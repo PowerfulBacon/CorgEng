@@ -10,7 +10,7 @@ jobs:
     
     defaults:
         run:
-            working-directory: ./GJ2022
+            working-directory: ./CorgEng
 
     steps:
       - uses: actions/checkout@v2
