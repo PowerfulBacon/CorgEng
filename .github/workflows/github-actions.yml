@@ -36,4 +36,4 @@ jobs:
           msbuild.exe CorgEng.Core.sln /p:platform="x86" /p:configuration="Release"
         
       - name: Run Tests
-        run: vstest.console.exe ..\GJ2022.Tests\bin\x86\Release\GJ2022.Tests.dll
+        run: vstest.console.exe ..\CorgEng.Tests\bin\x86\Release\CorgEng.Tests.dll
