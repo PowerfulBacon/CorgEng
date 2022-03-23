@@ -10,7 +10,7 @@ jobs:
     
     defaults:
         run:
-            working-directory: './CorgEng.Core'
+            working-directory: "./CorgEng.Core"
 
     steps:
       - uses: actions/checkout@v2
