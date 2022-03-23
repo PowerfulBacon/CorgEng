@@ -29,7 +29,7 @@ jobs:
         run: cd $GITHUB_WORKSPACE
         
       - name: Restore Packages
-        run: nuget restore GJ2022.sln
+        run: nuget restore CorgEng.Core.sln
         
       - name: Build Solution
         run: |
