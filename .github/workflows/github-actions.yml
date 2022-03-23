@@ -1,4 +1,4 @@
-name: Unit tests
+ame: Unit tests
 
 on: [push]
 
@@ -10,7 +10,7 @@ jobs:
     
     defaults:
         run:
-            working-directory: ./GJ2022
+            working-directory: ./CorgEng.Core
 
     steps:
       - uses: actions/checkout@v2
@@ -29,11 +29,11 @@ jobs:
         run: cd $GITHUB_WORKSPACE
         
       - name: Restore Packages
-        run: nuget restore GJ2022.sln
+        run: nuget restore CorgEng.Core.sln
         
       - name: Build Solution
         run: |
-          msbuild.exe GJ2022.sln /p:platform="x86" /p:configuration="Release"
+          msbuild.exe CorgEng.Core.sln /p:platform="x86" /p:configuration="Release"
         
       - name: Run Tests
-        run: vstest.console.exe ..\GJ2022.Tests\bin\x86\Release\GJ2022.Tests.dll
+        run: vstest.console.exe ..\CorgEng.Tests\bin\x86\Release\CorgEng.Tests.dll
