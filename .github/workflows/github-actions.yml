@@ -29,11 +29,11 @@ jobs:
         run: cd $GITHUB_WORKSPACE
         
       - name: Restore Packages
-        run: nuget restore CorgEng\.Core.sln
+        run: nuget restore CorgEng.Core.sln
         
       - name: Build Solution
         run: |
-          msbuild.exe CorgEng\.Core.sln /p:platform="x86" /p:configuration="Release"
+          msbuild.exe "CorgEng.Core.sln" /p:platform="x86" /p:configuration="Release"
         
       - name: Run Tests
-        run: vstest.console.exe ..\CorgEng.Tests\bin\x86\Release\CorgEng\.Tests.dll
+        run: vstest.console.exe ..\CorgEng.Tests\bin\x86\Release\CorgEng.Tests.dll
