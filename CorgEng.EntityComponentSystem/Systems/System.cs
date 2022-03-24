@@ -18,10 +18,7 @@ namespace CorgEng.EntityComponentSystem.Systems
         /// </summary>
         public void RegisterLocalEvent<GComponent, GEvent>(Func<Entity, GComponent, GEvent> eventHandler)
         {
-            if (EventManager.RegisteredComponentEvents.ContainsKey(typeof(GComponent)))
-                EventManager.RegisteredComponentEvents[typeof(GComponent)].Add(typeof(GEvent));
-            else
-                EventManager.RegisteredComponentEvents.Add(typeof(GComponent), new List<Type>() { typeof(GEvent) });
+            
         }
 
     }

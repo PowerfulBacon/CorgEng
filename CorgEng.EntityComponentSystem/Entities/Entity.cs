@@ -11,9 +11,42 @@ namespace CorgEng.EntityComponentSystem.Entities
     {
 
         /// <summary>
-        /// List of components attached to this entity
+        /// A dictionary shared between all entities that records an entity and the component
+        /// instances it has.
+        /// Shared to save on memory.
         /// </summary>
-        public List<Component> Components { get; } = new List<Component>();
+        private static Dictionary<(Entity, Type), Component> EntityComponentInstances { get; } = new Dictionary<(Entity, Type), Component>();
+
+        /// <summary>
+        /// A list of the component types attatched to this entity
+        /// </summary>
+        private List<Type> ComponentTypes { get; } = new List<Type>();
+
+        /// <summary>
+        /// TODO: Populate this.
+        /// A dictionary that associates event types to a list of callbacks that this entity
+        /// needs to call should it recieve that event.
+        /// </summary>
+        public Dictionary<Type, Func<>>
+
+        /// <summary>
+        /// Get the component with the specified type
+        /// </summary>
+        public Component GetComponent<ComponentType>()
+        {
+            return EntityComponentInstances[(this, typeof(ComponentType))];
+        }
+
+        /// <summary>
+        /// Delete the entity, removes it's references from the static list.
+        /// </summary>
+        public void Delete()
+        {
+            foreach (Type type in ComponentTypes)
+            {
+                EntityComponentInstances.Remove((this, type));
+            }
+        }
 
     }
 }
