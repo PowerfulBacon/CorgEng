@@ -73,6 +73,7 @@ namespace CorgEng.Core
         public static void SetRenderCore(RenderCore newRenderCore)
         {
             MainRenderCore = newRenderCore;
+            MainRenderCore.Initialize();
         }
 
         /// <summary>

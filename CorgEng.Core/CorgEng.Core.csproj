@@ -120,6 +120,12 @@
     <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
+    <None Update="Content\Shaders\default\default.frag">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Content\Shaders\default\default.vert">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="glfw.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

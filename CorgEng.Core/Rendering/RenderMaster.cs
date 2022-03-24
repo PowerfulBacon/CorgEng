@@ -34,7 +34,7 @@ namespace CorgEng.Core.Rendering
             glEnable(GL_BLEND);
             glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
             //Set a background colour
-            glClearColor(255 / 255f, 105 / 255f, 180 / 255f, 1.0f);
+            glClearColor(0, 0, 0, 1.0f);
         }
 
         /// <summary>

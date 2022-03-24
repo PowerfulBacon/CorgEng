@@ -28,6 +28,11 @@ namespace CorgEng.Core.Rendering
         }
 
         /// <summary>
+        /// Called when the render core is initialized
+        /// </summary>
+        public abstract void Initialize();
+
+        /// <summary>
         /// Perform rendering
         /// </summary>
         public abstract void PerformRender();

@@ -11,6 +11,11 @@ namespace CorgEng.Core
 
     internal class ExampleRenderCore : RenderCore
     {
+        public override void Initialize()
+        {
+            return;
+        }
+
         public override void PerformRender()
         {
             //Do nothing for now
