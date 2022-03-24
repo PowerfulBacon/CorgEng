@@ -117,10 +117,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="GameManagement\" />
     <Folder Include="Properties\" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="glfw-net" Version="3.3.1" />
+    <Folder Include="Rendering\x\" />
   </ItemGroup>
   <ItemGroup>
     <None Update="glfw.dll">
