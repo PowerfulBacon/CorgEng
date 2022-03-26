@@ -8,17 +8,14 @@ using System;
 namespace CorgEng.Tests.EntityComponentSystem
 {
 
-    internal class OtherEvent : Event { }
+    internal class OtherEvent : Event
+    { }
 
     internal class TestEvent : Event
-    {
-
-    }
+    { }
 
     internal class TestComponent : Component
-    {
-
-    }
+    { }
 
     internal class TestEntitySystem : EntitySystem
     {
