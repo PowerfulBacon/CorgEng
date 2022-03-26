@@ -28,9 +28,6 @@ jobs:
       - name: Navigate to Workspace
         run: cd $GITHUB_WORKSPACE
         
-      - name: Dotnet Restore
-        run: dotnet restore CorgEng.Core.sln --runtime win7-x86
-        
       - name: Nuget Restore Packages
         run: nuget restore CorgEng.Core.sln
         
