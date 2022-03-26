@@ -1,15 +1,14 @@
-﻿using CorgEng.EntityComponentSystem.Entities;
+﻿using CorgEng.EntityComponentSystem.Components;
+using CorgEng.EntityComponentSystem.Entities;
 using CorgEng.EntityComponentSystem.Events;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CorgEng.EntityComponentSystem.Systems
 {
     public abstract class System
     {
+
+        internal delegate void SystemEventHandlerDelegate(Entity entity, Component component, Event signal);
 
         public abstract void SystemSetup();
 
