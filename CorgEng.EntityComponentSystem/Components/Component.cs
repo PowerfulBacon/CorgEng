@@ -1,4 +1,5 @@
-﻿using CorgEng.EntityComponentSystem.Entities;
+﻿using CorgEng.Core.Logging;
+using CorgEng.EntityComponentSystem.Entities;
 using CorgEng.EntityComponentSystem.Events;
 using CorgEng.EntityComponentSystem.Systems;
 using System;
@@ -39,10 +40,10 @@ namespace CorgEng.EntityComponentSystem.Components
                         systemEventHandler.Invoke(entity, this, signal);
                 };
                 //Start listening for this event
-                if (parent.EventListeners.ContainsKey(key))
-                    parent.EventListeners[key].Add(componentInjectionLambda);
+                if (parent.EventListeners.ContainsKey(eventType))
+                    parent.EventListeners[eventType].Add(componentInjectionLambda);
                 else
-                    parent.EventListeners.Add(key, new List<Entity.InternalSignalHandleDelegate>() { componentInjectionLambda });
+                    parent.EventListeners.Add(eventType, new List<Entity.InternalSignalHandleDelegate>() { componentInjectionLambda });
             }
         }
 

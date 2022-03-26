@@ -1,5 +1,6 @@
 ﻿using CorgEng.EntityComponentSystem.Components;
 using CorgEng.EntityComponentSystem.Events;
+using System;
 using System.Collections.Generic;
 
 namespace CorgEng.EntityComponentSystem.Entities
@@ -18,23 +19,27 @@ namespace CorgEng.EntityComponentSystem.Entities
         /// Components register themselves to this when needed, and this gets fired off to the component
         /// which then can fire off itself to the system.
         /// </summary>
-        internal Dictionary<EventComponentPair, List<InternalSignalHandleDelegate>> EventListeners { get; } = null;
+        internal Dictionary<Type, List<InternalSignalHandleDelegate>> EventListeners { get; } = null;
+
+        public void AddComponent(Component component)
+        {
+            Components.Add(component);
+            component.OnComponentAdded(this);
+        }
 
         /// <summary>
         /// Internal method for handling signals.
         /// </summary>
-        /// <typeparam name="ComponentTarget"></typeparam>
         /// <param name="signal"></param>
-        internal void HandleSignal<ComponentTarget>(Event signal)
+        internal void HandleSignal(Event signal)
         {
             //Verify that this signal is being listened for
             if (EventListeners == null)
                 return;
-            EventComponentPair eventComponentPair = new EventComponentPair(signal.GetType(), typeof(ComponentTarget));
-            if (!EventListeners.ContainsKey(eventComponentPair))
+            if (!EventListeners.ContainsKey(signal.GetType()))
                 return;
             //Fetch the registered signal handlers
-            List<InternalSignalHandleDelegate> signalHandleDelegates = EventListeners[eventComponentPair];
+            List<InternalSignalHandleDelegate> signalHandleDelegates = EventListeners[signal.GetType()];
             //Call the signals
             foreach (InternalSignalHandleDelegate internalSignalHandler in signalHandleDelegates)
             {

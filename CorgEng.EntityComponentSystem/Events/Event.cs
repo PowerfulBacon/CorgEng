@@ -10,7 +10,7 @@ namespace CorgEng.EntityComponentSystem.Events
         /// </summary>
         public void Raise(Entity target)
         {
-
+            target.HandleSignal(this);
         }
 
     }

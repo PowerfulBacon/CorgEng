@@ -59,6 +59,11 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\CorgEng.Core\CorgEng.Core.csproj">
+      <Project>{A3101CA0-3DFA-4C1C-9A67-DA979DB8676D}</Project>
+      <Name>CorgEng.Core</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
