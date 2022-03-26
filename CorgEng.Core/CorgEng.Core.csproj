@@ -20,6 +20,7 @@
     <Deterministic>true</Deterministic>
     <ApplicationIcon />
     <StartupObject />
+    <SignAssembly>false</SignAssembly>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
