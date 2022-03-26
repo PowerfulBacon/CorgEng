@@ -25,6 +25,12 @@ namespace CorgEng.EntityComponentSystem.Systems
             where GComponent : Component
             where GEvent : Event
         {
+            //Register the component to recieve the target event on the event manager
+            if (!EventManager.RegisteredEvents.ContainsKey(typeof(GComponent)))
+                EventManager.RegisteredEvents.Add(typeof(GComponent), new List<Type>());
+            if(!EventManager.RegisteredEvents[typeof(GComponent)].Contains(typeof(GEvent)))
+                EventManager.RegisteredEvents[typeof(GComponent)].Add(typeof(GEvent));
+            //Register the system to receieve the event
             EventComponentPair eventComponentPair = new EventComponentPair(typeof(GEvent), typeof(GComponent));
             if (!RegisteredSystemSignalHandlers.ContainsKey(eventComponentPair))
                 RegisteredSystemSignalHandlers.Add(eventComponentPair, new List<SystemEventHandlerDelegate>());

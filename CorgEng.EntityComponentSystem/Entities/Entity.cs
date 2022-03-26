@@ -19,7 +19,7 @@ namespace CorgEng.EntityComponentSystem.Entities
         /// Components register themselves to this when needed, and this gets fired off to the component
         /// which then can fire off itself to the system.
         /// </summary>
-        internal Dictionary<Type, List<InternalSignalHandleDelegate>> EventListeners { get; } = null;
+        internal Dictionary<Type, List<InternalSignalHandleDelegate>> EventListeners { get; set; } = null;
 
         public void AddComponent(Component component)
         {
