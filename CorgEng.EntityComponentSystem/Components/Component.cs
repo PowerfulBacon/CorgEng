@@ -29,6 +29,7 @@ namespace CorgEng.EntityComponentSystem.Components
             {
                 EventComponentPair key = new EventComponentPair(eventType, GetType());
                 //Locate the monitoring system's callback handler
+                //TODO:
                 SystemEventHandlerDelegate systemEventHandler = null;
                 //Create a lambda function that injects this component and relays it to the system
                 InternalSignalHandleDelegate componentInjectionLambda = (Entity entity, Event signal) => {
