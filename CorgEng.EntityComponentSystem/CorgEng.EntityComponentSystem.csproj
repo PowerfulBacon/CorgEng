@@ -54,7 +54,7 @@
     <Compile Include="Events\EventComponentPair.cs" />
     <Compile Include="Events\EventManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Systems\System.cs" />
+    <Compile Include="Systems\EntitySystem.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

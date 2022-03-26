@@ -1,9 +1,10 @@
 ﻿using CorgEng.EntityComponentSystem.Entities;
 using CorgEng.EntityComponentSystem.Events;
+using CorgEng.EntityComponentSystem.Systems;
 using System;
 using System.Collections.Generic;
 using static CorgEng.EntityComponentSystem.Entities.Entity;
-using static CorgEng.EntityComponentSystem.Systems.System;
+using static CorgEng.EntityComponentSystem.Systems.EntitySystem;
 
 namespace CorgEng.EntityComponentSystem.Components
 {
@@ -29,11 +30,13 @@ namespace CorgEng.EntityComponentSystem.Components
             {
                 EventComponentPair key = new EventComponentPair(eventType, GetType());
                 //Locate the monitoring system's callback handler
-                //TODO:
-                SystemEventHandlerDelegate systemEventHandler = null;
+                if (!RegisteredSystemSignalHandlers.ContainsKey(key))
+                    continue;
+                List<SystemEventHandlerDelegate> systemEventHandlers = RegisteredSystemSignalHandlers[key];
                 //Create a lambda function that injects this component and relays it to the system
                 InternalSignalHandleDelegate componentInjectionLambda = (Entity entity, Event signal) => {
-                    systemEventHandler.Invoke(entity, this, signal);
+                    foreach(SystemEventHandlerDelegate systemEventHandler in systemEventHandlers)
+                        systemEventHandler.Invoke(entity, this, signal);
                 };
                 //Start listening for this event
                 if (parent.EventListeners.ContainsKey(key))

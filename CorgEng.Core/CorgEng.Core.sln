@@ -8,9 +8,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CorgEng.Tests", "..\CorgEng.Tests\CorgEng.Tests.csproj", "{7906D0B3-37A0-4997-A2B6-25E6EA8FB11E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CorgEng.EntityComponentSystem", "..\CorgEng.EntityComponentSystem\CorgEng.EntityComponentSystem.csproj", "{887F4CE9-2D52-4708-9842-171E74E66561}"
-	ProjectSection(ProjectDependencies) = postProject
-		{A3101CA0-3DFA-4C1C-9A67-DA979DB8676D} = {A3101CA0-3DFA-4C1C-9A67-DA979DB8676D}
-	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
