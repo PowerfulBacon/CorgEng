@@ -1,3 +1,5 @@
+//TODO: Rewrite me to a proper README
+
 # CorgEng
  A modularised, multi-threaded ECS based game engine.
 
