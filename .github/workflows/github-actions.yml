@@ -28,7 +28,7 @@ jobs:
       - name: Navigate to Workspace
         run: cd $GITHUB_WORKSPACE
         
-      - name: Restore Packages
+      - name: Nuget Restore Packages
         run: nuget restore CorgEng.Core.sln
         
       - name: Build Solution
