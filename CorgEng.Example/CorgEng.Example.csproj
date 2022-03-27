@@ -74,6 +74,26 @@
       <Project>{9CCC4A6B-2D13-425D-8C72-B034151EC11C}</Project>
       <Name>CorgEng.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\CorgEng.DependencyInjection\CorgEng.DependencyInjection.csproj">
+      <Project>{913a2be9-e596-4202-8da1-adf02ae63618}</Project>
+      <Name>CorgEng.DependencyInjection</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CorgEng.EntityComponentSystem\CorgEng.EntityComponentSystem.csproj">
+      <Project>{4bb408b5-9afa-42e6-973d-547a84a293a5}</Project>
+      <Name>CorgEng.EntityComponentSystem</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CorgEng.Logging\CorgEng.Logging.csproj">
+      <Project>{58dc11a7-998a-40a3-a73a-80bdb521fed4}</Project>
+      <Name>CorgEng.Logging</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CorgEng.Rendering\CorgEng.Rendering.csproj">
+      <Project>{bfc5583f-3a05-43e4-9d07-81d80b1ec685}</Project>
+      <Name>CorgEng.Rendering</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CorgEng.UtilityTypes\CorgEng.UtilityTypes.csproj">
+      <Project>{f9ccd4d7-9af2-4167-9f31-a2879d82f854}</Project>
+      <Name>CorgEng.UtilityTypes</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

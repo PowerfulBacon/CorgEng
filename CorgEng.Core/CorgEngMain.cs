@@ -1,6 +1,9 @@
-﻿using CorgEng.Core.Rendering;
+﻿using CorgEng.Core.Dependencies;
+using CorgEng.Core.Interfaces.Logging;
+using CorgEng.Core.Rendering;
 using CorgEng.Core.Rendering.Exceptions;
 using GLFW;
+using System.Collections.Generic;
 
 namespace CorgEng.Core
 {
@@ -25,17 +28,26 @@ namespace CorgEng.Core
         private static CorgEngWindow GameWindow { get; set; }
 
         /// <summary>
+        /// Create a logger
+        /// </summary>
+        [UsingDependency]
+        private static ILogger Logger;
+        
+        /// <summary>
         /// Initializes the CorgEng game engine.
         /// Will call initialization on all CorgEng modules.
         /// </summary>
         public static void Initialize()
         {
+            Logger?.WriteLine("Starting CorgEng Application", LogType.DEBUG);
             //Create a new window
             GameWindow = new CorgEngWindow();
             GameWindow.Open();
+            Logger?.WriteLine("Successfully created primary window", LogType.DEBUG);
             //Create the internal render master
             InternalRenderMaster = new RenderMaster();
             InternalRenderMaster.Initialize();
+            Logger?.WriteLine("Successfully initialized render master", LogType.DEBUG);
         }
 
         /// <summary>
@@ -79,6 +91,16 @@ namespace CorgEng.Core
         {
             //Terminate GLFW
             Glfw.Terminate();
+        }
+
+        private static void PriorityModuleInit()
+        {
+            //TODO
+        }
+
+        private static void ModuleInit()
+        {
+
         }
 
     }

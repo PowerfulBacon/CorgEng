@@ -20,7 +20,7 @@ namespace CorgEng.DependencyInjection.Injection
         /// <summary>
         /// Load the dependencies, called during module loading.
         /// </summary>
-        [ModuleLoad]
+        [ModuleLoad(priority = true)]
         public static void LoadDependencyInjection()
         {
             Stopwatch stopwatch = new Stopwatch();
