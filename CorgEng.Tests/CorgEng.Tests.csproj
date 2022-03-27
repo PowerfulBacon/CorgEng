@@ -87,14 +87,18 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DependencyInjection\DependencyTests.cs" />
     <Compile Include="EntityComponentSystem\SignalTests.cs" />
-    <Compile Include="UnitTest1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\CorgEng.DependencyInjection\CorgEng.DependencyInjection.csproj">
+      <Project>{E9665AEC-B3A5-4B93-A7FD-E8D55496BB7F}</Project>
+      <Name>CorgEng.DependencyInjection</Name>
+    </ProjectReference>
     <ProjectReference Include="..\CorgEng.EntityComponentSystem\CorgEng.EntityComponentSystem.csproj">
       <Project>{887F4CE9-2D52-4708-9842-171E74E66561}</Project>
       <Name>CorgEng.EntityComponentSystem</Name>
