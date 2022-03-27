@@ -1,4 +1,5 @@
-﻿using CorgEng.DependencyInjection.Dependencies;
+﻿using CorgEng.Core.Dependencies;
+using CorgEng.DependencyInjection.Dependencies;
 using CorgEng.DependencyInjection.Injection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -14,7 +15,7 @@ namespace CorgEng.Tests.DependencyInjection
             bool CompleteTest();
         }
 
-        [Dependency()]
+        [Dependency]
         private class BadDependency : IDependency
         {
             public bool CompleteTest() => false;

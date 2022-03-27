@@ -4,7 +4,7 @@ using GLFW;
 
 namespace CorgEng.Core
 {
-    public static class CorgEng
+    public static class CorgEngMain
     {
 
         /// <summary>

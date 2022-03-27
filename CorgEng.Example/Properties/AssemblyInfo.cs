@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("CorgEng.UtilityTypes")]
+[assembly: AssemblyTitle("CorgEng.Example")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("CorgEng.UtilityTypes")]
+[assembly: AssemblyProduct("CorgEng.Example")]
 [assembly: AssemblyCopyright("Copyright ©  2022")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("f9ccd4d7-9af2-4167-9f31-a2879d82f854")]
+[assembly: Guid("14e8a473-e0b8-4cb2-ba76-b322fa0edadf")]
 
 // Version information for an assembly consists of the following four values:
 //

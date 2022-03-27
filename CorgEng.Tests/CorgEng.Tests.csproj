@@ -5,7 +5,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{7906D0B3-37A0-4997-A2B6-25E6EA8FB11E}</ProjectGuid>
+    <ProjectGuid>{04D2DFC7-ABE3-46BA-9E98-8E01A8BE92B5}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>CorgEng.Tests</RootNamespace>
@@ -20,7 +20,6 @@
     <TestProjectType>UnitTest</TestProjectType>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -30,7 +29,6 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -58,24 +56,6 @@
     <LangVersion>7.3</LangVersion>
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\x86\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
-    <LangVersion>7.3</LangVersion>
-    <ErrorReport>prompt</ErrorReport>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
-    <OutputPath>bin\x86\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
-    <LangVersion>7.3</LangVersion>
-    <ErrorReport>prompt</ErrorReport>
-  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.VisualStudio.TestPlatform.TestFramework, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\CorgEng.Core\packages\MSTest.TestFramework.2.1.2\lib\net45\Microsoft.VisualStudio.TestPlatform.TestFramework.dll</HintPath>
@@ -89,7 +69,6 @@
   <ItemGroup>
     <Compile Include="DependencyInjection\DependencyTests.cs" />
     <Compile Include="EntityComponentSystem\SignalTests.cs" />
-    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UtilityTypes\BatchTests.cs" />
   </ItemGroup>
@@ -98,19 +77,19 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CorgEng.Core\CorgEng.Core.csproj">
-      <Project>{A3101CA0-3DFA-4C1C-9A67-DA979DB8676D}</Project>
+      <Project>{9CCC4A6B-2D13-425D-8C72-B034151EC11C}</Project>
       <Name>CorgEng.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\CorgEng.DependencyInjection\CorgEng.DependencyInjection.csproj">
-      <Project>{E9665AEC-B3A5-4B93-A7FD-E8D55496BB7F}</Project>
+      <Project>{913A2BE9-E596-4202-8DA1-ADF02AE63618}</Project>
       <Name>CorgEng.DependencyInjection</Name>
     </ProjectReference>
     <ProjectReference Include="..\CorgEng.EntityComponentSystem\CorgEng.EntityComponentSystem.csproj">
-      <Project>{887F4CE9-2D52-4708-9842-171E74E66561}</Project>
+      <Project>{4BB408B5-9AFA-42E6-973D-547A84A293A5}</Project>
       <Name>CorgEng.EntityComponentSystem</Name>
     </ProjectReference>
     <ProjectReference Include="..\CorgEng.UtilityTypes\CorgEng.UtilityTypes.csproj">
-      <Project>{E6624E89-7E7E-4AA5-9134-3C577053A759}</Project>
+      <Project>{F9CCD4D7-9AF2-4167-9F31-A2879D82F854}</Project>
       <Name>CorgEng.UtilityTypes</Name>
     </ProjectReference>
   </ItemGroup>

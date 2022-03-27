@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CorgEng.DependencyInjection.Dependencies
+namespace CorgEng.Core.Dependencies
 {
     public class UsingDependencyAttribute : Attribute
     {

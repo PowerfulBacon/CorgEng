@@ -1,18 +1,19 @@
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-[assembly: AssemblyTitle("CoreEng.Tests")]
+[assembly: AssemblyTitle("CorgEng.Tests")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("CoreEng.Tests")]
+[assembly: AssemblyProduct("CorgEng.Tests")]
 [assembly: AssemblyCopyright("Copyright ©  2022")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
 [assembly: ComVisible(false)]
 
-[assembly: Guid("7906d0b3-37a0-4997-a2b6-25e6ea8fb11e")]
+[assembly: Guid("04d2dfc7-abe3-46ba-9e98-8e01a8be92b5")]
 
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("1.0.0.0")]

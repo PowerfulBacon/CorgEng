@@ -1,4 +1,5 @@
-﻿using CorgEng.Core.Modules;
+﻿using CorgEng.Core.Dependencies;
+using CorgEng.Core.Modules;
 using CorgEng.DependencyInjection.Dependencies;
 using System;
 using System.Collections.Generic;
