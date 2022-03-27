@@ -50,11 +50,5 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Vectors\Vector.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\CorgEng.DependencyInjection\CorgEng.DependencyInjection.csproj">
-      <Project>{E9665AEC-B3A5-4B93-A7FD-E8D55496BB7F}</Project>
-      <Name>CorgEng.DependencyInjection</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

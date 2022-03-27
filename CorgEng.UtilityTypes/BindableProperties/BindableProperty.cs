@@ -1,9 +1,7 @@
-﻿using CorgEng.DependencyInjection.Dependencies;
-using System;
+﻿using System;
 
 namespace CorgEng.UtilityTypes.BindableProperties
 {
-    [Dependency(defaultDependency = true)]
     public class BindableProperty<T> : IBindableProperty<T>
     {
 
