@@ -1,7 +1,5 @@
-﻿using CorgEng.Core.Logging;
-using CorgEng.EntityComponentSystem.Entities;
+﻿using CorgEng.EntityComponentSystem.Entities;
 using CorgEng.EntityComponentSystem.Events;
-using CorgEng.EntityComponentSystem.Systems;
 using System;
 using System.Collections.Generic;
 using static CorgEng.EntityComponentSystem.Entities.Entity;

@@ -2,7 +2,7 @@
 
 namespace CorgEng.Core.Logging
 {
-    public class ConsoleLogger : ILogger
+    public static class ConsoleLogger
     {
 
         private static object consoleLock = new object();
@@ -14,7 +14,7 @@ namespace CorgEng.Core.Logging
         /// <summary>
         /// TODO
         /// </summary>
-        public void WriteLine(object message, LogType logType = LogType.MESSAGE)
+        public static void WriteLine(object message, LogType logType = LogType.MESSAGE)
         {
             if (message is Exception)
                 ExceptionCount++;
@@ -33,7 +33,7 @@ namespace CorgEng.Core.Logging
             }
         }
 
-        private void SetConsoleColor(LogType logType)
+        private static void SetConsoleColor(LogType logType)
         {
             switch (logType)
             {
