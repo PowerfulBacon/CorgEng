@@ -1,5 +1,4 @@
 ﻿using CorgEng.UtilityTypes.Vectors;
-using System;
 using System.Collections.Generic;
 
 namespace CorgEng.UtilityTypes.Batches.Interfaces

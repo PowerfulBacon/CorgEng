@@ -3,7 +3,6 @@ using CorgEng.EntityComponentSystem.Entities;
 using CorgEng.EntityComponentSystem.Events;
 using CorgEng.EntityComponentSystem.Systems;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
 
 namespace CorgEng.Tests.EntityComponentSystem
 {

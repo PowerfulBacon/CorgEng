@@ -1,13 +1,8 @@
 ﻿using CorgEng.UtilityTypes.Batches;
-using CorgEng.UtilityTypes.Batches.Interfaces;
 using CorgEng.UtilityTypes.BindableProperties;
 using CorgEng.UtilityTypes.Vectors;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CorgEng.Tests.UtilityTypes
 {
