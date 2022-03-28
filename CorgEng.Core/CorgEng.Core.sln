@@ -19,6 +19,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CorgEng.Example", "..\CorgE
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CorgEng.Logging", "..\CorgEng.Logging\CorgEng.Logging.csproj", "{58DC11A7-998A-40A3-A73A-80BDB521FED4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CorgEng.GenericInterfaces", "..\CorgEng.GenericInterfaces\CorgEng.GenericInterfaces.csproj", "{E87F196E-5BF2-4AAF-8209-9F66A4F4B0EB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -91,6 +93,14 @@ Global
 		{58DC11A7-998A-40A3-A73A-80BDB521FED4}.Release|Any CPU.Build.0 = Release|Any CPU
 		{58DC11A7-998A-40A3-A73A-80BDB521FED4}.Release|x64.ActiveCfg = Release|Any CPU
 		{58DC11A7-998A-40A3-A73A-80BDB521FED4}.Release|x64.Build.0 = Release|Any CPU
+		{E87F196E-5BF2-4AAF-8209-9F66A4F4B0EB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E87F196E-5BF2-4AAF-8209-9F66A4F4B0EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E87F196E-5BF2-4AAF-8209-9F66A4F4B0EB}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{E87F196E-5BF2-4AAF-8209-9F66A4F4B0EB}.Debug|x64.Build.0 = Debug|Any CPU
+		{E87F196E-5BF2-4AAF-8209-9F66A4F4B0EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E87F196E-5BF2-4AAF-8209-9F66A4F4B0EB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E87F196E-5BF2-4AAF-8209-9F66A4F4B0EB}.Release|x64.ActiveCfg = Release|Any CPU
+		{E87F196E-5BF2-4AAF-8209-9F66A4F4B0EB}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

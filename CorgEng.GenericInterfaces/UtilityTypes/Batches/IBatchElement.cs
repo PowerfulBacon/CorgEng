@@ -1,6 +1,4 @@
-﻿using CorgEng.UtilityTypes.Vectors;
-
-namespace CorgEng.UtilityTypes.Batches.Interfaces
+﻿namespace CorgEng.GenericInterfaces.UtilityTypes.Batches
 {
     public interface IBatchElement<TargetBatch>
         where TargetBatch : IBatch<TargetBatch>
@@ -12,6 +10,6 @@ namespace CorgEng.UtilityTypes.Batches.Interfaces
         int BatchPosition { get; set; }
 
         //Get the value at a specific index
-        Vector<float> GetValue(int index);
+        IVector<float> GetValue(int index);
     }
 }

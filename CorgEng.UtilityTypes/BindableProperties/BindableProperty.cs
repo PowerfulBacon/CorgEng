@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CorgEng.GenericInterfaces.UtilityTypes;
+using System;
 
 namespace CorgEng.UtilityTypes.BindableProperties
 {

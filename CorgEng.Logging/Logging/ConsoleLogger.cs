@@ -1,8 +1,8 @@
-﻿using CorgEng.Core.Interfaces.Logging;
-using CorgEng.DependencyInjection.Dependencies;
+﻿using CorgEng.DependencyInjection.Dependencies;
+using CorgEng.GenericInterfaces.Logging;
 using System;
 
-namespace CorgEng.Core.Logging
+namespace CorgEng.Logging
 {
     [Dependency(defaultDependency = true)]
     public class ConsoleLogger : ILogger

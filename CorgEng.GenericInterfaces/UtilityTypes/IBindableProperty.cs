@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CorgEng.UtilityTypes.BindableProperties
+namespace CorgEng.GenericInterfaces.UtilityTypes
 {
     public interface IBindableProperty<T>
     {

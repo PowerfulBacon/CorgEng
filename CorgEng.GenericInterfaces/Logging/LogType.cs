@@ -1,7 +1,7 @@
 ﻿/// <summary>
 /// Level of the log type
 /// </summary>
-namespace CorgEng.Core.Interfaces.Logging
+namespace CorgEng.GenericInterfaces.Logging
 {
     public enum LogType
     {

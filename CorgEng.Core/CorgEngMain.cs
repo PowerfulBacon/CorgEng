@@ -1,9 +1,16 @@
 ﻿using CorgEng.Core.Dependencies;
-using CorgEng.Core.Interfaces.Logging;
+using CorgEng.Core.Modules;
 using CorgEng.Core.Rendering;
 using CorgEng.Core.Rendering.Exceptions;
+using CorgEng.GenericInterfaces.Logging;
 using GLFW;
+using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace CorgEng.Core
 {
@@ -32,13 +39,15 @@ namespace CorgEng.Core
         /// </summary>
         [UsingDependency]
         private static ILogger Logger;
-        
+
         /// <summary>
         /// Initializes the CorgEng game engine.
         /// Will call initialization on all CorgEng modules.
         /// </summary>
         public static void Initialize()
         {
+            //Load priority modules (Logging)
+            PriorityModuleInit();
             Logger?.WriteLine("Starting CorgEng Application", LogType.DEBUG);
             //Create a new window
             GameWindow = new CorgEngWindow();
@@ -48,6 +57,8 @@ namespace CorgEng.Core
             InternalRenderMaster = new RenderMaster();
             InternalRenderMaster.Initialize();
             Logger?.WriteLine("Successfully initialized render master", LogType.DEBUG);
+            //Load non-priority modules
+            ModuleInit();
         }
 
         /// <summary>
@@ -93,14 +104,109 @@ namespace CorgEng.Core
             Glfw.Terminate();
         }
 
-        private static void PriorityModuleInit()
+        /// <summary>
+        /// An enumerably containing assemblies loaded from the CorgEngConfig.
+        /// </summary>
+        private static IEnumerable<Assembly> LoadedAssemblyModules;
+
+        /// <summary>
+        /// Loads a CorgEng config file
+        /// </summary>
+        /// <param name="filePath"></param>
+        public static void LoadConfig(string filePath)
         {
-            //TODO
+            try
+            {
+                //Locate the config resources file
+                string resourceName = Assembly.GetEntryAssembly().GetManifestResourceNames().Single(str => str.EndsWith(filePath));
+                using (Stream resourceStream = Assembly.GetEntryAssembly().GetManifestResourceStream(resourceName))
+                {
+                    XElement configElement = XElement.Load(resourceStream);
+                    foreach (XElement childElement in configElement.Elements())
+                    {
+                        switch (childElement.Name.ToString())
+                        {
+                            case "DependencyModules":
+                                List<Assembly> loadedAssemblies = new List<Assembly>();
+                                foreach (XElement dependency in childElement.Elements())
+                                {
+                                    try
+                                    {
+                                        Assembly loadedModule = Assembly.LoadFile($"{Path.GetFullPath(dependency.Value)}.dll");
+                                        loadedAssemblies.Add(loadedModule);
+                                    }
+                                    catch (FileNotFoundException)
+                                    {
+                                        Console.Error.WriteLine($"[CorgEng Config Error]: Couldn't located module {dependency.Value}.dll");
+                                    }
+                                }
+                                LoadedAssemblyModules = loadedAssemblies;
+                                break;
+                            default:
+                                Console.Error.WriteLine($"[CorgEng Config Error]: Error parsing config, unknown config attribute {childElement.Name}.");
+                                break;
+                        }
+                    }
+                }
+            }
+            catch (System.Exception e)
+            {
+                Console.Error.WriteLine("CorgEng: A fatal exception has occured during configuration loading!");
+                Console.Error.WriteLine(e.Message);
+                Console.Error.WriteLine("The program may be corrupted or incorrectly configured.");
+                Console.Error.WriteLine("Please reinstall the program and ensure that if developing a CorgEng game, the config is set as an embedded resource.");
+                Console.Error.WriteLine("The application will now be terminated.");
+                Console.Error.WriteLine("Press any key to continue...");
+                Console.ReadKey();
+                throw;
+            }
+            //Console
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine(@"
+ _____                 _____            
+/  __ \               |  ___|           
+| /  \/ ___  _ __ __ _| |__ _ __   __ _ 
+| |    / _ \| '__/ _` |  __| '_ \ / _` |
+| \__/| (_) | | | (_| | |__| | | | (_| |
+ \____/\___/|_|  \__, \____|_| |_|\__, |
+                  __/ |            __/ |
+                 |___/            |___/ ");
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.WriteLine("@ 2022 CorgEng | MIT License\n");
+            Console.WriteLine("Succesfully loaded and parsed config!");
         }
 
+        private static IEnumerable<MethodInfo> ModuleLoadAttributes;
+
+        /// <summary>
+        /// Calls priority method modules
+        /// </summary>
+        private static void PriorityModuleInit()
+        {
+            ModuleLoadAttributes = AppDomain.CurrentDomain.GetAssemblies()
+                .SelectMany(assembly => assembly.GetTypes()
+                .SelectMany(type => type.GetMethods(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static)
+                .Where(method => method.GetCustomAttribute<ModuleLoadAttribute>() != null )));
+            Parallel.ForEach(ModuleLoadAttributes, (MethodInfo) => {
+                Console.WriteLine(MethodInfo.Name);
+                if(MethodInfo.GetCustomAttribute<ModuleLoadAttribute>().priority)
+                    MethodInfo.Invoke(null, new object[] { });
+            });
+        }
+
+        /// <summary>
+        /// Loads non-priority modules
+        /// </summary>
         private static void ModuleInit()
         {
-
+            Parallel.ForEach(ModuleLoadAttributes, (MethodInfo) => {
+                if (!MethodInfo.GetCustomAttribute<ModuleLoadAttribute>().priority)
+                {
+                    MethodInfo.Invoke(null, new object[] { });
+                    Logger?.WriteLine($"Successfully loaded module {MethodInfo.DeclaringType.Name}");
+                }
+            });
+            ModuleLoadAttributes = null;
         }
 
     }

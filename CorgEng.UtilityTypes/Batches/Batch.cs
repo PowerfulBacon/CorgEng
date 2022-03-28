@@ -1,4 +1,5 @@
-﻿using CorgEng.UtilityTypes.Batches.Interfaces;
+﻿using CorgEng.GenericInterfaces.UtilityTypes;
+using CorgEng.GenericInterfaces.UtilityTypes.Batches;
 using CorgEng.UtilityTypes.Vectors;
 using System;
 using System.Collections;
@@ -126,7 +127,7 @@ namespace CorgEng.UtilityTypes.Batches
         /// <param name="batchIndex"></param>
         /// <param name="groupIndex"></param>
         /// <param name="newValue"></param>
-        public void Update(int batchIndex, int groupIndex, Vector<float> newValue)
+        public void Update(int batchIndex, int groupIndex, IVector<float> newValue)
         {
             //Find what array group we are in
             int targetArrayGroupIndex = GetArrayGroupIndex(batchIndex, groupIndex);

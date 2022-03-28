@@ -1,9 +1,10 @@
-﻿using System;
+﻿using CorgEng.GenericInterfaces.UtilityTypes;
+using System;
 
 namespace CorgEng.UtilityTypes.Vectors
 {
 
-    public struct Vector<T>
+    public struct Vector<T> : IVector<T>
     {
 
         public static Vector<float> Zero => new Vector<float>(0, 0);

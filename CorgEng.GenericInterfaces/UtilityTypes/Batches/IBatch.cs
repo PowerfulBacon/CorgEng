@@ -1,7 +1,7 @@
-﻿using CorgEng.UtilityTypes.Vectors;
+﻿using CorgEng.GenericInterfaces.UtilityTypes;
 using System.Collections.Generic;
 
-namespace CorgEng.UtilityTypes.Batches.Interfaces
+namespace CorgEng.GenericInterfaces.UtilityTypes.Batches
 {
     public interface IBatch<Self> : IEnumerable<IBatchElement<Self>>
         where Self : IBatch<Self>
@@ -11,6 +11,12 @@ namespace CorgEng.UtilityTypes.Batches.Interfaces
         //A value of 3 will concatenate 3 values into a single vec3 (x, y, z)
         int[] BatchVectorSizes { get; }
 
+        int Count { get; }
+
+        int BatchSize { get; }
+
+        int IndividualBatchCounts { get; }
+
         //Add an element to the render batch
         void Add(IBatchElement<Self> element);
 
@@ -18,7 +24,7 @@ namespace CorgEng.UtilityTypes.Batches.Interfaces
         void Remove(IBatchElement<Self> element);
 
         //Update some element in the batch
-        void Update(int batchIndex, int groupIndex, Vector<float> newValue);
+        void Update(int batchIndex, int groupIndex, IVector<float> newValue);
 
         float[] GetArray(int batchIndex, int groupIndex);
 

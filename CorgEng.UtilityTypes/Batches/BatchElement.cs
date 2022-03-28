@@ -1,4 +1,5 @@
-﻿using CorgEng.UtilityTypes.Batches.Interfaces;
+﻿using CorgEng.GenericInterfaces.UtilityTypes;
+using CorgEng.GenericInterfaces.UtilityTypes.Batches;
 using CorgEng.UtilityTypes.BindableProperties;
 using CorgEng.UtilityTypes.Vectors;
 using System;
@@ -41,7 +42,7 @@ namespace CorgEng.UtilityTypes.Batches
             ContainingBatch.Update(BatchPosition, index, newValue);
         }
 
-        public Vector<float> GetValue(int index)
+        public IVector<float> GetValue(int index)
         {
             return internalValues[index].Value;
         }

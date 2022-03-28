@@ -82,6 +82,10 @@
       <Project>{4bb408b5-9afa-42e6-973d-547a84a293a5}</Project>
       <Name>CorgEng.EntityComponentSystem</Name>
     </ProjectReference>
+    <ProjectReference Include="..\CorgEng.GenericInterfaces\CorgEng.GenericInterfaces.csproj">
+      <Project>{E87F196E-5BF2-4AAF-8209-9F66A4F4B0EB}</Project>
+      <Name>CorgEng.GenericInterfaces</Name>
+    </ProjectReference>
     <ProjectReference Include="..\CorgEng.Logging\CorgEng.Logging.csproj">
       <Project>{58dc11a7-998a-40a3-a73a-80bdb521fed4}</Project>
       <Name>CorgEng.Logging</Name>
@@ -94,6 +98,9 @@
       <Project>{f9ccd4d7-9af2-4167-9f31-a2879d82f854}</Project>
       <Name>CorgEng.UtilityTypes</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="CorgEngConfig.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

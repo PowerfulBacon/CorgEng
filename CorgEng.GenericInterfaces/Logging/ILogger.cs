@@ -1,4 +1,4 @@
-﻿namespace CorgEng.Core.Interfaces.Logging
+﻿namespace CorgEng.GenericInterfaces.Logging
 {
     public interface ILogger
     {
