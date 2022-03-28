@@ -111,6 +111,7 @@ namespace CorgEng.Core
 
         /// <summary>
         /// Loads a CorgEng config file
+        /// TODO: Whitelist/blacklist types and add sandboxing
         /// </summary>
         /// <param name="filePath"></param>
         public static void LoadConfig(string filePath)
