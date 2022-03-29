@@ -71,6 +71,7 @@
     <Compile Include="SpriteRendering\SpriteBatch.cs" />
     <Compile Include="SpriteRendering\SpriteRenderer.cs" />
     <Compile Include="SpriteRendering\SpriteRenderObject.cs" />
+    <Compile Include="SpriteRendering\SpriteRenderObjectFactory.cs" />
     <Compile Include="SpriteRendering\SpriteSharedRenderAttributes.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -92,10 +93,14 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Content\Shaders\SpriteShader\SpriteShader.frag" />
     <None Include="Content\Shaders\SpriteShader\SpriteShader.vert">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="External Libraries\README.md" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Models\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

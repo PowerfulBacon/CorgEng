@@ -1,4 +1,5 @@
-﻿using CorgEng.GenericInterfaces.Rendering.Renderers;
+﻿using CorgEng.Core.Dependencies;
+using CorgEng.GenericInterfaces.Rendering.Renderers;
 using CorgEng.GenericInterfaces.Rendering.RenderObjects;
 using CorgEng.GenericInterfaces.Rendering.Shaders;
 using CorgEng.GenericInterfaces.Rendering.SharedRenderAttributes;
@@ -30,6 +31,7 @@ namespace CorgEng.Rendering
 
         public void Initialize()
         {
+            CreateShaders();
             //Create a program for the renderer
             programUint = glCreateProgram();
             //Setup the program:
@@ -42,6 +44,8 @@ namespace CorgEng.Rendering
             //Load the uniform variables in here, if required
             LoadUniformVariableLocations();
         }
+
+        protected abstract void CreateShaders();
 
         protected abstract void LoadUniformVariableLocations();
 

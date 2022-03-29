@@ -1,4 +1,5 @@
-﻿using CorgEng.DependencyInjection.Dependencies;
+﻿using CorgEng.Core.Dependencies;
+using CorgEng.DependencyInjection.Dependencies;
 using CorgEng.GenericInterfaces.Rendering.Renderers.SpriteRendering;
 using CorgEng.GenericInterfaces.Rendering.RenderObjects.SpriteRendering;
 using CorgEng.GenericInterfaces.Rendering.Shaders;
@@ -13,14 +14,27 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static OpenGL.Gl;
 
 namespace CorgEng.Rendering.SpriteRendering
 {
+    /// <summary>
+    /// TODO: Vertex and UV should be required and sent in automatically
+    /// </summary>
     [Dependency(defaultDependency = true)]
     internal sealed class SpriteRenderer : InstancedRenderer<SpriteSharedRenderAttributes, SpriteBatch>, ISpriteRenderer
     {
 
-        protected override IShaderSet ShaderSet { get; }
+        [UsingDependency]
+        private static IShaderFactory ShaderFactory;
+
+        private IShaderSet _shaderSet;
+        protected override IShaderSet ShaderSet => _shaderSet;
+
+        protected override void CreateShaders()
+        {
+            _shaderSet = ShaderFactory.CreateShaderSet("SpriteShader");
+        }
 
         public void StartRendering(ISpriteRenderObject spriteRenderObject)
         {
@@ -46,17 +60,22 @@ namespace CorgEng.Rendering.SpriteRendering
             spriteRenderObject.SetBelongingBatchElement<SpriteBatch>(null);
         }
 
-        protected override void BindBatchAttributes(SpriteSharedRenderAttributes sharedRenderAttributes, SpriteBatch batch)
+        protected override void LoadUniformVariableLocations()
         {
             throw new NotImplementedException();
+        }
+
+        protected override void BindBatchAttributes(SpriteSharedRenderAttributes sharedRenderAttributes, SpriteBatch batch)
+        {
+            //Bind attrib arrays
+            //Set the attrib divisors
+            glVertexAttribDivisor(0, 0);
+            glVertexAttribDivisor(1, 0);
+            glVertexAttribDivisor(2, 1);
+            glVertexAttribDivisor(3, 1);
         }
 
         protected override void BindUniformVariables()
-        {
-            throw new NotImplementedException();
-        }
-
-        protected override void LoadUniformVariableLocations()
         {
             throw new NotImplementedException();
         }
