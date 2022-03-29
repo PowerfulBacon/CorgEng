@@ -11,5 +11,8 @@
 
         //Get the value at a specific index
         IVector<float> GetValue(int index);
+
+        //Called when removed from a render batch, unbinds the properties.
+        void Unbind();
     }
 }

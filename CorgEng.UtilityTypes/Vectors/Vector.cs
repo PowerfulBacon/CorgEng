@@ -12,9 +12,12 @@ namespace CorgEng.UtilityTypes.Vectors
         public Vector(params T[] values)
         {
             Values = values;
+            OnChange = null;
         }
 
         private T[] Values;
+
+        public event EventHandler OnChange;
 
         /// <summary>
         /// Overload for the [] operator, returns the element of the vector.
@@ -22,25 +25,28 @@ namespace CorgEng.UtilityTypes.Vectors
         public T this[int x]
         {
             get { return Values[x]; }
-            set { Values[x] = value; }
+            set {
+                Values[x] = value;
+                OnChange?.Invoke(this, EventArgs.Empty);
+            }
         }
 
         public T X
         {
-            get => Values[0];
-            set => Values[0] = value;
+            get => this[0];
+            set => this[0] = value;
         }
 
         public T Y
         {
-            get => Values[1];
-            set => Values[1] = value;
+            get => this[1];
+            set => this[1] = value;
         }
 
         public T Z
         {
-            get => Values[2];
-            set => Values[2] = value;
+            get => this[2];
+            set => this[2] = value;
         }
 
         /// <summary>
@@ -53,12 +59,12 @@ namespace CorgEng.UtilityTypes.Vectors
 
         public Vector<T> IgnoreZ()
         {
-            return new Vector<T>(Values[0], Values[1]);
+            return new Vector<T>(this[0], this[1]);
         }
 
         public Vector<T> SetZ(T zValue)
         {
-            return new Vector<T>(Values[0], Values[1], zValue);
+            return new Vector<T>(this[0], this[1], zValue);
         }
 
         public Vector<T> Copy()
@@ -66,7 +72,7 @@ namespace CorgEng.UtilityTypes.Vectors
             T[] valuesCopy = new T[Dimensions];
             for (int i = 0; i < Dimensions; i++)
             {
-                valuesCopy[i] = Values[i];
+                valuesCopy[i] = this[i];
             }
             return new Vector<T>(valuesCopy);
         }
@@ -94,14 +100,14 @@ namespace CorgEng.UtilityTypes.Vectors
                 //Dimensional safe copy
                 for (int i = 0; i < Math.Min(trueTarget.Dimensions, trueThis.Dimensions); i++)
                 {
-                    thisCopy[i] = trueTarget.Values[i];
+                    thisCopy[i] = trueTarget[i];
                 }
                 extraDistance = distanceMoved - totalDistance;
                 return thisCopy;
             }
             for (int i = 0; i < Math.Min(trueTarget.Dimensions, trueThis.Dimensions); i++)
             {
-                float dist = (dynamic)trueTarget[i] - trueThis.Values[i];
+                float dist = (dynamic)trueTarget[i] - trueThis[i];
                 thisCopy[i] += (dynamic)(dist / totalDistance * (speed * deltaTime));
             }
             extraDistance = 0;
@@ -323,7 +329,7 @@ namespace CorgEng.UtilityTypes.Vectors
 
         public override string ToString()
         {
-            return $"{{{string.Join(", ", Values)}}}";
+            return $"{{{string.Join(", ", this)}}}";
         }
 
         public override bool Equals(object obj)

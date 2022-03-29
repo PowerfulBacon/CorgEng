@@ -14,13 +14,13 @@ namespace CorgEng.Rendering
 {
     internal abstract class InstancedRenderer<TSharedRenderAttributes, TBatch> : IRenderer
         where TSharedRenderAttributes : ISharedRenderAttributes
-        where TBatch : IBatch<TBatch>
+        where TBatch : IBatch<TBatch>, new()
     {
 
         protected abstract IShaderSet ShaderSet { get; }
 
         //The renderer's cache
-        protected Dictionary<TSharedRenderAttributes, TBatch> RenderCache { get; set; } = new Dictionary<TSharedRenderAttributes, TBatch>();
+        protected Dictionary<ISharedRenderAttributes, TBatch> RenderCache { get; set; } = new Dictionary<ISharedRenderAttributes, TBatch>();
 
         //The uint for the render program
         protected uint programUint;
@@ -56,14 +56,14 @@ namespace CorgEng.Rendering
             //Lock the render cache (Major rendering changes will wait for update completion)
             lock (RenderCache)
             {
-                foreach (TSharedRenderAttributes sharedRenderAttribute in RenderCache.Keys)
+                foreach (ISharedRenderAttributes sharedRenderAttribute in RenderCache.Keys)
                 {
                     TBatch renderBatch = RenderCache[sharedRenderAttribute];
                     //Batch is empty, continue
                     if (renderBatch.Count == 0)
                         continue;
                     //Rendering preperation
-                    BindBatchAttributes(sharedRenderAttribute, renderBatch);
+                    BindBatchAttributes((TSharedRenderAttributes)sharedRenderAttribute, renderBatch);
                     //Deal with rendering
                     for (int i = renderBatch.IndividualBatchCounts - 1; i >= 0; i--)
                     {
@@ -80,6 +80,30 @@ namespace CorgEng.Rendering
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// Adds a batch element to the render cache
+        /// </summary>
+        protected void AddToBatch(ISharedRenderAttributes sharedRenderAttributes, IBatchElement<TBatch> batchElement)
+        {
+            if (RenderCache.ContainsKey(sharedRenderAttributes))
+            {
+                RenderCache[sharedRenderAttributes].Add(batchElement);
+            }
+            else
+            {
+                TBatch createdBatch = new TBatch();
+                createdBatch.Add(batchElement);
+                RenderCache.Add(sharedRenderAttributes, createdBatch);
+            }
+        }
+
+        protected void RemoveFromBatch(ISharedRenderAttributes sharedRenderAttributes, IBatchElement<TBatch> batchElement)
+        {
+            RenderCache[sharedRenderAttributes].Remove(batchElement);
+            if (RenderCache[sharedRenderAttributes].Count == 0)
+                RenderCache.Remove(sharedRenderAttributes);
         }
 
         /// <summary>

@@ -11,6 +11,7 @@ namespace CorgEng.Rendering.SpriteRendering
 {
     internal sealed class SpriteBatch : IBatch<SpriteBatch>
     {
+
         public int[] BatchVectorSizes => throw new NotImplementedException();
 
         public int Count => throw new NotImplementedException();

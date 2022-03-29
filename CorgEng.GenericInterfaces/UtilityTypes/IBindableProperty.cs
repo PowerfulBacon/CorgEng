@@ -11,5 +11,7 @@ namespace CorgEng.GenericInterfaces.UtilityTypes
         //The actual value of the bindable property
         T Value { get; set; }
 
+        void TriggerChanged();
+
     }
 }

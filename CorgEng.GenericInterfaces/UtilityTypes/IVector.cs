@@ -9,6 +9,8 @@ namespace CorgEng.GenericInterfaces.UtilityTypes
     public interface IVector<T>
     {
 
+        event EventHandler OnChange;
+
         T this[int x] { get; set; }
 
         T X { get; set; }
