@@ -1,4 +1,6 @@
-﻿using CorgEng.GenericInterfaces.Rendering.SharedRenderAttributes;
+﻿using CorgEng.Core.Dependencies;
+using CorgEng.GenericInterfaces.Rendering.Models;
+using CorgEng.GenericInterfaces.Rendering.SharedRenderAttributes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +12,11 @@ namespace CorgEng.Rendering.SpriteRendering
     internal class SpriteSharedRenderAttributes : ISharedRenderAttributes
     {
 
+        [UsingDependency]
+        private static ISquareModelFactory squareModelFactory;
+
+        private static IModel squareModel;
+
         /// <summary>
         /// The uint ID of the texture that this sprite uses.
         /// </summary>
@@ -17,9 +24,13 @@ namespace CorgEng.Rendering.SpriteRendering
         
         public int VertexCount => 6;
 
+        public IModel Model => squareModel;
+
         public SpriteSharedRenderAttributes(uint spriteTextureUint)
         {
             SpriteTextureUint = spriteTextureUint;
+            if (squareModel == null)
+                squareModel = squareModelFactory.CreateModel();
         }
 
         // ======================

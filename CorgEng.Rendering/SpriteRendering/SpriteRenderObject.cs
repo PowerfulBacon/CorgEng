@@ -18,26 +18,29 @@ namespace CorgEng.Rendering.SpriteRendering
     {
         public IBindableProperty<uint> TextureFile { get; }
 
-        public IBindableProperty<double> TextureFileX { get; }
+        public IBindableProperty<float> TextureFileX { get; }
 
-        public IBindableProperty<double> TextureFileY { get; }
+        public IBindableProperty<float> TextureFileY { get; }
 
-        public IBindableProperty<double> TextureFileWidth { get; }
+        public IBindableProperty<float> TextureFileWidth { get; }
 
-        public IBindableProperty<double> TextureFileHeight { get; }
+        public IBindableProperty<float> TextureFileHeight { get; }
 
         public IBindableProperty<IVector<float>> WorldPosition { get; } = new BindableProperty<IVector<float>>(new Vector<float>(0, 0, 0));
 
-        public SpriteRenderObject(uint textureUint, double textureX, double textureY, double textureWidth, double textureHeight)
+        public IBindablePropertyGroup TextureDetails { get; }
+
+        public SpriteRenderObject(uint textureUint, float textureX, float textureY, float textureWidth, float textureHeight)
         {
             //When the vector changes, trigger change on the bindable property.
             WorldPosition.Value.OnChange += (object src, EventArgs arg) => { WorldPosition.TriggerChanged(); };
             //Set the bindable properties
             TextureFile = new BindableProperty<uint>(textureUint);
-            TextureFileX = new BindableProperty<double>(textureX);
-            TextureFileY = new BindableProperty<double>(textureY);
-            TextureFileWidth = new BindableProperty<double>(textureWidth);
-            TextureFileHeight = new BindableProperty<double>(textureHeight);
+            TextureFileX = new BindableProperty<float>(textureX);
+            TextureFileY = new BindableProperty<float>(textureY);
+            TextureFileWidth = new BindableProperty<float>(textureWidth);
+            TextureFileHeight = new BindableProperty<float>(textureHeight);
+            TextureDetails = new BindablePropertyGroup(TextureFileX, TextureFileY, TextureFileWidth, TextureFileHeight);
         }
 
         private object batchContained;

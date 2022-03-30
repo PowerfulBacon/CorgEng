@@ -65,6 +65,8 @@
     <Compile Include="External Libraries\JetBrains.Annotations.cs" />
     <Compile Include="External Libraries\OpenGL.cs" />
     <Compile Include="InstancedRenderer.cs" />
+    <Compile Include="Models\Model.cs" />
+    <Compile Include="Models\SquareModelFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Shaders\ShaderFactory.cs" />
     <Compile Include="Shaders\ShaderSet.cs" />
@@ -100,7 +102,9 @@
     <None Include="External Libraries\README.md" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Models\" />
+    <Content Include="glfw.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -18,6 +18,10 @@ namespace CorgEng.Rendering
         where TBatch : IBatch<TBatch>, new()
     {
 
+        // The amount of required attrib arrays (2: Vertices and UVs)
+        protected const int USER_BUFFER_OFFSET = 2;
+
+        // The shader set beloning to this renderer
         protected abstract IShaderSet ShaderSet { get; }
 
         //The renderer's cache
@@ -47,8 +51,6 @@ namespace CorgEng.Rendering
 
         protected abstract void CreateShaders();
 
-        protected abstract void LoadUniformVariableLocations();
-
         public void Render()
         {
             //Start using our program
@@ -66,9 +68,30 @@ namespace CorgEng.Rendering
                     //Batch is empty, continue
                     if (renderBatch.Count == 0)
                         continue;
-                    //Rendering preperation
-                    BindBatchAttributes((TSharedRenderAttributes)sharedRenderAttribute, renderBatch);
+
+                    //====================
+                    //Bind default attributes: Model and UV
+                    //====================
+                    BindAttribArray(0, sharedRenderAttribute.Model.VertexBuffer, 3);
+                    BindAttribArray(1, sharedRenderAttribute.Model.UvBuffer, 2);
+                    //Set the attrib divisors
+                    glVertexAttribDivisor(0, 0);
+                    glVertexAttribDivisor(1, 0);
+
+                    //====================
+                    // Bind custom attributes (Instance position etc.)
+                    //====================
+                    //Generate custom buffer locations if we need to
+                    GenerateCustomBufferLocations(renderBatch);
+                    for (uint i = USER_BUFFER_OFFSET; i < renderBatch.BatchVectorSizes.Length + 2; i++)
+                    {
+                        BindAttribArray(i, storedBufferLocations[i - 2], renderBatch.BatchVectorSizes[i - 2]);
+                        glVertexAttribDivisor(i, 1);
+                    }
+
+                    //====================
                     //Deal with rendering
+                    //====================
                     for (int i = renderBatch.IndividualBatchCounts - 1; i >= 0; i--)
                     {
                         int count = renderBatch.BatchSize;
@@ -80,10 +103,35 @@ namespace CorgEng.Rendering
                         //Bind and prepare a batch for rendering
                         BindBatchGroup(renderBatch, i, count);
                         //Do instanced rendering
-                        glDrawArraysInstanced(GL_TRIANGLES, 0, sharedRenderAttribute.VertexCount, count);
+                        glDrawArraysInstanced(GL_TRIANGLES, 0, sharedRenderAttribute.Model.VertexCount, count);
                     }
                 }
+
+                //====================
+                //Unbind attrib arrays
+                //====================
+                for (uint i = 0; i < storedBufferLocations.Length + USER_BUFFER_OFFSET; i++)
+                {
+                    glDisableVertexAttribArray(i);
+                }
+
             }
+        }
+
+        /// <summary>
+        /// Get the locations of uniform variables
+        /// </summary>
+        protected virtual void LoadUniformVariableLocations()
+        {
+
+        }
+
+        /// <summary>
+        /// Bind the uniform variables pre-render
+        /// </summary>
+        protected virtual void BindUniformVariables()
+        {
+
         }
 
         /// <summary>
@@ -111,19 +159,10 @@ namespace CorgEng.Rendering
         }
 
         /// <summary>
-        /// Bind the attribute arrays, set vertex attribute divisors
-        /// and load texture information so that a target batch
-        /// can be rendered.
-        /// </summary>
-        protected abstract void BindBatchAttributes(TSharedRenderAttributes sharedRenderAttributes, TBatch batch);
-
-        /// <summary>
-        /// Populates the buffer data for a specified batch group
+        /// Generates the buffer locations for custom buffers
         /// </summary>
         /// <param name="batch"></param>
-        /// <param name="batchIndex"></param>
-        /// <param name="count"></param>
-        protected unsafe void BindBatchGroup(TBatch batch, int batchIndex, int count)
+        private unsafe void GenerateCustomBufferLocations(TBatch batch)
         {
             //Generate buffer locations
             if (storedBufferLocations == null)
@@ -139,6 +178,16 @@ namespace CorgEng.Rendering
                     glBufferData(GL_ARRAY_BUFFER, sizeof(float) * batch.BatchVectorSizes[i] * batch.BatchSize, NULL, GL_STREAM_DRAW);
                 }
             }
+        }
+
+        /// <summary>
+        /// Populates the buffer data for a specified batch group
+        /// </summary>
+        /// <param name="batch"></param>
+        /// <param name="batchIndex"></param>
+        /// <param name="count"></param>
+        protected unsafe void BindBatchGroup(TBatch batch, int batchIndex, int count)
+        {
             //Load the buffers
             for (int i = 0; i < batch.BatchVectorSizes.Length; i++)
             {
@@ -153,7 +202,22 @@ namespace CorgEng.Rendering
             }
         }
 
-        protected abstract void BindUniformVariables();
+        /// <summary>
+        /// Binds the atrib array at index provided, with the buffer data provided.
+        /// </summary>
+        protected unsafe void BindAttribArray(uint index, uint buffer, int size)
+        {
+            glEnableVertexAttribArray(index);
+            glBindBuffer(GL_ARRAY_BUFFER, buffer);
+            glVertexAttribPointer(
+                index,              //Attribute - Where the layout location is in the vertex shader
+                size,               //Size of the triangles (3 sides)
+                GL_FLOAT,           //Type (Floats)
+                false,              //Normalized (nope)
+                0,                  //Stride (0)
+                NULL                //Array buffer offset (null)
+            );
+        }
 
     }
 }

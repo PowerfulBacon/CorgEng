@@ -43,7 +43,8 @@ namespace CorgEng.Rendering.SpriteRendering
                 throw new DuplicateRenderException("Attempting to render a sprite object already being rendered.");
             //Create a new batch element for this
             IBatchElement<SpriteBatch> batchElement = new BatchElement<SpriteBatch>(new IBindableProperty<IVector<float>>[] {
-                spriteRenderObject.WorldPosition
+                spriteRenderObject.WorldPosition,
+                spriteRenderObject.TextureDetails
             });
             //Remember the batch element we are stored in, so it can be saved
             spriteRenderObject.SetBelongingBatchElement(batchElement);
@@ -60,24 +61,5 @@ namespace CorgEng.Rendering.SpriteRendering
             spriteRenderObject.SetBelongingBatchElement<SpriteBatch>(null);
         }
 
-        protected override void LoadUniformVariableLocations()
-        {
-            throw new NotImplementedException();
-        }
-
-        protected override void BindBatchAttributes(SpriteSharedRenderAttributes sharedRenderAttributes, SpriteBatch batch)
-        {
-            //Bind attrib arrays
-            //Set the attrib divisors
-            glVertexAttribDivisor(0, 0);
-            glVertexAttribDivisor(1, 0);
-            glVertexAttribDivisor(2, 1);
-            glVertexAttribDivisor(3, 1);
-        }
-
-        protected override void BindUniformVariables()
-        {
-            throw new NotImplementedException();
-        }
     }
 }

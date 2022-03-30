@@ -12,11 +12,13 @@ namespace CorgEng.GenericInterfaces.Rendering.RenderObjects.SpriteRendering
 
         IBindableProperty<uint> TextureFile { get; }
 
-        IBindableProperty<double> TextureFileX { get; }
-        IBindableProperty<double> TextureFileY { get; }
+        IBindableProperty<float> TextureFileX { get; }
+        IBindableProperty<float> TextureFileY { get; }
 
-        IBindableProperty<double> TextureFileHeight { get; }
-        IBindableProperty<double> TextureFileWidth { get; }
+        IBindableProperty<float> TextureFileHeight { get; }
+        IBindableProperty<float> TextureFileWidth { get; }
+
+        IBindablePropertyGroup TextureDetails { get; }
 
     }
 }

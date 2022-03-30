@@ -6,14 +6,10 @@ using System.Threading.Tasks;
 
 namespace CorgEng.GenericInterfaces.Rendering.Models
 {
-    public interface IModel
+    public interface IModelFactory
     {
 
-        int VertexCount { get; }
-
-        uint VertexBuffer { get; }
-
-        uint UvBuffer { get; }
+        IModel CreateModel(float[] vertices, float[] uvs);
 
     }
 }

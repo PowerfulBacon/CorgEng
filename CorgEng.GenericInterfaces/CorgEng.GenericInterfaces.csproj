@@ -45,6 +45,8 @@
     <Compile Include="Logging\LogType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Rendering\Models\IModel.cs" />
+    <Compile Include="Rendering\Models\IModelFactory.cs" />
+    <Compile Include="Rendering\Models\ISquareModelFactory.cs" />
     <Compile Include="Rendering\Positioning\IWorldPosition.cs" />
     <Compile Include="Rendering\Renderers\IRenderer.cs" />
     <Compile Include="Rendering\Renderers\SpriteRendering\ISpriteRenderer.cs" />
@@ -57,6 +59,7 @@
     <Compile Include="UtilityTypes\Batches\IBatch.cs" />
     <Compile Include="UtilityTypes\Batches\IBatchElement.cs" />
     <Compile Include="UtilityTypes\IBindableProperty.cs" />
+    <Compile Include="UtilityTypes\IBindablePropertyGroup.cs" />
     <Compile Include="UtilityTypes\IVector.cs" />
   </ItemGroup>
   <ItemGroup />

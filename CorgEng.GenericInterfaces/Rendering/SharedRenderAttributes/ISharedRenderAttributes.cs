@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CorgEng.GenericInterfaces.Rendering.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,7 +10,10 @@ namespace CorgEng.GenericInterfaces.Rendering.SharedRenderAttributes
     public interface ISharedRenderAttributes
     {
 
-        int VertexCount { get; }
+        /// <summary>
+        /// The model used by this set of objects with shared render attributes.
+        /// </summary>
+        IModel Model { get; }
 
     }
 }
