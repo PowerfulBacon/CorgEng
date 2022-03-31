@@ -71,6 +71,7 @@
     <Compile Include="EntityComponentSystem\SignalTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UtilityTypes\BatchTests.cs" />
+    <Compile Include="UtilityTypes\VectorTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

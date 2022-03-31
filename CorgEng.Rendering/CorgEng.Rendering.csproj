@@ -62,8 +62,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Exceptions\DuplicateRenderException.cs" />
-    <Compile Include="External Libraries\JetBrains.Annotations.cs" />
-    <Compile Include="External Libraries\OpenGL.cs" />
     <Compile Include="InstancedRenderer.cs" />
     <Compile Include="Models\Model.cs" />
     <Compile Include="Models\SquareModelFactory.cs" />
@@ -95,16 +93,12 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Content\Shaders\SpriteShader\SpriteShader.frag" />
+    <None Include="Content\Shaders\SpriteShader\SpriteShader.frag">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Content\Shaders\SpriteShader\SpriteShader.vert">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="External Libraries\README.md" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="glfw.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

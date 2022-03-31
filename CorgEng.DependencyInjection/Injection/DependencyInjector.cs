@@ -84,16 +84,24 @@ namespace CorgEng.DependencyInjection.Injection
             //Perform injection
             foreach (MemberInfo memberInfo in requiredInjections)
             {
-                if (memberInfo is PropertyInfo property)
+                try
                 {
-                    //Locate the type of the property
-                    Type desiredType = property.PropertyType;
-                    property.SetValue(null, GetDependencyInstance(desiredType));
+                    if (memberInfo is PropertyInfo property)
+                    {
+                        //Locate the type of the property
+                        Type desiredType = property.PropertyType;
+                        property.SetValue(null, GetDependencyInstance(desiredType));
+                    }
+                    else if (memberInfo is FieldInfo field)
+                    {
+                        Type desiredType = field.FieldType;
+                        field.SetValue(null, GetDependencyInstance(desiredType));
+                    }
                 }
-                else if (memberInfo is FieldInfo field)
+                catch (Exception e)
                 {
-                    Type desiredType = field.FieldType;
-                    field.SetValue(null, GetDependencyInstance(desiredType));
+                    Console.WriteLine($"Injection failure on {memberInfo.Name} at {memberInfo.DeclaringType}:");
+                    Console.WriteLine(e);
                 }
             }
             Console.WriteLine($"Injected {requiredInjections.Count()} dependencies.");

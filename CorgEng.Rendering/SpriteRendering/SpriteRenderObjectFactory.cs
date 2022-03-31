@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace CorgEng.Rendering.SpriteRendering
 {
     [Dependency(defaultDependency = true)]
-    public class SpriteRenderObjectFactory : ISpriteRenderObjectFactory
+    public sealed class SpriteRenderObjectFactory : ISpriteRenderObjectFactory
     {
 
         public ISpriteRenderObject CreateSpriteRenderObject(uint textureFile, float textureX, float textureY, float textureWidth, float textureHeight)

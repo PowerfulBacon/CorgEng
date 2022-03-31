@@ -4,7 +4,7 @@ using System;
 namespace CorgEng.UtilityTypes.Vectors
 {
 
-    public struct Vector<T> : IVector<T>
+    public class Vector<T> : IVector<T>
     {
 
         public static Vector<float> Zero => new Vector<float>(0, 0);
@@ -67,7 +67,7 @@ namespace CorgEng.UtilityTypes.Vectors
             return new Vector<T>(this[0], this[1], zValue);
         }
 
-        public Vector<T> Copy()
+        public IVector<T> Copy()
         {
             T[] valuesCopy = new T[Dimensions];
             for (int i = 0; i < Dimensions; i++)
@@ -85,7 +85,7 @@ namespace CorgEng.UtilityTypes.Vectors
                 extraDistance = 0;
                 return this;
             }
-            Vector<T> thisCopy = Copy();
+            Vector<T> thisCopy = (Vector<T>)Copy();
             Vector<T> trueTarget = target;
             Vector<T> trueThis = this;
             if (ignoreZ)
@@ -205,7 +205,7 @@ namespace CorgEng.UtilityTypes.Vectors
         /// <param name="a"></param>
         /// <param name="b"></param>
         /// <returns></returns>
-        public static T DotProduct(Vector<T> a, Vector<T> b)
+        public static T DotProduct(IVector<T> a, IVector<T> b)
         {
             return a.DotProduct(b);
         }
@@ -215,7 +215,7 @@ namespace CorgEng.UtilityTypes.Vectors
         /// </summary>
         /// <param name="other"></param>
         /// <returns></returns>
-        public T DotProduct(Vector<T> other)
+        public T DotProduct(IVector<T> other)
         {
             dynamic result = 0;
             //Add the values

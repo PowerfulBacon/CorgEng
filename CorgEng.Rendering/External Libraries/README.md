@@ -1,1 +1,0 @@
-﻿The code in the folder 'External Libraries/' was not created by me and is not part of the project.

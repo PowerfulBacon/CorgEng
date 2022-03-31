@@ -78,6 +78,12 @@
     <Compile Include="Rendering\RenderMaster.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Content\Shaders\CoreShader\CoreShader.frag">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\Shaders\CoreShader\CoreShader.vert">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="External Libraries\README.md" />
     <None Include="packages.config" />
   </ItemGroup>

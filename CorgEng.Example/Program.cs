@@ -31,13 +31,13 @@ namespace CorgEng.Example
 
             public override void Initialize()
             {
+                spriteRenderer?.Initialize();
                 ISpriteRenderObject spriteRenderObject = spriteRenderObjectFactory?.CreateSpriteRenderObject(0, 0, 0, 1, 1);
                 spriteRenderer?.StartRendering(spriteRenderObject);
             }
 
             public override void PerformRender()
             {
-                //Do nothing for now
                 spriteRenderer?.Render();
             }
         }

@@ -21,5 +21,11 @@ namespace CorgEng.GenericInterfaces.UtilityTypes
 
         int Dimensions { get; }
 
+        float Length();
+
+        T DotProduct(IVector<T> other);
+
+        IVector<T> Copy();
+
     }
 }

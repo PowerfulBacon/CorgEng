@@ -81,7 +81,7 @@ namespace CorgEng.Core
                 MainRenderCore.PreRender();
                 MainRenderCore.PerformRender();
                 //Pass the output image from the render core to the internal renderer
-                InternalRenderMaster.RenderImageToScreen(MainRenderCore.FrameBufferUint);
+                InternalRenderMaster.RenderImageToScreen(MainRenderCore.RenderTextureUint);
             }
         }
 

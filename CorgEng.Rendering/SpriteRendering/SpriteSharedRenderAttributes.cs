@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace CorgEng.Rendering.SpriteRendering
 {
-    internal class SpriteSharedRenderAttributes : ISharedRenderAttributes
+    internal sealed class SpriteSharedRenderAttributes : ISharedRenderAttributes
     {
 
         [UsingDependency]
