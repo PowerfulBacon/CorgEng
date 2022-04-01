@@ -61,6 +61,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Cameras\Isometic\IsometricCamera.cs" />
+    <Compile Include="Cameras\Isometic\IsometricCameraFactory.cs" />
     <Compile Include="Exceptions\DuplicateRenderException.cs" />
     <Compile Include="InstancedRenderer.cs" />
     <Compile Include="Models\Model.cs" />
@@ -100,5 +102,6 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

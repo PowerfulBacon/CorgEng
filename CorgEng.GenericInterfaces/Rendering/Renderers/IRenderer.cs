@@ -11,7 +11,7 @@ namespace CorgEng.GenericInterfaces.Rendering.Renderers
 
         void Initialize();
 
-        void Render();
+        void Render(ICamera camera);
 
     }
 }

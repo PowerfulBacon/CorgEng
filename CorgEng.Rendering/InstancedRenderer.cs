@@ -1,5 +1,6 @@
 ﻿using CorgEng.Core.Dependencies;
 using CorgEng.GenericInterfaces.Logging;
+using CorgEng.GenericInterfaces.Rendering;
 using CorgEng.GenericInterfaces.Rendering.Renderers;
 using CorgEng.GenericInterfaces.Rendering.RenderObjects;
 using CorgEng.GenericInterfaces.Rendering.Shaders;
@@ -53,13 +54,13 @@ namespace CorgEng.Rendering
 
         protected abstract void CreateShaders();
 
-        public void Render()
+        public void Render(ICamera camera)
         {
             //Start using our program
             //Shaders were loaded during init
             glUseProgram(programUint);
             //Bind uniform variables
-            BindUniformVariables();
+            BindUniformVariables(camera);
             //Perform actual rendering
             //Lock the render cache (Major rendering changes will wait for update completion)
             lock (RenderCache)
@@ -120,20 +121,26 @@ namespace CorgEng.Rendering
             }
         }
 
+        private int viewMatrixUniformLocation;
+        private int projectionMatrixUniformLocation;
+
         /// <summary>
         /// Get the locations of uniform variables
         /// </summary>
         protected virtual void LoadUniformVariableLocations()
         {
-
+            viewMatrixUniformLocation = glGetUniformLocation(programUint, "viewMatrix");
+            projectionMatrixUniformLocation = glGetUniformLocation(programUint, "projectionMatrix");
         }
 
         /// <summary>
         /// Bind the uniform variables pre-render
         /// </summary>
-        protected virtual void BindUniformVariables()
+        protected unsafe virtual void BindUniformVariables(ICamera camera)
         {
-
+            //Bind the main camera
+            glUniformMatrix4fv(viewMatrixUniformLocation, 1, false, camera.GetViewMatrix(1920, 1080).GetPointer());
+            glUniformMatrix4fv(projectionMatrixUniformLocation, 1, false, camera.GetProjectionMatrix(1920, 1080).GetPointer());
         }
 
         /// <summary>

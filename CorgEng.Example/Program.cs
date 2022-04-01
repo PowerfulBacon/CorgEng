@@ -4,6 +4,8 @@ using CorgEng.Core.Rendering;
 using CorgEng.DependencyInjection;
 using CorgEng.DependencyInjection.Injection;
 using CorgEng.EntityComponentSystem;
+using CorgEng.GenericInterfaces.Rendering;
+using CorgEng.GenericInterfaces.Rendering.Cameras.Isometric;
 using CorgEng.GenericInterfaces.Rendering.Renderers.SpriteRendering;
 using CorgEng.GenericInterfaces.Rendering.RenderObjects.SpriteRendering;
 using CorgEng.Logging;
@@ -38,9 +40,12 @@ namespace CorgEng.Example
 
             public override void PerformRender()
             {
-                spriteRenderer?.Render();
+                spriteRenderer?.Render(CorgEngMain.MainCamera);
             }
         }
+
+        [UsingDependency]
+        private static IIsometricCameraFactory isometricCameraFactory;
 
         static void Main(string[] args)
         {
@@ -50,6 +55,9 @@ namespace CorgEng.Example
             //This creates the window and loads all
             //modules that are dependencies
             CorgEngMain.Initialize();
+            //Set the main camera
+            ICamera camera = isometricCameraFactory.CreateCamera();
+            CorgEngMain.SetMainCamera(camera);
             //Set the render core
             ExampleRenderCore erc = new ExampleRenderCore();
             CorgEngMain.SetRenderCore(erc);

@@ -3,6 +3,7 @@ using CorgEng.Core.Modules;
 using CorgEng.Core.Rendering;
 using CorgEng.Core.Rendering.Exceptions;
 using CorgEng.GenericInterfaces.Logging;
+using CorgEng.GenericInterfaces.Rendering;
 using GLFW;
 using System;
 using System.Collections.Generic;
@@ -33,6 +34,11 @@ namespace CorgEng.Core
         /// The window associated with the CorgEng application
         /// </summary>
         private static CorgEngWindow GameWindow { get; set; }
+
+        /// <summary>
+        /// The main camera for the game
+        /// </summary>
+        public static ICamera MainCamera { get; private set; }
 
         /// <summary>
         /// Create a logger
@@ -83,6 +89,11 @@ namespace CorgEng.Core
                 //Pass the output image from the render core to the internal renderer
                 InternalRenderMaster.RenderImageToScreen(MainRenderCore.RenderTextureUint);
             }
+        }
+
+        public static void SetMainCamera(ICamera camera)
+        {
+            MainCamera = camera;
         }
 
         /// <summary>

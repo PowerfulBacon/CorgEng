@@ -9,5 +9,4 @@ uniform sampler2D renderTexture;
 void main()
 {
 	result = texture(renderTexture, fragUV);
-	//result = vec4(1, 0, 0, 1);
 }

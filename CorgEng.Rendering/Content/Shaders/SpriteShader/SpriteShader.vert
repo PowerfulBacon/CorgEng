@@ -18,7 +18,7 @@ void main()
 {
     //mat4 MVP = projectionMatrix * viewMatrix;
     //gl_Position = MVP * vec4(inInstancePos + inVertexPos, 1.0);
-    gl_Position = vec4(inVertexPos, 1.0);
+    gl_Position = projectionMatrix * viewMatrix * vec4(inVertexPos, 1.0);
     //Output the vertex UV to the fragment shader
     fragVertexUV = inVertexUV;
     fragTextureData = inTextureData;

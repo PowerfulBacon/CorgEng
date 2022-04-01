@@ -21,6 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -29,6 +30,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -44,6 +46,9 @@
     <Compile Include="Logging\ILogger.cs" />
     <Compile Include="Logging\LogType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Rendering\Cameras\ICamera.cs" />
+    <Compile Include="Rendering\Cameras\Isometric\IIsometricCamera.cs" />
+    <Compile Include="Rendering\Cameras\Isometric\IIsometricCameraFactory.cs" />
     <Compile Include="Rendering\Models\IModel.cs" />
     <Compile Include="Rendering\Models\IModelFactory.cs" />
     <Compile Include="Rendering\Models\ISquareModelFactory.cs" />
@@ -60,6 +65,7 @@
     <Compile Include="UtilityTypes\Batches\IBatchElement.cs" />
     <Compile Include="UtilityTypes\IBindableProperty.cs" />
     <Compile Include="UtilityTypes\IBindablePropertyGroup.cs" />
+    <Compile Include="UtilityTypes\IMatrix.cs" />
     <Compile Include="UtilityTypes\IVector.cs" />
   </ItemGroup>
   <ItemGroup />
