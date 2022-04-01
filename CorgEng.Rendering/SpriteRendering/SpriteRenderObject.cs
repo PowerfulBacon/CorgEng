@@ -16,15 +16,15 @@ namespace CorgEng.Rendering.SpriteRendering
 {
     public sealed class SpriteRenderObject : ISpriteRenderObject
     {
-        public IBindableProperty<uint> TextureFile { get; }
+        public IBindableProperty<uint> TextureFile { get; set; }
 
-        public IBindableProperty<float> TextureFileX { get; }
+        public IBindableProperty<float> TextureFileX { get; set; }
 
-        public IBindableProperty<float> TextureFileY { get; }
+        public IBindableProperty<float> TextureFileY { get; set; }
 
-        public IBindableProperty<float> TextureFileWidth { get; }
+        public IBindableProperty<float> TextureFileWidth { get; set; }
 
-        public IBindableProperty<float> TextureFileHeight { get; }
+        public IBindableProperty<float> TextureFileHeight { get; set; }
 
         public IBindableProperty<IVector<float>> WorldPosition { get; } = new BindableProperty<IVector<float>>(new Vector<float>(0, 0, 0));
 
@@ -59,5 +59,6 @@ namespace CorgEng.Rendering.SpriteRendering
         {
             return new SpriteSharedRenderAttributes(TextureFile.Value);
         }
+
     }
 }

@@ -125,6 +125,13 @@ namespace CorgEng.Rendering
         private int projectionMatrixUniformLocation;
 
         /// <summary>
+        /// Bind the texture if your batches use textures
+        /// </summary>
+        /// <param name="batch"></param>
+        protected virtual void BindBatchTexture(TBatch batch)
+        { }
+
+        /// <summary>
         /// Get the locations of uniform variables
         /// </summary>
         protected virtual void LoadUniformVariableLocations()

@@ -75,6 +75,8 @@
     <Compile Include="SpriteRendering\SpriteRenderObject.cs" />
     <Compile Include="SpriteRendering\SpriteRenderObjectFactory.cs" />
     <Compile Include="SpriteRendering\SpriteSharedRenderAttributes.cs" />
+    <Compile Include="Textures\TextureBitmap.cs" />
+    <Compile Include="Textures\TextureFactory.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CorgEng.Core\CorgEng.Core.csproj">

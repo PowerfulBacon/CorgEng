@@ -10,13 +10,13 @@ namespace CorgEng.GenericInterfaces.Rendering.RenderObjects.SpriteRendering
     public interface ISpriteRenderObject : IRenderObject
     {
 
-        IBindableProperty<uint> TextureFile { get; }
+        IBindableProperty<uint> TextureFile { get; set; }
 
-        IBindableProperty<float> TextureFileX { get; }
-        IBindableProperty<float> TextureFileY { get; }
+        IBindableProperty<float> TextureFileX { get; set; }
+        IBindableProperty<float> TextureFileY { get; set; }
 
-        IBindableProperty<float> TextureFileHeight { get; }
-        IBindableProperty<float> TextureFileWidth { get; }
+        IBindableProperty<float> TextureFileHeight { get; set; }
+        IBindableProperty<float> TextureFileWidth { get; set; }
 
         IBindablePropertyGroup TextureDetails { get; }
 
