@@ -69,5 +69,11 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Systems\EntitySystem.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CorgEng.Core\CorgEng.Core.csproj">
+      <Project>{9CCC4A6B-2D13-425D-8C72-B034151EC11C}</Project>
+      <Name>CorgEng.Core</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

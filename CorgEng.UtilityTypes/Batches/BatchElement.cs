@@ -1,4 +1,5 @@
-﻿using CorgEng.UtilityTypes.Batches.Interfaces;
+﻿using CorgEng.GenericInterfaces.UtilityTypes;
+using CorgEng.GenericInterfaces.UtilityTypes.Batches;
 using CorgEng.UtilityTypes.BindableProperties;
 using CorgEng.UtilityTypes.Vectors;
 using System;
@@ -17,22 +18,38 @@ namespace CorgEng.UtilityTypes.Batches
 
         //The values this batch element contains
         //Note that vectors are stored by value not by type
-        private readonly BindableProperty<Vector<float>>[] internalValues;
+        private readonly IBindableProperty<IVector<float>>[] internalValues;
 
-        public BatchElement(BindableProperty<Vector<float>>[] internalValues)
+        private EventHandler[] eventHandlers;
+
+        public BatchElement(IBindableProperty<IVector<float>>[] internalValues)
         {
             //Set the bindable properties
             this.internalValues = internalValues;
             //Bind the properties to update the batch when changed
+            eventHandlers = new EventHandler[internalValues.Length];
             for (int i = 0; i < internalValues.Length; i++)
             {
-                internalValues[i].ValueChanged += (object sender, EventArgs args) => {
-                    OnBindablePropertyChanged(i, (Vector<float>)sender);
+                eventHandlers[i] = (object sender, EventArgs args) => {
+                    OnBindablePropertyChanged(i, (IVector<float>)sender);
                 };
+                //Store the event handler, so it can be unbound later.
+                internalValues[i].ValueChanged += eventHandlers[i];
             }
         }
 
-        private void OnBindablePropertyChanged(int index, Vector<float> newValue)
+        public void Unbind()
+        {
+            for (int i = 0; i < internalValues.Length; i++)
+            {
+                //Store the event handler, so it can be unbound later.
+                internalValues[i].ValueChanged -= eventHandlers[i];
+                //Nullify the event handler
+                eventHandlers = null;
+            }
+        }
+
+        private void OnBindablePropertyChanged(int index, IVector<float> newValue)
         {
             //Not contained within any parent batch
             if (ContainingBatch == null)
@@ -41,7 +58,7 @@ namespace CorgEng.UtilityTypes.Batches
             ContainingBatch.Update(BatchPosition, index, newValue);
         }
 
-        public Vector<float> GetValue(int index)
+        public IVector<float> GetValue(int index)
         {
             return internalValues[index].Value;
         }

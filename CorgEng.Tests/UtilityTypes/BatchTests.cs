@@ -1,4 +1,5 @@
-﻿using CorgEng.UtilityTypes.Batches;
+﻿using CorgEng.GenericInterfaces.UtilityTypes;
+using CorgEng.UtilityTypes.Batches;
 using CorgEng.UtilityTypes.BindableProperties;
 using CorgEng.UtilityTypes.Vectors;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -9,6 +10,8 @@ namespace CorgEng.Tests.UtilityTypes
     [TestClass]
     public class BatchTests
     {
+
+        private Vector<float> TestVector { get; } = new Vector<float>();
 
         private class TestBatch : Batch<TestBatch>
         {
@@ -24,11 +27,11 @@ namespace CorgEng.Tests.UtilityTypes
             TestBatch batch = new TestBatch(5);
             Assert.AreEqual(0, batch.Count);
             Assert.AreEqual(0, batch.IndividualBatchCounts);
-            BatchElement<TestBatch> first = new BatchElement<TestBatch>(new BindableProperty<Vector<float>>[] {
-                new BindableProperty<Vector<float>>(new Vector<float>(1, 2, 3)),
-                new BindableProperty<Vector<float>>(new Vector<float>(4, 5)),
-                new BindableProperty<Vector<float>>(new Vector<float>(6)),
-                new BindableProperty<Vector<float>>(new Vector<float>(7, 8, 9)),
+            BatchElement<TestBatch> first = new BatchElement<TestBatch>(new BindableProperty<IVector<float>>[] {
+                new BindableProperty<IVector<float>>(new Vector<float>(1, 2, 3)),
+                new BindableProperty<IVector<float>>(new Vector<float>(4, 5)),
+                new BindableProperty<IVector<float>>(new Vector<float>(6)),
+                new BindableProperty<IVector<float>>(new Vector<float>(7, 8, 9)),
             });
             batch.Add(first);
             Console.WriteLine(batch);
@@ -38,21 +41,21 @@ namespace CorgEng.Tests.UtilityTypes
             //Multi-add
             for (int i = 1; i < 5; i ++)
             {
-                batch.Add(new BatchElement<TestBatch>(new BindableProperty<Vector<float>>[] {
-                    new BindableProperty<Vector<float>>(new Vector<float>(i, i, i)),
-                    new BindableProperty<Vector<float>>(new Vector<float>(i, i)),
-                    new BindableProperty<Vector<float>>(new Vector<float>(i)),
-                    new BindableProperty<Vector<float>>(new Vector<float>(i, i, i)),
+                batch.Add(new BatchElement<TestBatch>(new BindableProperty<IVector<float>>[] {
+                    new BindableProperty<IVector<float>>(new Vector<float>(i, i, i)),
+                    new BindableProperty<IVector<float>>(new Vector<float>(i, i)),
+                    new BindableProperty<IVector<float>>(new Vector<float>(i)),
+                    new BindableProperty<IVector<float>>(new Vector<float>(i, i, i)),
                 }));
                 Assert.AreEqual(i + 1, batch.Count);
                 Assert.AreEqual(1, batch.IndividualBatchCounts);
             }
             //Add another batch to test expanding
-            BatchElement<TestBatch> specialElement = new BatchElement<TestBatch>(new BindableProperty<Vector<float>>[] {
-                new BindableProperty<Vector<float>>(new Vector<float>(1, 2, 3)),
-                new BindableProperty<Vector<float>>(new Vector<float>(4, 5)),
-                new BindableProperty<Vector<float>>(new Vector<float>(9)),
-                new BindableProperty<Vector<float>>(new Vector<float>(7, 8, 9)),
+            BatchElement<TestBatch> specialElement = new BatchElement<TestBatch>(new BindableProperty<IVector<float>>[] {
+                new BindableProperty<IVector<float>>(new Vector<float>(1, 2, 3)),
+                new BindableProperty<IVector<float>>(new Vector<float>(4, 5)),
+                new BindableProperty<IVector<float>>(new Vector<float>(9)),
+                new BindableProperty<IVector<float>>(new Vector<float>(7, 8, 9)),
             });
             batch.Add(specialElement);
             Console.WriteLine(batch);

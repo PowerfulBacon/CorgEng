@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CorgEng.GenericInterfaces.UtilityTypes;
+using System;
 
 namespace CorgEng.UtilityTypes.BindableProperties
 {
@@ -11,7 +12,7 @@ namespace CorgEng.UtilityTypes.BindableProperties
             get => _value;
             set {
                 _value = value;
-                ValueChanged?.Invoke(_value, EventArgs.Empty);
+                TriggerChanged();
             }
         }
 
@@ -20,6 +21,11 @@ namespace CorgEng.UtilityTypes.BindableProperties
         public BindableProperty(T value)
         {
             _value = value;
+        }
+
+        public void TriggerChanged()
+        {
+            ValueChanged?.Invoke(_value, EventArgs.Empty);
         }
     }
 }
