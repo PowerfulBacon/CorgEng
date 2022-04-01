@@ -17,9 +17,9 @@ namespace CorgEng.Rendering.Cameras.Isometic
 
         public float Y { get; set; }
 
-        public float Width { get; set; }
+        public float Width { get; set; } = 2;
 
-        public float Height { get; set; }
+        public float Height { get; set; } = 2;
 
         public IMatrix GetProjectionMatrix(float windowWidth, float windowHeight)
         {
@@ -28,7 +28,7 @@ namespace CorgEng.Rendering.Cameras.Isometic
 
         public IMatrix GetViewMatrix(float windowWidth, float windowHeight)
         {
-            return Matrix.Identity[4];
+            return Matrix.GetScaleMatrix(1.0f / (Width * 0.5f), 1.0f / (Height * 0.5f), 1.0f) * Matrix.GetTranslationMatrix(-X, -Y, 0);
         }
 
     }
