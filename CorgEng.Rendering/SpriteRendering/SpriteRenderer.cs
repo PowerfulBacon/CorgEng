@@ -67,18 +67,20 @@ namespace CorgEng.Rendering.SpriteRendering
         protected override void LoadUniformVariableLocations()
         {
             base.LoadUniformVariableLocations();
-            textureSamplerUniformLocation = glGetUniformLocation(programUint, "");
+            textureSamplerUniformLocation = glGetUniformLocation(programUint, "renderTexture");
         }
 
         protected override void BindUniformVariables(ICamera camera)
         {
+            base.BindUniformVariables(camera);
             glUniform1i(textureSamplerUniformLocation, 0);
         }
 
-        protected override void BindBatchTexture(SpriteBatch batch)
+        protected override void BindBatchTexture(SpriteSharedRenderAttributes batchAttributes)
         {
-            //TODO
-            base.BindBatchTexture(batch);
+            //Bind the texture
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, batchAttributes.SpriteTextureUint);
         }
     }
 }

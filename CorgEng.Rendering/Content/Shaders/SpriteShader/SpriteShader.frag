@@ -10,7 +10,10 @@ out vec4 result;
 uniform mat4 viewMatrix;
 uniform mat4 projectionMatrix;
  
+uniform sampler2D renderTexture;
+
 void main()
 {
-    result = vec4(1, 0, 0, 1);
+    result = texture(renderTexture, fragVertexUV);
+    //result = vec4(1, 0, 0, 1);
 }
