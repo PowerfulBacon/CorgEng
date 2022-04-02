@@ -26,6 +26,7 @@ namespace CorgEng.Core.Rendering
             FrameBufferUint = glGenFramebuffer();
             glBindFramebuffer(GL_FRAMEBUFFER, FrameBufferUint);
             //Create a render texture
+            glActiveTexture(GL_TEXTURE0);
             RenderTextureUint = glGenTexture();
             //Bind the created texture so we can modify it
             glBindTexture(GL_TEXTURE_2D, RenderTextureUint);

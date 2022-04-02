@@ -102,5 +102,11 @@
   <ItemGroup>
     <EmbeddedResource Include="CorgEngConfig.xml" />
   </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <Content Include="Content\Textures\Example\Example.bmp">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

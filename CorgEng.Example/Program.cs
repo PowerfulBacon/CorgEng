@@ -8,6 +8,7 @@ using CorgEng.GenericInterfaces.Rendering;
 using CorgEng.GenericInterfaces.Rendering.Cameras.Isometric;
 using CorgEng.GenericInterfaces.Rendering.Renderers.SpriteRendering;
 using CorgEng.GenericInterfaces.Rendering.RenderObjects.SpriteRendering;
+using CorgEng.GenericInterfaces.Rendering.Textures;
 using CorgEng.Logging;
 using CorgEng.UtilityTypes;
 using System;
@@ -31,10 +32,17 @@ namespace CorgEng.Example
             [UsingDependency]
             private static ISpriteRenderObjectFactory spriteRenderObjectFactory;
 
+            [UsingDependency]
+            private static ITextureFactory textureFactory;
+
             public override void Initialize()
             {
                 spriteRenderer?.Initialize();
-                ISpriteRenderObject spriteRenderObject = spriteRenderObjectFactory?.CreateSpriteRenderObject(0, 0, 0, 1, 1);
+                //Create a textured sprite object
+                ITexture texture = textureFactory.CreateTexture("Content/Textures/Example/Example.bmp");
+                //Here is an example of just using a basic texture:
+                //We load the texture and don't use the json types
+                ISpriteRenderObject spriteRenderObject = spriteRenderObjectFactory?.CreateSpriteRenderObject(texture.TextureID, 0, 0, 1, 1);
                 spriteRenderer?.StartRendering(spriteRenderObject);
             }
 

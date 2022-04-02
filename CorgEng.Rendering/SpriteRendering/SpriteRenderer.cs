@@ -1,5 +1,6 @@
 ﻿using CorgEng.Core.Dependencies;
 using CorgEng.DependencyInjection.Dependencies;
+using CorgEng.GenericInterfaces.Rendering;
 using CorgEng.GenericInterfaces.Rendering.Renderers.SpriteRendering;
 using CorgEng.GenericInterfaces.Rendering.RenderObjects.SpriteRendering;
 using CorgEng.GenericInterfaces.Rendering.Shaders;
@@ -61,5 +62,25 @@ namespace CorgEng.Rendering.SpriteRendering
             spriteRenderObject.SetBelongingBatchElement<SpriteBatch>(null);
         }
 
+        private int textureSamplerUniformLocation; 
+
+        protected override void LoadUniformVariableLocations()
+        {
+            base.LoadUniformVariableLocations();
+            textureSamplerUniformLocation = glGetUniformLocation(programUint, "renderTexture");
+        }
+
+        protected override void BindUniformVariables(ICamera camera)
+        {
+            base.BindUniformVariables(camera);
+            glUniform1i(textureSamplerUniformLocation, 0);
+        }
+
+        protected override void BindBatchTexture(SpriteSharedRenderAttributes batchAttributes)
+        {
+            //Bind the texture
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, batchAttributes.SpriteTextureUint);
+        }
     }
 }

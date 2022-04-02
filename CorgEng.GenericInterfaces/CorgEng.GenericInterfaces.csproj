@@ -61,6 +61,9 @@
     <Compile Include="Rendering\Shaders\IShaderFactory.cs" />
     <Compile Include="Rendering\Shaders\IShaderSet.cs" />
     <Compile Include="Rendering\SharedRenderAttributes\ISharedRenderAttributes.cs" />
+    <Compile Include="Rendering\Textures\Bitmap\IBitmapFactory.cs" />
+    <Compile Include="Rendering\Textures\ITexture.cs" />
+    <Compile Include="Rendering\Textures\ITextureFactory.cs" />
     <Compile Include="UtilityTypes\Batches\IBatch.cs" />
     <Compile Include="UtilityTypes\Batches\IBatchElement.cs" />
     <Compile Include="UtilityTypes\IBindableProperty.cs" />

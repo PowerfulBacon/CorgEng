@@ -81,6 +81,8 @@ namespace CorgEng.Rendering
                     glVertexAttribDivisor(0, 0);
                     glVertexAttribDivisor(1, 0);
 
+                    BindBatchTexture((TSharedRenderAttributes)sharedRenderAttribute);
+
                     //====================
                     // Bind custom attributes (Instance position etc.)
                     //====================
@@ -123,6 +125,13 @@ namespace CorgEng.Rendering
 
         private int viewMatrixUniformLocation;
         private int projectionMatrixUniformLocation;
+
+        /// <summary>
+        /// Bind the texture if your batches use textures
+        /// </summary>
+        /// <param name="batch"></param>
+        protected virtual void BindBatchTexture(TSharedRenderAttributes batchAttributes)
+        { }
 
         /// <summary>
         /// Get the locations of uniform variables
