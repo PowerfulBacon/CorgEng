@@ -74,6 +74,10 @@
       <Project>{9CCC4A6B-2D13-425D-8C72-B034151EC11C}</Project>
       <Name>CorgEng.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\CorgEng.GenericInterfaces\CorgEng.GenericInterfaces.csproj">
+      <Project>{E87F196E-5BF2-4AAF-8209-9F66A4F4B0EB}</Project>
+      <Name>CorgEng.GenericInterfaces</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
