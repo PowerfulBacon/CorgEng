@@ -45,7 +45,7 @@ namespace CorgEng.EntityComponentSystem.Components
                 if (parent.EventListeners.ContainsKey(eventType))
                     parent.EventListeners[eventType].Add(componentInjectionLambda);
                 else
-                    parent.EventListeners.Add(eventType, new List<Entity.InternalSignalHandleDelegate>() { componentInjectionLambda });
+                    parent.EventListeners.Add(eventType, new List<InternalSignalHandleDelegate>() { componentInjectionLambda });
             }
         }
 
