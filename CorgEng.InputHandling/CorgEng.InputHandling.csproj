@@ -52,6 +52,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\CorgEng.DependencyInjection\CorgEng.DependencyInjection.csproj">
+      <Project>{913A2BE9-E596-4202-8DA1-ADF02AE63618}</Project>
+      <Name>CorgEng.DependencyInjection</Name>
+    </ProjectReference>
     <ProjectReference Include="..\CorgEng.EntityComponentSystem\CorgEng.EntityComponentSystem.csproj">
       <Project>{4BB408B5-9AFA-42E6-973D-547A84A293A5}</Project>
       <Name>CorgEng.EntityComponentSystem</Name>

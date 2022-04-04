@@ -6,9 +6,11 @@ using System.Text;
 using System.Threading.Tasks;
 using GLFW;
 using CorgEng.InputHandling.Events;
+using CorgEng.DependencyInjection.Dependencies;
 
 namespace CorgEng.InputHandling
 {
+    [Dependency(defaultDependency = true)]
     public class InputHandler : IInputHandler
     {
 
