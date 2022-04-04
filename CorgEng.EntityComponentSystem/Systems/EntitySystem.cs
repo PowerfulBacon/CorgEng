@@ -1,4 +1,5 @@
 ﻿using CorgEng.Core.Dependencies;
+using CorgEng.Core.Modules;
 using CorgEng.EntityComponentSystem.Components;
 using CorgEng.EntityComponentSystem.Entities;
 using CorgEng.EntityComponentSystem.Events;
@@ -6,7 +7,10 @@ using CorgEng.GenericInterfaces.Logging;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace CorgEng.EntityComponentSystem.Systems
 {
@@ -41,6 +45,34 @@ namespace CorgEng.EntityComponentSystem.Systems
 
         public abstract void SystemSetup();
 
+        private static List<EntitySystem> EntitySystems = new List<EntitySystem>();
+
+        /// <summary>
+        /// Called when the ECS module is loaded.
+        /// Creates all System types and tracks the to prevent GC
+        /// </summary>
+        [ModuleLoad]
+        private static void CreateAllSystems()
+        {
+            Logger?.WriteLine($"Setting up systems...", LogType.LOG);
+            //Locate all system types using reflection.
+            //Note that we need all systems in all loaded modules
+            IEnumerable<Type> locatedSystems = AppDomain.CurrentDomain.GetAssemblies()
+                .SelectMany(assembly => assembly.GetTypes()
+                .Where(type => typeof(EntitySystem).IsAssignableFrom(type) && !type.IsAbstract));
+            Parallel.ForEach(locatedSystems, (type) => {
+                Logger?.WriteLine($"Initializing {type}...", LogType.LOG);
+                EntitySystem createdSystem = (EntitySystem)type.GetConstructor(BindingFlags.Public | BindingFlags.Instance, null, CallingConventions.HasThis, new Type[0], null).Invoke(new object[0]);
+                createdSystem.SystemSetup();
+                EntitySystems.Add(createdSystem);
+            });
+            Logger?.WriteLine($"Successfully created and setup all systems!", LogType.LOG);
+        }
+
+        /// <summary>
+        /// The system thread. Waits until an invokation is required and then triggers it
+        /// on the system's thread.
+        /// </summary>
         private void SystemThread()
         {
             //TODO: Make this run until the game is closed
