@@ -24,12 +24,21 @@ namespace CorgEng.Tests.EntityComponentSystem
         public override void SystemSetup()
         {
             RegisterLocalEvent<TestComponent, TestEvent>(HandleTestEvent);
+            RegisterGlobalEvent<TestEvent>(HandleGlobalEvent);
         }
 
         private void HandleTestEvent(Entity entity, TestComponent component, TestEvent eventDetails)
         {
-            Console.WriteLine($"Current thread: {Thread.CurrentThread.Name}");
+            Assert.AreEqual(typeof(TestComponent), component.GetType());
+            Console.WriteLine($"[LOCAL EVENT]: Current thread: {Thread.CurrentThread.Name} - {Environment.StackTrace}");
             SignalTests.handlesReceieved++;
+            Console.WriteLine(SignalTests.handlesReceieved);
+        }
+
+        private void HandleGlobalEvent(TestEvent globalEvent)
+        {
+            Console.WriteLine($"[GLOBAL EVENT]: Current thread: {Thread.CurrentThread.Name}");
+            SignalTests.passedGlobalTest = true;
         }
 
     }
@@ -40,13 +49,25 @@ namespace CorgEng.Tests.EntityComponentSystem
 
         internal volatile static int handlesReceieved = 0;
 
+        internal volatile static bool passedGlobalTest = false;
+
+        private volatile static TestEntitySystem entitySystem;
+        
+        public SignalTests()
+        {
+            if (entitySystem == null)
+            {
+                Console.WriteLine("Setting up test");
+                entitySystem = new TestEntitySystem();
+                entitySystem.SystemSetup();
+            }
+        }
+
         [TestMethod]
+        [Timeout(1000)]
         public void TestSignalHandling()
         {
             Console.WriteLine($"Current thread: {Thread.CurrentThread.ManagedThreadId}");
-            //Setup a test entity system first
-            TestEntitySystem entitySystem = new TestEntitySystem();
-            entitySystem.SystemSetup();
             //Create a test entity
             Entity testEntity = new Entity();
             //Add a test component
@@ -56,17 +77,31 @@ namespace CorgEng.Tests.EntityComponentSystem
             Assert.AreEqual(0, handlesReceieved);
             //Send a test signal
             new TestEvent().Raise(testEntity);
-            Thread.Sleep(20);  //Sleep to account for multi-threading
-            Assert.AreEqual(1, handlesReceieved);
+            while (handlesReceieved != 1)
+                Thread.Sleep(1);
+            Console.WriteLine("Passed 1");
             new TestEvent().Raise(testEntity);
-            Thread.Sleep(20);  //Sleep to account for multi-threading
-            Assert.AreEqual(2, handlesReceieved);
+            while (handlesReceieved != 2)
+                Thread.Sleep(1);
+            Console.WriteLine("Passed 2");
             new OtherEvent().Raise(testEntity);
-            Thread.Sleep(20);  //Sleep to account for multi-threading
+            Thread.Sleep(50);  //Sleep to account for multi-threading
             Assert.AreEqual(2, handlesReceieved);
             new TestEvent().Raise(testEntity);
-            Thread.Sleep(20);  //Sleep to account for multi-threading
-            Assert.AreEqual(3, handlesReceieved);
+            while (handlesReceieved != 3)
+                Thread.Sleep(1);
+            Console.WriteLine("Passed 3");
+        }
+
+        [TestMethod]
+        [Timeout(1000)]
+        public void TestGlobalSignalHandling()
+        {
+            Console.WriteLine($"Current thread: {Thread.CurrentThread.ManagedThreadId}");
+            passedGlobalTest = false;
+            new TestEvent().RaiseGlobally();
+            while (!passedGlobalTest)
+                Thread.Sleep(1);
         }
 
     }

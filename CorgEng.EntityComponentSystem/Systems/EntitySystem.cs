@@ -13,6 +13,11 @@ namespace CorgEng.EntityComponentSystem.Systems
     public abstract class EntitySystem
     {
 
+        /// <summary>
+        /// Internal global event component specifically for handling global signals
+        /// </summary>
+        internal class GlobalEventComponent : Component { }
+
         [UsingDependency]
         private static ILogger Logger;
 
@@ -59,6 +64,31 @@ namespace CorgEng.EntityComponentSystem.Systems
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// Registers a signal to a global event.
+        /// </summary>
+        /// <typeparam name="GEvent">The type of the global event to subscribe to.</typeparam>
+        /// <param name="eventHandler">The method to be invoked when the global event is raised.</param>
+        public void RegisterGlobalEvent<GEvent>(Action<GEvent> eventHandler)
+            where GEvent : Event
+        {
+            //Register the component to recieve the target event on the event manager
+            if (!EventManager.RegisteredEvents.ContainsKey(typeof(GlobalEventComponent)))
+                EventManager.RegisteredEvents.Add(typeof(GlobalEventComponent), new List<Type>());
+            if (!EventManager.RegisteredEvents[typeof(GlobalEventComponent)].Contains(typeof(GEvent)))
+                EventManager.RegisteredEvents[typeof(GlobalEventComponent)].Add(typeof(GEvent));
+            //Register the system to receieve the event
+            EventComponentPair eventComponentPair = new EventComponentPair(typeof(GEvent), typeof(GlobalEventComponent));
+            if (!RegisteredSystemSignalHandlers.ContainsKey(eventComponentPair))
+                RegisteredSystemSignalHandlers.Add(eventComponentPair, new List<SystemEventHandlerDelegate>());
+            RegisteredSystemSignalHandlers[eventComponentPair].Add((Entity entity, Component component, Event signal) => {
+                invokationQueue.Enqueue(() => {
+                    eventHandler.Invoke((GEvent)signal);
+                });
+                waitHandle.Set();
+            });
         }
 
         /// <summary>
