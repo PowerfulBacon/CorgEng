@@ -1,4 +1,6 @@
-﻿using GLFW;
+﻿using CorgEng.Core.Dependencies;
+using CorgEng.GenericInterfaces.InputHandler;
+using GLFW;
 using System;
 using static OpenGL.Gl;
 
@@ -8,6 +10,9 @@ namespace CorgEng.Core.Rendering
     {
 
         private Window glWindowInstance;
+
+        [UsingDependency]
+        private static IInputHandler InputHandler;
 
         /// <summary>
         /// Open the main window
@@ -56,6 +61,8 @@ namespace CorgEng.Core.Rendering
             Glfw.MakeContextCurrent(glWindowInstance);
             //I don't actually know what this does
             Import(Glfw.GetProcAddress);
+            //Setup the input handler
+            InputHandler.SetupInputHandler(glWindowInstance);
         }
 
     }
