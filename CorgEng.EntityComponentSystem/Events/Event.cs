@@ -26,18 +26,15 @@ namespace CorgEng.EntityComponentSystem.Events
             if (!EventManager.RegisteredEvents.ContainsKey(typeof(GlobalEventComponent)))
                 return;
             //Locate all event types we are listening for
-            foreach (Type eventType in EventManager.RegisteredEvents[typeof(GlobalEventComponent)])
+            EventComponentPair key = new EventComponentPair(GetType(), typeof(GlobalEventComponent));
+            //Locate the monitoring system's callback handler
+            if (!RegisteredSystemSignalHandlers.ContainsKey(key))
             {
-                EventComponentPair key = new EventComponentPair(eventType, typeof(GlobalEventComponent));
-                //Locate the monitoring system's callback handler
-                if (!RegisteredSystemSignalHandlers.ContainsKey(key))
-                {
-                    continue;
-                }
-                List<SystemEventHandlerDelegate> systemEventHandlers = RegisteredSystemSignalHandlers[key];
-                foreach (SystemEventHandlerDelegate systemEventHandler in systemEventHandlers)
-                    systemEventHandler.Invoke(null, null, this);
+                return;
             }
+            List<SystemEventHandlerDelegate> systemEventHandlers = RegisteredSystemSignalHandlers[key];
+            foreach (SystemEventHandlerDelegate systemEventHandler in systemEventHandlers)
+                systemEventHandler.Invoke(null, null, this);
         }
 
     }

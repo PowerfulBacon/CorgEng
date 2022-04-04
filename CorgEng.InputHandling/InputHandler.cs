@@ -16,11 +16,21 @@ namespace CorgEng.InputHandling
 
         private Window window;
 
+        private KeyCallback keyCallbackDelegate;
+        private MouseButtonCallback mouseButtonCallback;
+
         public void SetupInputHandler(Window targetWindow)
         {
+            keyCallbackDelegate = HandleKeyboardPress;
+            mouseButtonCallback = HandleMousePress;
             window = targetWindow;
-            Glfw.SetKeyCallback(targetWindow, HandleKeyboardPress);
-            Glfw.SetMouseButtonCallback(targetWindow, HandleMousePress);
+            Glfw.SetKeyCallback(targetWindow, keyCallbackDelegate);
+            Glfw.SetMouseButtonCallback(targetWindow, mouseButtonCallback);
+        }
+
+        ~InputHandler()
+        {
+            Console.WriteLine("Input handler GC'd");
         }
 
         private void HandleMousePress(IntPtr window, MouseButton button, InputState state, ModifierKeys modifiers)

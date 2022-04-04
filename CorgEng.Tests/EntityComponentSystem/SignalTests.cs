@@ -99,6 +99,9 @@ namespace CorgEng.Tests.EntityComponentSystem
         {
             Console.WriteLine($"Current thread: {Thread.CurrentThread.ManagedThreadId}");
             passedGlobalTest = false;
+            new OtherEvent().RaiseGlobally();
+            Thread.Sleep(50);
+            Assert.IsFalse(passedGlobalTest);
             new TestEvent().RaiseGlobally();
             while (!passedGlobalTest)
                 Thread.Sleep(1);
