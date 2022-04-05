@@ -19,7 +19,7 @@ namespace CorgEng.EntityComponentSystem.Implementations.Transform
         private void SetEntityPosition(Entity entity, TransformComponent transform, SetPositionEvent setPositionEvent)
         {
             //Create a new on move event
-            MoveEvent moveEvent = new MoveEvent(transform.Position);
+            MoveEvent moveEvent = new MoveEvent(transform.Position, setPositionEvent.NewPosition);
             //Update the position of the transform
             transform.Position = setPositionEvent.NewPosition;
             //Trigger the on move event
