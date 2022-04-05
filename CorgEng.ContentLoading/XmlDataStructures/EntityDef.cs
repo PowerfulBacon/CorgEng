@@ -1,4 +1,5 @@
 ﻿using CorgEng.Core.Dependencies;
+using CorgEng.GenericInterfaces.ContentLoading;
 using CorgEng.GenericInterfaces.Logging;
 using CorgEng.GenericInterfaces.UtilityTypes;
 using CorgEng.UtilityTypes.Vectors;
@@ -12,7 +13,7 @@ using System.Xml;
 
 namespace CorgEng.ContentLoading.XmlDataStructures
 {
-    public class EntityDef : PropertyDef
+    public class EntityDef : PropertyDef, IEntityDef
     {
 
         [UsingDependency]
@@ -64,17 +65,15 @@ namespace CorgEng.ContentLoading.XmlDataStructures
             //Call the pre init behaviour
             created.PreInitialize(initializePosition);
             //Set the properties of this object
-            foreach (PropertyDef property in GetChildren())
+            foreach (IPropertyDef property in GetChildren())
             {
-                object propertyValue = null;
                 try
                 {
-                    propertyValue = property.GetValue(initializePosition);
-                    created.SetProperty(property.Name, propertyValue);
+                    created.SetProperty(property.Name, property);
                 }
                 catch (Exception e)
                 {
-                    Log.WriteLine($"{e}\nProperty Name: {property.Name}\nProperty Value: {propertyValue?.ToString() ?? "NULL REFERENCE"}", LogType.ERROR);
+                    Log.WriteLine(e, LogType.ERROR);
                 }
             }
             //Initialize the created thing
@@ -96,7 +95,7 @@ namespace CorgEng.ContentLoading.XmlDataStructures
             return GetValue(position);
         }
 
-        public override PropertyDef Copy()
+        public override IPropertyDef Copy()
         {
             PropertyDef copy = new EntityDef(Name);
             foreach (string key in Tags.Keys)

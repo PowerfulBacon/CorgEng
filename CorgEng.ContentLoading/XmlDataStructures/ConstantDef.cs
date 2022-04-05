@@ -1,4 +1,5 @@
-﻿using CorgEng.GenericInterfaces.UtilityTypes;
+﻿using CorgEng.GenericInterfaces.ContentLoading;
+using CorgEng.GenericInterfaces.UtilityTypes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,9 +19,9 @@ namespace CorgEng.ContentLoading.XmlDataStructures
             return EntityConfig.LoadedConstants[GetChild("Constant").Tags["Name"]].GetValue(initializePosition);
         }
 
-        public override PropertyDef Copy()
+        public override IPropertyDef Copy()
         {
-            PropertyDef copy = new ConstantDef(Name);
+            IPropertyDef copy = new ConstantDef(Name);
             foreach (string key in Tags.Keys)
                 copy.Tags.Add(key, Tags[key]);
             foreach (string key in Children.Keys)

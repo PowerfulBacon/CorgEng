@@ -44,7 +44,6 @@
     <Compile Include="EntityConfig.cs" />
     <Compile Include="EntityCreator.cs" />
     <Compile Include="EntityLoader.cs" />
-    <Compile Include="IInstantiatable.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="XmlDataStructures\BooleanDef.cs" />
     <Compile Include="XmlDataStructures\ConstantDef.cs" />

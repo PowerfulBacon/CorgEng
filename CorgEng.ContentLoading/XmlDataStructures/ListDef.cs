@@ -1,4 +1,5 @@
-﻿using CorgEng.GenericInterfaces.UtilityTypes;
+﻿using CorgEng.GenericInterfaces.ContentLoading;
+using CorgEng.GenericInterfaces.UtilityTypes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,12 +12,12 @@ namespace CorgEng.ContentLoading.XmlDataStructures
     public class ListDef : PropertyDef
     {
 
-        public new List<PropertyDef> Children { get; } = new List<PropertyDef>();
+        public new List<IPropertyDef> Children { get; } = new List<IPropertyDef>();
 
         public ListDef(string name) : base(name)
         { }
 
-        public override void AddChild(PropertyDef property)
+        public override void AddChild(IPropertyDef property)
         {
             Children.Add(property);
             if (property.Tags.ContainsKey("Override"))
@@ -33,7 +34,7 @@ namespace CorgEng.ContentLoading.XmlDataStructures
             return values;
         }
 
-        public override IReadOnlyCollection<PropertyDef> GetChildren()
+        public override IReadOnlyCollection<IPropertyDef> GetChildren()
         {
             return Children;
         }
@@ -41,7 +42,7 @@ namespace CorgEng.ContentLoading.XmlDataStructures
         /// <summary>
         /// Merge lists by getting elements from all
         /// </summary>
-        protected override void UpdateFrom(PropertyDef overrider)
+        public override void UpdateFrom(IPropertyDef overrider)
         {
             //Update all incoming properties
             foreach (PropertyDef incomingProperty in overrider.GetChildren())
@@ -50,7 +51,7 @@ namespace CorgEng.ContentLoading.XmlDataStructures
             }
         }
 
-        public override PropertyDef Copy()
+        public override IPropertyDef Copy()
         {
             ListDef copy = new ListDef(Name);
             foreach (string key in Tags.Keys)

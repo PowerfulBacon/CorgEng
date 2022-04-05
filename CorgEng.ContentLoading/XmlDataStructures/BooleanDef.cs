@@ -1,4 +1,5 @@
-﻿using CorgEng.GenericInterfaces.UtilityTypes;
+﻿using CorgEng.GenericInterfaces.ContentLoading;
+using CorgEng.GenericInterfaces.UtilityTypes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,13 +25,13 @@ namespace CorgEng.ContentLoading.XmlDataStructures
             return value;
         }
 
-        protected override void UpdateFrom(PropertyDef overrider)
+        public override void UpdateFrom(IPropertyDef overrider)
         {
             value = ((BooleanDef)overrider).value;
             base.UpdateFrom(overrider);
         }
 
-        public override PropertyDef Copy()
+        public override IPropertyDef Copy()
         {
             BooleanDef copy = new BooleanDef(Name, value ? "true" : "false");
             foreach (string key in Tags.Keys)

@@ -1,4 +1,5 @@
-﻿using CorgEng.GenericInterfaces.UtilityTypes;
+﻿using CorgEng.GenericInterfaces.ContentLoading;
+using CorgEng.GenericInterfaces.UtilityTypes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace CorgEng.ContentLoading.XmlDataStructures
 {
-    public class PropertyDef
+    public class PropertyDef : IPropertyDef
     {
 
         private static int num = 0;
@@ -24,11 +25,11 @@ namespace CorgEng.ContentLoading.XmlDataStructures
         /// <summary>
         /// Children components
         /// </summary>
-        public Dictionary<string, PropertyDef> Children { get; } = new Dictionary<string, PropertyDef>();
+        public Dictionary<string, IPropertyDef> Children { get; } = new Dictionary<string, IPropertyDef>();
 
-        public virtual PropertyDef Copy()
+        public virtual IPropertyDef Copy()
         {
-            PropertyDef copy = new PropertyDef(Name);
+            IPropertyDef copy = new PropertyDef(Name);
             foreach (string key in Tags.Keys)
                 copy.Tags.Add(key, Tags[key]);
             foreach (string key in Children.Keys)
@@ -55,7 +56,7 @@ namespace CorgEng.ContentLoading.XmlDataStructures
         /// <summary>
         /// Add a child element
         /// </summary>
-        public virtual void AddChild(PropertyDef property)
+        public virtual void AddChild(IPropertyDef property)
         {
             //Update existing
             if (Children.ContainsKey(property.Name))
@@ -85,10 +86,10 @@ namespace CorgEng.ContentLoading.XmlDataStructures
         ///   <OverrideMe>200</OverrideMe>
         /// </Entity>
         /// </summary>
-        protected virtual void UpdateFrom(PropertyDef overrider)
+        public virtual void UpdateFrom(IPropertyDef overrider)
         {
             //Update all incoming properties
-            foreach (PropertyDef incomingProperty in overrider.GetChildren())
+            foreach (IPropertyDef incomingProperty in overrider.GetChildren())
             {
                 //We already have this property, update it
                 if (Children.ContainsKey(incomingProperty.Name))
@@ -102,7 +103,7 @@ namespace CorgEng.ContentLoading.XmlDataStructures
             }
         }
 
-        public virtual IReadOnlyCollection<PropertyDef> GetChildren()
+        public virtual IReadOnlyCollection<IPropertyDef> GetChildren()
         {
             return Children.Values;
         }
@@ -137,7 +138,7 @@ namespace CorgEng.ContentLoading.XmlDataStructures
 
         public void InheritFromDependancy()
         {
-            if(Tags.ContainsKey("ParentName"))
+            if (Tags.ContainsKey("ParentName"))
                 InheritFrom(Tags["ParentName"]);
         }
 
@@ -163,7 +164,7 @@ namespace CorgEng.ContentLoading.XmlDataStructures
         /// <summary>
         /// Get a child by name
         /// </summary>
-        public PropertyDef GetChild(string name)
+        public IPropertyDef GetChild(string name)
         {
             if (Children.ContainsKey(name))
                 return Children[name];

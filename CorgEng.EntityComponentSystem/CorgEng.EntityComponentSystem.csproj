@@ -76,6 +76,10 @@
     <Compile Include="Systems\EntitySystem.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\CorgEng.ContentLoading\CorgEng.ContentLoading.csproj">
+      <Project>{46ED6820-5DE9-4B9C-AC58-728503212732}</Project>
+      <Name>CorgEng.ContentLoading</Name>
+    </ProjectReference>
     <ProjectReference Include="..\CorgEng.Core\CorgEng.Core.csproj">
       <Project>{9CCC4A6B-2D13-425D-8C72-B034151EC11C}</Project>
       <Name>CorgEng.Core</Name>

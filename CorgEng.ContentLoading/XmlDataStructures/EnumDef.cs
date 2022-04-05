@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CorgEng.GenericInterfaces.ContentLoading;
 using CorgEng.GenericInterfaces.UtilityTypes;
 using CorgEng.UtilityTypes.Vectors;
 
@@ -23,16 +24,16 @@ namespace CorgEng.ContentLoading.XmlDataStructures
             where T : Enum
         {
             int value = 0;
-            foreach (PropertyDef property in GetChildren())
+            foreach (IPropertyDef property in GetChildren())
             {
                 value |= (int)Enum.Parse(typeof(T), (string)property.GetValue(Vector<float>.Zero));
             }
             return (T)Enum.ToObject(typeof(T), value);
         }
 
-        public override PropertyDef Copy()
+        public override IPropertyDef Copy()
         {
-            PropertyDef copy = new EnumDef(Name);
+            IPropertyDef copy = new EnumDef(Name);
             foreach (string key in Tags.Keys)
                 copy.Tags.Add(key, Tags[key]);
             foreach (string key in Children.Keys)
