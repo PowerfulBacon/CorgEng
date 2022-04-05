@@ -1,5 +1,6 @@
 ﻿using CorgEng.EntityComponentSystem.Entities;
 using CorgEng.EntityComponentSystem.Events;
+using CorgEng.EntityComponentSystem.Events.Events;
 using System;
 using System.Collections.Generic;
 using static CorgEng.EntityComponentSystem.Entities.Entity;
@@ -47,6 +48,9 @@ namespace CorgEng.EntityComponentSystem.Components
                 else
                     parent.EventListeners.Add(eventType, new List<InternalSignalHandleDelegate>() { componentInjectionLambda });
             }
+            //Send the component added event
+            ComponentAddedEvent componentAddedEvent = new ComponentAddedEvent(this);
+            componentAddedEvent.Raise(parent);
         }
 
     }
