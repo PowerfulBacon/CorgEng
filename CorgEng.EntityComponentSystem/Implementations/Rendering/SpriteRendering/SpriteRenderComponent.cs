@@ -18,7 +18,7 @@ namespace CorgEng.EntityComponentSystem.Implementations.Rendering.SpriteRenderin
 
         public ISpriteRenderObject SpriteRenderObject;
 
-        public EntityDef TypeDef { get; set; }
+        public IEntityDef TypeDef { get; set; }
 
         public void Initialize(IVector<float> initializePosition)
         { }
@@ -26,7 +26,7 @@ namespace CorgEng.EntityComponentSystem.Implementations.Rendering.SpriteRenderin
         public void PreInitialize(IVector<float> initializePosition)
         { }
 
-        public void SetProperty(string name, PropertyDef property)
+        public void SetProperty(string name, IPropertyDef property)
         {
             switch (name)
             {
