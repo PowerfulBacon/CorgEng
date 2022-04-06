@@ -115,9 +115,12 @@ namespace CorgEng.Rendering
                 //====================
                 //Unbind attrib arrays
                 //====================
-                for (uint i = 0; i < storedBufferLocations.Length + USER_BUFFER_OFFSET; i++)
+                if (storedBufferLocations != null)
                 {
-                    glDisableVertexAttribArray(i);
+                    for (uint i = 0; i < storedBufferLocations.Length + USER_BUFFER_OFFSET; i++)
+                    {
+                        glDisableVertexAttribArray(i);
+                    }
                 }
 
             }

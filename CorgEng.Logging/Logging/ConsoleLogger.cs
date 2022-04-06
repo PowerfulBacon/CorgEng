@@ -14,9 +14,6 @@ namespace CorgEng.Logging
 
         public static int ExceptionCount = 0;
 
-        /// <summary>
-        /// TODO
-        /// </summary>
         public void WriteLine(object message, LogType logType = LogType.MESSAGE)
         {
             if (message is Exception)

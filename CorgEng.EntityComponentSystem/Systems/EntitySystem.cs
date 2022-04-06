@@ -3,6 +3,7 @@ using CorgEng.Core.Modules;
 using CorgEng.EntityComponentSystem.Components;
 using CorgEng.EntityComponentSystem.Entities;
 using CorgEng.EntityComponentSystem.Events;
+using CorgEng.GenericInterfaces.ContentLoading;
 using CorgEng.GenericInterfaces.Logging;
 using System;
 using System.Collections.Concurrent;
@@ -20,7 +21,13 @@ namespace CorgEng.EntityComponentSystem.Systems
         /// <summary>
         /// Internal global event component specifically for handling global signals
         /// </summary>
-        internal class GlobalEventComponent : Component { }
+        internal class GlobalEventComponent : Component
+        {
+            public override bool SetProperty(string name, IPropertyDef property)
+            {
+                return false;
+            }
+        }
 
         [UsingDependency]
         private static ILogger Logger;

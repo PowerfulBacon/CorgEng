@@ -1,4 +1,5 @@
 ﻿using CorgEng.DependencyInjection.Dependencies;
+using CorgEng.GenericInterfaces.ContentLoading;
 using CorgEng.GenericInterfaces.Rendering.Positioning;
 using CorgEng.GenericInterfaces.Rendering.RenderObjects.SpriteRendering;
 using CorgEng.GenericInterfaces.Rendering.SharedRenderAttributes;
@@ -30,6 +31,8 @@ namespace CorgEng.Rendering.SpriteRendering
 
         public IBindablePropertyGroup TextureDetails { get; }
 
+        public IEntityDef TypeDef { get; set; }
+
         public SpriteRenderObject(uint textureUint, float textureX, float textureY, float textureWidth, float textureHeight)
         {
             //When the vector changes, trigger change on the bindable property.
@@ -58,6 +61,18 @@ namespace CorgEng.Rendering.SpriteRendering
         public ISharedRenderAttributes GetSharedRenderAttributes()
         {
             return new SpriteSharedRenderAttributes(TextureFile.Value);
+        }
+
+        public void PreInitialize(IVector<float> initializePosition)
+        { }
+
+        public void Initialize(IVector<float> initializePosition)
+        { }
+
+        public bool SetProperty(string name, IPropertyDef property)
+        {
+            //TODO: Textures can be loaded from the def file
+            return false;
         }
 
     }

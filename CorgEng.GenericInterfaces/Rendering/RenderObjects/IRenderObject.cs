@@ -1,4 +1,5 @@
-﻿using CorgEng.GenericInterfaces.Rendering.Positioning;
+﻿using CorgEng.GenericInterfaces.ContentLoading;
+using CorgEng.GenericInterfaces.Rendering.Positioning;
 using CorgEng.GenericInterfaces.Rendering.SharedRenderAttributes;
 using CorgEng.GenericInterfaces.UtilityTypes;
 using CorgEng.GenericInterfaces.UtilityTypes.Batches;
@@ -10,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace CorgEng.GenericInterfaces.Rendering.RenderObjects
 {
-    public interface IRenderObject
+    public interface IRenderObject : IInstantiatable
     {
 
         IBindableProperty<IVector<float>> WorldPosition { get; }

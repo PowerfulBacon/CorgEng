@@ -1,5 +1,8 @@
 ﻿using CorgEng.EntityComponentSystem.Entities;
 using CorgEng.EntityComponentSystem.Events;
+using CorgEng.EntityComponentSystem.Events.Events;
+using CorgEng.GenericInterfaces.ContentLoading;
+using CorgEng.GenericInterfaces.UtilityTypes;
 using System;
 using System.Collections.Generic;
 using static CorgEng.EntityComponentSystem.Entities.Entity;
@@ -7,13 +10,24 @@ using static CorgEng.EntityComponentSystem.Systems.EntitySystem;
 
 namespace CorgEng.EntityComponentSystem.Components
 {
-    public abstract class Component
+    public abstract class Component : IInstantiatable
     {
         
         /// <summary>
         /// The parent of this component
         /// </summary>
         public Entity Parent { get; internal set; }
+
+        public IEntityDef TypeDef { get; set; }
+
+        public void Initialize(IVector<float> initializePosition)
+        { }
+
+        public void PreInitialize(IVector<float> initializePosition)
+        { }
+
+        public abstract bool SetProperty(string name, IPropertyDef property);
+
 
         /// <summary>
         /// Register existing signals when we are added
@@ -47,6 +61,9 @@ namespace CorgEng.EntityComponentSystem.Components
                 else
                     parent.EventListeners.Add(eventType, new List<InternalSignalHandleDelegate>() { componentInjectionLambda });
             }
+            //Send the component added event
+            ComponentAddedEvent componentAddedEvent = new ComponentAddedEvent(this);
+            componentAddedEvent.Raise(parent);
         }
 
     }

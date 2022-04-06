@@ -11,9 +11,9 @@ namespace CorgEng.InputHandling.Events
     public class KeyPressEvent : Event
     {
 
-        Keys Key { get; set; }
+        public Keys Key { get; set; }
 
-        ModifierKeys ModifierKeys { get; set; }
+        public ModifierKeys ModifierKeys { get; set; }
 
         public KeyPressEvent(Keys key, ModifierKeys modifierKeys)
         {
