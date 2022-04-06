@@ -1,4 +1,5 @@
 ﻿using CorgEng.EntityComponentSystem.Components;
+using CorgEng.GenericInterfaces.ContentLoading;
 using CorgEng.UtilityTypes.Vectors;
 using System;
 using System.Collections.Generic;
@@ -12,6 +13,11 @@ namespace CorgEng.EntityComponentSystem.Implementations.Transform
     {
 
         public Vector<float> Position { get; internal set; }
+
+        public override bool SetProperty(string name, IPropertyDef property)
+        {
+            return false;
+        }
 
     }
 }

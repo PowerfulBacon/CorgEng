@@ -69,7 +69,8 @@ namespace CorgEng.ContentLoading.XmlDataStructures
             {
                 try
                 {
-                    created.SetProperty(property.Name, property);
+                    if(!created.SetProperty(property.Name, property))
+                        throw new NotImplementedException($"Unknown property name {property.Name}. Check configuration file for {Name}");
                 }
                 catch (Exception e)
                 {

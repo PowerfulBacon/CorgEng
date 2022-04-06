@@ -18,23 +18,15 @@ namespace CorgEng.EntityComponentSystem.Implementations.Rendering.SpriteRenderin
 
         public ISpriteRenderObject SpriteRenderObject;
 
-        public IEntityDef TypeDef { get; set; }
-
-        public void Initialize(IVector<float> initializePosition)
-        { }
-
-        public void PreInitialize(IVector<float> initializePosition)
-        { }
-
-        public void SetProperty(string name, IPropertyDef property)
+        public override bool SetProperty(string name, IPropertyDef property)
         {
             switch (name)
             {
                 case "SpriteRenderObject":
                     SpriteRenderObject = property.GetValue(Vector<float>.Zero) as ISpriteRenderObject;
-                    return;
+                    return true;
             }
-            throw new NotImplementedException($"Unknown property name {name}. Check configuration file for {TypeDef.Name}");
+            return false;
         }
     }
 }

@@ -31,7 +31,7 @@ namespace CorgEng.ContentLoading
             Property,       //All else failed
         }
 
-        private const string GAME_DATA_DIRECTORY = "Data/GameData";
+        private const string GAME_DATA_DIRECTORY = "Content";
 
         [UsingDependency]
         private static ILogger Log;
@@ -48,6 +48,11 @@ namespace CorgEng.ContentLoading
                 Log.WriteLine("Clearing existing EntityConfig data... (LoadEntities was called again, likely a debug call)", LogType.WARNING);
                 EntityConfig.LoadedEntityDefs.Clear();
                 EntityConfig.LoadedConstants.Clear();
+            }
+            if (!Directory.Exists(GAME_DATA_DIRECTORY))
+            {
+                Log.WriteLine("No ./Content directory exists, unable to load dynamic content.", LogType.WARNING);
+                return;
             }
             //Locate all game data XML files.
             foreach (string gameDataGroupName in Directory.GetDirectories(GAME_DATA_DIRECTORY))

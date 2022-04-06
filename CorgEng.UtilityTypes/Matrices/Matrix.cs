@@ -49,7 +49,6 @@ namespace CorgEng.UtilityTypes.Matrices
         //Values of the matrix
         //This shouldn't be used directly due to being extremely confusing
         //Index 0 = Y, index 1 = X
-        //TODO: REFACTORING REQUIRED
         //OPEN GL HANDLES MATRICES AS:
         //m0 m4 m8 m12
         //m1 m5 m9  m13
