@@ -1,5 +1,7 @@
 //TODO: Rewrite me to a proper README
 
+https://discord.gg/6hgfjRrVJP
+
 # CorgEng
 
 A modularised, multi-threaded ECS based game engine.
