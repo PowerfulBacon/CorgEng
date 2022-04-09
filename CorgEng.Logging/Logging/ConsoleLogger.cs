@@ -1,6 +1,7 @@
 ﻿using CorgEng.DependencyInjection.Dependencies;
 using CorgEng.GenericInterfaces.Logging;
 using System;
+using System.Threading;
 
 namespace CorgEng.Logging
 {
@@ -26,7 +27,7 @@ namespace CorgEng.Logging
             {
                 //Write it
                 SetConsoleColor(logType);
-                Console.Write($"[{logType}][{logTime}]");
+                Console.Write($"[{Thread.CurrentThread.Name ?? $"T{Thread.CurrentThread.ManagedThreadId}"}][{logType}][{logTime}]");
                 Console.BackgroundColor = ConsoleColor.Black;
                 Console.ForegroundColor = ConsoleColor.Gray;
                 Console.WriteLine($" {message ?? "null"}");

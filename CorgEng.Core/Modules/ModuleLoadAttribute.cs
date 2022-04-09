@@ -10,5 +10,7 @@ namespace CorgEng.Core.Modules
 
         public bool priority = false;
 
+        public bool mainThread = false;
+
     }
 }

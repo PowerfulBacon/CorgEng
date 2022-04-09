@@ -62,7 +62,7 @@ namespace CorgEng.Core.Rendering
             //I don't actually know what this does
             Import(Glfw.GetProcAddress);
             //Setup the input handler
-            InputHandler.SetupInputHandler(glWindowInstance);
+            InputHandler?.SetupInputHandler(glWindowInstance);
         }
 
     }

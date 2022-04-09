@@ -6,12 +6,11 @@ using System.Threading.Tasks;
 
 namespace CorgEng.GenericInterfaces.Rendering.Textures
 {
-    public interface ITextureFactory
+    public enum DirectionalModes
     {
-
-        ITexture CreateTexture(string texturePath);
-
-        ITextureState GetTextureFromIconState(string iconState);
-
+        NONE = 0,
+        CARDINAL = 1,
+        CARDINAL_DIAGONAL = 2,
+        FULL = 3
     }
 }

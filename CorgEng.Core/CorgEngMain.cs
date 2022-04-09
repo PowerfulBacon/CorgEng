@@ -202,9 +202,16 @@ namespace CorgEng.Core
                 .Where(method => method.GetCustomAttribute<ModuleLoadAttribute>() != null )));
             Parallel.ForEach(ModuleLoadAttributes, (MethodInfo) => {
                 Console.WriteLine(MethodInfo.Name);
-                if(MethodInfo.GetCustomAttribute<ModuleLoadAttribute>().priority)
+                if(MethodInfo.GetCustomAttribute<ModuleLoadAttribute>().priority
+                    && !MethodInfo.GetCustomAttribute<ModuleLoadAttribute>().mainThread)
                     MethodInfo.Invoke(null, new object[] { });
             });
+            foreach (MethodInfo methodToInvoke in ModuleLoadAttributes)
+            {
+                if (methodToInvoke.GetCustomAttribute<ModuleLoadAttribute>().priority
+                    && methodToInvoke.GetCustomAttribute<ModuleLoadAttribute>().mainThread)
+                    methodToInvoke.Invoke(null, new object[] { });
+            }
         }
 
         /// <summary>
@@ -213,12 +220,19 @@ namespace CorgEng.Core
         private static void ModuleInit()
         {
             Parallel.ForEach(ModuleLoadAttributes, (MethodInfo) => {
-                if (!MethodInfo.GetCustomAttribute<ModuleLoadAttribute>().priority)
+                if (!MethodInfo.GetCustomAttribute<ModuleLoadAttribute>().priority
+                    && !MethodInfo.GetCustomAttribute<ModuleLoadAttribute>().mainThread)
                 {
                     MethodInfo.Invoke(null, new object[] { });
                     Logger?.WriteLine($"Successfully loaded module {MethodInfo.DeclaringType.Name}");
                 }
             });
+            foreach (MethodInfo methodToInvoke in ModuleLoadAttributes)
+            {
+                if (!methodToInvoke.GetCustomAttribute<ModuleLoadAttribute>().priority
+                    && methodToInvoke.GetCustomAttribute<ModuleLoadAttribute>().mainThread)
+                    methodToInvoke.Invoke(null, new object[] { });
+            }
             ModuleLoadAttributes = null;
         }
 

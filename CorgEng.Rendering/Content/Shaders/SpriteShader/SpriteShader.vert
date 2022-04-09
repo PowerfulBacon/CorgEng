@@ -3,7 +3,7 @@
 layout (location = 0) in vec3 inVertexPos;
 layout (location = 1) in vec2 inVertexUV;
 layout (location = 2) in vec3 inInstancePos;
-layout (location = 4) in vec4 inTextureData;
+layout (location = 3) in vec4 inTextureData;
 
 //UV data
 out vec2 fragVertexUV;
