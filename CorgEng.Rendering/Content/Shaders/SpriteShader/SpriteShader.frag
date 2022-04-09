@@ -14,6 +14,6 @@ uniform sampler2D renderTexture;
 
 void main()
 {
-    result = texture(renderTexture, fragVertexUV);
+    result = texture(renderTexture, fragVertexUV * vec2(fragTextureData[2], fragTextureData[3]) + vec2(fragTextureData[0], fragTextureData[1]));
     //result = vec4(1, 0, 0, 1);
 }

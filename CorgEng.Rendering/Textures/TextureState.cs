@@ -12,15 +12,15 @@ namespace CorgEng.Rendering.Textures
 
         public ITexture TextureFile { get; private set; }
 
-        public double OffsetX { get; private set; }
+        public float OffsetX { get; private set; }
 
-        public double OffsetY { get; private set; }
+        public float OffsetY { get; private set; }
 
-        public double OffsetWidth { get; private set; }
+        public float OffsetWidth { get; private set; }
 
-        public double OffsetHeight { get; private set; }
+        public float OffsetHeight { get; private set; }
 
-        public TextureState(ITexture textureFile, double offsetX, double offsetY, double offsetWidth, double offsetHeight)
+        public TextureState(ITexture textureFile, float offsetX, float offsetY, float offsetWidth, float offsetHeight)
         {
             TextureFile = textureFile;
             OffsetX = offsetX;

@@ -86,7 +86,6 @@ namespace CorgEng.Rendering.Textures
             //Hands the texture data to an openGL buffer to be stored on the GPU
             //DEBUG
             glActiveTexture(GL_TEXTURE0);
-            Log.WriteLine($"{data.Length},{textureDataIndex}", LogType.DEBUG);
             TextureID = glGenTexture();
             glBindTexture(GL_TEXTURE_2D, TextureID);
             fixed (byte* dataPointer = &data[0])

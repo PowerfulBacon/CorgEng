@@ -1,0 +1,12 @@
+{
+  "textures": [
+    {
+      "id": "error",
+      "file": "Icons/error.bmp",
+      "width": 32,
+      "height": 32,
+      "index_x": 0,
+      "index_y": 0
+    }
+  ]
+}

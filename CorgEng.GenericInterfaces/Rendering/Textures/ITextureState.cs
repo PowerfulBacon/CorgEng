@@ -11,13 +11,13 @@ namespace CorgEng.GenericInterfaces.Rendering.Textures
 
         ITexture TextureFile { get; }
 
-        double OffsetX { get; }
+        float OffsetX { get; }
 
-        double OffsetY { get; }
+        float OffsetY { get; }
 
-        double OffsetWidth { get; }
+        float OffsetWidth { get; }
 
-        double OffsetHeight { get; }
+        float OffsetHeight { get; }
 
     }
 }

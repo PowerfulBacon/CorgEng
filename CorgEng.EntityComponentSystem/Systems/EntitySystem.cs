@@ -114,20 +114,28 @@ namespace CorgEng.EntityComponentSystem.Systems
             where GEvent : Event
         {
             //Register the component to recieve the target event on the event manager
-            if (!EventManager.RegisteredEvents.ContainsKey(typeof(GlobalEventComponent)))
-                EventManager.RegisteredEvents.Add(typeof(GlobalEventComponent), new List<Type>());
-            if (!EventManager.RegisteredEvents[typeof(GlobalEventComponent)].Contains(typeof(GEvent)))
-                EventManager.RegisteredEvents[typeof(GlobalEventComponent)].Add(typeof(GEvent));
+            lock (EventManager.RegisteredEvents)
+            {
+                if (!EventManager.RegisteredEvents.ContainsKey(typeof(GlobalEventComponent)))
+                    EventManager.RegisteredEvents.Add(typeof(GlobalEventComponent), new List<Type>());
+                if (!EventManager.RegisteredEvents[typeof(GlobalEventComponent)].Contains(typeof(GEvent)))
+                    EventManager.RegisteredEvents[typeof(GlobalEventComponent)].Add(typeof(GEvent));
+            }
             //Register the system to receieve the event
             EventComponentPair eventComponentPair = new EventComponentPair(typeof(GEvent), typeof(GlobalEventComponent));
-            if (!RegisteredSystemSignalHandlers.ContainsKey(eventComponentPair))
-                RegisteredSystemSignalHandlers.Add(eventComponentPair, new List<SystemEventHandlerDelegate>());
-            RegisteredSystemSignalHandlers[eventComponentPair].Add((Entity entity, Component component, Event signal) => {
-                invokationQueue.Enqueue(() => {
-                    eventHandler.Invoke((GEvent)signal);
+            lock (RegisteredSystemSignalHandlers)
+            {
+                if (!RegisteredSystemSignalHandlers.ContainsKey(eventComponentPair))
+                    RegisteredSystemSignalHandlers.Add(eventComponentPair, new List<SystemEventHandlerDelegate>());
+                RegisteredSystemSignalHandlers[eventComponentPair].Add((Entity entity, Component component, Event signal) =>
+                {
+                    invokationQueue.Enqueue(() =>
+                    {
+                        eventHandler.Invoke((GEvent)signal);
+                    });
+                    waitHandle.Set();
                 });
-                waitHandle.Set();
-            });
+            }
         }
 
         /// <summary>
@@ -138,20 +146,28 @@ namespace CorgEng.EntityComponentSystem.Systems
             where GEvent : Event
         {
             //Register the component to recieve the target event on the event manager
-            if (!EventManager.RegisteredEvents.ContainsKey(typeof(GComponent)))
-                EventManager.RegisteredEvents.Add(typeof(GComponent), new List<Type>());
-            if(!EventManager.RegisteredEvents[typeof(GComponent)].Contains(typeof(GEvent)))
-                EventManager.RegisteredEvents[typeof(GComponent)].Add(typeof(GEvent));
+            lock (EventManager.RegisteredEvents)
+            {
+                if (!EventManager.RegisteredEvents.ContainsKey(typeof(GComponent)))
+                    EventManager.RegisteredEvents.Add(typeof(GComponent), new List<Type>());
+                if (!EventManager.RegisteredEvents[typeof(GComponent)].Contains(typeof(GEvent)))
+                    EventManager.RegisteredEvents[typeof(GComponent)].Add(typeof(GEvent));
+            }
             //Register the system to receieve the event
             EventComponentPair eventComponentPair = new EventComponentPair(typeof(GEvent), typeof(GComponent));
-            if (!RegisteredSystemSignalHandlers.ContainsKey(eventComponentPair))
-                RegisteredSystemSignalHandlers.Add(eventComponentPair, new List<SystemEventHandlerDelegate>());
-            RegisteredSystemSignalHandlers[eventComponentPair].Add((Entity entity, Component component, Event signal) => {
-                invokationQueue.Enqueue(() => {
-                    eventHandler.Invoke(entity, (GComponent)component, (GEvent)signal);
+            lock (RegisteredSystemSignalHandlers)
+            {
+                if (!RegisteredSystemSignalHandlers.ContainsKey(eventComponentPair))
+                    RegisteredSystemSignalHandlers.Add(eventComponentPair, new List<SystemEventHandlerDelegate>());
+                RegisteredSystemSignalHandlers[eventComponentPair].Add((Entity entity, Component component, Event signal) =>
+                {
+                    invokationQueue.Enqueue(() =>
+                    {
+                        eventHandler.Invoke(entity, (GComponent)component, (GEvent)signal);
+                    });
+                    waitHandle.Set();
                 });
-                waitHandle.Set();
-            });
+            }
         }
 
     }

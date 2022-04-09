@@ -19,7 +19,7 @@ namespace CorgEng.Rendering.Textures
         [UsingDependency]
         private static ILogger Log;
 
-        private const string ICON_PATH = "Data/IconFiles/";
+        private const string ICON_PATH = "Content/";
 
         /// <summary>
         /// The error icon state to display if things fail
@@ -72,12 +72,12 @@ namespace CorgEng.Rendering.Textures
             {
                 ITexture texture = TextureFileCache[usingJson.FileName];
                 //Convert 0-width (width) to -1 to 1 (2)
-                double pixelFactorX = 2.0 / texture.Width;
-                double pixelFactorY = 2.0 / texture.Height;
+                float pixelFactorX = 1.0f / texture.Width;
+                float pixelFactorY = 1.0f / texture.Height;
                 return new TextureState(
                     texture,
-                    usingJson.IndexX * pixelFactorX - 1.0,
-                    usingJson.IndexY * pixelFactorY - 1.0,
+                    usingJson.IndexX * 32 * pixelFactorX,
+                    usingJson.IndexY * 32 * pixelFactorY,
                     usingJson.Width * pixelFactorX,
                     usingJson.Height * pixelFactorY);
             }
@@ -92,13 +92,13 @@ namespace CorgEng.Rendering.Textures
                     TextureFileCache.Add(usingJson.FileName, loadedBitmap);
                     //Return the created texture
                     ITexture texture = TextureFileCache[usingJson.FileName];
-                    //Convert 0-width (width) to -1 to 1 (2)
-                    double pixelFactorX = 2.0 / texture.Width;
-                    double pixelFactorY = 2.0 / texture.Height;
+                    //Convert 0-width (width) to 0 to 1 (2)
+                    float pixelFactorX = 1.0f / texture.Width;
+                    float pixelFactorY = 1.0f / texture.Height;
                     return new TextureState(
                         texture,
-                        usingJson.IndexX * pixelFactorX - 1.0,
-                        usingJson.IndexY * pixelFactorY - 1.0,
+                        usingJson.IndexX * 32 * pixelFactorX,
+                        usingJson.IndexY * 32 * pixelFactorY,
                         usingJson.Width * pixelFactorX,
                         usingJson.Height * pixelFactorY);
                 }
@@ -123,7 +123,7 @@ namespace CorgEng.Rendering.Textures
         /// <summary>
         /// Load the texture data json
         /// </summary>
-        [ModuleLoad]
+        [ModuleLoad(mainThread = true)]
         public static void LoadTextureDataJson()
         {
             //Loaded texture data
@@ -147,7 +147,7 @@ namespace CorgEng.Rendering.Textures
             //Start loading and parsing the data
             JObject loadedJson = JObject.Parse(File.ReadAllText(fileName));
             //Json file loaded
-            Log?.WriteLine("Json file loaded and parsed, populating block texture cache", LogType.MESSAGE);
+            Log?.WriteLine($"Json file {fileName} loaded and parsed, populating block texture cache", LogType.MESSAGE);
             //Load the texture jsons
             JToken texturesProperty = loadedJson["textures"];
             foreach (JToken value in texturesProperty)
