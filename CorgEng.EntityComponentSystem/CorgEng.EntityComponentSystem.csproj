@@ -63,7 +63,10 @@
     <Compile Include="Components\ComponentManager.cs" />
     <Compile Include="Components\Exceptions\ComponentException.cs" />
     <Compile Include="Events\Events\ComponentAddedEvent.cs" />
+    <Compile Include="Implementations\Rendering\SpriteRendering\SetSpriteEvent.cs" />
+    <Compile Include="Implementations\Rendering\SpriteRendering\SetSpriteRendererEvent.cs" />
     <Compile Include="Implementations\Rendering\SpriteRendering\SpriteRenderComponent.cs" />
+    <Compile Include="Implementations\Rendering\SpriteRendering\SpriteRenderSystem.cs" />
     <Compile Include="Implementations\Transform\MoveEvent.cs" />
     <Compile Include="Implementations\Transform\SetPositionEvent.cs" />
     <Compile Include="Implementations\Transform\TransformComponent.cs" />

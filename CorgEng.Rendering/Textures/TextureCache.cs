@@ -1,0 +1,194 @@
+﻿using CorgEng.Core.Dependencies;
+using CorgEng.GenericInterfaces.Logging;
+using CorgEng.GenericInterfaces.Rendering.Textures;
+using Newtonsoft.Json.Linq;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace CorgEng.Rendering.Textures
+{
+    internal static class TextureCache
+    {
+
+        [UsingDependency]
+        private static ILogger Log;
+
+        private const string ICON_PATH = "Data/IconFiles/";
+
+        /// <summary>
+        /// The error icon state to display if things fail
+        /// </summary>
+        public const string ERROR_ICON_STATE = "error";
+
+        /// <summary>
+        /// A store of the loaded texture files
+        /// </summary>
+        private static Dictionary<string, ITexture> TextureFileCache = new Dictionary<string, ITexture>();
+
+        /// <summary>
+        /// A store of the loaded texture json data
+        /// </summary>
+        private static Dictionary<string, TextureJson> TextureJsons = new Dictionary<string, TextureJson>();
+
+        /// <summary>
+        /// Has loading been completed?
+        /// </summary>
+        public static bool LoadingComplete { get; private set; } = false;
+
+        /// <summary>
+        /// Does the error state exist?
+        /// </summary>
+        public static bool ErrorStateExists { get => TextureJsons.ContainsKey(ERROR_ICON_STATE); }
+
+        /// <summary>
+        /// Test the error state
+        /// </summary>
+        /// <returns></returns>
+        public static string GetErrorFile()
+        {
+            TextureJson errTex = TextureJsons[ERROR_ICON_STATE];
+            return $"{ICON_PATH}{errTex.FileName}";
+        }
+
+        internal static ITextureState GetTexture(string textureFile, bool checkSanity = false)
+        {
+            TextureJson usingJson;
+            // Check if the block texture exists
+            if (TextureJsons.ContainsKey(textureFile))
+                usingJson = TextureJsons[textureFile];
+            else
+            {
+                Log?.WriteLine($"Error, block texture: {textureFile} not found!", LogType.WARNING);
+                usingJson = TextureJsons[ERROR_ICON_STATE];
+            }
+            //Locate the texture object we need
+            if (TextureFileCache.ContainsKey(usingJson.FileName))
+            {
+                ITexture texture = TextureFileCache[usingJson.FileName];
+                //Convert 0-width (width) to -1 to 1 (2)
+                double pixelFactorX = 2.0 / texture.Width;
+                double pixelFactorY = 2.0 / texture.Height;
+                return new TextureState(
+                    texture,
+                    usingJson.IndexX * pixelFactorX - 1.0,
+                    usingJson.IndexY * pixelFactorY - 1.0,
+                    usingJson.Width * pixelFactorX,
+                    usingJson.Height * pixelFactorY);
+            }
+            else
+            {
+                try
+                {
+                    //Load the texture
+                    TextureBitmap loadedBitmap = new TextureBitmap();
+                    loadedBitmap.ReadTexture($"{ICON_PATH}{usingJson.FileName}");
+                    //Cache the created texture
+                    TextureFileCache.Add(usingJson.FileName, loadedBitmap);
+                    //Return the created texture
+                    ITexture texture = TextureFileCache[usingJson.FileName];
+                    //Convert 0-width (width) to -1 to 1 (2)
+                    double pixelFactorX = 2.0 / texture.Width;
+                    double pixelFactorY = 2.0 / texture.Height;
+                    return new TextureState(
+                        texture,
+                        usingJson.IndexX * pixelFactorX - 1.0,
+                        usingJson.IndexY * pixelFactorY - 1.0,
+                        usingJson.Width * pixelFactorX,
+                        usingJson.Height * pixelFactorY);
+                }
+                catch (Exception e)
+                {
+                    //Catch whatever error we got (Probably lack of file)
+                    Log?.WriteLine(e, LogType.ERROR);
+                    if (!checkSanity)
+                    {
+                        //Return a standard error texture
+                        return GetTexture(ERROR_ICON_STATE, true);
+                    }
+                    else
+                    {
+                        //Just die at this point, our error icon doesn't exist.
+                        throw e;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Load the texture data json
+        /// </summary>
+        public static void LoadTextureDataJson()
+        {
+            //Start the texture loader thread
+            new Thread(() => LoadTextureDataJsonThread()).Start();
+        }
+
+        /// <summary>
+        /// Seperate thread for loading the texture Json
+        /// </summary>
+        private static void LoadTextureDataJsonThread(bool catchErrors = true)
+        {
+            //Loaded texture data
+            Log?.WriteLine("Loading texture data...", LogType.MESSAGE);
+            //Start loading and parsing the data
+            JObject loadedJson = JObject.Parse(File.ReadAllText("Data/TextureData.json"));
+            //Json file loaded
+            Log?.WriteLine("Json file loaded and parsed, populating block texture cache", LogType.MESSAGE);
+            //Load the texture jsons
+            JToken texturesProperty = loadedJson["textures"];
+            foreach (JToken value in texturesProperty)
+            {
+                try
+                {
+                    string id = value.Value<string>("id");
+                    string file = value.Value<string>("file");
+                    int width = value.Value<int>("width");
+                    int height = value.Value<int>("height");
+                    int index_x = value.Value<int>("index_x");
+                    int index_y = value.Value<int>("index_y");
+                    string directionalStateMode = value.Value<string>("directional") ?? "NONE";
+                    //Create the texture json
+                    TextureJson createdJson = new TextureJson(file, width, height, index_x, index_y, (DirectionalModes)Enum.Parse(typeof(DirectionalModes), directionalStateMode));
+                    //Cache it
+                    TextureJsons.Add(id, createdJson);
+                }
+                catch (Exception e)
+                {
+                    if (catchErrors)
+                    {
+                        //TODO: Error handling
+                        Log?.WriteLine(e, LogType.ERROR);
+                    }
+                    else
+                    {
+                        Log?.WriteLine(e.StackTrace);
+                        LoadingComplete = true;
+                        throw e;
+                    }
+                }
+            }
+            //Loaded Texture cache
+            Log?.WriteLine($"Successfully loaded data about {TextureJsons.Count} textures.", LogType.MESSAGE);
+            //All texture data loaded
+            Log?.WriteLine("All texture data loaded!", LogType.MESSAGE);
+            //Loading completed
+            LoadingComplete = true;
+        }
+
+        public static void InitializeTextureObjects()
+        {
+            foreach (string jsonKey in TextureJsons.Keys)
+            {
+                TextureJson json = TextureJsons[jsonKey];
+                if (!TextureFileCache.ContainsKey(json.FileName))
+                    GetTexture(jsonKey);
+            }
+        }
+
+    }
+}
