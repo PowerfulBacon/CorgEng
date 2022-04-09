@@ -51,7 +51,7 @@ namespace CorgEng.Core.Rendering
             //Bind our framebuffer to render to
             glBindFramebuffer(GL_FRAMEBUFFER, FrameBufferUint);
             //Clear the backbuffer
-            //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             //Set the viewport
             glViewport(0, 0, Width, Height);
         }
