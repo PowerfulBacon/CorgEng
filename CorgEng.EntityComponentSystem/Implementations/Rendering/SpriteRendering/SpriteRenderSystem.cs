@@ -39,7 +39,7 @@ namespace CorgEng.EntityComponentSystem.Implementations.Rendering.SpriteRenderin
             //Store the sprite being used
             spriteRenderComponent.Sprite = setSpriteEvent.TextureFile;
             //Update the sprite data
-            ITexture newTexture = TextureFactory.GetTextureFromIconState(spriteRenderComponent.Sprite);
+            ITexture newTexture = TextureFactory.GetTextureFromIconState(spriteRenderComponent.Sprite).TextureFile;
             spriteRenderComponent.SpriteRenderObject.TextureFile.Value = newTexture.TextureID;
         }
 

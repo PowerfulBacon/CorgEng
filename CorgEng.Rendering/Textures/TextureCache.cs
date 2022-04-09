@@ -1,4 +1,5 @@
 ﻿using CorgEng.Core.Dependencies;
+using CorgEng.Core.Modules;
 using CorgEng.GenericInterfaces.Logging;
 using CorgEng.GenericInterfaces.Rendering.Textures;
 using Newtonsoft.Json.Linq;
@@ -122,21 +123,29 @@ namespace CorgEng.Rendering.Textures
         /// <summary>
         /// Load the texture data json
         /// </summary>
+        [ModuleLoad]
         public static void LoadTextureDataJson()
         {
-            //Start the texture loader thread
-            new Thread(() => LoadTextureDataJsonThread()).Start();
+            //Loaded texture data
+            Log?.WriteLine("Loading texture data...", LogType.MESSAGE);
+            foreach (string file in Directory.GetFiles("Content/", "*.texdat", SearchOption.AllDirectories))
+            {
+                LoadTextureDataJsonThread(file, false);
+            }
+            InitializeTextureObjects();
+            //Loaded Texture cache
+            Log?.WriteLine($"Successfully loaded data about {TextureJsons.Count} textures.", LogType.MESSAGE);
+            //All texture data loaded
+            Log?.WriteLine("All texture data loaded!", LogType.MESSAGE);
         }
 
         /// <summary>
         /// Seperate thread for loading the texture Json
         /// </summary>
-        private static void LoadTextureDataJsonThread(bool catchErrors = true)
+        private static void LoadTextureDataJsonThread(string fileName, bool catchErrors = true)
         {
-            //Loaded texture data
-            Log?.WriteLine("Loading texture data...", LogType.MESSAGE);
             //Start loading and parsing the data
-            JObject loadedJson = JObject.Parse(File.ReadAllText("Data/TextureData.json"));
+            JObject loadedJson = JObject.Parse(File.ReadAllText(fileName));
             //Json file loaded
             Log?.WriteLine("Json file loaded and parsed, populating block texture cache", LogType.MESSAGE);
             //Load the texture jsons
@@ -168,14 +177,10 @@ namespace CorgEng.Rendering.Textures
                     {
                         Log?.WriteLine(e.StackTrace);
                         LoadingComplete = true;
-                        throw e;
+                        throw;
                     }
                 }
             }
-            //Loaded Texture cache
-            Log?.WriteLine($"Successfully loaded data about {TextureJsons.Count} textures.", LogType.MESSAGE);
-            //All texture data loaded
-            Log?.WriteLine("All texture data loaded!", LogType.MESSAGE);
             //Loading completed
             LoadingComplete = true;
         }
