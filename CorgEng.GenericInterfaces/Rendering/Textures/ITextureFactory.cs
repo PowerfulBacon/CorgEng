@@ -11,7 +11,7 @@ namespace CorgEng.GenericInterfaces.Rendering.Textures
 
         ITexture CreateTexture(string texturePath);
 
-        ITexture GetTextureFromIconState(string iconState);
+        ITextureState GetTextureFromIconState(string iconState);
 
     }
 }

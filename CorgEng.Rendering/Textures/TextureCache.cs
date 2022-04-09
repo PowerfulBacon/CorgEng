@@ -55,15 +55,15 @@ namespace CorgEng.Rendering.Textures
             return $"{ICON_PATH}{errTex.FileName}";
         }
 
-        internal static ITextureState GetTexture(string textureFile, bool checkSanity = false)
+        internal static ITextureState GetTexture(string textureState, bool checkSanity = false)
         {
             TextureJson usingJson;
             // Check if the block texture exists
-            if (TextureJsons.ContainsKey(textureFile))
-                usingJson = TextureJsons[textureFile];
+            if (TextureJsons.ContainsKey(textureState))
+                usingJson = TextureJsons[textureState];
             else
             {
-                Log?.WriteLine($"Error, block texture: {textureFile} not found!", LogType.WARNING);
+                Log?.WriteLine($"Error, block texture: {textureState} not found!", LogType.WARNING);
                 usingJson = TextureJsons[ERROR_ICON_STATE];
             }
             //Locate the texture object we need

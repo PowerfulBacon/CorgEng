@@ -29,5 +29,9 @@ namespace CorgEng.Rendering.Textures
             throw new NotImplementedException($"Texture file extension .{fileExtension} is not supported.");
         }
 
+        public ITextureState GetTextureFromIconState(string iconState)
+        {
+            return TextureCache.GetTexture(iconState);
+        }
     }
 }
