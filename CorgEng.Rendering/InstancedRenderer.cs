@@ -88,9 +88,9 @@ namespace CorgEng.Rendering
                     //====================
                     //Generate custom buffer locations if we need to
                     GenerateCustomBufferLocations(renderBatch);
-                    for (uint i = USER_BUFFER_OFFSET; i < renderBatch.BatchVectorSizes.Length + 2; i++)
+                    for (uint i = USER_BUFFER_OFFSET; i < renderBatch.BatchVectorSizes.Length + USER_BUFFER_OFFSET; i++)
                     {
-                        BindAttribArray(i, storedBufferLocations[i - 2], renderBatch.BatchVectorSizes[i - 2]);
+                        BindAttribArray(i, storedBufferLocations[i - USER_BUFFER_OFFSET], renderBatch.BatchVectorSizes[i - USER_BUFFER_OFFSET]);
                         glVertexAttribDivisor(i, 1);
                     }
 
