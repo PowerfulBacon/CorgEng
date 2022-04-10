@@ -1,6 +1,8 @@
 ﻿using CorgEng.Core.Dependencies;
 using CorgEng.EntityComponentSystem.Entities;
 using CorgEng.EntityComponentSystem.Systems;
+using CorgEng.GenericInterfaces.Logging;
+using CorgEng.GenericInterfaces.Rendering.RenderObjects.SpriteRendering;
 using CorgEng.GenericInterfaces.Rendering.Textures;
 using System;
 using System.Collections.Generic;
@@ -15,6 +17,12 @@ namespace CorgEng.EntityComponentSystem.Implementations.Rendering.SpriteRenderin
 
         [UsingDependency]
         private static ITextureFactory TextureFactory;
+
+        [UsingDependency]
+        private static ISpriteRenderObjectFactory SpriteRenderObjectFactory;
+
+        [UsingDependency]
+        private static ILogger Log;
 
         public override void SystemSetup()
         {
@@ -36,11 +44,32 @@ namespace CorgEng.EntityComponentSystem.Implementations.Rendering.SpriteRenderin
 
         private void OnSetSprite(Entity entity, SpriteRenderComponent spriteRenderComponent, SetSpriteEvent setSpriteEvent)
         {
+            Log.WriteLine("setting sprite");
             //Store the sprite being used
             spriteRenderComponent.Sprite = setSpriteEvent.TextureFile;
             //Update the sprite data
-            ITexture newTexture = TextureFactory.GetTextureFromIconState(spriteRenderComponent.Sprite).TextureFile;
-            spriteRenderComponent.SpriteRenderObject.TextureFile.Value = newTexture.TextureID;
+            ITextureState newTexture = TextureFactory.GetTextureFromIconState(spriteRenderComponent.Sprite);
+            if (spriteRenderComponent.SpriteRenderObject != null)
+            {
+                spriteRenderComponent.SpriteRenderObject.TextureFile.Value = newTexture.TextureFile.TextureID;
+                spriteRenderComponent.SpriteRenderObject.TextureFileX.Value = newTexture.OffsetX;
+                spriteRenderComponent.SpriteRenderObject.TextureFileY.Value = newTexture.OffsetY;
+                spriteRenderComponent.SpriteRenderObject.TextureFileWidth.Value = newTexture.OffsetWidth;
+                spriteRenderComponent.SpriteRenderObject.TextureFileHeight.Value = newTexture.OffsetHeight;
+            }
+            else
+            {
+                //Create teh sprite render boject
+                spriteRenderComponent.SpriteRenderObject = SpriteRenderObjectFactory.CreateSpriteRenderObject(
+                    newTexture.TextureFile.TextureID,
+                    newTexture.OffsetX,
+                    newTexture.OffsetY,
+                    newTexture.OffsetWidth,
+                    newTexture.OffsetHeight);
+                //Start rendernig
+                if (spriteRenderComponent.SpriteRenderer != null)
+                    spriteRenderComponent.SpriteRenderer.StartRendering(spriteRenderComponent.SpriteRenderObject);
+            }
         }
 
     }
