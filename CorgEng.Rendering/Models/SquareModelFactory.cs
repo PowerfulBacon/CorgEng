@@ -1,4 +1,5 @@
-﻿using CorgEng.DependencyInjection.Dependencies;
+﻿using CorgEng.Core.Modules;
+using CorgEng.DependencyInjection.Dependencies;
 using CorgEng.GenericInterfaces.Rendering.Models;
 using System;
 using System.Collections.Generic;
@@ -11,6 +12,8 @@ namespace CorgEng.Rendering.Models
     [Dependency(defaultDependency = true)]
     public class SquareModelFactory : ISquareModelFactory
     {
+
+        private static Model model;
 
         private static float[] vertices = {
             0.5f, 0.5f, 0,        //(1, 1)
@@ -30,11 +33,16 @@ namespace CorgEng.Rendering.Models
             1.0f, 1.0f
         };
 
+        [ModuleLoad(mainThread = true)]
+        private static void CreateSquareModel()
+        {
+            model = new Model();
+            model.GenerateBuffers(vertices, uvs);
+        }
+
         public IModel CreateModel()
         {
-            Model createdModel = new Model();
-            createdModel.GenerateBuffers(vertices, uvs);
-            return createdModel;
+            return model;;
         }
 
     }
