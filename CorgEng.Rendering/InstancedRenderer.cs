@@ -16,7 +16,7 @@ using static OpenGL.Gl;
 namespace CorgEng.Rendering
 {
 
-    internal abstract class InstancedRenderer<TSharedRenderAttributes, TBatch> : IRenderer
+    public abstract class InstancedRenderer<TSharedRenderAttributes, TBatch> : IRenderer
         where TSharedRenderAttributes : ISharedRenderAttributes
         where TBatch : IBatch<TBatch>, new()
     {

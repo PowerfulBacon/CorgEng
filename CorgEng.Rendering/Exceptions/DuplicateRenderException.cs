@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CorgEng.Rendering.Exceptions
 {
-    class DuplicateRenderException : Exception
+    public class DuplicateRenderException : Exception
     {
         public DuplicateRenderException(string message) : base(message)
         {
