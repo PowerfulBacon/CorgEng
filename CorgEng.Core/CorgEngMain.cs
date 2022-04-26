@@ -48,6 +48,13 @@ namespace CorgEng.Core
         private static ILogger Logger;
 
         /// <summary>
+        /// Time of the last frame
+        /// </summary>
+        private static double lastFrameTime;
+
+        public static double DeltaTime { get; private set; }
+
+        /// <summary>
         /// Initializes the CorgEng game engine.
         /// Will call initialization on all CorgEng modules.
         /// </summary>
@@ -77,6 +84,7 @@ namespace CorgEng.Core
             //While the window shouldn't close
             while (!GameWindow.ShouldClose())
             {
+                lastFrameTime = Glfw.Time;
                 //Swap the framebuffers
                 GameWindow.SwapFramebuffers();
                 //Poll for system events to prevent the program from showing as hanging
@@ -89,6 +97,7 @@ namespace CorgEng.Core
                 MainRenderCore.PerformRender();
                 //Pass the output image from the render core to the internal renderer
                 InternalRenderMaster.RenderImageToScreen(MainRenderCore.RenderTextureUint);
+                DeltaTime = Glfw.Time - lastFrameTime;
             }
         }
 
