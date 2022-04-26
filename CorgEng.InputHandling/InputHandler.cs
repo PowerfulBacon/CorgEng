@@ -34,11 +34,6 @@ namespace CorgEng.InputHandling
             Glfw.SetMouseButtonCallback(targetWindow, mouseButtonCallback);
         }
 
-        ~InputHandler()
-        {
-            Console.WriteLine("Input handler GC'd");
-        }
-
         private void HandleMousePress(IntPtr window, MouseButton button, InputState state, ModifierKeys modifiers)
         {
             double x;
