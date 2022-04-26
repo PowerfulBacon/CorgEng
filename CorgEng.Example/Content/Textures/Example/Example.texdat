@@ -1,0 +1,12 @@
+{
+  "textures": [
+    {
+      "id": "example",
+      "file": "Textures/Example/Example.bmp",
+      "width": 256,
+      "height": 256,
+      "index_x": 0,
+      "index_y": 0
+    }
+  ]
+}

@@ -1,6 +1,4 @@
-﻿using CorgEng.ContentLoading;
-using CorgEng.ContentLoading.XmlDataStructures;
-using CorgEng.EntityComponentSystem.Components;
+﻿using CorgEng.EntityComponentSystem.Components;
 using CorgEng.GenericInterfaces.ContentLoading;
 using CorgEng.GenericInterfaces.Rendering.Renderers.SpriteRendering;
 using CorgEng.GenericInterfaces.Rendering.RenderObjects.SpriteRendering;
