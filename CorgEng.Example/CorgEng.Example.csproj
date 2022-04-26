@@ -73,6 +73,7 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="GLFW.NET, Version=1.0.1.0, Culture=neutral, PublicKeyToken=null" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -83,6 +84,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Components\PlayerMovement\PlayerMovementComponent.cs" />
+    <Compile Include="Components\PlayerMovement\PlayerMovementSystem.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -114,6 +117,10 @@
     <ProjectReference Include="..\CorgEng.GenericInterfaces\CorgEng.GenericInterfaces.csproj">
       <Project>{E87F196E-5BF2-4AAF-8209-9F66A4F4B0EB}</Project>
       <Name>CorgEng.GenericInterfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CorgEng.InputHandling\CorgEng.InputHandling.csproj">
+      <Project>{19DB3C95-8E41-43A6-ACFE-78B3873E6F89}</Project>
+      <Name>CorgEng.InputHandling</Name>
     </ProjectReference>
     <ProjectReference Include="..\CorgEng.Logging\CorgEng.Logging.csproj">
       <Project>{58dc11a7-998a-40a3-a73a-80bdb521fed4}</Project>

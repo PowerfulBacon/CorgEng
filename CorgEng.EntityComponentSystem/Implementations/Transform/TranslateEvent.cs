@@ -8,14 +8,14 @@ using System.Threading.Tasks;
 
 namespace CorgEng.EntityComponentSystem.Implementations.Transform
 {
-    public sealed class SetPositionEvent : Event
+    public sealed class TranslateEvent : Event
     {
 
-        public Vector<float> NewPosition { get; set; }
+        public Vector<float> TranslationDelta { get; set; }
 
-        public SetPositionEvent(Vector<float> newPosition)
+        public TranslateEvent(Vector<float> translationDelta)
         {
-            NewPosition = newPosition;
+            TranslationDelta = translationDelta;
         }
 
     }

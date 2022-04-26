@@ -16,6 +16,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CorgEng.UtilityTypes", "..\CorgEng.UtilityTypes\CorgEng.UtilityTypes.csproj", "{F9CCD4D7-9AF2-4167-9F31-A2879D82F854}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CorgEng.Example", "..\CorgEng.Example\CorgEng.Example.csproj", "{14E8A473-E0B8-4CB2-BA76-B322FA0EDADF}"
+	ProjectSection(ProjectDependencies) = postProject
+		{46ED6820-5DE9-4B9C-AC58-728503212732} = {46ED6820-5DE9-4B9C-AC58-728503212732}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CorgEng.Logging", "..\CorgEng.Logging\CorgEng.Logging.csproj", "{58DC11A7-998A-40A3-A73A-80BDB521FED4}"
 EndProject
