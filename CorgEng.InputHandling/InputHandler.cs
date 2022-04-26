@@ -7,12 +7,17 @@ using System.Threading.Tasks;
 using GLFW;
 using CorgEng.InputHandling.Events;
 using CorgEng.DependencyInjection.Dependencies;
+using CorgEng.GenericInterfaces.Logging;
+using CorgEng.Core.Dependencies;
 
 namespace CorgEng.InputHandling
 {
     [Dependency(defaultDependency = true)]
     public class InputHandler : IInputHandler
     {
+
+        [UsingDependency]
+        private static ILogger Logger;
 
         private Window window;
 
@@ -21,6 +26,7 @@ namespace CorgEng.InputHandling
 
         public void SetupInputHandler(Window targetWindow)
         {
+            Logger?.WriteLine($"Input handler setup to listen to {targetWindow}", LogType.LOG);
             keyCallbackDelegate = HandleKeyboardPress;
             mouseButtonCallback = HandleMousePress;
             window = targetWindow;

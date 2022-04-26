@@ -7,6 +7,7 @@ using CorgEng.EntityComponentSystem;
 using CorgEng.EntityComponentSystem.Entities;
 using CorgEng.EntityComponentSystem.Implementations.Rendering.SpriteRendering;
 using CorgEng.EntityComponentSystem.Implementations.Transform;
+using CorgEng.Example.Components.PlayerMovement;
 using CorgEng.GenericInterfaces.Rendering;
 using CorgEng.GenericInterfaces.Rendering.Cameras.Isometric;
 using CorgEng.GenericInterfaces.Rendering.Renderers.SpriteRendering;
@@ -48,6 +49,7 @@ namespace CorgEng.Example
                 renderableEntity = new Entity();
                 renderableEntity.AddComponent(new SpriteRenderComponent());
                 renderableEntity.AddComponent(new TransformComponent());
+                renderableEntity.AddComponent(new PlayerMovementComponent());
                 new SetSpriteEvent("example").Raise(renderableEntity);
                 new SetSpriteRendererEvent(spriteRenderer).Raise(renderableEntity);
             }
@@ -55,8 +57,6 @@ namespace CorgEng.Example
             public override void PerformRender()
             {
                 spriteRenderer?.Render(CorgEngMain.MainCamera);
-                Random random = new Random();
-                new SetPositionEvent(new UtilityTypes.Vectors.Vector<float>((float)random.NextDouble() * 2 - 1, (float)random.NextDouble() * 2 - 1)).Raise(renderableEntity);
             }
         }
 
