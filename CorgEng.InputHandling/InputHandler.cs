@@ -8,6 +8,7 @@ using GLFW;
 using CorgEng.InputHandling.Events;
 using CorgEng.DependencyInjection.Dependencies;
 using CorgEng.GenericInterfaces.Logging;
+using CorgEng.Core.Dependencies;
 
 namespace CorgEng.InputHandling
 {
