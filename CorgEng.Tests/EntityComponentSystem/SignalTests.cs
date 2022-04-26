@@ -2,6 +2,7 @@
 using CorgEng.EntityComponentSystem.Entities;
 using CorgEng.EntityComponentSystem.Events;
 using CorgEng.EntityComponentSystem.Systems;
+using CorgEng.GenericInterfaces.ContentLoading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Threading;
@@ -16,7 +17,12 @@ namespace CorgEng.Tests.EntityComponentSystem
     { }
 
     internal class TestComponent : Component
-    { }
+    {
+        public override bool SetProperty(string name, IPropertyDef property)
+        {
+            return false;
+        }
+    }
 
     internal class TestEntitySystem : EntitySystem
     {

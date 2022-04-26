@@ -1,4 +1,6 @@
-﻿using CorgEng.GenericInterfaces.UtilityTypes;
+﻿using CorgEng.Core.Dependencies;
+using CorgEng.GenericInterfaces.Logging;
+using CorgEng.GenericInterfaces.UtilityTypes;
 using CorgEng.GenericInterfaces.UtilityTypes.Batches;
 using CorgEng.UtilityTypes.BindableProperties;
 using CorgEng.UtilityTypes.Vectors;
@@ -30,11 +32,12 @@ namespace CorgEng.UtilityTypes.Batches
             eventHandlers = new EventHandler[internalValues.Length];
             for (int i = 0; i < internalValues.Length; i++)
             {
-                eventHandlers[i] = (object sender, EventArgs args) => {
-                    OnBindablePropertyChanged(i, (IVector<float>)sender);
+                int iCopy = i;
+                eventHandlers[iCopy] = (object sender, EventArgs args) => {
+                    OnBindablePropertyChanged(iCopy, (IVector<float>)sender);
                 };
                 //Store the event handler, so it can be unbound later.
-                internalValues[i].ValueChanged += eventHandlers[i];
+                internalValues[iCopy].ValueChanged += eventHandlers[iCopy];
             }
         }
 

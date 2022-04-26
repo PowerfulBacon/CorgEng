@@ -4,12 +4,15 @@ using CorgEng.Core.Rendering;
 using CorgEng.DependencyInjection;
 using CorgEng.DependencyInjection.Injection;
 using CorgEng.EntityComponentSystem;
+using CorgEng.EntityComponentSystem.Entities;
+using CorgEng.EntityComponentSystem.Implementations.Rendering.SpriteRendering;
+using CorgEng.EntityComponentSystem.Implementations.Transform;
 using CorgEng.GenericInterfaces.Rendering;
 using CorgEng.GenericInterfaces.Rendering.Cameras.Isometric;
 using CorgEng.GenericInterfaces.Rendering.Renderers.SpriteRendering;
 using CorgEng.GenericInterfaces.Rendering.RenderObjects.SpriteRendering;
+using CorgEng.GenericInterfaces.Rendering.Shaders;
 using CorgEng.GenericInterfaces.Rendering.Textures;
-using CorgEng.Logging;
 using CorgEng.UtilityTypes;
 using System;
 using System.Collections.Generic;
@@ -26,6 +29,8 @@ namespace CorgEng.Example
         internal class ExampleRenderCore : RenderCore
         {
 
+            private Entity renderableEntity;
+
             [UsingDependency]
             private static ISpriteRenderer spriteRenderer;
 
@@ -37,18 +42,21 @@ namespace CorgEng.Example
 
             public override void Initialize()
             {
+
                 spriteRenderer?.Initialize();
-                //Create a textured sprite object
-                ITexture texture = textureFactory.CreateTexture("Content/Textures/Example/Example.bmp");
-                //Here is an example of just using a basic texture:
-                //We load the texture and don't use the json types
-                ISpriteRenderObject spriteRenderObject = spriteRenderObjectFactory?.CreateSpriteRenderObject(texture.TextureID, 0, 0, 1, 1);
-                spriteRenderer?.StartRendering(spriteRenderObject);
+
+                renderableEntity = new Entity();
+                renderableEntity.AddComponent(new SpriteRenderComponent());
+                renderableEntity.AddComponent(new TransformComponent());
+                new SetSpriteEvent("example").Raise(renderableEntity);
+                new SetSpriteRendererEvent(spriteRenderer).Raise(renderableEntity);
             }
 
             public override void PerformRender()
             {
                 spriteRenderer?.Render(CorgEngMain.MainCamera);
+                Random random = new Random();
+                new SetPositionEvent(new UtilityTypes.Vectors.Vector<float>((float)random.NextDouble() * 2 - 1, (float)random.NextDouble() * 2 - 1)).Raise(renderableEntity);
             }
         }
 

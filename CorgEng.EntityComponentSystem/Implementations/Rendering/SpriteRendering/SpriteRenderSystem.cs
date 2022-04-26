@@ -1,5 +1,6 @@
 ﻿using CorgEng.Core.Dependencies;
 using CorgEng.EntityComponentSystem.Entities;
+using CorgEng.EntityComponentSystem.Implementations.Transform;
 using CorgEng.EntityComponentSystem.Systems;
 using CorgEng.GenericInterfaces.Logging;
 using CorgEng.GenericInterfaces.Rendering.RenderObjects.SpriteRendering;
@@ -28,6 +29,17 @@ namespace CorgEng.EntityComponentSystem.Implementations.Rendering.SpriteRenderin
         {
             RegisterLocalEvent<SpriteRenderComponent, SetSpriteEvent>(OnSetSprite);
             RegisterLocalEvent<SpriteRenderComponent, SetSpriteRendererEvent>(OnSetRenderer);
+            RegisterLocalEvent<SpriteRenderComponent, MoveEvent>(OnEntityMoved);
+        }
+
+        /// <summary>
+        /// Called when the parent entity is moved.
+        /// </summary>
+        private void OnEntityMoved(Entity entity, SpriteRenderComponent spriteRenderComponent, MoveEvent moveEvent)
+        {
+            spriteRenderComponent.SpriteRenderObject.WorldPosition.Value.X = moveEvent.NewPosition.X;
+            spriteRenderComponent.SpriteRenderObject.WorldPosition.Value.Y = moveEvent.NewPosition.Y;
+            spriteRenderComponent.SpriteRenderObject.WorldPosition.TriggerChanged();
         }
 
         private void OnSetRenderer(Entity entity, SpriteRenderComponent spriteRenderComponent, SetSpriteRendererEvent setSpriteRenderer)
