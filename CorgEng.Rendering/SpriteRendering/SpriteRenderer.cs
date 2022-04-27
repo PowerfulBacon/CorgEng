@@ -19,9 +19,6 @@ using static OpenGL.Gl;
 
 namespace CorgEng.Rendering.SpriteRendering
 {
-    /// <summary>
-    /// TODO: Vertex and UV should be required and sent in automatically
-    /// </summary>
     [Dependency]
     internal sealed class SpriteRenderer : InstancedRenderer<SpriteSharedRenderAttributes, SpriteBatch>, ISpriteRenderer
     {
