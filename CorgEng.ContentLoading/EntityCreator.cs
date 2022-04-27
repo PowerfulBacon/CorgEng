@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace CorgEng.ContentLoading
 {
-    [Dependency(defaultDependency = true)]
+    [Dependency]
     public class EntityCreator
     {
 

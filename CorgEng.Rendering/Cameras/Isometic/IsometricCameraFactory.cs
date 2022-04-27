@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace CorgEng.Rendering.Cameras.Isometic
 {
-    [Dependency(defaultDependency = true)]
+    [Dependency]
     public class IsometricCameraFactory : IIsometricCameraFactory
     {
 

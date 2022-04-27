@@ -5,9 +5,9 @@ namespace CorgEng.DependencyInjection.Injection
     public class DependencyList
     {
 
-        public object DefaultDependency { get; set; }
+        public int CurrentPriority { get; set; }
 
-        public List<object> LoadedDependencies { get; set; } = new List<object>();
+        public object ImplementedDependency { get; set; }
 
     }
 }

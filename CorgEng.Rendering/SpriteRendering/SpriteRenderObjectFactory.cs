@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace CorgEng.Rendering.SpriteRendering
 {
-    [Dependency(defaultDependency = true)]
+    [Dependency]
     public sealed class SpriteRenderObjectFactory : ISpriteRenderObjectFactory
     {
 

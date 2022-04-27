@@ -21,7 +21,7 @@ namespace CorgEng.Tests.DependencyInjection
             public bool CompleteTest() => false;
         }
 
-        [Dependency(defaultDependency = true)]
+        [Dependency]
         private class Dependency : IDependency
         {
             public bool CompleteTest() => true;

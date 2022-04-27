@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace CorgEng.Rendering.Textures
 {
-    [Dependency(defaultDependency = true)]
+    [Dependency]
     public class TextureFactory : ITextureFactory
     {
 

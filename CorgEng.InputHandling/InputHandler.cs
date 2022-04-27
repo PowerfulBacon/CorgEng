@@ -12,7 +12,7 @@ using CorgEng.Core.Dependencies;
 
 namespace CorgEng.InputHandling
 {
-    [Dependency(defaultDependency = true)]
+    [Dependency]
     public class InputHandler : IInputHandler
     {
 

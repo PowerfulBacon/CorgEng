@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace CorgEng.Rendering.Models
 {
-    [Dependency(defaultDependency = true)]
+    [Dependency]
     public class SquareModelFactory : ISquareModelFactory
     {
 
