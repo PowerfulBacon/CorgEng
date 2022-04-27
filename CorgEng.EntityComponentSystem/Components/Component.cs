@@ -74,7 +74,6 @@ namespace CorgEng.EntityComponentSystem.Components
                     parent.EventListeners[eventType].Add(componentInjectionLambda);
                 else
                     parent.EventListeners.Add(eventType, new List<InternalSignalHandleDelegate>() { componentInjectionLambda });
-                Console.WriteLine($"Added an event listener. Total: {parent.EventListeners[eventType].Count} ({componentInjectionLambdas.Count} owned by us)");
             }
             //Send the component added event
             ComponentAddedEvent componentAddedEvent = new ComponentAddedEvent(this);
@@ -119,7 +118,6 @@ namespace CorgEng.EntityComponentSystem.Components
                             {
                                 parent.EventListeners[eventType].Remove(signalHandleDelegate);
                                 componentInjectionLambdas.Remove(signalHandleDelegate);
-                                Console.WriteLine($"Removed an event listener. Total: {parent.EventListeners[eventType].Count} ({componentInjectionLambdas.Count} owned by us)");
                             }
                         }
                     }
