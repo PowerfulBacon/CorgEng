@@ -37,8 +37,6 @@ namespace CorgEng.DependencyInjection.Injection
             {
                 //Get the interface types
                 Type[] interfaces = dependencyType.GetInterfaces();
-                //Instantiate the type
-                object instantiatedDependency = Activator.CreateInstance(dependencyType);
                 //Check if the dependency is default
                 DependencyAttribute dependencyAttribute = dependencyType.GetCustomAttribute<DependencyAttribute>();
                 //Load the dependency into the dependency list
@@ -56,10 +54,14 @@ namespace CorgEng.DependencyInjection.Injection
                         targetDependencyList = DependencyList[targetInterface];
                     }
                     //Insert into the dependency list
-                    targetDependencyList.LoadedDependencies.Add(instantiatedDependency);
-                    //Default dependencies
-                    if (dependencyAttribute.defaultDependency)
-                        targetDependencyList.DefaultDependency = instantiatedDependency;
+                    //Check priority
+                    if (targetDependencyList.ImplementedDependency == null || targetDependencyList.CurrentPriority < dependencyAttribute.priority)
+                    {
+                        //Instantiate the type
+                        object instantiatedDependency = Activator.CreateInstance(dependencyType);
+                        targetDependencyList.CurrentPriority = dependencyAttribute.priority;
+                        targetDependencyList.ImplementedDependency = instantiatedDependency;
+                    }
                 }
             }
             Console.WriteLine($"Loaded {DependencyList.Count} dependency modules.");
@@ -112,7 +114,7 @@ namespace CorgEng.DependencyInjection.Injection
             //Locate dependency
             if (DependencyList.ContainsKey(interfaceType))
             {
-                return DependencyList[interfaceType].DefaultDependency;
+                return DependencyList[interfaceType].ImplementedDependency;
             }
             //Dependency injection issue
             return null;

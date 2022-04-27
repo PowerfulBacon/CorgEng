@@ -5,7 +5,7 @@ using System.Threading;
 
 namespace CorgEng.Logging
 {
-    [Dependency(defaultDependency = true)]
+    [Dependency]
     public class ConsoleLogger : ILogger
     {
 

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace CorgEng.Rendering.Shaders
 {
-    [Dependency(defaultDependency = true)]
+    [Dependency]
     public class ShaderFactory : IShaderFactory
     {
 

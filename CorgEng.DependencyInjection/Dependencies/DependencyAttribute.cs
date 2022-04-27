@@ -10,7 +10,7 @@ namespace CorgEng.DependencyInjection.Dependencies
     {
 
         //This dependency will not be loaded by default
-        public bool defaultDependency = false;
+        public int priority = 0;
 
     }
 }
