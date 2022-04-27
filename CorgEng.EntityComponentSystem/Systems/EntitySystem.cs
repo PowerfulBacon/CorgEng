@@ -41,9 +41,20 @@ namespace CorgEng.EntityComponentSystem.Systems
         /// </summary>
         internal static Dictionary<EventComponentPair, List<SystemEventHandlerDelegate>> RegisteredSystemSignalHandlers { get; } = new Dictionary<EventComponentPair, List<SystemEventHandlerDelegate>>();
 
+        /// <summary>
+        /// Wait handler. This will cause the thread to pause until an event that needs handling is raised.
+        /// </summary>
         private readonly AutoResetEvent waitHandle = new AutoResetEvent(false);
 
+        /// <summary>
+        /// The invokation queue. A queue of actions that need to be triggered (Raised events)
+        /// </summary>
         private readonly ConcurrentQueue<Action> invokationQueue = new ConcurrentQueue<Action>();
+
+        /// <summary>
+        /// A static list of all entity systems in use
+        /// </summary>
+        private static List<EntitySystem> EntitySystems = new List<EntitySystem>();
 
         public EntitySystem()
         {
@@ -55,8 +66,6 @@ namespace CorgEng.EntityComponentSystem.Systems
         }
 
         public abstract void SystemSetup();
-
-        private static List<EntitySystem> EntitySystems = new List<EntitySystem>();
 
         /// <summary>
         /// Called when the ECS module is loaded.
@@ -80,7 +89,7 @@ namespace CorgEng.EntityComponentSystem.Systems
             Logger?.WriteLine($"Successfully created and setup all systems!", LogType.LOG);
         }
 
-        [ModuleTerminateAttribute]
+        [ModuleTerminate]
         private static void TerminateSubsystems()
         {
             new GameClosedEvent().RaiseGlobally();
@@ -108,7 +117,7 @@ namespace CorgEng.EntityComponentSystem.Systems
                     }
                     catch (Exception e)
                     {
-                        Logger.WriteLine(e);
+                        Logger?.WriteLine(e, LogType.ERROR);
                     }
                 }
             }

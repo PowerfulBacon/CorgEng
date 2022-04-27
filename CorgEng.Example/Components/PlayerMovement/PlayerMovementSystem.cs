@@ -25,7 +25,15 @@ namespace CorgEng.Example.Components.PlayerMovement
         public override void SystemSetup()
         {
             RegisterLocalEvent<PlayerMovementComponent, ComponentAddedEvent>(OnComponentAdded);
+            RegisterLocalEvent<PlayerMovementComponent, ComponentRemovedEvent>(OnComponentRemoved);
             RegisterGlobalEvent<KeyHeldEvent>(OnKeyHeld);
+        }
+
+        public void OnComponentRemoved(Entity entity, PlayerMovementComponent playerMovementComponent, ComponentRemovedEvent componentAddEvent)
+        {
+            if (componentAddEvent.Component != playerMovementComponent)
+                return;
+            playerEntities.Remove(entity);
         }
 
         public void OnComponentAdded(Entity entity, PlayerMovementComponent playerMovementComponent, ComponentAddedEvent componentAddEvent)
@@ -57,6 +65,18 @@ namespace CorgEng.Example.Components.PlayerMovement
                 case Keys.A:
                     playerEntities.ForEach((Entity entity) => {
                         new TranslateEvent(new Vector<float>(-(float)CorgEngMain.DeltaTime, 0)).Raise(entity);
+                    });
+                    break;
+                case Keys.K:
+                    playerEntities.ForEach((Entity entity) => {
+                        foreach(Component component in entity.Components)
+                        {
+                            if (component is PlayerMovementComponent)
+                            {
+                                entity.RemoveComponent(component);
+                                return;
+                            }
+                        }
                     });
                     break;
             }

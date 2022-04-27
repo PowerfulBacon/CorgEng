@@ -1,5 +1,7 @@
-﻿using CorgEng.EntityComponentSystem.Components;
+﻿using CorgEng.Core.Dependencies;
+using CorgEng.EntityComponentSystem.Components;
 using CorgEng.EntityComponentSystem.Events;
+using CorgEng.GenericInterfaces.Logging;
 using System;
 using System.Collections.Generic;
 
@@ -7,6 +9,9 @@ namespace CorgEng.EntityComponentSystem.Entities
 {
     public class Entity
     {
+
+        [UsingDependency]
+        private static ILogger TempLogger;
 
         internal delegate void InternalSignalHandleDelegate(Entity entity, Event signal);
 
@@ -21,10 +26,24 @@ namespace CorgEng.EntityComponentSystem.Entities
         /// </summary>
         internal Dictionary<Type, List<InternalSignalHandleDelegate>> EventListeners { get; set; } = null;
 
+        /// <summary>
+        /// Add a component to the specified entity
+        /// </summary>
+        /// <param name="component">A reference to the component to be added</param>
         public void AddComponent(Component component)
         {
             Components.Add(component);
             component.OnComponentAdded(this);
+        }
+
+        /// <summary>
+        /// Remove a component from the specified entity.
+        /// </summary>
+        /// <param name="component">The reference to the component to remove</param>
+        public void RemoveComponent(Component component)
+        {
+            component.OnComponentRemoved(this);
+            Components.Remove(component);
         }
 
         /// <summary>
@@ -40,6 +59,7 @@ namespace CorgEng.EntityComponentSystem.Entities
                 return;
             //Fetch the registered signal handlers
             List<InternalSignalHandleDelegate> signalHandleDelegates = EventListeners[signal.GetType()];
+            TempLogger.WriteLine($"Invoking {signalHandleDelegates.Count} signal handlers", LogType.TEMP);
             //Call the signals
             foreach (InternalSignalHandleDelegate internalSignalHandler in signalHandleDelegates)
             {

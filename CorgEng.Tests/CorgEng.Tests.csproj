@@ -122,6 +122,10 @@
       <Project>{E87F196E-5BF2-4AAF-8209-9F66A4F4B0EB}</Project>
       <Name>CorgEng.GenericInterfaces</Name>
     </ProjectReference>
+    <ProjectReference Include="..\CorgEng.Logging\CorgEng.Logging.csproj">
+      <Project>{58DC11A7-998A-40A3-A73A-80BDB521FED4}</Project>
+      <Name>CorgEng.Logging</Name>
+    </ProjectReference>
     <ProjectReference Include="..\CorgEng.UtilityTypes\CorgEng.UtilityTypes.csproj">
       <Project>{F9CCD4D7-9AF2-4167-9F31-A2879D82F854}</Project>
       <Name>CorgEng.UtilityTypes</Name>

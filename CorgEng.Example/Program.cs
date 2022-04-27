@@ -7,6 +7,7 @@ using CorgEng.EntityComponentSystem;
 using CorgEng.EntityComponentSystem.Entities;
 using CorgEng.EntityComponentSystem.Implementations.Rendering.SpriteRendering;
 using CorgEng.EntityComponentSystem.Implementations.Transform;
+using CorgEng.Example.Common.Components.Camera;
 using CorgEng.Example.Components.PlayerMovement;
 using CorgEng.GenericInterfaces.Rendering;
 using CorgEng.GenericInterfaces.Rendering.Cameras.Isometric;
@@ -45,11 +46,11 @@ namespace CorgEng.Example
             {
 
                 spriteRenderer?.Initialize();
-
+                
+                //Create and setup a renderable thing
                 renderableEntity = new Entity();
                 renderableEntity.AddComponent(new SpriteRenderComponent());
                 renderableEntity.AddComponent(new TransformComponent());
-                renderableEntity.AddComponent(new PlayerMovementComponent());
                 new SetSpriteEvent("example").Raise(renderableEntity);
                 new SetSpriteRendererEvent(spriteRenderer).Raise(renderableEntity);
             }
@@ -71,8 +72,17 @@ namespace CorgEng.Example
             //This creates the window and loads all
             //modules that are dependencies
             CorgEngMain.Initialize();
+
+            //Camera an isometric camera
+            IIsometricCamera camera = isometricCameraFactory.CreateCamera();
+
+            //Create the entity to hold and move the camera
+            Entity mainCameraEntity = new Entity();
+            mainCameraEntity.AddComponent(new TransformComponent());
+            mainCameraEntity.AddComponent(new PlayerMovementComponent());
+            mainCameraEntity.AddComponent(new CameraComponent(camera));
+
             //Set the main camera
-            ICamera camera = isometricCameraFactory.CreateCamera();
             CorgEngMain.SetMainCamera(camera);
             //Set the render core
             ExampleRenderCore erc = new ExampleRenderCore();

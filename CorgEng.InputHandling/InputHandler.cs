@@ -34,6 +34,12 @@ namespace CorgEng.InputHandling
             window = targetWindow;
             Glfw.SetKeyCallback(targetWindow, keyCallbackDelegate);
             Glfw.SetMouseButtonCallback(targetWindow, mouseButtonCallback);
+            Glfw.SetScrollCallback(targetWindow, HandleScroll);
+        }
+
+        private void HandleScroll(IntPtr window, double x, double y)
+        {
+            new MouseScrollEvent(y).RaiseGlobally();
         }
 
         private void HandleMousePress(IntPtr window, MouseButton button, InputState state, ModifierKeys modifiers)

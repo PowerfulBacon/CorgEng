@@ -85,6 +85,7 @@
     <Compile Include="Events\KeyReleaseEvent.cs" />
     <Compile Include="Events\MousePressEvent.cs" />
     <Compile Include="Events\MouseReleaseEvent.cs" />
+    <Compile Include="Events\MouseScrollEvent.cs" />
     <Compile Include="InputHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

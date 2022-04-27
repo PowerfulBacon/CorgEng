@@ -84,6 +84,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Common\Components\Camera\CameraComponent.cs" />
+    <Compile Include="Common\Components\Camera\CameraSystem.cs" />
     <Compile Include="Components\PlayerMovement\PlayerMovementComponent.cs" />
     <Compile Include="Components\PlayerMovement\PlayerMovementSystem.cs" />
     <Compile Include="Program.cs" />

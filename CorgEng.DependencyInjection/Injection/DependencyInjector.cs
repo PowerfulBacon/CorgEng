@@ -17,6 +17,8 @@ namespace CorgEng.DependencyInjection.Injection
         /// </summary>
         private static Dictionary<Type, DependencyList> DependencyList = new Dictionary<Type, DependencyList>();
 
+        public static bool InjectionCompleted { get; private set; } = false;
+
         /// <summary>
         /// Load the dependencies, called during module loading.
         /// </summary>
@@ -69,6 +71,7 @@ namespace CorgEng.DependencyInjection.Injection
             InjectDependencies();
             stopwatch.Stop();
             Console.WriteLine($"Completed dependency loading and injection in {stopwatch.ElapsedMilliseconds}ms.");
+            InjectionCompleted = true;
         }
 
         /// <summary>
