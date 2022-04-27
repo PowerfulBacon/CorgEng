@@ -80,6 +80,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Events\KeyHeldEvent.cs" />
     <Compile Include="Events\KeyPressEvent.cs" />
     <Compile Include="Events\KeyReleaseEvent.cs" />
     <Compile Include="Events\MousePressEvent.cs" />

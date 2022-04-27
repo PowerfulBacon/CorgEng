@@ -52,6 +52,11 @@ namespace CorgEng.Core
         /// </summary>
         private static double lastFrameTime;
 
+        /// <summary>
+        /// The time delta between the last frame and the current frame.
+        /// Time taken for rendering to occur.
+        /// Note: Due to multi-threading DeltaTime is not the same across all processing threads.
+        /// </summary>
         public static double DeltaTime { get; private set; }
 
         /// <summary>
@@ -89,6 +94,8 @@ namespace CorgEng.Core
                 GameWindow.SwapFramebuffers();
                 //Poll for system events to prevent the program from showing as hanging
                 Glfw.PollEvents();
+                //Handle key events
+                GameWindow.Update();
                 //Check to ensure we have a render core
                 if (MainRenderCore == null)
                     throw new NullRenderCoreException("The main CorgEng render core is not set! Use CorgEng.SetRenderCore(RenderCore) to set the primary render core.");

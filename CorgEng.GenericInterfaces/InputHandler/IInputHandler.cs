@@ -12,5 +12,7 @@ namespace CorgEng.GenericInterfaces.InputHandler
 
         void SetupInputHandler(Window targetWindow);
 
+        void WindowUpdate(Window targetWindow);
+
     }
 }
