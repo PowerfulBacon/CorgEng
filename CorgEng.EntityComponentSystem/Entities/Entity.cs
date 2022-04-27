@@ -10,9 +10,6 @@ namespace CorgEng.EntityComponentSystem.Entities
     public class Entity
     {
 
-        [UsingDependency]
-        private static ILogger TempLogger;
-
         internal delegate void InternalSignalHandleDelegate(Entity entity, Event signal);
 
         /// <summary>
@@ -59,7 +56,6 @@ namespace CorgEng.EntityComponentSystem.Entities
                 return;
             //Fetch the registered signal handlers
             List<InternalSignalHandleDelegate> signalHandleDelegates = EventListeners[signal.GetType()];
-            TempLogger.WriteLine($"Invoking {signalHandleDelegates.Count} signal handlers", LogType.TEMP);
             //Call the signals
             foreach (InternalSignalHandleDelegate internalSignalHandler in signalHandleDelegates)
             {

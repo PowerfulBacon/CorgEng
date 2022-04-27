@@ -29,9 +29,9 @@ namespace CorgEng.Example.Components.PlayerMovement
             RegisterGlobalEvent<KeyHeldEvent>(OnKeyHeld);
         }
 
-        public void OnComponentRemoved(Entity entity, PlayerMovementComponent playerMovementComponent, ComponentRemovedEvent componentAddEvent)
+        public void OnComponentRemoved(Entity entity, PlayerMovementComponent playerMovementComponent, ComponentRemovedEvent componentRemovedEvent)
         {
-            if (componentAddEvent.Component != playerMovementComponent)
+            if (componentRemovedEvent.Component != playerMovementComponent)
                 return;
             playerEntities.Remove(entity);
         }

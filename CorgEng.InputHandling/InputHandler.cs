@@ -23,6 +23,7 @@ namespace CorgEng.InputHandling
 
         private KeyCallback keyCallbackDelegate;
         private MouseButtonCallback mouseButtonCallback;
+        private MouseCallback handleScrollCallback;
 
         private HashSet<Keys> heldKeys = new HashSet<Keys>();
 
@@ -31,10 +32,11 @@ namespace CorgEng.InputHandling
             Logger?.WriteLine($"Input handler setup to listen to {targetWindow}", LogType.LOG);
             keyCallbackDelegate = HandleKeyboardPress;
             mouseButtonCallback = HandleMousePress;
+            handleScrollCallback = HandleScroll;
             window = targetWindow;
             Glfw.SetKeyCallback(targetWindow, keyCallbackDelegate);
             Glfw.SetMouseButtonCallback(targetWindow, mouseButtonCallback);
-            Glfw.SetScrollCallback(targetWindow, HandleScroll);
+            Glfw.SetScrollCallback(targetWindow, handleScrollCallback);
         }
 
         private void HandleScroll(IntPtr window, double x, double y)
