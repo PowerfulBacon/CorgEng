@@ -15,13 +15,13 @@ namespace CorgEng.Tests.DependencyInjection
             bool CompleteTest();
         }
 
-        [Dependency]
+        [Dependency(priority = 4)]
         private class BadDependency : IDependency
         {
             public bool CompleteTest() => false;
         }
 
-        [Dependency]
+        [Dependency(priority = 5)]
         private class Dependency : IDependency
         {
             public bool CompleteTest() => true;
