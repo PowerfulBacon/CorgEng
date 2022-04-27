@@ -81,6 +81,7 @@
     <Compile Include="Components\ComponentManager.cs" />
     <Compile Include="Components\Exceptions\ComponentException.cs" />
     <Compile Include="Events\Events\ComponentAddedEvent.cs" />
+    <Compile Include="Events\Events\GameClosedEvent.cs" />
     <Compile Include="Implementations\Rendering\SpriteRendering\SetSpriteEvent.cs" />
     <Compile Include="Implementations\Rendering\SpriteRendering\SetSpriteRendererEvent.cs" />
     <Compile Include="Implementations\Rendering\SpriteRendering\SpriteRenderComponent.cs" />

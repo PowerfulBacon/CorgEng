@@ -83,6 +83,11 @@ namespace CorgEng.Example
             //Shut down the program once it has been closed
             //and clean everything up.
             CorgEngMain.Shutdown();
+            //Ask for a line of code
+#if DEBUG
+            Console.WriteLine("Program finished execution, press any key to continue...");
+            Console.ReadKey();
+#endif
         }
     }
 }

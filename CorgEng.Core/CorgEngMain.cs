@@ -59,6 +59,8 @@ namespace CorgEng.Core
         /// </summary>
         public static double DeltaTime { get; private set; }
 
+        public static bool Terminated { get; private set; }
+
         /// <summary>
         /// Initializes the CorgEng game engine.
         /// Will call initialization on all CorgEng modules.
@@ -128,6 +130,10 @@ namespace CorgEng.Core
         /// </summary>
         public static void Shutdown()
         {
+            //Terinate the engine's subthreads.
+            Terminated = true;
+            //Call terination
+            TriggerTerminateMethods();
             //Terminate GLFW
             Glfw.Terminate();
         }
@@ -250,6 +256,21 @@ namespace CorgEng.Core
                     methodToInvoke.Invoke(null, new object[] { });
             }
             ModuleLoadAttributes = null;
+        }
+
+        /// <summary>
+        /// Triggers termination methods
+        /// </summary>
+        private static void TriggerTerminateMethods()
+        {
+            IEnumerable<MethodInfo> TerminateAttributes = AppDomain.CurrentDomain.GetAssemblies()
+                .SelectMany(assembly => assembly.GetTypes()
+                .SelectMany(type => type.GetMethods(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static)
+                .Where(method => method.GetCustomAttribute<ModuleTerminateAttribute>() != null)));
+            foreach (MethodInfo methodToInvoke in TerminateAttributes)
+            {
+                methodToInvoke.Invoke(null, new object[] { });
+            }
         }
 
     }

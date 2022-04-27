@@ -1,8 +1,10 @@
-﻿using CorgEng.Core.Dependencies;
+﻿using CorgEng.Core;
+using CorgEng.Core.Dependencies;
 using CorgEng.Core.Modules;
 using CorgEng.EntityComponentSystem.Components;
 using CorgEng.EntityComponentSystem.Entities;
 using CorgEng.EntityComponentSystem.Events;
+using CorgEng.EntityComponentSystem.Events.Events;
 using CorgEng.GenericInterfaces.ContentLoading;
 using CorgEng.GenericInterfaces.Logging;
 using System;
@@ -48,6 +50,8 @@ namespace CorgEng.EntityComponentSystem.Systems
             Thread thread = new Thread(SystemThread);
             thread.Name = $"{this} thread";
             thread.Start();
+            //Register the global signal to handle closing the game
+            RegisterGlobalEvent((GameClosedEvent e) => { });
         }
 
         public abstract void SystemSetup();
@@ -76,14 +80,19 @@ namespace CorgEng.EntityComponentSystem.Systems
             Logger?.WriteLine($"Successfully created and setup all systems!", LogType.LOG);
         }
 
+        [ModuleTerminateAttribute]
+        private static void TerminateSubsystems()
+        {
+            new GameClosedEvent().RaiseGlobally();
+        }
+
         /// <summary>
         /// The system thread. Waits until an invokation is required and then triggers it
         /// on the system's thread.
         /// </summary>
         private void SystemThread()
         {
-            //TODO: Make this run until the game is closed
-            while (true)
+            while (!CorgEngMain.Terminated)
             {
                 //Wait until we are awoken again
                 if (invokationQueue.Count == 0)
@@ -103,6 +112,8 @@ namespace CorgEng.EntityComponentSystem.Systems
                     }
                 }
             }
+            //Terminated
+            Logger?.WriteLine($"Terminated EntitySystem thread: {this}");
         }
 
         /// <summary>
