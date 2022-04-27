@@ -25,7 +25,7 @@ namespace CorgEng.Example.Components.PlayerMovement
         public override void SystemSetup()
         {
             RegisterLocalEvent<PlayerMovementComponent, ComponentAddedEvent>(OnComponentAdded);
-            RegisterGlobalEvent<KeyPressEvent>(OnKeyPress);
+            RegisterGlobalEvent<KeyHeldEvent>(OnKeyHeld);
         }
 
         public void OnComponentAdded(Entity entity, PlayerMovementComponent playerMovementComponent, ComponentAddedEvent componentAddEvent)
@@ -35,28 +35,28 @@ namespace CorgEng.Example.Components.PlayerMovement
             playerEntities.Add(entity);
         }
 
-        public void OnKeyPress(KeyPressEvent keyPressEvent)
+        public void OnKeyHeld(KeyHeldEvent keyHeldEvent)
         {
-            switch (keyPressEvent.Key)
+            switch (keyHeldEvent.Key)
             {
                 case Keys.W:
                     playerEntities.ForEach((Entity entity) => {
-                        new TranslateEvent(new Vector<float>(0, 1)).Raise(entity);
+                        new TranslateEvent(new Vector<float>(0, (float)CorgEngMain.DeltaTime)).Raise(entity);
                     });
                     break;
                 case Keys.S:
                     playerEntities.ForEach((Entity entity) => {
-                        new TranslateEvent(new Vector<float>(0, -1)).Raise(entity);
+                        new TranslateEvent(new Vector<float>(0, -(float)CorgEngMain.DeltaTime)).Raise(entity);
                     });
                     break;
                 case Keys.D:
                     playerEntities.ForEach((Entity entity) => {
-                        new TranslateEvent(new Vector<float>(1, 0)).Raise(entity);
+                        new TranslateEvent(new Vector<float>((float)CorgEngMain.DeltaTime, 0)).Raise(entity);
                     });
                     break;
                 case Keys.A:
                     playerEntities.ForEach((Entity entity) => {
-                        new TranslateEvent(new Vector<float>(-1, 0)).Raise(entity);
+                        new TranslateEvent(new Vector<float>(-(float)CorgEngMain.DeltaTime, 0)).Raise(entity);
                     });
                     break;
             }

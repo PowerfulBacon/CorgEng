@@ -24,6 +24,8 @@ namespace CorgEng.InputHandling
         private KeyCallback keyCallbackDelegate;
         private MouseButtonCallback mouseButtonCallback;
 
+        private HashSet<Keys> heldKeys = new HashSet<Keys>();
+
         public void SetupInputHandler(Window targetWindow)
         {
             Logger?.WriteLine($"Input handler setup to listen to {targetWindow}", LogType.LOG);
@@ -65,11 +67,30 @@ namespace CorgEng.InputHandling
                 case InputState.Press:
                     KeyPressEvent keyPressEvent = new KeyPressEvent(key, mods);
                     keyPressEvent.RaiseGlobally();
+                    lock (heldKeys)
+                    {
+                        heldKeys.Add(key);
+                    }
                     return;
                 case InputState.Release:
                     KeyReleaseEvent keyReleaseEvent = new KeyReleaseEvent(key, mods);
                     keyReleaseEvent.RaiseGlobally();
+                    lock (heldKeys)
+                    {
+                        heldKeys.Remove(key);
+                    }
                     return;
+            }
+        }
+
+        public void WindowUpdate(Window targetWindow)
+        {
+            lock (heldKeys)
+            {
+                foreach (Keys key in heldKeys)
+                {
+                    new KeyHeldEvent(key).RaiseGlobally();
+                }
             }
         }
 

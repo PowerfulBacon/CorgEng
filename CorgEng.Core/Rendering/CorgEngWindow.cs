@@ -65,5 +65,10 @@ namespace CorgEng.Core.Rendering
             InputHandler?.SetupInputHandler(glWindowInstance);
         }
 
+        public void Update()
+        {
+            InputHandler?.WindowUpdate(glWindowInstance);
+        }
+
     }
 }
