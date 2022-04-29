@@ -160,23 +160,29 @@ namespace CorgEng.Rendering
         /// </summary>
         protected void AddToBatch(ISharedRenderAttributes sharedRenderAttributes, IBatchElement<TBatch> batchElement)
         {
-            if (RenderCache.ContainsKey(sharedRenderAttributes))
+            lock (RenderCache)
             {
-                RenderCache[sharedRenderAttributes].Add(batchElement);
-            }
-            else
-            {
-                TBatch createdBatch = new TBatch();
-                createdBatch.Add(batchElement);
-                RenderCache.Add(sharedRenderAttributes, createdBatch);
+                if (RenderCache.ContainsKey(sharedRenderAttributes))
+                {
+                    RenderCache[sharedRenderAttributes].Add(batchElement);
+                }
+                else
+                {
+                    TBatch createdBatch = new TBatch();
+                    createdBatch.Add(batchElement);
+                    RenderCache.Add(sharedRenderAttributes, createdBatch);
+                }
             }
         }
 
         protected void RemoveFromBatch(ISharedRenderAttributes sharedRenderAttributes, IBatchElement<TBatch> batchElement)
         {
-            RenderCache[sharedRenderAttributes].Remove(batchElement);
-            if (RenderCache[sharedRenderAttributes].Count == 0)
-                RenderCache.Remove(sharedRenderAttributes);
+            lock (RenderCache)
+            {
+                RenderCache[sharedRenderAttributes].Remove(batchElement);
+                if (RenderCache[sharedRenderAttributes].Count == 0)
+                    RenderCache.Remove(sharedRenderAttributes);
+            }
         }
 
         /// <summary>
@@ -196,7 +202,7 @@ namespace CorgEng.Rendering
                     //Bind the buffer (so we can perform operations on it)
                     glBindBuffer(GL_ARRAY_BUFFER, storedBufferLocations[i]);
                     //Reserve space in the buffer
-                    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * batch.BatchVectorSizes[i] * batch.BatchSize, NULL, GL_STREAM_DRAW);
+                    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * batch.BatchVectorSizes[i] * batch.BatchSize, NULL, GL_DYNAMIC_DRAW);
                 }
             }
         }
@@ -217,7 +223,7 @@ namespace CorgEng.Rendering
                     //Bind the buffer to perform operation on it
                     glBindBuffer(GL_ARRAY_BUFFER, storedBufferLocations[i]);
                     //Put data into the buffer
-                    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * batch.BatchVectorSizes[i] * batch.BatchSize, NULL, GL_STREAM_DRAW);
+                    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * batch.BatchVectorSizes[i] * batch.BatchSize, NULL, GL_DYNAMIC_DRAW);
                     glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(float) * batch.BatchVectorSizes[i] * count, bufferPointer);
                 }
             }

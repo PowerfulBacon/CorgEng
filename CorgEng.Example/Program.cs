@@ -16,6 +16,7 @@ using CorgEng.GenericInterfaces.Rendering.RenderObjects.SpriteRendering;
 using CorgEng.GenericInterfaces.Rendering.Shaders;
 using CorgEng.GenericInterfaces.Rendering.Textures;
 using CorgEng.UtilityTypes;
+using CorgEng.UtilityTypes.Vectors;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -46,13 +47,20 @@ namespace CorgEng.Example
             {
 
                 spriteRenderer?.Initialize();
-                
+
                 //Create and setup a renderable thing
-                renderableEntity = new Entity();
-                renderableEntity.AddComponent(new SpriteRenderComponent());
-                renderableEntity.AddComponent(new TransformComponent());
-                new SetSpriteEvent("example").Raise(renderableEntity);
-                new SetSpriteRendererEvent(spriteRenderer).Raise(renderableEntity);
+                for (int x = 0; x < 39; x++)
+                {
+                    for (int y = 0; y < 641; y++)
+                    {
+                        renderableEntity = new Entity();
+                        renderableEntity.AddComponent(new SpriteRenderComponent());
+                        renderableEntity.AddComponent(new TransformComponent());
+                        new SetPositionEvent(new Vector<float>(x, y)).Raise(renderableEntity);
+                        new SetSpriteEvent("example").Raise(renderableEntity);
+                        new SetSpriteRendererEvent(spriteRenderer).Raise(renderableEntity);
+                    }
+                }
             }
 
             public override void PerformRender()
@@ -93,11 +101,6 @@ namespace CorgEng.Example
             //Shut down the program once it has been closed
             //and clean everything up.
             CorgEngMain.Shutdown();
-            //Ask for a line of code
-#if DEBUG
-            Console.WriteLine("Program finished execution, press any key to continue...");
-            Console.ReadKey();
-#endif
         }
     }
 }

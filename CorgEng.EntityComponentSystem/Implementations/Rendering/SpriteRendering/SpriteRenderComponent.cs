@@ -15,6 +15,8 @@ namespace CorgEng.EntityComponentSystem.Implementations.Rendering.SpriteRenderin
     public class SpriteRenderComponent : Component, IInstantiatable
     {
 
+        public IVector<float> CachedPosition { get; set; } = null;
+
         public string Sprite { get; internal set; }
 
         public ISpriteRenderObject SpriteRenderObject { get; internal set; }

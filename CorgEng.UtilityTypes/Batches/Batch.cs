@@ -49,15 +49,18 @@ namespace CorgEng.UtilityTypes.Batches
         /// </summary>
         private void ExpandBatch()
         {
-            float[][] newBatchGroup = new float[BatchVectorSizes.Length][];
-            for (int i = 0; i < BatchVectorSizes.Length; i++)
+            lock (this)
             {
-                //Set each batch group size accordingly
-                //A float needs 25000 space
-                //A vec3 needs 75000 space
-                newBatchGroup[i] = new float[BatchSize * BatchVectorSizes[i]];
+                float[][] newBatchGroup = new float[BatchVectorSizes.Length][];
+                for (int i = 0; i < BatchVectorSizes.Length; i++)
+                {
+                    //Set each batch group size accordingly
+                    //A float needs 25000 space
+                    //A vec3 needs 75000 space
+                    newBatchGroup[i] = new float[BatchSize * BatchVectorSizes[i]];
+                }
+                batchElements.Add(newBatchGroup);
             }
-            batchElements.Add(newBatchGroup);
         }
 
         /// <summary>
@@ -66,27 +69,30 @@ namespace CorgEng.UtilityTypes.Batches
         /// <param name="element"></param>
         public void Add(IBatchElement<T> element)
         {
-            //Check if the batch needs expanding
-            if (Count % BatchSize == 0)
+            lock (this)
             {
-                //The batch size needs expanding
-                ExpandBatch();
-            }
-            //Locate our batch group index
-            int batchGroupIndex = Count / BatchSize;
-            int internalGroupIndex = Count % BatchSize;
-            element.ContainingBatch = this;
-            element.BatchPosition = Count;
-            //Perform batch insertion
-            for (int i = 0; i < BatchVectorSizes.Length; i++)
-            {
-                for (int j = 0; j < BatchVectorSizes[i]; j++)
+                //Check if the batch needs expanding
+                if (Count % BatchSize == 0)
                 {
-                    batchElements[batchGroupIndex][i][internalGroupIndex * BatchVectorSizes[i] + j] = element.GetValue(i)[j];
+                    //The batch size needs expanding
+                    ExpandBatch();
                 }
+                //Locate our batch group index
+                int batchGroupIndex = Count / BatchSize;
+                int internalGroupIndex = Count % BatchSize;
+                element.ContainingBatch = this;
+                element.BatchPosition = Count;
+                //Perform batch insertion
+                for (int i = 0; i < BatchVectorSizes.Length; i++)
+                {
+                    for (int j = 0; j < BatchVectorSizes[i]; j++)
+                    {
+                        batchElements[batchGroupIndex][i][internalGroupIndex * BatchVectorSizes[i] + j] = element.GetValue(i)[j];
+                    }
+                }
+                //Increment the count
+                Count++;
             }
-            //Increment the count
-            Count++;
         }
 
         /// <summary>
@@ -96,28 +102,31 @@ namespace CorgEng.UtilityTypes.Batches
         /// <param name="element"></param>
         public void Remove(IBatchElement<T> element)
         {
-            int currentBatchGroup = element.BatchPosition / BatchSize;
-            int lastBatchGroup = (Count - 1) / BatchSize;
-            //Replace element with the last element
-            //If we are removing the last element, go straight to the easy delete
-            if (Count - 1 != element.BatchPosition)
+            lock (this)
             {
-                for (int groupIndex = 0; groupIndex < BatchVectorSizes.Length; groupIndex++)
+                int currentBatchGroup = element.BatchPosition / BatchSize;
+                int lastBatchGroup = (Count - 1) / BatchSize;
+                //Replace element with the last element
+                //If we are removing the last element, go straight to the easy delete
+                if (Count - 1 != element.BatchPosition)
                 {
-                    for (int i = 0; i < BatchVectorSizes[groupIndex]; i++)
+                    for (int groupIndex = 0; groupIndex < BatchVectorSizes.Length; groupIndex++)
                     {
-                        //Put the last element in the currents position
-                        batchElements[currentBatchGroup][groupIndex][element.BatchPosition % BatchSize * BatchVectorSizes[groupIndex] + i]
-                            = batchElements[lastBatchGroup][groupIndex][(Count - 1) % BatchSize * BatchVectorSizes[groupIndex] + i];
+                        for (int i = 0; i < BatchVectorSizes[groupIndex]; i++)
+                        {
+                            //Put the last element in the currents position
+                            batchElements[currentBatchGroup][groupIndex][element.BatchPosition % BatchSize * BatchVectorSizes[groupIndex] + i]
+                                = batchElements[lastBatchGroup][groupIndex][(Count - 1) % BatchSize * BatchVectorSizes[groupIndex] + i];
+                        }
                     }
                 }
-            }
-            //Decrement the count
-            Count--;
-            //Remove the last batch if it is now empty
-            if (Count - 1 % BatchSize == BatchSize - 1)
-            {
-                batchElements.RemoveAt(batchElements.Count - 1);
+                //Decrement the count
+                Count--;
+                //Remove the last batch if it is now empty
+                if (Count - 1 % BatchSize == BatchSize - 1)
+                {
+                    batchElements.RemoveAt(batchElements.Count - 1);
+                }
             }
         }
 
@@ -129,12 +138,15 @@ namespace CorgEng.UtilityTypes.Batches
         /// <param name="newValue"></param>
         public void Update(int batchIndex, int groupIndex, IVector<float> newValue)
         {
-            //Find what array group we are in
-            int targetArrayGroupIndex = GetArrayGroupIndex(batchIndex, groupIndex);
-            int targetArrayIndividualIndex = batchIndex % (BatchVectorSizes[groupIndex] * BatchSize);
-            for (int i = 0; i < BatchVectorSizes[groupIndex]; i++)
+            lock (this)
             {
-                batchElements[targetArrayGroupIndex][groupIndex][targetArrayIndividualIndex + i] = newValue[i];
+                //Find what array group we are in
+                int targetArrayGroupIndex = GetArrayGroupIndex(batchIndex, groupIndex);
+                int targetArrayIndividualIndex = (BatchVectorSizes[groupIndex] * batchIndex) % (BatchVectorSizes[groupIndex] * BatchSize);
+                for (int i = 0; i < BatchVectorSizes[groupIndex]; i++)
+                {
+                    batchElements[targetArrayGroupIndex][groupIndex][targetArrayIndividualIndex + i] = newValue[i];
+                }
             }
         }
 
@@ -163,7 +175,10 @@ namespace CorgEng.UtilityTypes.Batches
 
         public float[] GetArray(int batchIndex, int groupIndex)
         {
-            return batchElements[batchIndex][groupIndex];
+            lock (this)
+            {
+                return batchElements[batchIndex][groupIndex];
+            }
         }
 
         public override string ToString()

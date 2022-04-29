@@ -37,9 +37,16 @@ namespace CorgEng.EntityComponentSystem.Implementations.Rendering.SpriteRenderin
         /// </summary>
         private void OnEntityMoved(Entity entity, SpriteRenderComponent spriteRenderComponent, MoveEvent moveEvent)
         {
-            spriteRenderComponent.SpriteRenderObject.WorldPosition.Value.X = moveEvent.NewPosition.X;
-            spriteRenderComponent.SpriteRenderObject.WorldPosition.Value.Y = moveEvent.NewPosition.Y;
-            spriteRenderComponent.SpriteRenderObject.WorldPosition.TriggerChanged();
+            if (spriteRenderComponent.SpriteRenderObject == null)
+            {
+                spriteRenderComponent.CachedPosition = moveEvent.NewPosition.Copy();
+            }
+            else
+            {
+                spriteRenderComponent.SpriteRenderObject.WorldPosition.Value.X = moveEvent.NewPosition.X;
+                spriteRenderComponent.SpriteRenderObject.WorldPosition.Value.Y = moveEvent.NewPosition.Y;
+                spriteRenderComponent.SpriteRenderObject.WorldPosition.TriggerChanged();
+            }
         }
 
         private void OnSetRenderer(Entity entity, SpriteRenderComponent spriteRenderComponent, SetSpriteRendererEvent setSpriteRenderer)
@@ -56,7 +63,6 @@ namespace CorgEng.EntityComponentSystem.Implementations.Rendering.SpriteRenderin
 
         private void OnSetSprite(Entity entity, SpriteRenderComponent spriteRenderComponent, SetSpriteEvent setSpriteEvent)
         {
-            Log.WriteLine("setting sprite");
             //Store the sprite being used
             spriteRenderComponent.Sprite = setSpriteEvent.TextureFile;
             //Update the sprite data
@@ -78,7 +84,13 @@ namespace CorgEng.EntityComponentSystem.Implementations.Rendering.SpriteRenderin
                     newTexture.OffsetY,
                     newTexture.OffsetWidth,
                     newTexture.OffsetHeight);
-                //Start rendernig
+                if (spriteRenderComponent.CachedPosition != null)
+                {
+                    spriteRenderComponent.SpriteRenderObject.WorldPosition.Value.X = spriteRenderComponent.CachedPosition.X;
+                    spriteRenderComponent.SpriteRenderObject.WorldPosition.Value.Y = spriteRenderComponent.CachedPosition.Y;
+                    spriteRenderComponent.CachedPosition = null;
+                }
+                //Start rendering
                 if (spriteRenderComponent.SpriteRenderer != null)
                     spriteRenderComponent.SpriteRenderer.StartRendering(spriteRenderComponent.SpriteRenderObject);
             }

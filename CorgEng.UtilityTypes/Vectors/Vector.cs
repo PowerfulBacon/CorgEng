@@ -116,13 +116,15 @@ namespace CorgEng.UtilityTypes.Vectors
 
         public static bool operator ==(Vector<T> a, Vector<T> b)
         {
+            if (Equals(a, null) || Equals(b, null)) return Equals(a, b);
             if (a.Dimensions != b.Dimensions) return false;
-            for (int i = 0; i < a.Dimensions; i++) if (!a[i].Equals(b[i])) return false;
+            for (int i = 0; i < a.Dimensions; i++) if (!a[i].Equals(b[i]))return false;
             return true;
         }
 
         public static bool operator !=(Vector<T> a, Vector<T> b)
         {
+            if (Equals(a, null) || Equals(b, null)) return !Equals(a, b);
             if (a.Dimensions != b.Dimensions) return true;
             for (int i = 0; i < a.Dimensions; i++) if (!a[i].Equals(b[i])) return true;
             return false;
