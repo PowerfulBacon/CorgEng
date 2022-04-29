@@ -20,5 +20,10 @@ namespace CorgEng.GenericInterfaces.UserInterface.Components
         /// </summary>
         void Render();
 
+        /// <summary>
+        /// 
+        /// </summary>
+        List<IUserInterfaceComponent> Children { get; }
+
     }
 }

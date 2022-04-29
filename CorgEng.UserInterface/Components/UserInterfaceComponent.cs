@@ -22,6 +22,8 @@ namespace CorgEng.UserInterface.Components
         /// </summary>
         public IUserInterfaceRenderCore ComponentRenderCore { get; }
 
+        public List<IUserInterfaceComponent> Children { get; } = new List<IUserInterfaceComponent>();
+
         /// <summary>
         /// Perform rendering of this component
         /// </summary>
