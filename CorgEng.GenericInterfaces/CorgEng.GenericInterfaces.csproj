@@ -120,6 +120,7 @@
     <Compile Include="UserInterface\Anchors\IAnchor.cs" />
     <Compile Include="UserInterface\Anchors\IAnchorDetails.cs" />
     <Compile Include="UserInterface\Components\IUserInterfaceComponent.cs" />
+    <Compile Include="UserInterface\Components\IUserInterfaceRenderCore.cs" />
     <Compile Include="UserInterface\IUserInterface.cs" />
     <Compile Include="UserInterface\IUserInterfaceFactory.cs" />
     <Compile Include="UtilityTypes\Batches\IBatch.cs" />

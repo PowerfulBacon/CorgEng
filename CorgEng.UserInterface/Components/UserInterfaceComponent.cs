@@ -20,19 +20,14 @@ namespace CorgEng.UserInterface.Components
         /// <summary>
         /// The render core of the component
         /// </summary>
-        public RenderCore ComponentRenderCore { get; }
-
-        public UserInterfaceComponent(RenderCore renderCore)
-        {
-            //Set the render core
-            ComponentRenderCore = renderCore;
-        }
+        public IUserInterfaceRenderCore ComponentRenderCore { get; }
 
         /// <summary>
         /// Perform rendering of this component
         /// </summary>
         public void Render()
         {
+            //This render core needs to be able to draw its children
             ComponentRenderCore.PerformRender();
         }
 
