@@ -7,13 +7,45 @@ using System.Threading.Tasks;
 
 namespace CorgEng.GenericInterfaces.UserInterface.Components
 {
+    /// <summary>
+    /// A user interface component.
+    /// The coordinate space for a user interface component is:
+    /// 0 - Left or bottom of parent component
+    /// 1 - Top or right of parent component.
+    /// </summary>
     public interface IUserInterfaceComponent
     {
 
         /// <summary>
-        /// The anchor data for this component
+        /// The anchor data for this component.
         /// </summary>
         IAnchor Anchor { get; }
+
+        /// <summary>
+        /// The parent user interface component
+        /// </summary>
+        IUserInterfaceComponent Parent { get; }
+
+        /// <summary>
+        /// The width of the user interface component in pixels
+        /// </summary>
+        double PixelWidth { get; }
+
+        /// <summary>
+        /// The height of the user interface component in pixels
+        /// </summary>
+        double PixelHeight { get; }
+
+        /// <summary>
+        /// The minimum possible width of the user interface component in pixels.
+        /// Determined based on strictness & children minimum pixel widths.
+        /// </summary>
+        double MinimumPixelWidth { get; }
+
+        /// <summary>
+        /// The minimum possible height of the user inetrface component in pixels.
+        /// </summary>
+        double MinimumPixelHeight { get; }
 
         /// <summary>
         /// Render the user interface component
@@ -21,9 +53,22 @@ namespace CorgEng.GenericInterfaces.UserInterface.Components
         void Render();
 
         /// <summary>
-        /// 
+        /// Add a user interface component to the children list
         /// </summary>
-        List<IUserInterfaceComponent> Children { get; }
+        /// <param name="userInterfaceComponent">The user interface component to add to the children of this one.</param>
+        void AddChild(IUserInterfaceComponent userInterfaceComponent);
+
+        /// <summary>
+        /// Gets a list of all children components
+        /// </summary>
+        /// <returns>A list of all children user interface components.</returns>
+        List<IUserInterfaceComponent> GetChildren();
+
+        /// <summary>
+        /// Executed when the parent user interface component is resized.
+        /// Used to recalculate our user interface scale.
+        /// </summary>
+        void OnParentResized();
 
     }
 }

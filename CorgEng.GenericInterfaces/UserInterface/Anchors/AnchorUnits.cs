@@ -8,6 +8,7 @@ namespace CorgEng.GenericInterfaces.UserInterface.Anchors
 {
     public enum AnchorUnits
     {
-        PIXELS
+        PIXELS,
+        PERCENTAGE,
     }
 }

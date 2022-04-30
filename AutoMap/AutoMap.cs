@@ -33,8 +33,8 @@ namespace AutoMap
             //Create the entity to hold and move the camera
             Entity mainCameraEntity = new Entity();
             mainCameraEntity.AddComponent(new TransformComponent());
-            mainCameraEntity.AddComponent(new PlayerMovementComponent());
-            mainCameraEntity.AddComponent(new CameraComponent(camera));
+            //mainCameraEntity.AddComponent(new PlayerMovementComponent());
+            //mainCameraEntity.AddComponent(new CameraComponent(camera));
 
             //Set the main camera
             CorgEngMain.SetMainCamera(camera);

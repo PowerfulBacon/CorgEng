@@ -94,6 +94,7 @@
     <Compile Include="DependencyInjection\DependencyTests.cs" />
     <Compile Include="EntityComponentSystem\SignalTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UserInterfaceTests\UnitTests\UserInterfaceComponentTests.cs" />
     <Compile Include="UtilityTypes\BatchTests.cs" />
     <Compile Include="UtilityTypes\MatrixTests\GeneralMatrixTests.cs" />
     <Compile Include="UtilityTypes\MatrixTests\IdentityMatrixTests.cs" />

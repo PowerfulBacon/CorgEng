@@ -24,7 +24,7 @@ namespace CorgEng.MapLoading
                 return MapCache.LoadedMaps[fileLocation];
             //Load the map file from a file
             MapFile loadedMapFile = new MapFile();
-
+            throw new System.NotImplementedException();
         }
 
     }

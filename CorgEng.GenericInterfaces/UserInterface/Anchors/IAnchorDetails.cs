@@ -24,5 +24,10 @@ namespace CorgEng.GenericInterfaces.UserInterface.Anchors
         /// </summary>
         double AnchorOffset { get; }
 
+        /// <summary>
+        /// Is this anchor strict?
+        /// </summary>
+        bool Strict { get; }
+
     }
 }

@@ -118,8 +118,11 @@
     <Compile Include="UserInterface\Anchors\AnchorDirections.cs" />
     <Compile Include="UserInterface\Anchors\AnchorUnits.cs" />
     <Compile Include="UserInterface\Anchors\IAnchor.cs" />
+    <Compile Include="UserInterface\Anchors\IAnchorDetailFactory.cs" />
     <Compile Include="UserInterface\Anchors\IAnchorDetails.cs" />
+    <Compile Include="UserInterface\Anchors\IAnchorFactory.cs" />
     <Compile Include="UserInterface\Components\IUserInterfaceComponent.cs" />
+    <Compile Include="UserInterface\Components\IUserInterfaceComponentFactory.cs" />
     <Compile Include="UserInterface\Components\IUserInterfaceRenderCore.cs" />
     <Compile Include="UserInterface\IUserInterface.cs" />
     <Compile Include="UserInterface\IUserInterfaceFactory.cs" />
