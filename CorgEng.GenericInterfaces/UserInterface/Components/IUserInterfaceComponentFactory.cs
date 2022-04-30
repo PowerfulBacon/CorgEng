@@ -10,9 +10,9 @@ namespace CorgEng.GenericInterfaces.UserInterface.Components
     public interface IUserInterfaceComponentFactory
     {
 
-        IUserInterfaceComponent CreateGenericUserInterfaceComponent(IUserInterfaceComponent parent, IAnchor anchorDetails);
+        IUserInterfaceComponent CreateGenericUserInterfaceComponent(IUserInterfaceComponent parent, IAnchor anchorDetails, ScaleAnchors scaleAnchor);
 
-        IUserInterfaceComponent CreateGenericUserInterfaceComponent(IAnchor anchorDetails);
+        IUserInterfaceComponent CreateGenericUserInterfaceComponent(IAnchor anchorDetails, ScaleAnchors scaleAnchor);
 
     }
 }

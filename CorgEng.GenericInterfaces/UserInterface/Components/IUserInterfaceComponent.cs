@@ -22,6 +22,11 @@ namespace CorgEng.GenericInterfaces.UserInterface.Components
         IAnchor Anchor { get; }
 
         /// <summary>
+        /// The scale anchor information
+        /// </summary>
+        ScaleAnchors ScaleAnchor { get; }
+
+        /// <summary>
         /// The parent user interface component
         /// </summary>
         IUserInterfaceComponent Parent { get; }
@@ -65,10 +70,23 @@ namespace CorgEng.GenericInterfaces.UserInterface.Components
         List<IUserInterfaceComponent> GetChildren();
 
         /// <summary>
+        /// Try and set the height of this user interface component.
+        /// Will not be smaller than the minimum UI height.
+        /// </summary>
+        /// <param name="width">The width to set this UI component to. Must be greater than the minimum pixel width.</param>
+        /// <param name="height">The height to set this UI component to. Must be greater than the minimum pixel width.</param>
+        void SetWidth(double width, double height);
+
+        /// <summary>
         /// Executed when the parent user interface component is resized.
         /// Used to recalculate our user interface scale.
         /// </summary>
         void OnParentResized();
+
+        /// <summary>
+        /// Recalculate the minimum pixel width and height
+        /// </summary>
+        void CalculateMinimumScales();
 
     }
 }

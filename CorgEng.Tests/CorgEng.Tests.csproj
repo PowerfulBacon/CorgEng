@@ -96,6 +96,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestSetup.cs" />
     <Compile Include="UserInterfaceTests\UnitTests\UserInterfaceComponentTests.cs" />
+    <Compile Include="UserInterfaceTests\UnitTests\UserInterfaceXmlLoaderTests.cs" />
     <Compile Include="UtilityTypes\BatchTests.cs" />
     <Compile Include="UtilityTypes\MatrixTests\GeneralMatrixTests.cs" />
     <Compile Include="UtilityTypes\MatrixTests\IdentityMatrixTests.cs" />
@@ -108,6 +109,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\CorgEng.ContentLoading\CorgEng.ContentLoading.csproj">
+      <Project>{46ed6820-5de9-4b9c-ac58-728503212732}</Project>
+      <Name>CorgEng.ContentLoading</Name>
+    </ProjectReference>
     <ProjectReference Include="..\CorgEng.Core\CorgEng.Core.csproj">
       <Project>{9CCC4A6B-2D13-425D-8C72-B034151EC11C}</Project>
       <Name>CorgEng.Core</Name>
@@ -124,9 +129,21 @@
       <Project>{E87F196E-5BF2-4AAF-8209-9F66A4F4B0EB}</Project>
       <Name>CorgEng.GenericInterfaces</Name>
     </ProjectReference>
+    <ProjectReference Include="..\CorgEng.InputHandling\CorgEng.InputHandling.csproj">
+      <Project>{19db3c95-8e41-43a6-acfe-78b3873e6f89}</Project>
+      <Name>CorgEng.InputHandling</Name>
+    </ProjectReference>
     <ProjectReference Include="..\CorgEng.Logging\CorgEng.Logging.csproj">
       <Project>{58DC11A7-998A-40A3-A73A-80BDB521FED4}</Project>
       <Name>CorgEng.Logging</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CorgEng.Rendering\CorgEng.Rendering.csproj">
+      <Project>{bfc5583f-3a05-43e4-9d07-81d80b1ec685}</Project>
+      <Name>CorgEng.Rendering</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CorgEng.UserInterface\CorgEng.UserInterface.csproj">
+      <Project>{19e048d9-1587-40cc-bee3-e1883a21fec8}</Project>
+      <Name>CorgEng.UserInterface</Name>
     </ProjectReference>
     <ProjectReference Include="..\CorgEng.UtilityTypes\CorgEng.UtilityTypes.csproj">
       <Project>{F9CCD4D7-9AF2-4167-9F31-A2879D82F854}</Project>
@@ -137,6 +154,11 @@
     <EmbeddedResource Include="CorgEngConfig.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="UserInterfaceTests\UnitTests\Content\UserInterfaceExample.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

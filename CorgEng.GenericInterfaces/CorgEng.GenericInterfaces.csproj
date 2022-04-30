@@ -121,11 +121,11 @@
     <Compile Include="UserInterface\Anchors\IAnchorDetailFactory.cs" />
     <Compile Include="UserInterface\Anchors\IAnchorDetails.cs" />
     <Compile Include="UserInterface\Anchors\IAnchorFactory.cs" />
+    <Compile Include="UserInterface\Anchors\ScaleAnchors.cs" />
     <Compile Include="UserInterface\Components\IUserInterfaceComponent.cs" />
     <Compile Include="UserInterface\Components\IUserInterfaceComponentFactory.cs" />
     <Compile Include="UserInterface\Components\IUserInterfaceRenderCore.cs" />
-    <Compile Include="UserInterface\IUserInterface.cs" />
-    <Compile Include="UserInterface\IUserInterfaceFactory.cs" />
+    <Compile Include="UserInterface\Generators\IUserInterfaceXmlLoader.cs" />
     <Compile Include="UtilityTypes\Batches\IBatch.cs" />
     <Compile Include="UtilityTypes\Batches\IBatchElement.cs" />
     <Compile Include="UtilityTypes\IBindableProperty.cs" />
