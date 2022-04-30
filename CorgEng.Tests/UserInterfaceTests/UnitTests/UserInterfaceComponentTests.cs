@@ -31,6 +31,12 @@ namespace CorgEng.Tests.UserInterfaceTests.UnitTests
                 DependencyInjector.LoadDependencyInjection();
         }
 
+        /// <summary>
+        /// This test verifies that the dependencies have been implemented.
+        /// </summary>
+        /// <assumptions>
+        /// Assumes that dependency injection is working and functioning.
+        /// </assumptions>
         [TestMethod]
         public void TestDependenciesCreated()
         {
@@ -39,6 +45,13 @@ namespace CorgEng.Tests.UserInterfaceTests.UnitTests
             Assert.IsNotNull(AnchorDetailFactory, "Anchor detail factory hasn't been implemented");
         }
 
+        /// <summary>
+        /// This test verifies that components can calculate their own minimum width and height
+        /// when they have no children.
+        /// </summary>
+        /// <assumptions>
+        /// Assumes that dependencies have been created and are loaded correctly.
+        /// </assumptions>
         [TestMethod]
         public void TestUserInterfacePixelScaling()
         {
@@ -63,6 +76,14 @@ namespace CorgEng.Tests.UserInterfaceTests.UnitTests
             Assert.AreEqual(200, userInterfaceComponent.MinimumPixelWidth);
         }
 
+        /// <summary>
+        /// This test verifies that the parent's have the correct minimum width and height
+        /// based off of their children component's width and height.
+        /// </summary>
+        /// <assumptions>
+        /// Assumes that dependencies have been created and are loaded correctly.
+        /// Assumes that components can correctly calculate their own minimum width and height.
+        /// </assumptions>
         [TestMethod]
         public void TestUserInterfaceParentPixelScaling()
         {
