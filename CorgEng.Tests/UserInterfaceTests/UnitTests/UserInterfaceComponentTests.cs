@@ -26,6 +26,7 @@ namespace CorgEng.Tests.UserInterfaceTests.UnitTests
 
         public UserInterfaceComponentTests()
         {
+
             //Load dependency injection, if required.
             if (!DependencyInjector.InjectionCompleted)
                 DependencyInjector.LoadDependencyInjection();
@@ -52,8 +53,17 @@ namespace CorgEng.Tests.UserInterfaceTests.UnitTests
         /// <assumptions>
         /// Assumes that dependencies have been created and are loaded correctly.
         /// </assumptions>
-        [TestMethod]
-        public void TestUserInterfacePixelScaling()
+        [DataTestMethod]
+        [DataRow(AnchorDirections.LEFT, AnchorDirections.LEFT, 0, 500, 500)]
+        [DataRow(AnchorDirections.LEFT, AnchorDirections.LEFT, 50, 250, 200)]
+        [DataRow(AnchorDirections.LEFT, AnchorDirections.RIGHT, 50, 50, 0)]
+        [DataRow(AnchorDirections.RIGHT, AnchorDirections.RIGHT, 300, 50, 250)]
+        public void TestUserInterfacePixelScaling(
+            AnchorDirections leftAnchorDir,
+            AnchorDirections rightAnchorDir,
+            double leftAnchorAmount,
+            double rightAnchorAmount,
+            double expectedWidth)
         {
             //Verify assumptions
             if (AnchorDetailFactory == null)
@@ -65,15 +75,15 @@ namespace CorgEng.Tests.UserInterfaceTests.UnitTests
             //Create the anchor details
             IAnchorDetails topAnchorDetails = AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.TOP, AnchorUnits.PIXELS, 100);
             IAnchorDetails bottomAnchorDetails = AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.BOTTOM, AnchorUnits.PIXELS, 100);
-            IAnchorDetails leftAnchorDetails = AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.LEFT, AnchorUnits.PIXELS, 50);
-            IAnchorDetails rightAnchorDetails = AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.LEFT, AnchorUnits.PIXELS, 250);
+            IAnchorDetails leftAnchorDetails = AnchorDetailFactory.CreateAnchorDetails(leftAnchorDir, AnchorUnits.PIXELS, leftAnchorAmount);
+            IAnchorDetails rightAnchorDetails = AnchorDetailFactory.CreateAnchorDetails(rightAnchorDir, AnchorUnits.PIXELS, rightAnchorAmount);
             //Craete the anchor
             IAnchor anchor = AnchorFactory.CreateAnchor(leftAnchorDetails, rightAnchorDetails, topAnchorDetails, bottomAnchorDetails);
             //Create a generic user interface component
             IUserInterfaceComponent userInterfaceComponent = UserInterfaceComponentFactory.CreateGenericUserInterfaceComponent(anchor);
             //Ensure user interface minimum scale correctness
             Assert.AreEqual(0, userInterfaceComponent.MinimumPixelHeight);
-            Assert.AreEqual(200, userInterfaceComponent.MinimumPixelWidth);
+            Assert.AreEqual(expectedWidth, userInterfaceComponent.MinimumPixelWidth);
         }
 
         /// <summary>
@@ -84,8 +94,18 @@ namespace CorgEng.Tests.UserInterfaceTests.UnitTests
         /// Assumes that dependencies have been created and are loaded correctly.
         /// Assumes that components can correctly calculate their own minimum width and height.
         /// </assumptions>
-        [TestMethod]
-        public void TestUserInterfaceParentPixelScaling()
+        [DataTestMethod]
+        [DataRow(AnchorDirections.LEFT, AnchorDirections.LEFT, 0, 50, 50)]
+        [DataRow(AnchorDirections.LEFT, AnchorDirections.LEFT, 50, 250, 250)]
+        [DataRow(AnchorDirections.LEFT, AnchorDirections.LEFT, 100, 100, 100)]
+        [DataRow(AnchorDirections.LEFT, AnchorDirections.RIGHT, 100, 100, 200)] //Requires 100 left and 100 right
+        [DataRow(AnchorDirections.LEFT, AnchorDirections.RIGHT, 0, 0, 0)]
+        public void TestUserInterfaceParentPixelScaling(
+            AnchorDirections leftChildAnchorDir,
+            AnchorDirections rightChildAnchorDir,
+            double leftChildAnchorAmount,
+            double rightChildAnchorAmount,
+            double expectedParentWidth)
         {
             //Verify assumptions
             if (AnchorDetailFactory == null)
@@ -104,22 +124,17 @@ namespace CorgEng.Tests.UserInterfaceTests.UnitTests
             //Create the anchor details
             IAnchorDetails childTopAnchorDetails = AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.TOP, AnchorUnits.PIXELS, 100);
             IAnchorDetails childBottomAnchorDetails = AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.BOTTOM, AnchorUnits.PIXELS, 100);
-            IAnchorDetails childLeftAnchorDetails = AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.LEFT, AnchorUnits.PIXELS, 50);
-            IAnchorDetails childRightAnchorDetails = AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.LEFT, AnchorUnits.PIXELS, 250);
+            IAnchorDetails childLeftAnchorDetails = AnchorDetailFactory.CreateAnchorDetails(leftChildAnchorDir, AnchorUnits.PIXELS, leftChildAnchorAmount);
+            IAnchorDetails childRightAnchorDetails = AnchorDetailFactory.CreateAnchorDetails(rightChildAnchorDir, AnchorUnits.PIXELS, rightChildAnchorAmount);
             //Craete the anchor
             IAnchor childAnchor = AnchorFactory.CreateAnchor(childLeftAnchorDetails, childRightAnchorDetails, childTopAnchorDetails, childBottomAnchorDetails);
             //Create a generic user interface component
             IUserInterfaceComponent parentUserInterfaceComponent = UserInterfaceComponentFactory.CreateGenericUserInterfaceComponent(parentAnchor);
             //Create another generic user interface component
             IUserInterfaceComponent childUserInterfaceComponent = UserInterfaceComponentFactory.CreateGenericUserInterfaceComponent(parentUserInterfaceComponent, childAnchor);
-            //Verify assumptions
-            if (childUserInterfaceComponent.MinimumPixelHeight != 0)
-                Assert.Inconclusive("Assumption verification failed: Minimum pixel height of child component is not 0.");
-            if (childUserInterfaceComponent.MinimumPixelWidth != 200)
-                Assert.Inconclusive("Assumption verification failed: Minimum pixel width of child component is not 200.");
             //Check parent minimum width
             Assert.AreEqual(200, parentUserInterfaceComponent.MinimumPixelHeight);  //Should be 200 as child component requires 100 space above, and 100 space below
-            Assert.AreEqual(250, parentUserInterfaceComponent.MinimumPixelWidth);   //Should be 250 as child component requires 250 space left and none right.
+            Assert.AreEqual(expectedParentWidth, parentUserInterfaceComponent.MinimumPixelWidth);   //Should be 250 as child component requires 250 space left and none right.
         }
 
     }
