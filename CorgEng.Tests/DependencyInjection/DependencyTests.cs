@@ -33,8 +33,6 @@ namespace CorgEng.Tests.DependencyInjection
         [TestMethod]
         public void TestDependency()
         {
-            //Load dependency injection
-            DependencyInjector.LoadDependencyInjection();
             //Execute test
             Assert.IsTrue(dependency.CompleteTest());
         }

@@ -94,6 +94,7 @@
     <Compile Include="DependencyInjection\DependencyTests.cs" />
     <Compile Include="EntityComponentSystem\SignalTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TestSetup.cs" />
     <Compile Include="UserInterfaceTests\UnitTests\UserInterfaceComponentTests.cs" />
     <Compile Include="UtilityTypes\BatchTests.cs" />
     <Compile Include="UtilityTypes\MatrixTests\GeneralMatrixTests.cs" />
@@ -132,7 +133,11 @@
       <Name>CorgEng.UtilityTypes</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <EmbeddedResource Include="CorgEngConfig.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

@@ -12,6 +12,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CorgEng.Rendering", "..\CorgEng.Rendering\CorgEng.Rendering.csproj", "{BFC5583F-3A05-43E4-9D07-81D80B1EC685}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CorgEng.Tests", "..\CorgEng.Tests\CorgEng.Tests.csproj", "{04D2DFC7-ABE3-46BA-9E98-8E01A8BE92B5}"
+	ProjectSection(ProjectDependencies) = postProject
+		{19E048D9-1587-40CC-BEE3-E1883A21FEC8} = {19E048D9-1587-40CC-BEE3-E1883A21FEC8}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CorgEng.UtilityTypes", "..\CorgEng.UtilityTypes\CorgEng.UtilityTypes.csproj", "{F9CCD4D7-9AF2-4167-9F31-A2879D82F854}"
 EndProject

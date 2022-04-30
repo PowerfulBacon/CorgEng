@@ -24,14 +24,6 @@ namespace CorgEng.Tests.UserInterfaceTests.UnitTests
         [UsingDependency]
         private static IAnchorDetailFactory AnchorDetailFactory;
 
-        public UserInterfaceComponentTests()
-        {
-
-            //Load dependency injection, if required.
-            if (!DependencyInjector.InjectionCompleted)
-                DependencyInjector.LoadDependencyInjection();
-        }
-
         /// <summary>
         /// This test verifies that the dependencies have been implemented.
         /// </summary>

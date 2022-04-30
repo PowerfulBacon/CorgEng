@@ -160,51 +160,62 @@ namespace CorgEng.Core
         /// TODO: Whitelist/blacklist types and add sandboxing
         /// </summary>
         /// <param name="filePath"></param>
-        public static void LoadConfig(string filePath)
+        public static void LoadConfig(string filePath, bool embeddedResource = true, bool awaitOnError = true)
         {
             try
             {
+                string resourceName;
+                Stream resourceStream;
                 //Locate the config resources file
-                string resourceName = Assembly.GetEntryAssembly().GetManifestResourceNames().Single(str => str.EndsWith(filePath));
-                using (Stream resourceStream = Assembly.GetEntryAssembly().GetManifestResourceStream(resourceName))
+                if (embeddedResource)
                 {
-                    XElement configElement = XElement.Load(resourceStream);
-                    foreach (XElement childElement in configElement.Elements())
+                    resourceName = Assembly.GetEntryAssembly().GetManifestResourceNames().Single(str => str.EndsWith(filePath));
+                    resourceStream = Assembly.GetEntryAssembly().GetManifestResourceStream(resourceName);
+                }
+                else
+                {
+                    resourceName = filePath;
+                    resourceStream = new FileStream(filePath, FileMode.Open);
+                }
+                XElement configElement = XElement.Load(resourceStream);
+                foreach (XElement childElement in configElement.Elements())
+                {
+                    switch (childElement.Name.ToString())
                     {
-                        switch (childElement.Name.ToString())
-                        {
-                            case "DependencyModules":
-                                List<Assembly> loadedAssemblies = new List<Assembly>();
-                                foreach (XElement dependency in childElement.Elements())
+                        case "DependencyModules":
+                            List<Assembly> loadedAssemblies = new List<Assembly>();
+                            foreach (XElement dependency in childElement.Elements())
+                            {
+                                try
                                 {
-                                    try
-                                    {
-                                        Assembly loadedModule = Assembly.LoadFile($"{Path.GetFullPath(dependency.Value)}.dll");
-                                        loadedAssemblies.Add(loadedModule);
-                                    }
-                                    catch (FileNotFoundException)
-                                    {
-                                        Console.Error.WriteLine($"[CorgEng Config Error]: Couldn't located module {dependency.Value}.dll");
-                                    }
+                                    Assembly loadedModule = Assembly.LoadFile($"{Path.GetFullPath(dependency.Value)}.dll");
+                                    loadedAssemblies.Add(loadedModule);
                                 }
-                                LoadedAssemblyModules = loadedAssemblies;
-                                break;
-                            default:
-                                Console.Error.WriteLine($"[CorgEng Config Error]: Error parsing config, unknown config attribute {childElement.Name}.");
-                                break;
-                        }
+                                catch (FileNotFoundException)
+                                {
+                                    Console.Error.WriteLine($"[CorgEng Config Error]: Couldn't located module {dependency.Value}.dll");
+                                }
+                            }
+                            LoadedAssemblyModules = loadedAssemblies;
+                            break;
+                        default:
+                            Console.Error.WriteLine($"[CorgEng Config Error]: Error parsing config, unknown config attribute {childElement.Name}.");
+                            break;
                     }
                 }
+                resourceStream.Close();
             }
             catch (System.Exception e)
             {
                 Console.Error.WriteLine("CorgEng: A fatal exception has occured during configuration loading!");
                 Console.Error.WriteLine(e.Message);
+                Console.Error.WriteLine(e.StackTrace);
                 Console.Error.WriteLine("The program may be corrupted or incorrectly configured.");
                 Console.Error.WriteLine("Please reinstall the program and ensure that if developing a CorgEng game, the config is set as an embedded resource.");
                 Console.Error.WriteLine("The application will now be terminated.");
                 Console.Error.WriteLine("Press any key to continue...");
-                Console.ReadKey();
+                if(awaitOnError)
+                    Console.ReadKey();
                 throw;
             }
             //Console

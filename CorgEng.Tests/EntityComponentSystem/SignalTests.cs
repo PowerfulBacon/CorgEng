@@ -114,10 +114,6 @@ namespace CorgEng.Tests.EntityComponentSystem
                 entitySystem = new TestEntitySystem();
                 entitySystem.SystemSetup();
             }
-            if (!DependencyInjector.InjectionCompleted)
-            {
-                DependencyInjector.LoadDependencyInjection();
-            }
         }
 
         [TestCleanup]
