@@ -31,9 +31,16 @@ namespace CorgEng.UserInterface.Components
 
         private List<UserInterfaceComponent> Children { get; } = new List<UserInterfaceComponent>();
 
-        //TODO: Create this constructor
-        public UserInterfaceComponent()
+        public UserInterfaceComponent(IUserInterfaceComponent parent, IAnchor anchorDetails) : this(anchorDetails)
         {
+            //Set the parent
+            Parent = parent;
+        }
+
+        public UserInterfaceComponent(IAnchor anchorDetails)
+        {
+            // Set the anchor details
+            Anchor = anchorDetails;
             // Give warnings if the anchor units are mismatched.
             // Mismatched anchor units could result in the right position being
             // further left than the left position.
@@ -50,6 +57,8 @@ namespace CorgEng.UserInterface.Components
                 Logger?.WriteLine($"User interface component's left anchor is right, and the right anchor is left. This will result in a maximum size which isn't supported.", LogType.WARNING);
             if (Anchor.BottomDetails.AnchorSide == AnchorDirections.TOP && Anchor.TopDetails.AnchorSide == AnchorDirections.BOTTOM)
                 Logger?.WriteLine($"User interface component's bottom anchor is top, and the top anchor is bottom. This will result in a maximum size which isn't supported.", LogType.WARNING);
+            //Calculate minimum scales
+            CalculateMinimumScales();
         }
 
         public void Render()
