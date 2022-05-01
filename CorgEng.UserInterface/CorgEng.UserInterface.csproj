@@ -87,6 +87,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Rendering\UserInterfaceRenderCore.cs" />
     <Compile Include="Rendering\UserInterfaceRenderCoreFactory.cs" />
+    <Compile Include="Rendering\UserinterfaceRenderer\UserInterfaceBatch.cs" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
@@ -101,6 +102,10 @@
     <ProjectReference Include="..\CorgEng.GenericInterfaces\CorgEng.GenericInterfaces.csproj">
       <Project>{E87F196E-5BF2-4AAF-8209-9F66A4F4B0EB}</Project>
       <Name>CorgEng.GenericInterfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CorgEng.UtilityTypes\CorgEng.UtilityTypes.csproj">
+      <Project>{F9CCD4D7-9AF2-4167-9F31-A2879D82F854}</Project>
+      <Name>CorgEng.UtilityTypes</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

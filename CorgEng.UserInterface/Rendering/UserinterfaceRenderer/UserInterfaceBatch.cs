@@ -7,9 +7,10 @@ using System.Threading.Tasks;
 
 namespace CorgEng.UserInterface.Rendering.UserinterfaceRenderer
 {
-    internal sealed class UserInterfaceBatch : Batch<SpriteBatch>
+    internal sealed class UserInterfaceBatch : Batch<UserInterfaceBatch>
     {
 
+        public override int[] BatchVectorSizes => new int[] { 3, 4 };
 
     }
 }
