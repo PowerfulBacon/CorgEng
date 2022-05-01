@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<UserInterface>
+  <UserInterfaceComponent leftAnchor="left:100" rightAnchor="left:200!" topAnchor="top:10%" bottomAnchor="bottom:10%!">
+    <UserInterfaceComponent leftAnchor="left:10%" rightAnchor="right:10%" topAnchor="top:10%" bottomAnchor="bottom:10%">
+    </UserInterfaceComponent>
+  </UserInterfaceComponent>
+</UserInterface>

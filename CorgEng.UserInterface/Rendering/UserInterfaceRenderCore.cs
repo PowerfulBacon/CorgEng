@@ -21,17 +21,22 @@ namespace CorgEng.UserInterface.Rendering
 
         private ISpriteRenderer spriteRenderer;
 
+        private ISpriteRenderObject spriteRenderObject;
+
         public override void Initialize()
         {
             //Create the sprite renderer.
             spriteRenderer = SpriteRendererFactory.CreateSpriteRenderer();
             //Initialize it
             spriteRenderer?.Initialize();
+
+            spriteRenderObject = SpriteRenderObjectFactory.CreateSpriteRenderObject(1, 0, 0, 256, 256);
+            spriteRenderer.StartRendering(spriteRenderObject);
         }
 
         public override void PerformRender()
         {
-            
+            spriteRenderer?.Render(Core.CorgEngMain.MainCamera);
         }
 
     }

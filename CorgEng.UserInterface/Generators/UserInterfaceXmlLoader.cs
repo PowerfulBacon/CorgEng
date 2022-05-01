@@ -1,5 +1,6 @@
 ﻿using CorgEng.Core.Dependencies;
 using CorgEng.DependencyInjection.Dependencies;
+using CorgEng.GenericInterfaces.Logging;
 using CorgEng.GenericInterfaces.UserInterface.Anchors;
 using CorgEng.GenericInterfaces.UserInterface.Components;
 using CorgEng.GenericInterfaces.UserInterface.Generators;
@@ -25,12 +26,23 @@ namespace CorgEng.UserInterface.Generators
         [UsingDependency]
         private static IAnchorDetailFactory AnchorDetailFactory;
 
+        [UsingDependency]
+        private static ILogger Logger;
+
         public IUserInterfaceComponent LoadUserInterface(string filepath)
         {
-            //Load the XML file provided
-            XElement userInterfaceElement = XElement.Load(filepath);
-            //Load the interface component
-            return LoadFromXmlComponent(userInterfaceElement);
+            try
+            {
+                //Load the XML file provided
+                XElement userInterfaceElement = XElement.Load(filepath);
+                //Load the interface component
+                return LoadFromXmlComponent(userInterfaceElement);
+            }
+            catch (Exception e)
+            {
+                Logger?.WriteLine(e, LogType.ERROR);
+                return null;
+            }
         }
 
         private IUserInterfaceComponent LoadFromXmlComponent(XElement node, IUserInterfaceComponent parent = null)

@@ -15,6 +15,8 @@ using CorgEng.GenericInterfaces.Rendering.Renderers.SpriteRendering;
 using CorgEng.GenericInterfaces.Rendering.RenderObjects.SpriteRendering;
 using CorgEng.GenericInterfaces.Rendering.Shaders;
 using CorgEng.GenericInterfaces.Rendering.Textures;
+using CorgEng.GenericInterfaces.UserInterface.Components;
+using CorgEng.GenericInterfaces.UserInterface.Generators;
 using CorgEng.UtilityTypes;
 using CorgEng.UtilityTypes.Vectors;
 using System;
@@ -45,12 +47,21 @@ namespace CorgEng.Example
             [UsingDependency]
             private static ITextureFactory textureFactory;
 
+            //Example user interface
+            [UsingDependency]
+            private static IUserInterfaceXmlLoader UserInterfaceXmlLoader;
+
+            private IUserInterfaceComponent rootInterfaceComponent;
+
             public override void Initialize()
             {
 
                 spriteRenderer = SpriteRendererFactory.CreateSpriteRenderer();
 
                 spriteRenderer?.Initialize();
+
+                //Load a user interface (Yes, I know this shouldn't be in the render core)
+                rootInterfaceComponent = UserInterfaceXmlLoader?.LoadUserInterface("Content/UserInterface/UserInterfaceSimple.xml");
 
                 //Create and setup a renderable thing
                 for (int x = 0; x < 39; x++)
@@ -70,6 +81,7 @@ namespace CorgEng.Example
             public override void PerformRender()
             {
                 spriteRenderer?.Render(CorgEngMain.MainCamera);
+                rootInterfaceComponent?.Render();
             }
         }
 

@@ -69,11 +69,13 @@ namespace CorgEng.UserInterface.Components
                 Logger?.WriteLine($"User interface component's bottom anchor is top, and the top anchor is bottom. This will result in a maximum size which isn't supported.", LogType.WARNING);
             //Calculate minimum scales
             CalculateMinimumScales();
+            //Render core init
+            RenderCore.Initialize();
         }
 
         public void Render()
         {
-            throw new NotImplementedException();
+            RenderCore.PerformRender();
         }
 
         public void AddChild(IUserInterfaceComponent userInterfaceComponent)
