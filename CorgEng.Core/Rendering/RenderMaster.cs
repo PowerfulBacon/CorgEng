@@ -130,5 +130,14 @@ namespace CorgEng.Core.Rendering
             glDisableVertexAttribArray(0);
         }
 
+        /// <summary>
+        /// Set the window width and height
+        /// </summary>
+        internal void SetWindowRenderSize(int width, int height)
+        {
+            Width = width;
+            Height = height;
+        }
+
     }
 }

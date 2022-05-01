@@ -14,6 +14,9 @@ namespace CorgEng.Core.Rendering
         [UsingDependency]
         private static IInputHandler InputHandler;
 
+        internal delegate void WindowResizeDelegate(int width, int height);
+        internal WindowResizeDelegate OnWindowResized;
+
         /// <summary>
         /// Open the main window
         /// </summary>
@@ -46,6 +49,8 @@ namespace CorgEng.Core.Rendering
             return Glfw.WindowShouldClose(glWindowInstance);
         }
 
+        private SizeCallback sizeCallbackAliveKeeper;
+
         /// <summary>
         /// Setup the main window.
         /// Ensure the program fits on the monitor
@@ -63,6 +68,15 @@ namespace CorgEng.Core.Rendering
             Import(Glfw.GetProcAddress);
             //Setup the input handler
             InputHandler?.SetupInputHandler(glWindowInstance);
+            //Set the window size callback
+            sizeCallbackAliveKeeper = WindowResizeHandler;
+            Glfw.SetWindowSizeCallback(glWindowInstance, sizeCallbackAliveKeeper);
+        }
+
+        private void WindowResizeHandler(IntPtr window, int width, int height)
+        {
+            //Update the render core
+            OnWindowResized?.Invoke(width, height);
         }
 
         public void Update()

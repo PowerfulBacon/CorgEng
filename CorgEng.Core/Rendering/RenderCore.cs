@@ -1,10 +1,15 @@
-﻿using System;
+﻿using CorgEng.Core.Dependencies;
+using CorgEng.GenericInterfaces.Logging;
+using System;
 using static OpenGL.Gl;
 
 namespace CorgEng.Core.Rendering
 {
     public abstract class RenderCore
     {
+
+        [UsingDependency]
+        private static ILogger Logger;
 
         /// <summary>
         /// The uint of the frame buffer
@@ -65,6 +70,23 @@ namespace CorgEng.Core.Rendering
         /// Perform rendering
         /// </summary>
         public abstract void PerformRender();
+
+        public unsafe void Resize(int width, int height)
+        {
+            //Set the new width
+            Width = width;
+            Height = height;
+            //Update the tex image
+            //Bind the created texture so we can modify it
+            glBindTexture(GL_TEXTURE_2D, RenderTextureUint);
+            //Load the texture scale
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, Width, Height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+            //Set the texture parameters
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+            //Log
+            Logger?.WriteLine($"Render core resized to {Width}x{Height}", LogType.DEBUG);
+        }
 
     }
 }

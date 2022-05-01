@@ -262,6 +262,8 @@ namespace CorgEng.UserInterface.Components
             {
                 childComponent.OnParentResized();
             }
+            //Update our render core size
+            
         }
     }
 }

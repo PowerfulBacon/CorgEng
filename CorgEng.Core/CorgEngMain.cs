@@ -79,6 +79,8 @@ namespace CorgEng.Core
             InternalRenderMaster = new RenderMaster();
             InternalRenderMaster.Initialize();
             Logger?.WriteLine("Successfully initialized render master", LogType.DEBUG);
+            //Bind the render master size to the game window size
+            GameWindow.OnWindowResized += InternalRenderMaster.SetWindowRenderSize;
             //Load non-priority modules
             ModuleInit();
         }
@@ -127,6 +129,8 @@ namespace CorgEng.Core
             MainCamera = camera;
         }
 
+        private static CorgEngWindow.WindowResizeDelegate activeSizeDelegate;
+
         /// <summary>
         /// Sets the CorgEng program's render core.
         /// </summary>
@@ -134,6 +138,9 @@ namespace CorgEng.Core
         {
             MainRenderCore = newRenderCore;
             MainRenderCore.Initialize();
+            GameWindow.OnWindowResized -= activeSizeDelegate;
+            activeSizeDelegate = MainRenderCore.Resize;
+            GameWindow.OnWindowResized += activeSizeDelegate;
         }
 
         /// <summary>
