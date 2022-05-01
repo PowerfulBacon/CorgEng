@@ -121,7 +121,6 @@
     <Compile Include="UserInterface\Anchors\IAnchorDetailFactory.cs" />
     <Compile Include="UserInterface\Anchors\IAnchorDetails.cs" />
     <Compile Include="UserInterface\Anchors\IAnchorFactory.cs" />
-    <Compile Include="UserInterface\Anchors\ScaleAnchors.cs" />
     <Compile Include="UserInterface\Components\IUserInterfaceComponent.cs" />
     <Compile Include="UserInterface\Components\IUserInterfaceComponentFactory.cs" />
     <Compile Include="UserInterface\Components\IUserInterfaceRenderCore.cs" />

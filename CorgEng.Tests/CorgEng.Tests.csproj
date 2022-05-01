@@ -156,7 +156,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="UserInterfaceTests\UnitTests\Content\UserInterfaceExample.xml">
+    <Content Include="UserInterfaceTests\UnitTests\Content\UserInterfaceSimple.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

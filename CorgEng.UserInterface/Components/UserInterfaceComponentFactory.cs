@@ -13,14 +13,14 @@ namespace CorgEng.UserInterface.Components
     internal class UserInterfaceComponentFactory : IUserInterfaceComponentFactory
     {
 
-        public IUserInterfaceComponent CreateGenericUserInterfaceComponent(IUserInterfaceComponent parent, IAnchor anchorDetails, ScaleAnchors scaleAnchor)
+        public IUserInterfaceComponent CreateGenericUserInterfaceComponent(IUserInterfaceComponent parent, IAnchor anchorDetails)
         {
-            return new UserInterfaceComponent(parent, anchorDetails, scaleAnchor);
+            return new UserInterfaceComponent(parent, anchorDetails);
         }
 
-        public IUserInterfaceComponent CreateGenericUserInterfaceComponent(IAnchor anchorDetails, ScaleAnchors scaleAnchor)
+        public IUserInterfaceComponent CreateGenericUserInterfaceComponent(IAnchor anchorDetails)
         {
-            return new UserInterfaceComponent(anchorDetails, scaleAnchor);
+            return new UserInterfaceComponent(anchorDetails);
         }
 
     }

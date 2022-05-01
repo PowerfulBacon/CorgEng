@@ -22,11 +22,6 @@ namespace CorgEng.GenericInterfaces.UserInterface.Components
         IAnchor Anchor { get; }
 
         /// <summary>
-        /// The scale anchor information
-        /// </summary>
-        ScaleAnchors ScaleAnchor { get; }
-
-        /// <summary>
         /// The parent user interface component
         /// </summary>
         IUserInterfaceComponent Parent { get; }

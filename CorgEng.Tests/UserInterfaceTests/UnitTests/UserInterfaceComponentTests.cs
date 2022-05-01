@@ -38,11 +38,8 @@ namespace CorgEng.Tests.UserInterfaceTests.UnitTests
             Assert.IsNotNull(AnchorDetailFactory, "Anchor detail factory hasn't been implemented");
         }
 
-        /// <summary>
-        /// Test how scaling anchors work
-        /// </summary>
         [TestMethod]
-        public void TestScaleAnchorNonExpansion()
+        public void TestParentInterfaceExpansionPercentages()
         {
             //Verify assumptions
             if (AnchorDetailFactory == null)
@@ -58,8 +55,185 @@ namespace CorgEng.Tests.UserInterfaceTests.UnitTests
                     AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.RIGHT, AnchorUnits.PIXELS, 0),
                     AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.TOP, AnchorUnits.PIXELS, 0),
                     AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.BOTTOM, AnchorUnits.PIXELS, 0)
-                ),
-                ScaleAnchors.NONE
+                )
+            );
+            parentUserInterfaceComponent.SetWidth(1000, 1000);
+            //Add a child component which can scale but starts with no height
+            IUserInterfaceComponent expandingComponent = UserInterfaceComponentFactory.CreateGenericUserInterfaceComponent(
+                parentUserInterfaceComponent,
+                AnchorFactory.CreateAnchor(
+                    AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.LEFT, AnchorUnits.PERCENTAGE, 10, true),
+                    AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.RIGHT, AnchorUnits.PERCENTAGE, 10, true),
+                    AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.TOP, AnchorUnits.PERCENTAGE, 10, true),
+                    AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.BOTTOM, AnchorUnits.PERCENTAGE, 10)
+                )
+            );
+            //Add a child component to that which has a huge scale
+            IUserInterfaceComponent bigComponent = UserInterfaceComponentFactory.CreateGenericUserInterfaceComponent(
+                expandingComponent,
+                AnchorFactory.CreateAnchor(
+                    AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.LEFT, AnchorUnits.PIXELS, 0, true),
+                    AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.RIGHT, AnchorUnits.PIXELS, 0, true),
+                    AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.TOP, AnchorUnits.PIXELS, 0, true),
+                    AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.TOP, AnchorUnits.PIXELS, 500, true)
+                )
+            );
+            //Validate the height of the expanding component
+            //Minimum isn't enforced for super UI components
+            Assert.AreEqual(1000, parentUserInterfaceComponent.PixelHeight, "Failed assumption");
+            Assert.AreEqual(500, parentUserInterfaceComponent.MinimumPixelHeight, "Failed assumption");
+            //Middle comeponnt
+            Assert.AreEqual(800, expandingComponent.PixelHeight, "Failed assumption");
+            Assert.AreEqual(500, expandingComponent.MinimumPixelHeight, "Failed assumption");
+            //Child component
+            Assert.AreEqual(500, bigComponent.PixelHeight, "Failed assumption");
+            Assert.AreEqual(500, bigComponent.MinimumPixelHeight, "Failed assumption");
+            //Expand the parent interface
+            parentUserInterfaceComponent.SetWidth(1000, 700);
+            //Verify results
+            Assert.AreEqual(700, parentUserInterfaceComponent.PixelHeight);
+            Assert.AreEqual(500, parentUserInterfaceComponent.MinimumPixelHeight);
+            //Middle comeponnt
+            Assert.AreEqual(560, expandingComponent.PixelHeight);
+            Assert.AreEqual(500, expandingComponent.MinimumPixelHeight);
+            //Child component
+            Assert.AreEqual(500, bigComponent.PixelHeight);
+            Assert.AreEqual(500, bigComponent.MinimumPixelHeight);
+        }
+
+        [TestMethod]
+        public void TestParentInterfaceExpansion()
+        {
+            //Verify assumptions
+            if (AnchorDetailFactory == null)
+                Assert.Inconclusive("Anchor detail factory not located.");
+            if (AnchorFactory == null)
+                Assert.Inconclusive("Anchor factory not located.");
+            if (UserInterfaceComponentFactory == null)
+                Assert.Inconclusive("User interface factory not located.");
+            //Create a root component
+            IUserInterfaceComponent parentUserInterfaceComponent = UserInterfaceComponentFactory.CreateGenericUserInterfaceComponent(
+                AnchorFactory.CreateAnchor(
+                    AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.LEFT, AnchorUnits.PIXELS, 0),
+                    AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.RIGHT, AnchorUnits.PIXELS, 0),
+                    AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.TOP, AnchorUnits.PIXELS, 0),
+                    AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.BOTTOM, AnchorUnits.PIXELS, 0)
+                )
+            );
+            parentUserInterfaceComponent.SetWidth(1000, 1000);
+            //Add a child component which can scale but starts with no height
+            IUserInterfaceComponent expandingComponent = UserInterfaceComponentFactory.CreateGenericUserInterfaceComponent(
+                parentUserInterfaceComponent,
+                AnchorFactory.CreateAnchor(
+                    AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.LEFT, AnchorUnits.PIXELS, 100, true),
+                    AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.RIGHT, AnchorUnits.PIXELS, 100, true),
+                    AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.TOP, AnchorUnits.PIXELS, 100, true),
+                    AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.BOTTOM, AnchorUnits.PIXELS, 100)
+                )
+            );
+            //Add a child component to that which has a huge scale
+            IUserInterfaceComponent bigComponent = UserInterfaceComponentFactory.CreateGenericUserInterfaceComponent(
+                expandingComponent,
+                AnchorFactory.CreateAnchor(
+                    AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.LEFT, AnchorUnits.PIXELS, 0, true),
+                    AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.RIGHT, AnchorUnits.PIXELS, 0, true),
+                    AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.TOP, AnchorUnits.PIXELS, 0, true),
+                    AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.TOP, AnchorUnits.PIXELS, 500, true)
+                )
+            );
+            //Validate the height of the expanding component
+            //Minimum isn't enforced for super UI components
+            Assert.AreEqual(1000, parentUserInterfaceComponent.PixelHeight, "Failed assumption");
+            Assert.AreEqual(700, parentUserInterfaceComponent.MinimumPixelHeight, "Failed assumption");
+            //Middle comeponnt
+            Assert.AreEqual(800, expandingComponent.PixelHeight, "Failed assumption");
+            Assert.AreEqual(500, expandingComponent.MinimumPixelHeight, "Failed assumption");
+            //Child component
+            Assert.AreEqual(500, bigComponent.PixelHeight, "Failed assumption");
+            Assert.AreEqual(500, bigComponent.MinimumPixelHeight, "Failed assumption");
+            //Expand the parent interface
+            parentUserInterfaceComponent.SetWidth(1000, 700);
+            //Verify results
+            Assert.AreEqual(700, parentUserInterfaceComponent.PixelHeight);
+            Assert.AreEqual(700, parentUserInterfaceComponent.MinimumPixelHeight);
+            //Middle comeponnt
+            Assert.AreEqual(500, expandingComponent.PixelHeight);
+            Assert.AreEqual(500, expandingComponent.MinimumPixelHeight);
+            //Child component
+            Assert.AreEqual(500, bigComponent.PixelHeight);
+            Assert.AreEqual(500, bigComponent.MinimumPixelHeight);
+        }
+
+        [TestMethod]
+        public void TestExpansionWithMargin()
+        {
+            //Verify assumptions
+            if (AnchorDetailFactory == null)
+                Assert.Inconclusive("Anchor detail factory not located.");
+            if (AnchorFactory == null)
+                Assert.Inconclusive("Anchor factory not located.");
+            if (UserInterfaceComponentFactory == null)
+                Assert.Inconclusive("User interface factory not located.");
+            //Create a root component
+            IUserInterfaceComponent parentUserInterfaceComponent = UserInterfaceComponentFactory.CreateGenericUserInterfaceComponent(
+                AnchorFactory.CreateAnchor(
+                    AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.LEFT, AnchorUnits.PIXELS, 0),
+                    AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.RIGHT, AnchorUnits.PIXELS, 0),
+                    AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.TOP, AnchorUnits.PIXELS, 0),
+                    AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.BOTTOM, AnchorUnits.PIXELS, 0)
+                )
+            );
+            parentUserInterfaceComponent.SetWidth(1000, 1000);
+            //Add a child component which can scale but starts with no height
+            IUserInterfaceComponent expandingComponent = UserInterfaceComponentFactory.CreateGenericUserInterfaceComponent(
+                parentUserInterfaceComponent,
+                AnchorFactory.CreateAnchor(
+                    AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.LEFT, AnchorUnits.PIXELS, 100, true),
+                    AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.RIGHT, AnchorUnits.PIXELS, 100, true),
+                    AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.TOP, AnchorUnits.PIXELS, 100, true),
+                    AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.TOP, AnchorUnits.PIXELS, 100)
+                )
+            );
+            //Add a child component to that which has a huge scale
+            IUserInterfaceComponent bigComponent = UserInterfaceComponentFactory.CreateGenericUserInterfaceComponent(
+                expandingComponent,
+                AnchorFactory.CreateAnchor(
+                    AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.LEFT, AnchorUnits.PIXELS, 0, true),
+                    AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.RIGHT, AnchorUnits.PIXELS, 0, true),
+                    AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.TOP, AnchorUnits.PIXELS, 0, true),
+                    AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.TOP, AnchorUnits.PIXELS, 500, true)
+                )
+            );
+            //Validate the height of the expanding component
+            //Minimum isn't enforced for super UI components
+            Assert.AreEqual(1000, parentUserInterfaceComponent.PixelHeight);
+            Assert.AreEqual(600, parentUserInterfaceComponent.MinimumPixelHeight);
+            //Middle comeponnt
+            Assert.AreEqual(500, expandingComponent.PixelHeight);
+            Assert.AreEqual(500, expandingComponent.MinimumPixelHeight);
+            //Child component
+            Assert.AreEqual(500, bigComponent.PixelHeight);
+            Assert.AreEqual(500, bigComponent.MinimumPixelHeight);
+        }
+
+        [TestMethod]
+        public void TestMinimumScale()
+        {
+            //Verify assumptions
+            if (AnchorDetailFactory == null)
+                Assert.Inconclusive("Anchor detail factory not located.");
+            if (AnchorFactory == null)
+                Assert.Inconclusive("Anchor factory not located.");
+            if (UserInterfaceComponentFactory == null)
+                Assert.Inconclusive("User interface factory not located.");
+            //Create a root component
+            IUserInterfaceComponent parentUserInterfaceComponent = UserInterfaceComponentFactory.CreateGenericUserInterfaceComponent(
+                AnchorFactory.CreateAnchor(
+                    AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.LEFT, AnchorUnits.PIXELS, 0),
+                    AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.RIGHT, AnchorUnits.PIXELS, 0),
+                    AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.TOP, AnchorUnits.PIXELS, 0),
+                    AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.BOTTOM, AnchorUnits.PIXELS, 0)
+                )
             );
             parentUserInterfaceComponent.SetWidth(1000, 1000);
             //Add a child component which can scale but starts with no height
@@ -68,11 +242,119 @@ namespace CorgEng.Tests.UserInterfaceTests.UnitTests
                 AnchorFactory.CreateAnchor(
                     AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.LEFT, AnchorUnits.PIXELS, 0),
                     AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.RIGHT, AnchorUnits.PIXELS, 0),
+                    AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.TOP, AnchorUnits.PIXELS, 0, true),
+                    AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.TOP, AnchorUnits.PIXELS, 100)
+                )
+            );
+            //Add a child component to that which has a huge scale
+            IUserInterfaceComponent bigComponent = UserInterfaceComponentFactory.CreateGenericUserInterfaceComponent(
+                expandingComponent,
+                AnchorFactory.CreateAnchor(
+                    AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.LEFT, AnchorUnits.PIXELS, 0),
+                    AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.RIGHT, AnchorUnits.PIXELS, 0),
                     AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.TOP, AnchorUnits.PIXELS, 0),
                     AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.TOP, AnchorUnits.PIXELS, 500)
-                ),
-                //DO NOT EXPAND, Maintain 500 pixel height.
-                ScaleAnchors.NONE
+                )
+            );
+            //Validate the height of the expanding component
+            //Minimum isn't enforced for super UI components
+            Assert.AreEqual(1000, parentUserInterfaceComponent.PixelHeight);
+            Assert.AreEqual(500, parentUserInterfaceComponent.MinimumPixelHeight);
+            //Middle comeponnt
+            Assert.AreEqual(500, expandingComponent.PixelHeight);
+            Assert.AreEqual(500, expandingComponent.MinimumPixelHeight);
+            //Child component
+            Assert.AreEqual(500, bigComponent.PixelHeight);
+            Assert.AreEqual(500, bigComponent.MinimumPixelHeight);
+        }
+
+        /// <summary>
+        /// Test how scaling anchors work
+        /// </summary>
+        [TestMethod]
+        public void TestStrictExpansion()
+        {
+            //Verify assumptions
+            if (AnchorDetailFactory == null)
+                Assert.Inconclusive("Anchor detail factory not located.");
+            if (AnchorFactory == null)
+                Assert.Inconclusive("Anchor factory not located.");
+            if (UserInterfaceComponentFactory == null)
+                Assert.Inconclusive("User interface factory not located.");
+            //Create a root component
+            IUserInterfaceComponent parentUserInterfaceComponent = UserInterfaceComponentFactory.CreateGenericUserInterfaceComponent(
+                AnchorFactory.CreateAnchor(
+                    AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.LEFT, AnchorUnits.PIXELS, 0),
+                    AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.RIGHT, AnchorUnits.PIXELS, 0),
+                    AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.TOP, AnchorUnits.PIXELS, 0),
+                    AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.BOTTOM, AnchorUnits.PIXELS, 0)
+                )
+            );
+            parentUserInterfaceComponent.SetWidth(1000, 1000);
+            //This element should neve rexpand past 500 height
+            IUserInterfaceComponent expandingComponent = UserInterfaceComponentFactory.CreateGenericUserInterfaceComponent(
+                parentUserInterfaceComponent,
+                AnchorFactory.CreateAnchor(
+                    AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.LEFT, AnchorUnits.PIXELS, 0),
+                    AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.RIGHT, AnchorUnits.PIXELS, 0),
+                    AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.TOP, AnchorUnits.PIXELS, 0, true),
+                    AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.TOP, AnchorUnits.PIXELS, 500, true)
+                )
+            );
+            //Add a child component to that which has a huge scale
+            IUserInterfaceComponent bigComponent = UserInterfaceComponentFactory.CreateGenericUserInterfaceComponent(
+                expandingComponent,
+                AnchorFactory.CreateAnchor(
+                    AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.LEFT, AnchorUnits.PIXELS, 0),
+                    AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.RIGHT, AnchorUnits.PIXELS, 0),
+                    AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.TOP, AnchorUnits.PIXELS, 0, true),
+                    AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.TOP, AnchorUnits.PIXELS, 10000)
+                )
+            );
+            //Validate the height of the expanding component
+            //Minimum isn't enforced for super UI components
+            Assert.AreEqual(1000, parentUserInterfaceComponent.PixelHeight);
+            Assert.AreEqual(500, parentUserInterfaceComponent.MinimumPixelHeight);
+            //Middle comeponnt
+            Assert.AreEqual(500, expandingComponent.PixelHeight);
+            Assert.AreEqual(500, expandingComponent.MinimumPixelHeight);
+            //Child component
+            Assert.AreEqual(10000, bigComponent.PixelHeight);
+            Assert.AreEqual(10000, bigComponent.MinimumPixelHeight);
+        }
+
+        /// <summary>
+        /// Test how scaling anchors work
+        /// </summary>
+        [TestMethod]
+        public void TestNonStrictExpansion()
+        {
+            //Verify assumptions
+            if (AnchorDetailFactory == null)
+                Assert.Inconclusive("Anchor detail factory not located.");
+            if (AnchorFactory == null)
+                Assert.Inconclusive("Anchor factory not located.");
+            if (UserInterfaceComponentFactory == null)
+                Assert.Inconclusive("User interface factory not located.");
+            //Create a root component
+            IUserInterfaceComponent parentUserInterfaceComponent = UserInterfaceComponentFactory.CreateGenericUserInterfaceComponent(
+                AnchorFactory.CreateAnchor(
+                    AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.LEFT, AnchorUnits.PIXELS, 0),
+                    AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.RIGHT, AnchorUnits.PIXELS, 0),
+                    AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.TOP, AnchorUnits.PIXELS, 0),
+                    AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.BOTTOM, AnchorUnits.PIXELS, 0)
+                )
+            );
+            parentUserInterfaceComponent.SetWidth(1000, 1000);
+            //Add a child component which can scale but starts with no height
+            IUserInterfaceComponent expandingComponent = UserInterfaceComponentFactory.CreateGenericUserInterfaceComponent(
+                parentUserInterfaceComponent,
+                AnchorFactory.CreateAnchor(
+                    AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.LEFT, AnchorUnits.PIXELS, 0),
+                    AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.RIGHT, AnchorUnits.PIXELS, 0),
+                    AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.TOP, AnchorUnits.PIXELS, 0, true),
+                    AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.TOP, AnchorUnits.PIXELS, 100)
+                )
             );
             //Add a child component to that which has a huge scale
             IUserInterfaceComponent bigComponent = UserInterfaceComponentFactory.CreateGenericUserInterfaceComponent(
@@ -82,8 +364,7 @@ namespace CorgEng.Tests.UserInterfaceTests.UnitTests
                     AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.RIGHT, AnchorUnits.PIXELS, 0),
                     AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.TOP, AnchorUnits.PIXELS, 0),
                     AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.TOP, AnchorUnits.PIXELS, 10000)
-                ),
-                ScaleAnchors.NONE
+                )
             );
             //Validate the height of the expanding component
             //Minimum isn't enforced for super UI components
@@ -95,64 +376,6 @@ namespace CorgEng.Tests.UserInterfaceTests.UnitTests
             //Child component
             Assert.AreEqual(10000, bigComponent.PixelHeight);
             Assert.AreEqual(10000, bigComponent.MinimumPixelHeight);
-        }
-
-        /// <summary>
-        /// Test how scaling anchors work
-        /// </summary>
-        [TestMethod]
-        public void TestScaleAnchorExpansion()
-        {
-            //Verify assumptions
-            if (AnchorDetailFactory == null)
-                Assert.Inconclusive("Anchor detail factory not located.");
-            if (AnchorFactory == null)
-                Assert.Inconclusive("Anchor factory not located.");
-            if (UserInterfaceComponentFactory == null)
-                Assert.Inconclusive("User interface factory not located.");
-            //Create a root component
-            IUserInterfaceComponent parentUserInterfaceComponent = UserInterfaceComponentFactory.CreateGenericUserInterfaceComponent(
-                AnchorFactory.CreateAnchor(
-                    AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.LEFT, AnchorUnits.PIXELS, 0),
-                    AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.RIGHT, AnchorUnits.PIXELS, 0),
-                    AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.TOP, AnchorUnits.PIXELS, 0),
-                    AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.BOTTOM, AnchorUnits.PIXELS, 0)
-                ),
-                ScaleAnchors.NONE
-            );
-            parentUserInterfaceComponent.SetWidth(1000, 1000);
-            //Add a child component which can scale but starts with no height
-            IUserInterfaceComponent expandingComponent = UserInterfaceComponentFactory.CreateGenericUserInterfaceComponent(
-                parentUserInterfaceComponent,
-                AnchorFactory.CreateAnchor(
-                    AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.LEFT, AnchorUnits.PIXELS, 0),
-                    AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.RIGHT, AnchorUnits.PIXELS, 0),
-                    AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.TOP, AnchorUnits.PIXELS, 0),
-                    AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.TOP, AnchorUnits.PIXELS, 100)
-                ),
-                ScaleAnchors.TOP_LEFT
-            );
-            //Add a child component to that which has a huge scale
-            IUserInterfaceComponent bigComponent = UserInterfaceComponentFactory.CreateGenericUserInterfaceComponent(
-                expandingComponent,
-                AnchorFactory.CreateAnchor(
-                    AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.LEFT, AnchorUnits.PIXELS, 0),
-                    AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.RIGHT, AnchorUnits.PIXELS, 0),
-                    AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.TOP, AnchorUnits.PIXELS, 0),
-                    AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.TOP, AnchorUnits.PIXELS, 10000)
-                ),
-                ScaleAnchors.NONE
-            );
-            //Validate the height of the expanding component
-            //Minimum isn't enforced for super UI components
-            Assert.AreEqual(1000, parentUserInterfaceComponent.PixelHeight);            //Should be 1000 always
-            Assert.AreEqual(100, parentUserInterfaceComponent.MinimumPixelHeight);      //Should be a minimum of 100 since child requires 100 spacce
-            //Middle comeponnt
-            Assert.AreEqual(10000, expandingComponent.PixelHeight);                     //Should expand to have its children fit
-            Assert.AreEqual(100, expandingComponent.MinimumPixelHeight);                //Minimum of 100, expanding components ignore minimum of children
-            //Child component
-            Assert.AreEqual(10000, bigComponent.PixelHeight);                           //Forced to 10000
-            Assert.AreEqual(10000, bigComponent.MinimumPixelHeight);                    //Forced to 10000
         }
 
         /// <summary>
@@ -191,7 +414,7 @@ namespace CorgEng.Tests.UserInterfaceTests.UnitTests
             //Create the parent anchor
             IAnchor parentAnchor = AnchorFactory.CreateAnchor(parentLeftAnchorDetails, parentRightAnchorDetails, parentTopAnchorDetails, parentBottomAnchorDetails);
             //Create the parent component
-            IUserInterfaceComponent parentUserInterfaceComponent = UserInterfaceComponentFactory.CreateGenericUserInterfaceComponent(parentAnchor, ScaleAnchors.NONE);
+            IUserInterfaceComponent parentUserInterfaceComponent = UserInterfaceComponentFactory.CreateGenericUserInterfaceComponent(parentAnchor);
             parentUserInterfaceComponent.SetWidth(parentWidth, 1000);
             //Setup the child component
             //Create the anchor details
@@ -202,7 +425,7 @@ namespace CorgEng.Tests.UserInterfaceTests.UnitTests
             //Create the anchor
             IAnchor childAnchor = AnchorFactory.CreateAnchor(childLeftAnchorDetails, childRightAnchorDetails, childTopAnchorDetails, childBottomAnchorDetails);
             //Create the child component
-            IUserInterfaceComponent childUserInterfaceComponent = UserInterfaceComponentFactory.CreateGenericUserInterfaceComponent(parentUserInterfaceComponent, childAnchor, ScaleAnchors.NONE);
+            IUserInterfaceComponent childUserInterfaceComponent = UserInterfaceComponentFactory.CreateGenericUserInterfaceComponent(parentUserInterfaceComponent, childAnchor);
             //Verify child width
             Assert.AreEqual(800, childUserInterfaceComponent.PixelHeight);
             Assert.AreEqual(expectedChildPixelWidth, childUserInterfaceComponent.PixelWidth);
@@ -242,7 +465,7 @@ namespace CorgEng.Tests.UserInterfaceTests.UnitTests
             //Craete the anchor
             IAnchor anchor = AnchorFactory.CreateAnchor(leftAnchorDetails, rightAnchorDetails, topAnchorDetails, bottomAnchorDetails);
             //Create a generic user interface component
-            IUserInterfaceComponent userInterfaceComponent = UserInterfaceComponentFactory.CreateGenericUserInterfaceComponent(anchor, ScaleAnchors.NONE);
+            IUserInterfaceComponent userInterfaceComponent = UserInterfaceComponentFactory.CreateGenericUserInterfaceComponent(anchor);
             //Ensure user interface minimum scale correctness
             Assert.AreEqual(0, userInterfaceComponent.MinimumPixelHeight);
             Assert.AreEqual(expectedWidth, userInterfaceComponent.MinimumPixelWidth);
@@ -291,9 +514,9 @@ namespace CorgEng.Tests.UserInterfaceTests.UnitTests
             //Craete the anchor
             IAnchor childAnchor = AnchorFactory.CreateAnchor(childLeftAnchorDetails, childRightAnchorDetails, childTopAnchorDetails, childBottomAnchorDetails);
             //Create a generic user interface component
-            IUserInterfaceComponent parentUserInterfaceComponent = UserInterfaceComponentFactory.CreateGenericUserInterfaceComponent(parentAnchor, ScaleAnchors.NONE);
+            IUserInterfaceComponent parentUserInterfaceComponent = UserInterfaceComponentFactory.CreateGenericUserInterfaceComponent(parentAnchor);
             //Create another generic user interface component
-            UserInterfaceComponentFactory.CreateGenericUserInterfaceComponent(parentUserInterfaceComponent, childAnchor, ScaleAnchors.NONE);
+            UserInterfaceComponentFactory.CreateGenericUserInterfaceComponent(parentUserInterfaceComponent, childAnchor);
             //Check parent minimum width
             Assert.AreEqual(200, parentUserInterfaceComponent.MinimumPixelHeight);  //Should be 200 as child component requires 100 space above, and 100 space below
             Assert.AreEqual(expectedParentWidth, parentUserInterfaceComponent.MinimumPixelWidth);   //Should be 250 as child component requires 250 space left and none right.

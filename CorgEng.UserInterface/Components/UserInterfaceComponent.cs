@@ -31,20 +31,16 @@ namespace CorgEng.UserInterface.Components
 
         private List<IUserInterfaceComponent> Children { get; } = new List<IUserInterfaceComponent>();
 
-        public ScaleAnchors ScaleAnchor { get; }
-
-        public UserInterfaceComponent(IUserInterfaceComponent parent, IAnchor anchorDetails, ScaleAnchors scaleAnchor) : this(anchorDetails, scaleAnchor)
+        public UserInterfaceComponent(IUserInterfaceComponent parent, IAnchor anchorDetails) : this(anchorDetails)
         {
             //Set the parent
             Parent = parent;
             //Set children
-            Parent.AddChild(this);
+            Parent?.AddChild(this);
         }
 
-        public UserInterfaceComponent(IAnchor anchorDetails, ScaleAnchors scaleAnchor)
+        public UserInterfaceComponent(IAnchor anchorDetails)
         {
-            //Scale anchor
-            ScaleAnchor = scaleAnchor;
             // Set the anchor details
             Anchor = anchorDetails;
             // Give warnings if the anchor units are mismatched.
@@ -77,11 +73,23 @@ namespace CorgEng.UserInterface.Components
             //Add the child
             Children.Add(userInterfaceComponent);
             //Recalculate minimum UI scale
-            CalculateMinimumScales();
+            GetTopLevelParent(this).CalculateMinimumScales();
             //Recalculate child component's scale
             userInterfaceComponent.OnParentResized();
             //Check for expansion
-            CheckExpansion();
+            CheckExpansion(this);
+        }
+
+        /// <summary>
+        /// Get the parent component
+        /// </summary>
+        /// <param name="current"></param>
+        /// <returns></returns>
+        private IUserInterfaceComponent GetTopLevelParent(IUserInterfaceComponent current)
+        {
+            if (current.Parent == null)
+                return current;
+            return GetTopLevelParent(current.Parent);
         }
 
         /// <summary>
@@ -89,20 +97,20 @@ namespace CorgEng.UserInterface.Components
         /// If we aren't set to resize, maintain size based on parent component and don't contain subcomponent
         /// If we are set to resize, expand our size to fit our children
         /// </summary>
-        private void CheckExpansion()
+        public void CheckExpansion(IUserInterfaceComponent current)
         {
             //If we have no parent, we do not expand to fit our children (Don't change parent UI scales).
-            if (Parent == null)
-                return;
-            //Check if we are allowed to expand
-            if (ScaleAnchor == ScaleAnchors.NONE)
+            if (current.Parent == null)
                 return;
             //Check if we need to expand
+            current.SetWidth(current.PixelWidth, current.PixelHeight);
+            //Expand parent
+            CheckExpansion(current.Parent);
         }
 
         public List<IUserInterfaceComponent> GetChildren()
         {
-            throw new NotImplementedException();
+            return Children;
         }
 
         /// <summary>
@@ -192,33 +200,40 @@ namespace CorgEng.UserInterface.Components
             MinimumPixelHeight = 0;
             //If we don't expand our minimum width inherits from children components
             //Otherwise it is soley based on our parent component
-            if (ScaleAnchor == ScaleAnchors.NONE)
+            //Calculate the minimum widths of children recursively.
+            //Skip if all are strict
+            if (!Anchor.LeftDetails.Strict || !Anchor.RightDetails.Strict || !Anchor.TopDetails.Strict || !Anchor.BottomDetails.Strict)
             {
-                //Calculate the minimum widths of children recursively.
                 foreach (IUserInterfaceComponent childComponent in Children)
                 {
                     //Calclate the minimum scale
                     childComponent.CalculateMinimumScales();
                     //Determine our minimum scales based on this child component (Account for child min width + child offset)
-                    MinimumPixelWidth = Math.Max(
-                        MinimumPixelWidth,
-                        childComponent.MinimumPixelWidth
-                        + (childComponent.Anchor.LeftDetails.AnchorSide == AnchorDirections.LEFT && childComponent.Anchor.LeftDetails.AnchorUnits == AnchorUnits.PIXELS
-                            ? childComponent.Anchor.LeftDetails.AnchorOffset
-                            : 0)
-                        + (childComponent.Anchor.RightDetails.AnchorSide == AnchorDirections.RIGHT && childComponent.Anchor.RightDetails.AnchorUnits == AnchorUnits.PIXELS
-                            ? childComponent.Anchor.RightDetails.AnchorOffset
-                            : 0));
+                    if (!Anchor.LeftDetails.Strict || !Anchor.RightDetails.Strict)
+                    {
+                        MinimumPixelWidth = Math.Max(
+                            MinimumPixelWidth,
+                            childComponent.MinimumPixelWidth
+                            + (childComponent.Anchor.LeftDetails.AnchorSide == AnchorDirections.LEFT && childComponent.Anchor.LeftDetails.AnchorUnits == AnchorUnits.PIXELS
+                                ? childComponent.Anchor.LeftDetails.AnchorOffset
+                                : 0)
+                            + (childComponent.Anchor.RightDetails.AnchorSide == AnchorDirections.RIGHT && childComponent.Anchor.RightDetails.AnchorUnits == AnchorUnits.PIXELS
+                                ? childComponent.Anchor.RightDetails.AnchorOffset
+                                : 0));
+                    }
                     //Determine minimum pixel height
-                    MinimumPixelHeight = Math.Max(
-                        MinimumPixelHeight,
-                        childComponent.MinimumPixelHeight
-                        + (childComponent.Anchor.BottomDetails.AnchorSide == AnchorDirections.BOTTOM && childComponent.Anchor.BottomDetails.AnchorUnits == AnchorUnits.PIXELS
-                            ? childComponent.Anchor.BottomDetails.AnchorOffset
-                            : 0)
-                        + (childComponent.Anchor.TopDetails.AnchorSide == AnchorDirections.TOP && childComponent.Anchor.TopDetails.AnchorUnits == AnchorUnits.PIXELS
-                            ? childComponent.Anchor.TopDetails.AnchorOffset
-                            : 0));
+                    if (!Anchor.TopDetails.Strict || !Anchor.BottomDetails.Strict)
+                    {
+                        MinimumPixelHeight = Math.Max(
+                            MinimumPixelHeight,
+                            childComponent.MinimumPixelHeight
+                            + (childComponent.Anchor.BottomDetails.AnchorSide == AnchorDirections.BOTTOM && childComponent.Anchor.BottomDetails.AnchorUnits == AnchorUnits.PIXELS
+                                ? childComponent.Anchor.BottomDetails.AnchorOffset
+                                : 0)
+                            + (childComponent.Anchor.TopDetails.AnchorSide == AnchorDirections.TOP && childComponent.Anchor.TopDetails.AnchorUnits == AnchorUnits.PIXELS
+                                ? childComponent.Anchor.TopDetails.AnchorOffset
+                                : 0));
+                    }
                 }
             }
             //Calculate our minimum width alone
