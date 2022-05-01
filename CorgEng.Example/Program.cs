@@ -35,7 +35,9 @@ namespace CorgEng.Example
             private Entity renderableEntity;
 
             [UsingDependency]
-            private static ISpriteRenderer spriteRenderer;
+            private static ISpriteRendererFactory SpriteRendererFactory;
+
+            private ISpriteRenderer spriteRenderer;
 
             [UsingDependency]
             private static ISpriteRenderObjectFactory spriteRenderObjectFactory;
@@ -45,6 +47,8 @@ namespace CorgEng.Example
 
             public override void Initialize()
             {
+
+                spriteRenderer = SpriteRendererFactory.CreateSpriteRenderer();
 
                 spriteRenderer?.Initialize();
 

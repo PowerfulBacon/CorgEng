@@ -1,5 +1,7 @@
 ﻿using CorgEng.Core;
 using CorgEng.DependencyInjection.Injection;
+using CorgEng.GenericInterfaces.UserInterface.Rendering;
+using CorgEng.Tests.Stubs;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
@@ -22,6 +24,8 @@ namespace CorgEng.Tests
             CorgEngMain.LoadConfig("CorgEngConfig.xml", false, false);
             //Inject dependencies
             DependencyInjector.LoadDependencyInjection();
+            //Replace any openGL dependant dependencies
+            DependencyInjector.OverrideDependency<IUserInterfaceRenderCoreFactory>(new IRenderCoreStubFactory());
         }
 
     }

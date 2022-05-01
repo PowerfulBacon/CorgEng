@@ -97,6 +97,7 @@
     <Compile Include="Shaders\ShaderSet.cs" />
     <Compile Include="SpriteRendering\SpriteBatch.cs" />
     <Compile Include="SpriteRendering\SpriteRenderer.cs" />
+    <Compile Include="SpriteRendering\SpriteRendererFactory.cs" />
     <Compile Include="SpriteRendering\SpriteRenderObject.cs" />
     <Compile Include="SpriteRendering\SpriteRenderObjectFactory.cs" />
     <Compile Include="SpriteRendering\SpriteSharedRenderAttributes.cs" />

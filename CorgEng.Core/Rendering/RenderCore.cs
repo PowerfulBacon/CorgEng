@@ -1,11 +1,12 @@
 ﻿using CorgEng.Core.Dependencies;
+using CorgEng.GenericInterfaces.Core;
 using CorgEng.GenericInterfaces.Logging;
 using System;
 using static OpenGL.Gl;
 
 namespace CorgEng.Core.Rendering
 {
-    public abstract class RenderCore
+    public abstract class RenderCore : IRenderCore
     {
 
         [UsingDependency]

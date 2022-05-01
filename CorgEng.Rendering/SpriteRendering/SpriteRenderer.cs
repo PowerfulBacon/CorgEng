@@ -19,7 +19,6 @@ using static OpenGL.Gl;
 
 namespace CorgEng.Rendering.SpriteRendering
 {
-    [Dependency]
     internal sealed class SpriteRenderer : InstancedRenderer<SpriteSharedRenderAttributes, SpriteBatch>, ISpriteRenderer
     {
 

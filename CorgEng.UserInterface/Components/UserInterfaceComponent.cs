@@ -1,8 +1,11 @@
 ﻿using CorgEng.Core.Dependencies;
 using CorgEng.Core.Rendering;
+using CorgEng.GenericInterfaces.Core;
 using CorgEng.GenericInterfaces.Logging;
 using CorgEng.GenericInterfaces.UserInterface.Anchors;
 using CorgEng.GenericInterfaces.UserInterface.Components;
+using CorgEng.GenericInterfaces.UserInterface.Rendering;
+using CorgEng.UserInterface.Rendering;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,6 +20,9 @@ namespace CorgEng.UserInterface.Components
         [UsingDependency]
         private static ILogger Logger;
 
+        [UsingDependency]
+        private static IUserInterfaceRenderCoreFactory UserInterfaceRenderCoreFactory;
+
         public IAnchor Anchor { get; }
 
         public IUserInterfaceComponent Parent { get; }
@@ -30,6 +36,8 @@ namespace CorgEng.UserInterface.Components
         public double MinimumPixelHeight { get; private set; }
 
         private List<IUserInterfaceComponent> Children { get; } = new List<IUserInterfaceComponent>();
+
+        private IRenderCore RenderCore { get; } = UserInterfaceRenderCoreFactory?.Create();
 
         public UserInterfaceComponent(IUserInterfaceComponent parent, IAnchor anchorDetails) : this(anchorDetails)
         {
@@ -263,7 +271,7 @@ namespace CorgEng.UserInterface.Components
                 childComponent.OnParentResized();
             }
             //Update our render core size
-            
+            RenderCore?.Resize((int)PixelWidth, (int)PixelHeight);
         }
     }
 }

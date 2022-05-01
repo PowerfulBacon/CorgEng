@@ -9,5 +9,7 @@ namespace CorgEng.DependencyInjection.Injection
 
         public object ImplementedDependency { get; set; }
 
+        private object OverrideDependency { get; set; }
+
     }
 }
