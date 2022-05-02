@@ -15,19 +15,14 @@ namespace CorgEng.GenericInterfaces.Core
         void Initialize();
 
         /// <summary>
-        /// Switches openGL to render to our frame buffer.
+        /// Perform rendering
         /// </summary>
-        void PreRender();
-
-        /// <summary>
-        /// Draw whatever we need to a specified framebuffer.
-        /// </summary>
-        void PerformRender();
+        void DoRender();
 
         /// <summary>
         /// Draws the rendered frame buffer to the screen (Framebuffer 0)
         /// </summary>
-        void DrawBufferToScreen();
+        void DrawToBuffer(uint buffer);
 
         /// <summary>
         /// Resize the render core to the specified size.

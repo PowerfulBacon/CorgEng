@@ -108,8 +108,7 @@ namespace CorgEng.Core
                 if (MainRenderCore == null)
                     throw new NullRenderCoreException("The main CorgEng render core is not set! Use CorgEng.SetRenderCore(RenderCore) to set the primary render core.");
                 //Process the main render core
-                MainRenderCore.PreRender();
-                MainRenderCore.PerformRender();
+                MainRenderCore.DoRender();
                 //Pass the output image from the render core to the internal renderer
                 InternalRenderMaster.RenderImageToScreen(MainRenderCore);
                 DeltaTime = Glfw.Time - lastFrameTime;

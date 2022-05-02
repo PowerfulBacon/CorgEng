@@ -123,6 +123,15 @@ namespace CorgEng.Core.Rendering
         }
 
         /// <summary>
+        /// Do rendering
+        /// </summary>
+        public void DoRender()
+        {
+            PreRender();
+            PerformRender();
+        }
+
+        /// <summary>
         /// Called when the render core is initialized
         /// </summary>
         public abstract void Initialize();
@@ -149,10 +158,10 @@ namespace CorgEng.Core.Rendering
             Logger?.WriteLine($"Render core resized to {Width}x{Height}", LogType.DEBUG);
         }
 
-        public unsafe void DrawBufferToScreen()
+        public unsafe void DrawToBuffer(uint buffer)
         {
             //Reset the framebuffer (We want to draw to the screen, not a frame buffer)
-            glBindFramebuffer(GL_FRAMEBUFFER, 0);
+            glBindFramebuffer(GL_FRAMEBUFFER, buffer);
             //Set the using program to our program uint
             glUseProgram(programUint);
             //Bind uniform variables

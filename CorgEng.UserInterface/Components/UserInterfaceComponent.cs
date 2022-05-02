@@ -73,17 +73,20 @@ namespace CorgEng.UserInterface.Components
             RenderCore.Initialize();
         }
 
-        public void Render()
+        private void Render(UserInterfaceComponent userInterfaceComponent, uint buffer = 0)
         {
-            //Switch to the correct render core
-            RenderCore.PreRender();
-            //Do the actual rendering
-            RenderCore.PerformRender();
+            //Switch to the correct render core and draw it to the framebuffer
+            RenderCore.DoRender();
+            //Draw children
+            foreach (IUserInterfaceComponent childComponent in GetChildren())
+            {
+                childComponent.Render(childComponent, RenderCore);
+            }
         }
 
         public void DrawToScreen()
         {
-            RenderCore.DrawBufferToScreen();
+            RenderCore.DrawToBuffer(0);
         }
 
         public void AddChild(IUserInterfaceComponent userInterfaceComponent)

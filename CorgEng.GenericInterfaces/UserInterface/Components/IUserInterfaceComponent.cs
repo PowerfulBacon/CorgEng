@@ -48,11 +48,6 @@ namespace CorgEng.GenericInterfaces.UserInterface.Components
         double MinimumPixelHeight { get; }
 
         /// <summary>
-        /// Render the user interface component
-        /// </summary>
-        void Render();
-
-        /// <summary>
         /// Draw the user interface component to the screen
         /// </summary>
         void DrawToScreen();
