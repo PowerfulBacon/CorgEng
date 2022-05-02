@@ -53,6 +53,11 @@ namespace CorgEng.GenericInterfaces.UserInterface.Components
         void Render();
 
         /// <summary>
+        /// Draw the user interface component to the screen
+        /// </summary>
+        void DrawToScreen();
+
+        /// <summary>
         /// Add a user interface component to the children list
         /// </summary>
         /// <param name="userInterfaceComponent">The user interface component to add to the children of this one.</param>

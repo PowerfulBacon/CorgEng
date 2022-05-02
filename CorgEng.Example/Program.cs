@@ -62,6 +62,7 @@ namespace CorgEng.Example
 
                 //Load a user interface (Yes, I know this shouldn't be in the render core)
                 rootInterfaceComponent = UserInterfaceXmlLoader?.LoadUserInterface("Content/UserInterface/UserInterfaceSimple.xml");
+                rootInterfaceComponent.SetWidth(500, 500);
 
                 //Create and setup a renderable thing
                 for (int x = 0; x < 39; x++)
@@ -82,6 +83,7 @@ namespace CorgEng.Example
             {
                 spriteRenderer?.Render(CorgEngMain.MainCamera);
                 rootInterfaceComponent?.Render();
+                rootInterfaceComponent?.DrawToScreen();
             }
         }
 
