@@ -10,6 +10,16 @@ namespace CorgEng.GenericInterfaces.Core
     {
 
         /// <summary>
+        /// The uint of the frame buffer
+        /// </summary>
+        uint FrameBufferUint { get; }
+
+        /// <summary>
+        /// The uint of our render texture
+        /// </summary>
+        uint RenderTextureUint { get; }
+
+        /// <summary>
         /// Initialize the render core, run one time at the start.
         /// </summary>
         void Initialize();

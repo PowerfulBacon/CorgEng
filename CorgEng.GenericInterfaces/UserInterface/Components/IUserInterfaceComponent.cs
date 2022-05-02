@@ -50,7 +50,7 @@ namespace CorgEng.GenericInterfaces.UserInterface.Components
         /// <summary>
         /// Draw the user interface component to the screen
         /// </summary>
-        void DrawToScreen();
+        void DrawToFramebuffer(uint frameBuffer);
 
         /// <summary>
         /// Add a user interface component to the children list

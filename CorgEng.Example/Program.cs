@@ -82,7 +82,7 @@ namespace CorgEng.Example
             public override void PerformRender()
             {
                 spriteRenderer?.Render(CorgEngMain.MainCamera);
-                rootInterfaceComponent?.DrawToScreen();
+                rootInterfaceComponent?.DrawToFramebuffer(FrameBufferUint);
             }
         }
 

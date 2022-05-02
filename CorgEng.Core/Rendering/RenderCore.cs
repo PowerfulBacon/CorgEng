@@ -42,12 +42,12 @@ namespace CorgEng.Core.Rendering
         /// <summary>
         /// The uint of the frame buffer
         /// </summary>
-        internal uint FrameBufferUint { get; }
+        public uint FrameBufferUint { get; }
 
         /// <summary>
         /// The uint of our render texture
         /// </summary>
-        internal uint RenderTextureUint { get; }
+        public uint RenderTextureUint { get; }
 
         internal int Width { get; set; } = 1920;
 
@@ -77,6 +77,8 @@ namespace CorgEng.Core.Rendering
                 //Slightly broken is better than nothing.
                 Console.WriteLine("WARNING: FRAMEBUFFER ERROR. Your GPU may not support this application!");
             }
+            //Log creation
+            Logger?.WriteLine($"Created RenderCore, rendering to framebuffer {FrameBufferUint} outputting texture to {RenderTextureUint}");
         }
 
         public unsafe static void SetupRendering()

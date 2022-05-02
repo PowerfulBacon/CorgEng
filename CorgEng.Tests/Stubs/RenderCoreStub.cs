@@ -9,6 +9,10 @@ namespace CorgEng.Tests.Stubs
 {
     internal class RenderCoreStub : IRenderCore
     {
+        public uint FrameBufferUint => 0;
+
+        public uint RenderTextureUint => 0;
+
         public void DoRender()
         {
             return;
@@ -17,6 +21,11 @@ namespace CorgEng.Tests.Stubs
         public void DrawToBuffer()
         {
             return;
+        }
+
+        public void DrawToBuffer(uint buffer)
+        {
+            throw new NotImplementedException();
         }
 
         public void Initialize()
