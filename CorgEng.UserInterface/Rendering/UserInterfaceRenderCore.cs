@@ -1,7 +1,7 @@
 ﻿using CorgEng.Core.Dependencies;
 using CorgEng.Core.Rendering;
-using CorgEng.GenericInterfaces.Rendering.Renderers.SpriteRendering;
-using CorgEng.GenericInterfaces.Rendering.RenderObjects.SpriteRendering;
+using CorgEng.GenericInterfaces.UserInterface.Rendering.Renderer;
+using CorgEng.GenericInterfaces.UserInterface.Rendering.RenderObject;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,23 +14,23 @@ namespace CorgEng.UserInterface.Rendering
     {
 
         [UsingDependency]
-        private static ISpriteRenderObjectFactory SpriteRenderObjectFactory;
+        private static IUserInterfaceRenderObjectFactory SpriteRenderObjectFactory;
 
         [UsingDependency]
-        private static ISpriteRendererFactory SpriteRendererFactory;
+        private static IUserInterfaceRendererFactory SpriteRendererFactory;
 
-        private ISpriteRenderer spriteRenderer;
+        private IUserInterfaceRenderer spriteRenderer;
 
-        private ISpriteRenderObject spriteRenderObject;
+        private IUserInterfaceRenderObject spriteRenderObject;
 
         public override void Initialize()
         {
             //Create the sprite renderer.
-            spriteRenderer = SpriteRendererFactory.CreateSpriteRenderer();
+            spriteRenderer = SpriteRendererFactory.CreateUserInterfaceRenderer();
             //Initialize it
             spriteRenderer?.Initialize();
 
-            spriteRenderObject = SpriteRenderObjectFactory.CreateSpriteRenderObject(1, 0, 0, 256, 256);
+            spriteRenderObject = SpriteRenderObjectFactory.CreateUserInterfaceRenderObject(1, 0, 0, 256, 256);
             spriteRenderer.StartRendering(spriteRenderObject);
         }
 

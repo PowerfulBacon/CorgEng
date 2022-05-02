@@ -128,6 +128,10 @@
     <Compile Include="UserInterface\Components\IUserInterfaceRenderCore.cs" />
     <Compile Include="UserInterface\Generators\IUserInterfaceXmlLoader.cs" />
     <Compile Include="UserInterface\Rendering\IUserInterfaceRenderCoreFactory.cs" />
+    <Compile Include="UserInterface\Rendering\Renderer\IUserInterfaceRenderer.cs" />
+    <Compile Include="UserInterface\Rendering\Renderer\IUserInterfaceRendererFactory.cs" />
+    <Compile Include="UserInterface\Rendering\RenderObject\IUserInterfaceRenderObject.cs" />
+    <Compile Include="UserInterface\Rendering\RenderObject\IUserInterfaceRenderObjectFactory.cs" />
     <Compile Include="UtilityTypes\Batches\IBatch.cs" />
     <Compile Include="UtilityTypes\Batches\IBatchElement.cs" />
     <Compile Include="UtilityTypes\IBindableProperty.cs" />

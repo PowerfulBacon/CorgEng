@@ -75,7 +75,11 @@ namespace CorgEng.UserInterface.Components
 
         public void Render()
         {
+            //Switch to the correct render core
+            RenderCore.PreRender();
+            //Do the actual rendering
             RenderCore.PerformRender();
+            //Draw the rendering core to the screen
         }
 
         public void AddChild(IUserInterfaceComponent userInterfaceComponent)

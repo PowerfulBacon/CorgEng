@@ -88,8 +88,20 @@
     <Compile Include="Rendering\UserInterfaceRenderCore.cs" />
     <Compile Include="Rendering\UserInterfaceRenderCoreFactory.cs" />
     <Compile Include="Rendering\UserinterfaceRenderer\UserInterfaceBatch.cs" />
+    <Compile Include="Rendering\UserinterfaceRenderer\UserInterfaceRenderer.cs" />
+    <Compile Include="Rendering\UserinterfaceRenderer\UserInterfaceRendererFactory.cs" />
+    <Compile Include="Rendering\UserinterfaceRenderer\UserInterfaceRenderObject.cs" />
+    <Compile Include="Rendering\UserinterfaceRenderer\UserInterfaceRenderObjectFactory.cs" />
+    <Compile Include="Rendering\UserinterfaceRenderer\UserInterfaceSharedRenderAttributes.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="Content\Shaders\UserInterfaceShader\UserInterfaceShader.frag">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\Shaders\UserInterfaceShader\UserInterfaceShader.vert">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CorgEng.Core\CorgEng.Core.csproj">
       <Project>{9CCC4A6B-2D13-425D-8C72-B034151EC11C}</Project>
@@ -102,6 +114,10 @@
     <ProjectReference Include="..\CorgEng.GenericInterfaces\CorgEng.GenericInterfaces.csproj">
       <Project>{E87F196E-5BF2-4AAF-8209-9F66A4F4B0EB}</Project>
       <Name>CorgEng.GenericInterfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CorgEng.Rendering\CorgEng.Rendering.csproj">
+      <Project>{bfc5583f-3a05-43e4-9d07-81d80b1ec685}</Project>
+      <Name>CorgEng.Rendering</Name>
     </ProjectReference>
     <ProjectReference Include="..\CorgEng.UtilityTypes\CorgEng.UtilityTypes.csproj">
       <Project>{F9CCD4D7-9AF2-4167-9F31-A2879D82F854}</Project>

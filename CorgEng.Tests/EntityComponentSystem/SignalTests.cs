@@ -166,6 +166,8 @@ namespace CorgEng.Tests.EntityComponentSystem
             new TestEvent().Raise(testEntity);
             Thread.Sleep(50);
             Assert.AreEqual(0, handlesReceieved, "Should not have receieved a signal from removed component.");
+            while (secondaryHandlesReceieved != 1)
+                Thread.Sleep(1);
             Assert.AreEqual(1, secondaryHandlesReceieved, "Should have receieved a signal from remaining component.");
         }
 

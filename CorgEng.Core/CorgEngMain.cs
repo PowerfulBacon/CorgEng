@@ -111,7 +111,7 @@ namespace CorgEng.Core
                 MainRenderCore.PreRender();
                 MainRenderCore.PerformRender();
                 //Pass the output image from the render core to the internal renderer
-                InternalRenderMaster.RenderImageToScreen(MainRenderCore.RenderTextureUint);
+                InternalRenderMaster.RenderImageToScreen(MainRenderCore);
                 DeltaTime = Glfw.Time - lastFrameTime;
                 totalDeltaTime += DeltaTime;
                 counts++;

@@ -1,6 +1,7 @@
 ﻿using CorgEng.Core.Dependencies;
 using CorgEng.GenericInterfaces.Core;
 using CorgEng.GenericInterfaces.Logging;
+using CorgEng.GenericInterfaces.Rendering.Shaders;
 using System;
 using static OpenGL.Gl;
 
@@ -11,6 +12,32 @@ namespace CorgEng.Core.Rendering
 
         [UsingDependency]
         private static ILogger Logger;
+
+        //Fetch shader loading from some dependency somewhere
+        [UsingDependency]
+        private static IShaderFactory ShaderFactory;
+
+        private static float[] quadVertices = {
+            1, 1, 0,
+            1, -1, 0,
+            -1, 1, 0,
+            -1, 1, 0,
+            1, -1, 0,
+            -1, -1, 0
+        };
+
+        private static bool initialized = false;
+
+        //The vertex array and buffer objects
+        private static uint vertexArray;
+        private static uint vertexBuffer;
+
+        private static IShaderSet shaderSet;
+
+        private static int textureUniformLocation;
+
+        //Create a program for rendering
+        private static uint programUint;
 
         /// <summary>
         /// The uint of the frame buffer
@@ -52,7 +79,40 @@ namespace CorgEng.Core.Rendering
             }
         }
 
-        internal void PreRender()
+        public unsafe static void SetupRendering()
+        {
+            //Create stuff we need for screen rendering (static)
+            if (!initialized)
+            {
+                Logger.WriteLine("Initialized RenderCore static requirements.", LogType.LOG);
+                //Mark initialized to be true.
+                initialized = true;
+                //create and link a program
+                programUint = glCreateProgram();
+                //Start using the program: All operations will affect this program
+                glUseProgram(programUint);
+                //Generate a vertex array and bind it
+                vertexArray = glGenVertexArray();
+                glBindVertexArray(vertexArray);
+                //Create and bind the vertex buffer
+                vertexBuffer = glGenBuffer();
+                glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+                //Put data into the buffer
+                fixed (float* vertexPointer = &quadVertices[0])
+                {
+                    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * quadVertices.Length, vertexPointer, GL_STATIC_DRAW);
+                }
+                //Create the shaders
+                shaderSet = ShaderFactory?.CreateShaderSet("CoreShader");
+                //Get the uniform location of the shaders
+                shaderSet.AttachShaders(programUint);
+                glLinkProgram(programUint);
+                //Fetch uniform locations
+                textureUniformLocation = glGetUniformLocation(programUint, "renderTexture");
+            }
+        }
+
+        public void PreRender()
         {
             //Bind our framebuffer to render to
             glBindFramebuffer(GL_FRAMEBUFFER, FrameBufferUint);
@@ -89,5 +149,34 @@ namespace CorgEng.Core.Rendering
             Logger?.WriteLine($"Render core resized to {Width}x{Height}", LogType.DEBUG);
         }
 
+        public unsafe void DrawBufferToScreen()
+        {
+            //Reset the framebuffer (We want to draw to the screen, not a frame buffer)
+            glBindFramebuffer(GL_FRAMEBUFFER, 0);
+            //Set the using program to our program uint
+            glUseProgram(programUint);
+            //Bind uniform variables
+            glUniform1ui(textureUniformLocation, 0);
+            //Bind the vertex buffer
+            glEnableVertexAttribArray(0);
+            glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+            glVertexAttribPointer(
+                0,                  //Attribute - Where the layout location is in the vertex shader
+                3,                  //Size of the triangles (3 sides)
+                GL_FLOAT,           //Type (Floats)
+                false,              //Normalized (nope)
+                0,                  //Stride (0)
+                NULL                //Array buffer offset (null)
+            );
+            //Set the vertex attrib divisor
+            glVertexAttribDivisor(0, 0);
+            //Bind the texture
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, RenderTextureUint);
+            //Draw
+            glDrawArrays(GL_TRIANGLES, 0, 6);
+            //Disable the vertex attrib array
+            glDisableVertexAttribArray(0);
+        }
     }
 }
