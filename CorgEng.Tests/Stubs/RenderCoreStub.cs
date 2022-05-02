@@ -9,6 +9,11 @@ namespace CorgEng.Tests.Stubs
 {
     internal class RenderCoreStub : IRenderCore
     {
+        public void DrawBufferToScreen()
+        {
+            return;
+        }
+
         public void Initialize()
         {
             return;
@@ -17,6 +22,11 @@ namespace CorgEng.Tests.Stubs
         public void PerformRender()
         {
             return;
+        }
+
+        public void PreRender()
+        {
+            throw new NotImplementedException();
         }
 
         public void Resize(int width, int height)
