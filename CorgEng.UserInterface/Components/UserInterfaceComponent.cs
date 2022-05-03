@@ -1,4 +1,5 @@
-﻿using CorgEng.Core.Dependencies;
+﻿using CorgEng.Core;
+using CorgEng.Core.Dependencies;
 using CorgEng.Core.Rendering;
 using CorgEng.GenericInterfaces.Core;
 using CorgEng.GenericInterfaces.Logging;
@@ -73,21 +74,22 @@ namespace CorgEng.UserInterface.Components
             RenderCore.Initialize();
         }
 
-        private void Render(UserInterfaceComponent userInterfaceComponent, uint buffer)
+        private void Render(UserInterfaceComponent parent, UserInterfaceComponent userInterfaceComponent, uint buffer)
         {
             //Draw children
             foreach (IUserInterfaceComponent childComponent in userInterfaceComponent.GetChildren())
             {
-                Render(childComponent as UserInterfaceComponent, userInterfaceComponent.RenderCore.FrameBufferUint);
+                Render(this, childComponent as UserInterfaceComponent, userInterfaceComponent.RenderCore.FrameBufferUint);
             }
             //Switch to the correct render core and draw it to the framebuffer
             userInterfaceComponent.RenderCore.DoRender();
-            userInterfaceComponent.RenderCore.DrawToBuffer(buffer);
+            //TODO: Change 1920 and 1080 to screen res
+            userInterfaceComponent.RenderCore.DrawToBuffer(buffer, parent?.RenderCore?.Width ?? CorgEngMain.MainRenderCore.Width, parent?.RenderCore?.Height ?? CorgEngMain.MainRenderCore.Height);
         }
 
         public void DrawToFramebuffer(uint frameBuffer)
         {
-            Render(this, frameBuffer);
+            Render(null, this, frameBuffer);
         }
 
         public void AddChild(IUserInterfaceComponent userInterfaceComponent)

@@ -49,9 +49,9 @@ namespace CorgEng.Core.Rendering
         /// </summary>
         public uint RenderTextureUint { get; }
 
-        internal int Width { get; set; } = 1920;
+        public int Width { get; internal set; } = 1920;
 
-        internal int Height { get; set; } = 1080;
+        public int Height { get; internal set; } = 1080;
 
         public unsafe RenderCore()
         {
@@ -160,10 +160,13 @@ namespace CorgEng.Core.Rendering
             Logger?.WriteLine($"Render core resized to {Width}x{Height}", LogType.DEBUG);
         }
 
-        public unsafe void DrawToBuffer(uint buffer)
+        public unsafe void DrawToBuffer(uint buffer, int bufferWidth, int bufferHeight)
         {
             //Reset the framebuffer (We want to draw to the screen, not a frame buffer)
             glBindFramebuffer(GL_FRAMEBUFFER, buffer);
+            //Draw to full screen
+            glViewport(0, 0, bufferWidth, bufferHeight);
+
             //Set the using program to our program uint
             glUseProgram(programUint);
             //Bind uniform variables

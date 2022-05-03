@@ -13,6 +13,10 @@ namespace CorgEng.Tests.Stubs
 
         public uint RenderTextureUint => 0;
 
+        public int Width => 0;
+
+        public int Height => 0;
+
         public void DoRender()
         {
             return;
@@ -23,7 +27,7 @@ namespace CorgEng.Tests.Stubs
             return;
         }
 
-        public void DrawToBuffer(uint buffer)
+        public void DrawToBuffer(uint buffer, int bufferWidth, int bufferHeight)
         {
             throw new NotImplementedException();
         }

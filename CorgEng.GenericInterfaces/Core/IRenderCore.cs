@@ -9,6 +9,10 @@ namespace CorgEng.GenericInterfaces.Core
     public interface IRenderCore
     {
 
+        int Width { get; }
+
+        int Height { get; }
+
         /// <summary>
         /// The uint of the frame buffer
         /// </summary>
@@ -32,7 +36,7 @@ namespace CorgEng.GenericInterfaces.Core
         /// <summary>
         /// Draws the rendered frame buffer to the screen (Framebuffer 0)
         /// </summary>
-        void DrawToBuffer(uint buffer);
+        void DrawToBuffer(uint buffer, int bufferWidth, int bufferHeight);
 
         /// <summary>
         /// Resize the render core to the specified size.

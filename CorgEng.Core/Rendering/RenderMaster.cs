@@ -53,7 +53,7 @@ namespace CorgEng.Core.Rendering
             //We want to render to the entire screen
             glViewport(0, 0, Width, Height);
             //Draw the render core to the screen
-            renderCore.DrawToBuffer(0);
+            renderCore.DrawToBuffer(0, Width, Height);
         }
 
         /// <summary>
