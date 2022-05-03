@@ -55,7 +55,7 @@ namespace CorgEng.Example
 
             public override void Initialize()
             {
-
+                
                 spriteRenderer = SpriteRendererFactory.CreateSpriteRenderer();
 
                 spriteRenderer?.Initialize();

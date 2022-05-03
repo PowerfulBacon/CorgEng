@@ -90,6 +90,9 @@
     <Compile Include="ContentLoading\IInstantiatable.cs" />
     <Compile Include="ContentLoading\IPropertyDef.cs" />
     <Compile Include="Core\IRenderCore.cs" />
+    <Compile Include="Font\Characters\IFontCharacter.cs" />
+    <Compile Include="Font\Fonts\IFont.cs" />
+    <Compile Include="Font\Fonts\IFontFactory.cs" />
     <Compile Include="InputHandler\IInputHandler.cs" />
     <Compile Include="Logging\ILogger.cs" />
     <Compile Include="Logging\LogType.cs" />
@@ -142,5 +145,6 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

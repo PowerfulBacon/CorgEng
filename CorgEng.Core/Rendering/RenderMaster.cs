@@ -39,6 +39,7 @@ namespace CorgEng.Core.Rendering
             //Set a background colour
             glColorMask(true, true, true, true);
             glClearColor(0, 0, 0, 0);
+            
         }
 
         /// <summary>
