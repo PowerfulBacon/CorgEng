@@ -6,6 +6,9 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace CorgEng.Tests.DependencyInjection
 {
 
+    /// <summary>
+    /// Dependency injection overiding is required for these tests to run, so no point in testing it.
+    /// </summary>
     [TestClass]
     public class DependencyTests
     {
