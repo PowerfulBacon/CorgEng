@@ -27,9 +27,9 @@ namespace CorgEng.Tests.Stubs
             return;
         }
 
-        public void DrawToBuffer(uint buffer, int bufferWidth, int bufferHeight)
+        public void DrawToBuffer(uint buffer, int drawX, int drawY, int bufferWidth, int bufferHeight)
         {
-            throw new NotImplementedException();
+            return;
         }
 
         public void Initialize()

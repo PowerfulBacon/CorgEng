@@ -37,7 +37,8 @@ namespace CorgEng.Core.Rendering
             glEnable(GL_BLEND);
             glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
             //Set a background colour
-            glClearColor(0, 0, 0, 1.0f);
+            glColorMask(true, true, true, true);
+            glClearColor(0, 0, 0, 0);
         }
 
         /// <summary>
@@ -49,11 +50,8 @@ namespace CorgEng.Core.Rendering
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
             //Clear the screen and reset it to the background colour
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-            //Render the image to the screen (create a basic textured quad and feed in the)
-            //We want to render to the entire screen
-            glViewport(0, 0, Width, Height);
             //Draw the render core to the screen
-            renderCore.DrawToBuffer(0, Width, Height);
+            renderCore.DrawToBuffer(0, 0, 0, Width, Height);
         }
 
         /// <summary>

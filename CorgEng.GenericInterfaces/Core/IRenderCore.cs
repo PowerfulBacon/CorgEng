@@ -36,7 +36,7 @@ namespace CorgEng.GenericInterfaces.Core
         /// <summary>
         /// Draws the rendered frame buffer to the screen (Framebuffer 0)
         /// </summary>
-        void DrawToBuffer(uint buffer, int bufferWidth, int bufferHeight);
+        void DrawToBuffer(uint buffer, int drawX, int drawY, int bufferWidth, int bufferHeight);
 
         /// <summary>
         /// Resize the render core to the specified size.

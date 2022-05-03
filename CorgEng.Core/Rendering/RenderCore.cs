@@ -64,7 +64,7 @@ namespace CorgEng.Core.Rendering
             //Bind the created texture so we can modify it
             glBindTexture(GL_TEXTURE_2D, RenderTextureUint);
             //Load the texture scale
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, Width, Height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, Width, Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
             //Set the texture parameters
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -152,7 +152,7 @@ namespace CorgEng.Core.Rendering
             //Bind the created texture so we can modify it
             glBindTexture(GL_TEXTURE_2D, RenderTextureUint);
             //Load the texture scale
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, Width, Height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, Width, Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
             //Set the texture parameters
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -160,12 +160,12 @@ namespace CorgEng.Core.Rendering
             Logger?.WriteLine($"Render core resized to {Width}x{Height}", LogType.DEBUG);
         }
 
-        public unsafe void DrawToBuffer(uint buffer, int bufferWidth, int bufferHeight)
+        public unsafe void DrawToBuffer(uint buffer, int drawX, int drawY, int bufferWidth, int bufferHeight)
         {
             //Reset the framebuffer (We want to draw to the screen, not a frame buffer)
             glBindFramebuffer(GL_FRAMEBUFFER, buffer);
             //Draw to full screen
-            glViewport(0, 0, bufferWidth, bufferHeight);
+            glViewport(drawX, drawY, bufferWidth, bufferHeight);
 
             //Set the using program to our program uint
             glUseProgram(programUint);

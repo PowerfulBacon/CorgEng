@@ -83,8 +83,7 @@ namespace CorgEng.UserInterface.Components
             }
             //Switch to the correct render core and draw it to the framebuffer
             userInterfaceComponent.RenderCore.DoRender();
-            //TODO: Change 1920 and 1080 to screen res
-            userInterfaceComponent.RenderCore.DrawToBuffer(buffer, parent?.RenderCore?.Width ?? CorgEngMain.MainRenderCore.Width, parent?.RenderCore?.Height ?? CorgEngMain.MainRenderCore.Height);
+            userInterfaceComponent.RenderCore.DrawToBuffer(buffer, 0, 0, parent?.RenderCore?.Width ?? CorgEngMain.MainRenderCore.Width / 2, parent?.RenderCore?.Height ?? CorgEngMain.MainRenderCore.Height / 2);
         }
 
         public void DrawToFramebuffer(uint frameBuffer)
