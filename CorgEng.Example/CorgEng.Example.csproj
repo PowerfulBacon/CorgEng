@@ -116,6 +116,10 @@
       <Project>{4bb408b5-9afa-42e6-973d-547a84a293a5}</Project>
       <Name>CorgEng.EntityComponentSystem</Name>
     </ProjectReference>
+    <ProjectReference Include="..\CorgEng.Font\CorgEng.Font.csproj">
+      <Project>{a18b4113-8cbf-44b3-bc4a-c27920d2f6be}</Project>
+      <Name>CorgEng.Font</Name>
+    </ProjectReference>
     <ProjectReference Include="..\CorgEng.GenericInterfaces\CorgEng.GenericInterfaces.csproj">
       <Project>{E87F196E-5BF2-4AAF-8209-9F66A4F4B0EB}</Project>
       <Name>CorgEng.GenericInterfaces</Name>
