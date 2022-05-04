@@ -16,6 +16,9 @@ namespace CorgEng.Rendering.TextRendering
 
         public IBindableProperty<string> TextProperty { get; }
 
+        //TODO
+        public IBindableProperty<IVector<float>> ScreenPositionProperty { get; }
+
         //Collect a sprite renderer dependency so that we can draw our glyphs.
         [UsingDependency]
         private static ISpriteRenderer SpriteRenderer;
