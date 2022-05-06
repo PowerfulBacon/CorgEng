@@ -9,11 +9,13 @@ using CorgEng.EntityComponentSystem.Implementations.Rendering.SpriteRendering;
 using CorgEng.EntityComponentSystem.Implementations.Transform;
 using CorgEng.Example.Common.Components.Camera;
 using CorgEng.Example.Components.PlayerMovement;
+using CorgEng.GenericInterfaces.Font.Fonts;
 using CorgEng.GenericInterfaces.Rendering;
 using CorgEng.GenericInterfaces.Rendering.Cameras.Isometric;
 using CorgEng.GenericInterfaces.Rendering.Renderers.SpriteRendering;
 using CorgEng.GenericInterfaces.Rendering.RenderObjects.SpriteRendering;
 using CorgEng.GenericInterfaces.Rendering.Shaders;
+using CorgEng.GenericInterfaces.Rendering.Text;
 using CorgEng.GenericInterfaces.Rendering.Textures;
 using CorgEng.GenericInterfaces.UserInterface.Components;
 using CorgEng.GenericInterfaces.UserInterface.Generators;
@@ -51,6 +53,12 @@ namespace CorgEng.Example
             [UsingDependency]
             private static IUserInterfaceXmlLoader UserInterfaceXmlLoader;
 
+            [UsingDependency]
+            private static IFontFactory FontFactory;
+
+            [UsingDependency]
+            private static ITextObjectFactory TextObjectFactory;
+
             private IUserInterfaceComponent rootInterfaceComponent;
 
             public override void Initialize()
@@ -77,6 +85,10 @@ namespace CorgEng.Example
                         new SetSpriteRendererEvent(spriteRenderer).Raise(renderableEntity);
                     }
                 }
+
+                IFont font = FontFactory.GetFont("CourierCode");
+                ITextObject textObject = TextObjectFactory.CreateTextObject(spriteRenderer, font, "Bro this is so fucking cool im literally rendering text!!! \nUnfortunately all characters are stretched to be squares. LOL!!!");
+                textObject.StartRendering();
             }
 
             public override void PerformRender()

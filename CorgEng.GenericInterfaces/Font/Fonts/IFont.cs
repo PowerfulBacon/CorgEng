@@ -15,5 +15,15 @@ namespace CorgEng.GenericInterfaces.Font.Fonts
         /// </summary>
         IFontCharacter GetCharacter(int code);
 
+        /// <summary>
+        /// The width of the font texture file
+        /// </summary>
+        int FontWidth { get; }
+
+        /// <summary>
+        /// The height of the font texture file
+        /// </summary>
+        int FontHeight { get; }
+
     }
 }

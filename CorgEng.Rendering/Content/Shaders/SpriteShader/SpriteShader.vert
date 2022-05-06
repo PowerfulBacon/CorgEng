@@ -4,6 +4,8 @@ layout (location = 0) in vec3 inVertexPos;
 layout (location = 1) in vec2 inVertexUV;
 layout (location = 2) in vec3 inInstancePos;
 layout (location = 3) in vec4 inTextureData;
+layout (location = 4) in vec3 inMatrixFirst;
+layout (location = 5) in vec3 inMatrixSecond;
 
 //UV data
 out vec2 fragVertexUV;
@@ -16,8 +18,8 @@ uniform mat4 projectionMatrix;
  
 void main()
 {
-    //mat4 MVP = projectionMatrix * viewMatrix;
-    //gl_Position = MVP * vec4(inInstancePos + inVertexPos, 1.0);
+	//Create the matrix
+	//mat4
     gl_Position = projectionMatrix * viewMatrix * vec4(inVertexPos + inInstancePos, 1.0);
     //Output the vertex UV to the fragment shader
     fragVertexUV = inVertexUV;

@@ -28,6 +28,10 @@ namespace CorgEng.Font.Fonts
 
         private IFontCharacter[] fontCharacters;
 
+        public int FontWidth { get; private set; }
+
+        public int FontHeight { get; private set; }
+
         public Font(string fontName)
         {
             LoadFontCharacters(fontName);
@@ -51,13 +55,12 @@ namespace CorgEng.Font.Fonts
             foreach (string line in lines)
             {
                 //Ignore lines that we can't process
-                if (!line.StartsWith("page") && !line.StartsWith("char"))
+                if (!line.StartsWith("page") && !line.StartsWith("char") && !line.StartsWith("common"))
                     continue;
                 //Load stuff into a dictionary
                 Dictionary<string, string> lineParameters = new Dictionary<string, string>();
                 //Split the line by some regex expressing
                 string[] splitLine = whitespaceRegex.Split(line);
-                Logger.WriteLine($"Located {splitLine.Length} things");
                 //Work out each one
                 foreach (string linepart in splitLine)
                 {
@@ -65,7 +68,6 @@ namespace CorgEng.Font.Fonts
                     //Continue if we cannot locate an equals sign
                     if (positionOfEquals == -1)
                         continue;
-                    Logger.WriteLine(linepart);
                     //Load into a dictionary
                     string trimmedLine = linepart.Trim();
                     lineParameters.Add(trimmedLine.Substring(0, positionOfEquals), trimmedLine.Substring(positionOfEquals + 1));
@@ -93,6 +95,11 @@ namespace CorgEng.Font.Fonts
                         int.Parse(lineParameters["xadvance"])
                         ));
                 }
+                else if (line.StartsWith("common"))
+                {
+                    FontWidth = int.Parse(lineParameters["scaleW"]);
+                    FontHeight = int.Parse(lineParameters["scaleH"]);
+                }
             }
             //Complete the character cache
             fontCharacters = new IFontCharacter[maximumCharacterCode + 1];
@@ -110,7 +117,7 @@ namespace CorgEng.Font.Fonts
         /// </summary>
         public IFontCharacter GetCharacter(int code)
         {
-            //WILL RETURN INVALID CHARACTERS //TODO//
+            //WILL RETURN INVALID CHARACTERS (And crash) //TODO//
             return fontCharacters[code];
         }
 

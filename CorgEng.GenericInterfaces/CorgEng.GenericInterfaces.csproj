@@ -121,6 +121,7 @@
     <Compile Include="Rendering\Textures\ITextureFactory.cs" />
     <Compile Include="Rendering\Textures\ITextureState.cs" />
     <Compile Include="Rendering\Text\ITextObject.cs" />
+    <Compile Include="Rendering\Text\ITextObjectFactory.cs" />
     <Compile Include="UserInterface\Anchors\AnchorDirections.cs" />
     <Compile Include="UserInterface\Anchors\AnchorUnits.cs" />
     <Compile Include="UserInterface\Anchors\IAnchor.cs" />

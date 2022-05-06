@@ -102,6 +102,7 @@
     <Compile Include="SpriteRendering\SpriteRenderObjectFactory.cs" />
     <Compile Include="SpriteRendering\SpriteSharedRenderAttributes.cs" />
     <Compile Include="TextRendering\TextObject.cs" />
+    <Compile Include="TextRendering\TextObjectFactory.cs" />
     <Compile Include="Textures\TextureBitmap.cs" />
     <Compile Include="Textures\TextureCache.cs" />
     <Compile Include="Textures\TextureFactory.cs" />
