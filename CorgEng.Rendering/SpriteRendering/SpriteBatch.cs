@@ -13,7 +13,7 @@ namespace CorgEng.Rendering.SpriteRendering
     internal sealed class SpriteBatch : Batch<SpriteBatch>
     {
 
-        public override int[] BatchVectorSizes => new int[] { 3, 4 };
+        public override int[] BatchVectorSizes => new int[] { 3, 3, 4 };
 
     }
 }

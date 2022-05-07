@@ -25,5 +25,10 @@ namespace CorgEng.GenericInterfaces.Font.Fonts
         /// </summary>
         int FontHeight { get; }
 
+        /// <summary>
+        /// The font base
+        /// </summary>
+        int Base { get; }
+
     }
 }

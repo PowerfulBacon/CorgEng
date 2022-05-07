@@ -1,4 +1,6 @@
 ﻿using CorgEng.GenericInterfaces.Rendering.Renderers;
+using CorgEng.GenericInterfaces.Rendering.Renderers.SpriteRendering;
+using CorgEng.GenericInterfaces.Rendering.RenderObjects.SpriteRendering;
 using CorgEng.GenericInterfaces.UserInterface.Rendering.RenderObject;
 using System;
 using System.Collections.Generic;
@@ -8,12 +10,8 @@ using System.Threading.Tasks;
 
 namespace CorgEng.GenericInterfaces.UserInterface.Rendering.Renderer
 {
-    public interface IUserInterfaceRenderer : IRenderer
+    public interface IUserInterfaceRenderer : ISpriteRenderer
     {
-
-        void StartRendering(IUserInterfaceRenderObject userInterfaceRenderObject);
-
-        void StopRendering(IUserInterfaceRenderObject userInterfaceRenderObject);
 
     }
 }

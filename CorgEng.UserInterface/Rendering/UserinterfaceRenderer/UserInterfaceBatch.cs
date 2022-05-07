@@ -10,7 +10,7 @@ namespace CorgEng.UserInterface.Rendering.UserinterfaceRenderer
     internal sealed class UserInterfaceBatch : Batch<UserInterfaceBatch>
     {
 
-        public override int[] BatchVectorSizes => new int[] { 3, 4 };
+        public override int[] BatchVectorSizes => new int[] { 3, 3, 4 };
 
     }
 }

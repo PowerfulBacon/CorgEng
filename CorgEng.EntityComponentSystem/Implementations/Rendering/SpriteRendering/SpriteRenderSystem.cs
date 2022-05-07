@@ -43,9 +43,8 @@ namespace CorgEng.EntityComponentSystem.Implementations.Rendering.SpriteRenderin
             }
             else
             {
-                spriteRenderComponent.SpriteRenderObject.WorldPosition.Value.X = moveEvent.NewPosition.X;
-                spriteRenderComponent.SpriteRenderObject.WorldPosition.Value.Y = moveEvent.NewPosition.Y;
-                spriteRenderComponent.SpriteRenderObject.WorldPosition.TriggerChanged();
+                spriteRenderComponent.SpriteRenderObject.Transform.Value[3, 1] = moveEvent.NewPosition.X;
+                spriteRenderComponent.SpriteRenderObject.Transform.Value[3, 2] = moveEvent.NewPosition.Y;
             }
         }
 
@@ -86,8 +85,8 @@ namespace CorgEng.EntityComponentSystem.Implementations.Rendering.SpriteRenderin
                     newTexture.OffsetHeight);
                 if (spriteRenderComponent.CachedPosition != null)
                 {
-                    spriteRenderComponent.SpriteRenderObject.WorldPosition.Value.X = spriteRenderComponent.CachedPosition.X;
-                    spriteRenderComponent.SpriteRenderObject.WorldPosition.Value.Y = spriteRenderComponent.CachedPosition.Y;
+                    spriteRenderComponent.SpriteRenderObject.Transform.Value[3, 1] = spriteRenderComponent.CachedPosition.X;
+                    spriteRenderComponent.SpriteRenderObject.Transform.Value[3, 2] = spriteRenderComponent.CachedPosition.Y;
                     spriteRenderComponent.CachedPosition = null;
                 }
                 //Start rendering

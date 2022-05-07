@@ -22,6 +22,11 @@ namespace CorgEng.GenericInterfaces.Rendering.Text
         IBindableProperty<IVector<float>> ScreenPositionProperty { get; }
 
         /// <summary>
+        /// The scale of the text object
+        /// </summary>
+        IBindableProperty<float> Scale { get; }
+
+        /// <summary>
         /// Start rendering this text object
         /// </summary>
         void StartRendering();

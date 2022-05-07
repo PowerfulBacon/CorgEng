@@ -4,6 +4,7 @@ using CorgEng.GenericInterfaces.Rendering;
 using CorgEng.GenericInterfaces.Rendering.Renderers.SpriteRendering;
 using CorgEng.GenericInterfaces.Rendering.RenderObjects.SpriteRendering;
 using CorgEng.GenericInterfaces.Rendering.Shaders;
+using CorgEng.GenericInterfaces.Rendering.SharedRenderAttributes;
 using CorgEng.GenericInterfaces.UtilityTypes;
 using CorgEng.GenericInterfaces.UtilityTypes.Batches;
 using CorgEng.Rendering.Exceptions;
@@ -19,7 +20,7 @@ using static OpenGL.Gl;
 
 namespace CorgEng.Rendering.SpriteRendering
 {
-    internal sealed class SpriteRenderer : InstancedRenderer<SpriteSharedRenderAttributes, SpriteBatch>, ISpriteRenderer
+    internal sealed class SpriteRenderer : InstancedRenderer<ISpriteSharedRenderAttributes, SpriteBatch>, ISpriteRenderer
     {
 
         [UsingDependency]
@@ -40,7 +41,8 @@ namespace CorgEng.Rendering.SpriteRendering
                 throw new DuplicateRenderException("Attempting to render a sprite object already being rendered.");
             //Create a new batch element for this
             IBatchElement<SpriteBatch> batchElement = new BatchElement<SpriteBatch>(new IBindableProperty<IVector<float>>[] {
-                spriteRenderObject.WorldPosition,
+                spriteRenderObject.TransformFirstRow,
+                spriteRenderObject.TransformSecondRow,
                 spriteRenderObject.TextureDetails
             });
             //Remember the batch element we are stored in, so it can be saved
@@ -72,7 +74,7 @@ namespace CorgEng.Rendering.SpriteRendering
             glUniform1i(textureSamplerUniformLocation, 0);
         }
 
-        protected override void BindBatchTexture(SpriteSharedRenderAttributes batchAttributes)
+        protected override void BindBatchTexture(ISpriteSharedRenderAttributes batchAttributes)
         {
             //Bind the texture
             glActiveTexture(GL_TEXTURE0);

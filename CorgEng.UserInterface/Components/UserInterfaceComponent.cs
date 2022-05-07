@@ -28,6 +28,8 @@ namespace CorgEng.UserInterface.Components
 
         public IUserInterfaceComponent Parent { get; }
 
+        public bool Fullscreen { get; set; } = false;
+
         public double PixelWidth { get; private set; }
 
         public double PixelHeight { get; private set; }
@@ -81,9 +83,21 @@ namespace CorgEng.UserInterface.Components
             {
                 Render(this, childComponent as UserInterfaceComponent, userInterfaceComponent.RenderCore.FrameBufferUint);
             }
+            //Resize if necessary
+            if (Fullscreen && Parent == null && (PixelWidth != CorgEngMain.MainRenderCore.Width || PixelHeight != CorgEngMain.MainRenderCore.Height))
+            {
+                SetWidth(CorgEngMain.MainRenderCore.Width, CorgEngMain.MainRenderCore.Height);
+            }
             //Switch to the correct render core and draw it to the framebuffer
             userInterfaceComponent.RenderCore.DoRender();
-            userInterfaceComponent.RenderCore.DrawToBuffer(buffer, 0, 0, parent?.RenderCore?.Width ?? CorgEngMain.MainRenderCore.Width, parent?.RenderCore?.Height ?? CorgEngMain.MainRenderCore.Height);
+            //userInterfaceComponent.RenderCore.DrawToBuffer(buffer, 0, 0, parent?.RenderCore?.Width ?? CorgEngMain.MainRenderCore.Width, parent?.RenderCore?.Height ?? CorgEngMain.MainRenderCore.Height);
+            userInterfaceComponent.RenderCore.DrawToBuffer(
+                buffer,
+                0,
+                0,
+                (int)PixelWidth,
+                (int)PixelHeight
+            );
         }
 
         public void DrawToFramebuffer(uint frameBuffer)

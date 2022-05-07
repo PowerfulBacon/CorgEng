@@ -32,6 +32,8 @@ namespace CorgEng.Font.Fonts
 
         public int FontHeight { get; private set; }
 
+        public int Base { get; set; }
+
         public Font(string fontName)
         {
             LoadFontCharacters(fontName);
@@ -99,6 +101,7 @@ namespace CorgEng.Font.Fonts
                 {
                     FontWidth = int.Parse(lineParameters["scaleW"]);
                     FontHeight = int.Parse(lineParameters["scaleH"]);
+                    Base = int.Parse(lineParameters["base"]);
                 }
             }
             //Complete the character cache

@@ -115,6 +115,7 @@
     <Compile Include="Rendering\Shaders\IShaderFactory.cs" />
     <Compile Include="Rendering\Shaders\IShaderSet.cs" />
     <Compile Include="Rendering\SharedRenderAttributes\ISharedRenderAttributes.cs" />
+    <Compile Include="Rendering\SharedRenderAttributes\ISpriteSharedRenderAttributes.cs" />
     <Compile Include="Rendering\Textures\Bitmap\IBitmapFactory.cs" />
     <Compile Include="Rendering\Textures\DirectionalModes.cs" />
     <Compile Include="Rendering\Textures\ITexture.cs" />

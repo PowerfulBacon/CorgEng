@@ -1,6 +1,8 @@
 ﻿using CorgEng.Core.Dependencies;
 using CorgEng.GenericInterfaces.Rendering;
+using CorgEng.GenericInterfaces.Rendering.RenderObjects.SpriteRendering;
 using CorgEng.GenericInterfaces.Rendering.Shaders;
+using CorgEng.GenericInterfaces.Rendering.SharedRenderAttributes;
 using CorgEng.GenericInterfaces.UserInterface.Rendering.Renderer;
 using CorgEng.GenericInterfaces.UserInterface.Rendering.RenderObject;
 using CorgEng.GenericInterfaces.UtilityTypes;
@@ -17,7 +19,7 @@ using static OpenGL.Gl;
 
 namespace CorgEng.UserInterface.Rendering.UserinterfaceRenderer
 {
-    internal sealed class UserInterfaceRenderer : InstancedRenderer<UserInterfaceSharedRenderAttributes, UserInterfaceBatch>, IUserInterfaceRenderer
+    internal sealed class UserInterfaceRenderer : InstancedRenderer<ISpriteSharedRenderAttributes, UserInterfaceBatch>, IUserInterfaceRenderer
     {
 
         [UsingDependency]
@@ -31,14 +33,15 @@ namespace CorgEng.UserInterface.Rendering.UserinterfaceRenderer
             _shaderSet = ShaderFactory.CreateShaderSet("UserInterfaceShader");
         }
 
-        public void StartRendering(IUserInterfaceRenderObject spriteRenderObject)
+        public void StartRendering(ISpriteRenderObject spriteRenderObject)
         {
             //Check for duplicate render exceptions
             if (spriteRenderObject.GetBelongingBatchElement<UserInterfaceBatch>() != null)
                 throw new DuplicateRenderException("Attempting to render a sprite object already being rendered.");
             //Create a new batch element for this
             IBatchElement<UserInterfaceBatch> batchElement = new BatchElement<UserInterfaceBatch>(new IBindableProperty<IVector<float>>[] {
-                spriteRenderObject.WorldPosition,
+                spriteRenderObject.TransformFirstRow,
+                spriteRenderObject.TransformSecondRow,
                 spriteRenderObject.TextureDetails
             });
             //Remember the batch element we are stored in, so it can be saved
@@ -47,7 +50,7 @@ namespace CorgEng.UserInterface.Rendering.UserinterfaceRenderer
             AddToBatch(spriteRenderObject.GetSharedRenderAttributes(), batchElement);
         }
 
-        public void StopRendering(IUserInterfaceRenderObject spriteRenderObject)
+        public void StopRendering(ISpriteRenderObject spriteRenderObject)
         {
             //Remove references to the on change event
             spriteRenderObject.GetBelongingBatchElement<UserInterfaceBatch>().Unbind();
@@ -70,7 +73,7 @@ namespace CorgEng.UserInterface.Rendering.UserinterfaceRenderer
             glUniform1i(textureSamplerUniformLocation, 0);
         }
 
-        protected override void BindBatchTexture(UserInterfaceSharedRenderAttributes batchAttributes)
+        protected override void BindBatchTexture(ISpriteSharedRenderAttributes batchAttributes)
         {
             //Bind the texture
             glActiveTexture(GL_TEXTURE0);

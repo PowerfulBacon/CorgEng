@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace CorgEng.UserInterface.Rendering.UserinterfaceRenderer
 {
-    internal sealed class UserInterfaceSharedRenderAttributes : ISharedRenderAttributes
+    internal sealed class UserInterfaceSharedRenderAttributes : ISpriteSharedRenderAttributes
     {
 
         [UsingDependency]

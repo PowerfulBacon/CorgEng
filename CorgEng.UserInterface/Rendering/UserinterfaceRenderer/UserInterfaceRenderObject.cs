@@ -4,6 +4,7 @@ using CorgEng.GenericInterfaces.UserInterface.Rendering.RenderObject;
 using CorgEng.GenericInterfaces.UtilityTypes;
 using CorgEng.GenericInterfaces.UtilityTypes.Batches;
 using CorgEng.UtilityTypes.BindableProperties;
+using CorgEng.UtilityTypes.Matrices;
 using CorgEng.UtilityTypes.Vectors;
 using System;
 using System.Collections.Generic;
@@ -26,7 +27,16 @@ namespace CorgEng.UserInterface.Rendering.UserinterfaceRenderer
 
         public IBindableProperty<float> TextureFileHeight { get; set; }
 
-        public IBindableProperty<IVector<float>> WorldPosition { get; } = new BindableProperty<IVector<float>>(new Vector<float>(0, 0, 0));
+        public IBindableProperty<IMatrix> Transform { get; } = new BindableProperty<IMatrix>(new Matrix(new float[,] {
+            { 1, 0, 0 },
+            { 0, 1, 0 },
+            //This last row is actually ignored
+            { 0, 0, 1 }
+        }));
+
+        public IBindableProperty<IVector<float>> TransformFirstRow { get; } = new BindableProperty<IVector<float>>(new Vector<float>(1, 0, 0));
+
+        public IBindableProperty<IVector<float>> TransformSecondRow { get; } = new BindableProperty<IVector<float>>(new Vector<float>(0, 1, 0));
 
         public IBindablePropertyGroup TextureDetails { get; }
 
@@ -35,7 +45,17 @@ namespace CorgEng.UserInterface.Rendering.UserinterfaceRenderer
         public UserInterfaceRenderObject(uint textureUint, float textureX, float textureY, float textureWidth, float textureHeight)
         {
             //When the vector changes, trigger change on the bindable property.
-            WorldPosition.Value.OnChange += (object src, EventArgs arg) => { WorldPosition.TriggerChanged(); };
+            Transform.Value.OnChange += (object src, EventArgs arg) => {
+                //Trigger updates to our transform rows
+                TransformFirstRow.Value.X = Transform.Value[1, 1];
+                TransformFirstRow.Value.Y = Transform.Value[2, 1];
+                TransformFirstRow.Value.Z = Transform.Value[3, 1];
+                TransformFirstRow.TriggerChanged();
+                TransformSecondRow.Value.X = Transform.Value[1, 2];
+                TransformSecondRow.Value.Y = Transform.Value[2, 2];
+                TransformSecondRow.Value.Z = Transform.Value[3, 2];
+                TransformSecondRow.TriggerChanged();
+            };
             //Set the bindable properties
             TextureFile = new BindableProperty<uint>(textureUint);
             TextureFileX = new BindableProperty<float>(textureX);

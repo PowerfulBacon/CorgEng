@@ -57,6 +57,11 @@ namespace CorgEng.UtilityTypes.Matrices
         //WHILE WE DO IT X FIRST
         private float[] Values { get; set; }
 
+        /// <summary>
+        /// The change event handler
+        /// </summary>
+        public event EventHandler OnChange = null;
+
         //We do have to use it for reference though
         public unsafe float* GetPointer()
         {
@@ -98,7 +103,10 @@ namespace CorgEng.UtilityTypes.Matrices
         public float this[int x, int y]
         {
             get { return Values[y - 1 + (x - 1) * Y]; }
-            set { Values[y - 1 + (x - 1) * Y] = value; }
+            set {
+                Values[y - 1 + (x - 1) * Y] = value;
+                OnChange?.Invoke(this, EventArgs.Empty);
+            }
         }
 
         /// <summary>

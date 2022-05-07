@@ -27,6 +27,11 @@ namespace CorgEng.GenericInterfaces.UserInterface.Components
         IUserInterfaceComponent Parent { get; }
 
         /// <summary>
+        /// If true, the user interface will automatically resize to always be fullscreen.
+        /// </summary>
+        bool Fullscreen { get; set; }
+
+        /// <summary>
         /// The width of the user interface component in pixels
         /// </summary>
         double PixelWidth { get; }

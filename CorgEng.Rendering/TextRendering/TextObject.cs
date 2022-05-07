@@ -37,6 +37,8 @@ namespace CorgEng.Rendering.TextRendering
         //TODO
         public IBindableProperty<IVector<float>> ScreenPositionProperty { get; }
 
+        public IBindableProperty<float> Scale { get; } = new BindableProperty<float>(0.1f);
+
         //Collect a sprite renderer dependency so that we can draw our glyphs.
         private ISpriteRenderer spriteRenderer;
 
@@ -56,6 +58,7 @@ namespace CorgEng.Rendering.TextRendering
             //Begin listening for updates to the text and screen position
             TextProperty.ValueChanged += Draw;
             ScreenPositionProperty.ValueChanged += Draw;
+            Scale.ValueChanged += Draw;
         }
 
         /// <summary>
@@ -65,7 +68,7 @@ namespace CorgEng.Rendering.TextRendering
         {
             //Setup the pointers for where we should be drawing the characters
             double xPointer = ScreenPositionProperty.Value.X;
-            double yPointer = ScreenPositionProperty.Value.Y;
+            double yPointer = ScreenPositionProperty.Value.Y + (Scale.Value * font.Base / font.FontHeight);
             //Get each character in the text property that needs rendering
             foreach (char textCharcter in TextProperty.Value)
             {
@@ -80,12 +83,14 @@ namespace CorgEng.Rendering.TextRendering
                     (float)fontCharacter.TextureYPosition / fontCharacter.TextureFile.Height,
                     (float)fontCharacter.TextureWidth / fontCharacter.TextureFile.Width,
                     (float)fontCharacter.TextureHeight / fontCharacter.TextureFile.Height);
-                renderObject.WorldPosition.Value.X = (float)xPointer;
-                renderObject.WorldPosition.TriggerChanged();
+                renderObject.Transform.Value[3, 1] = (float)xPointer + Scale.Value * 4 * fontCharacter.CharacterXOffset / fontCharacter.TextureFile.Width;
+                renderObject.Transform.Value[3, 2] = (float)yPointer - Scale.Value * 4 * fontCharacter.CharacterYOffset / fontCharacter.TextureFile.Height;
+                renderObject.Transform.Value[1, 1] = Scale.Value * 8 * fontCharacter.TextureWidth / fontCharacter.TextureFile.Width;
+                renderObject.Transform.Value[2, 2] = Scale.Value * 8 * fontCharacter.TextureHeight / fontCharacter.TextureFile.Height;
                 //Start rendering the character
                 spriteRenderer.StartRendering(renderObject);
                 //Move forward the pointers (Account for the font width)
-                xPointer += fontCharacter.CharacterXAdvance / (double)font.FontWidth * 10;
+                xPointer += fontCharacter.CharacterXAdvance / (double)font.FontWidth * 8 * Scale.Value;
                 //xPointer += 1;
             }
         }
