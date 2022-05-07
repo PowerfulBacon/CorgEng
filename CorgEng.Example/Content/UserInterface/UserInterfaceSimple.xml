@@ -2,6 +2,7 @@
 <UserInterface>
   <UserInterfaceComponent leftAnchor="left:100" rightAnchor="right:100" topAnchor="top:10%" bottomAnchor="bottom:10%">
     <UserInterfaceComponent leftAnchor="left:20%" rightAnchor="left:50%" topAnchor="top:10%" bottomAnchor="bottom:10%">
+      <TextComponent leftAnchor="left:10%" rightAnchor="right:10%" topAnchor="top:10%" bottomAnchor="bottom:10%" text="HELLO I AM A TEXT" />
     </UserInterfaceComponent>
   </UserInterfaceComponent>
 </UserInterface>
