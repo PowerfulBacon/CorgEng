@@ -18,6 +18,8 @@ namespace CorgEng.UserInterface.Components
     internal class UserInterfaceComponent : IUserInterfaceComponent
     {
 
+        private static int IdCounter = 0;
+
         [UsingDependency]
         private static ILogger Logger;
 
@@ -41,6 +43,8 @@ namespace CorgEng.UserInterface.Components
         private List<IUserInterfaceComponent> Children { get; } = new List<IUserInterfaceComponent>();
 
         private IRenderCore RenderCore { get; } = UserInterfaceRenderCoreFactory?.Create();
+
+        private int uniqueId = IdCounter++;
 
         public UserInterfaceComponent(IUserInterfaceComponent parent, IAnchor anchorDetails) : this(anchorDetails)
         {
@@ -78,25 +82,26 @@ namespace CorgEng.UserInterface.Components
 
         private void Render(UserInterfaceComponent parent, UserInterfaceComponent userInterfaceComponent, uint buffer)
         {
-            //Draw children
-            foreach (IUserInterfaceComponent childComponent in userInterfaceComponent.GetChildren())
-            {
-                Render(this, childComponent as UserInterfaceComponent, userInterfaceComponent.RenderCore.FrameBufferUint);
-            }
             //Resize if necessary
-            if (Fullscreen && Parent == null && (PixelWidth != CorgEngMain.MainRenderCore.Width || PixelHeight != CorgEngMain.MainRenderCore.Height))
+            if (userInterfaceComponent.Fullscreen && userInterfaceComponent.Parent == null && (userInterfaceComponent.PixelWidth != CorgEngMain.MainRenderCore.Width || userInterfaceComponent.PixelHeight != CorgEngMain.MainRenderCore.Height))
             {
-                SetWidth(CorgEngMain.MainRenderCore.Width, CorgEngMain.MainRenderCore.Height);
+                userInterfaceComponent.SetWidth(CorgEngMain.MainRenderCore.Width, CorgEngMain.MainRenderCore.Height);
             }
             //Switch to the correct render core and draw it to the framebuffer
             userInterfaceComponent.RenderCore.DoRender();
             //userInterfaceComponent.RenderCore.DrawToBuffer(buffer, 0, 0, parent?.RenderCore?.Width ?? CorgEngMain.MainRenderCore.Width, parent?.RenderCore?.Height ?? CorgEngMain.MainRenderCore.Height);
+            //Draw children
+            foreach (IUserInterfaceComponent childComponent in userInterfaceComponent.GetChildren())
+            {
+                //Render the child component to our buffer
+                Render(this, childComponent as UserInterfaceComponent, userInterfaceComponent.RenderCore.FrameBufferUint);
+            }
             userInterfaceComponent.RenderCore.DrawToBuffer(
                 buffer,
                 0,
                 0,
-                (int)PixelWidth,
-                (int)PixelHeight
+                (int)userInterfaceComponent.PixelWidth,
+                (int)userInterfaceComponent.PixelHeight
             );
         }
 
@@ -294,13 +299,14 @@ namespace CorgEng.UserInterface.Components
             //Set our width
             PixelWidth = Math.Max(MinimumPixelWidth, width);
             PixelHeight = Math.Max(MinimumPixelHeight, height);
+            //Update our render core size
+            RenderCore?.Resize((int)PixelWidth, (int)PixelHeight);
+            Logger?.WriteLine($"Reszied UI Element {uniqueId} to {PixelWidth}x{PixelHeight}", LogType.DEBUG);
             //Update child components
             foreach (IUserInterfaceComponent childComponent in Children)
             {
                 childComponent.OnParentResized();
             }
-            //Update our render core size
-            RenderCore?.Resize((int)PixelWidth, (int)PixelHeight);
         }
     }
 }
