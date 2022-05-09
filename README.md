@@ -54,10 +54,31 @@ Created dependencies will always be static. If you want an instanced reference, 
 
 ### Systems
 
+Systems are responsible for processing events and changing the states of components. They can listen for signals raised locally on entities, or listen to signals globally.
+
+```csharp
+void InitializeSystem()
+{
+  RegisterLocalEvent<GComponent, GEvent>(HandleEvent);
+}
+
+void HandleEvent(Entity e, GComponent component, GEvent signal)
+{
+  ...
+}
+```
+
 ### Components
+
+A component simply stores data and nothing else. All processing and changing of the data is handled by the entity system.
 
 ### Entities
 
-### Signals
+An entity stores components. It has no functionality without its components.
+
+### Signals/Events
+
+Signals store data and can be raised against an entity.
+When a signal is raised, any systems listening for the signal will be notified and can then perform some action.
 
 ## Render Cores
