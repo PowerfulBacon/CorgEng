@@ -46,6 +46,8 @@ namespace CorgEng.EntityComponentSystem.Systems
         /// </summary>
         private readonly AutoResetEvent waitHandle = new AutoResetEvent(false);
 
+        private volatile bool isWaiting = false;
+
         /// <summary>
         /// The invokation queue. A queue of actions that need to be triggered (Raised events)
         /// </summary>
@@ -105,7 +107,11 @@ namespace CorgEng.EntityComponentSystem.Systems
             {
                 //Wait until we are awoken again
                 if (invokationQueue.Count == 0)
+                {
+                    isWaiting = true;
                     waitHandle.WaitOne();
+                    isWaiting = false;
+                }
                 Action firstInvokation;
                 invokationQueue.TryDequeue(out firstInvokation);
                 if (firstInvokation != null)
@@ -113,7 +119,7 @@ namespace CorgEng.EntityComponentSystem.Systems
                     try
                     {
                         //Invoke the provided action
-                        firstInvokation.Invoke();
+                        firstInvokation();
                     }
                     catch (Exception e)
                     {
@@ -152,9 +158,10 @@ namespace CorgEng.EntityComponentSystem.Systems
                 {
                     invokationQueue.Enqueue(() =>
                     {
-                        eventHandler.Invoke((GEvent)signal);
+                        eventHandler((GEvent)signal);
                     });
-                    waitHandle.Set();
+                    if(isWaiting)
+                        waitHandle.Set();
                 });
             }
         }
@@ -184,9 +191,10 @@ namespace CorgEng.EntityComponentSystem.Systems
                 {
                     invokationQueue.Enqueue(() =>
                     {
-                        eventHandler.Invoke(entity, (GComponent)component, (GEvent)signal);
+                        eventHandler(entity, (GComponent)component, (GEvent)signal);
                     });
-                    waitHandle.Set();
+                    if(isWaiting)
+                        waitHandle.Set();
                 });
             }
         }
