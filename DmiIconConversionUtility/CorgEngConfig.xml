@@ -1,0 +1,6 @@
+﻿<CorgEngConfig>
+  <!--Specify which modules we need to load dynamically-->
+  <DependencyModules>
+    <Module>CorgEng.Logging</Module>
+  </DependencyModules>
+</CorgEngConfig>

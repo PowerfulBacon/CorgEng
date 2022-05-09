@@ -86,7 +86,7 @@ namespace CorgEng.Core.Rendering
             //Create stuff we need for screen rendering (static)
             if (!initialized)
             {
-                Logger.WriteLine("Initialized RenderCore static requirements.", LogType.LOG);
+                Logger?.WriteLine("Initialized RenderCore static requirements.", LogType.LOG);
                 //Mark initialized to be true.
                 initialized = true;
                 //create and link a program

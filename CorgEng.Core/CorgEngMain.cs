@@ -66,11 +66,17 @@ namespace CorgEng.Core
         /// Initializes the CorgEng game engine.
         /// Will call initialization on all CorgEng modules.
         /// </summary>
-        public static void Initialize()
+        public static void Initialize(bool disableRendering = false)
         {
             //Load priority modules (Logging)
             PriorityModuleInit();
             Logger?.WriteLine("Starting CorgEng Application", LogType.DEBUG);
+            if (disableRendering)
+            {
+                //Load non priority modules
+                ModuleInit();
+                return;
+            }
             //Create a new window
             GameWindow = new CorgEngWindow();
             GameWindow.Open();

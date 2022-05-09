@@ -44,6 +44,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CorgEng.UserInterface", "..
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CorgEng.Font", "..\CorgEng.Font\CorgEng.Font.csproj", "{A18B4113-8CBF-44B3-BC4A-C27920D2F6BE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DmiIconConversionUtility", "..\DmiIconConversionUtility\DmiIconConversionUtility.csproj", "{047A7C91-7A94-4393-8D25-54BF23498193}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -234,6 +236,18 @@ Global
 		{A18B4113-8CBF-44B3-BC4A-C27920D2F6BE}.Release|x64.Build.0 = Release|Any CPU
 		{A18B4113-8CBF-44B3-BC4A-C27920D2F6BE}.Release|x86.ActiveCfg = Release|Any CPU
 		{A18B4113-8CBF-44B3-BC4A-C27920D2F6BE}.Release|x86.Build.0 = Release|Any CPU
+		{047A7C91-7A94-4393-8D25-54BF23498193}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{047A7C91-7A94-4393-8D25-54BF23498193}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{047A7C91-7A94-4393-8D25-54BF23498193}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{047A7C91-7A94-4393-8D25-54BF23498193}.Debug|x64.Build.0 = Debug|Any CPU
+		{047A7C91-7A94-4393-8D25-54BF23498193}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{047A7C91-7A94-4393-8D25-54BF23498193}.Debug|x86.Build.0 = Debug|Any CPU
+		{047A7C91-7A94-4393-8D25-54BF23498193}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{047A7C91-7A94-4393-8D25-54BF23498193}.Release|Any CPU.Build.0 = Release|Any CPU
+		{047A7C91-7A94-4393-8D25-54BF23498193}.Release|x64.ActiveCfg = Release|Any CPU
+		{047A7C91-7A94-4393-8D25-54BF23498193}.Release|x64.Build.0 = Release|Any CPU
+		{047A7C91-7A94-4393-8D25-54BF23498193}.Release|x86.ActiveCfg = Release|Any CPU
+		{047A7C91-7A94-4393-8D25-54BF23498193}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
