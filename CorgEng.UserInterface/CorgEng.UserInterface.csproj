@@ -1,0 +1,128 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{19E048D9-1587-40CC-BEE3-E1883A21FEC8}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>CorgEng.UserInterface</RootNamespace>
+    <AssemblyName>CorgEng.UserInterface</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Anchors\Anchor.cs" />
+    <Compile Include="Anchors\AnchorDetailFactory.cs" />
+    <Compile Include="Anchors\AnchorDetails.cs" />
+    <Compile Include="Anchors\AnchorFactory.cs" />
+    <Compile Include="Components\UserInterfaceComponent.cs" />
+    <Compile Include="Components\UserInterfaceComponentFactory.cs" />
+    <Compile Include="Generators\UserInterfaceXmlLoader.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Rendering\UserInterfaceRenderCore.cs" />
+    <Compile Include="Rendering\UserInterfaceRenderCoreFactory.cs" />
+    <Compile Include="Rendering\UserinterfaceRenderer\UserInterfaceBatch.cs" />
+    <Compile Include="Rendering\UserinterfaceRenderer\UserInterfaceRenderer.cs" />
+    <Compile Include="Rendering\UserinterfaceRenderer\UserInterfaceRendererFactory.cs" />
+    <Compile Include="Rendering\UserinterfaceRenderer\UserInterfaceRenderObject.cs" />
+    <Compile Include="Rendering\UserinterfaceRenderer\UserInterfaceRenderObjectFactory.cs" />
+    <Compile Include="Rendering\UserinterfaceRenderer\UserInterfaceSharedRenderAttributes.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Content\Shaders\UserInterfaceShader\UserInterfaceShader.frag">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\Shaders\UserInterfaceShader\UserInterfaceShader.vert">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CorgEng.Core\CorgEng.Core.csproj">
+      <Project>{9CCC4A6B-2D13-425D-8C72-B034151EC11C}</Project>
+      <Name>CorgEng.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CorgEng.DependencyInjection\CorgEng.DependencyInjection.csproj">
+      <Project>{913A2BE9-E596-4202-8DA1-ADF02AE63618}</Project>
+      <Name>CorgEng.DependencyInjection</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CorgEng.GenericInterfaces\CorgEng.GenericInterfaces.csproj">
+      <Project>{E87F196E-5BF2-4AAF-8209-9F66A4F4B0EB}</Project>
+      <Name>CorgEng.GenericInterfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CorgEng.Rendering\CorgEng.Rendering.csproj">
+      <Project>{bfc5583f-3a05-43e4-9d07-81d80b1ec685}</Project>
+      <Name>CorgEng.Rendering</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CorgEng.UtilityTypes\CorgEng.UtilityTypes.csproj">
+      <Project>{F9CCD4D7-9AF2-4167-9F31-A2879D82F854}</Project>
+      <Name>CorgEng.UtilityTypes</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

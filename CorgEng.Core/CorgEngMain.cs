@@ -55,6 +55,7 @@ namespace CorgEng.Core
         /// <summary>
         /// The time delta between the last frame and the current frame.
         /// Time taken for rendering to occur.
+        /// Milliseconds.
         /// Note: Due to multi-threading DeltaTime is not the same across all processing threads.
         /// </summary>
         public static double DeltaTime { get; private set; }
@@ -78,6 +79,8 @@ namespace CorgEng.Core
             InternalRenderMaster = new RenderMaster();
             InternalRenderMaster.Initialize();
             Logger?.WriteLine("Successfully initialized render master", LogType.DEBUG);
+            //Bind the render master size to the game window size
+            GameWindow.OnWindowResized += InternalRenderMaster.SetWindowRenderSize;
             //Load non-priority modules
             ModuleInit();
         }
@@ -88,6 +91,9 @@ namespace CorgEng.Core
         /// </summary>
         public static void TransferToRenderingThread()
         {
+            double timeLeft = 1;
+            double totalDeltaTime = 0;
+            int counts = 0;
             //While the window shouldn't close
             while (!GameWindow.ShouldClose())
             {
@@ -102,11 +108,18 @@ namespace CorgEng.Core
                 if (MainRenderCore == null)
                     throw new NullRenderCoreException("The main CorgEng render core is not set! Use CorgEng.SetRenderCore(RenderCore) to set the primary render core.");
                 //Process the main render core
-                MainRenderCore.PreRender();
-                MainRenderCore.PerformRender();
+                MainRenderCore.DoRender();
                 //Pass the output image from the render core to the internal renderer
-                InternalRenderMaster.RenderImageToScreen(MainRenderCore.RenderTextureUint);
+                InternalRenderMaster.RenderImageToScreen(MainRenderCore);
                 DeltaTime = Glfw.Time - lastFrameTime;
+                totalDeltaTime += DeltaTime;
+                counts++;
+                timeLeft -= DeltaTime;
+                if (timeLeft < 0)
+                {
+                    Logger.WriteLine($"Average Frame Delta: {totalDeltaTime/counts}. Average FPS: {1/(totalDeltaTime/counts)}.Frame Delta Time: {DeltaTime}s. Frame rate: {1/DeltaTime}", LogType.TEMP);
+                    timeLeft = 1;
+                }
             }
         }
 
@@ -115,6 +128,8 @@ namespace CorgEng.Core
             MainCamera = camera;
         }
 
+        private static CorgEngWindow.WindowResizeDelegate activeSizeDelegate;
+
         /// <summary>
         /// Sets the CorgEng program's render core.
         /// </summary>
@@ -122,6 +137,9 @@ namespace CorgEng.Core
         {
             MainRenderCore = newRenderCore;
             MainRenderCore.Initialize();
+            GameWindow.OnWindowResized -= activeSizeDelegate;
+            activeSizeDelegate = MainRenderCore.Resize;
+            GameWindow.OnWindowResized += activeSizeDelegate;
         }
 
         /// <summary>
@@ -148,51 +166,62 @@ namespace CorgEng.Core
         /// TODO: Whitelist/blacklist types and add sandboxing
         /// </summary>
         /// <param name="filePath"></param>
-        public static void LoadConfig(string filePath)
+        public static void LoadConfig(string filePath, bool embeddedResource = true, bool awaitOnError = true)
         {
             try
             {
+                string resourceName;
+                Stream resourceStream;
                 //Locate the config resources file
-                string resourceName = Assembly.GetEntryAssembly().GetManifestResourceNames().Single(str => str.EndsWith(filePath));
-                using (Stream resourceStream = Assembly.GetEntryAssembly().GetManifestResourceStream(resourceName))
+                if (embeddedResource)
                 {
-                    XElement configElement = XElement.Load(resourceStream);
-                    foreach (XElement childElement in configElement.Elements())
+                    resourceName = Assembly.GetEntryAssembly().GetManifestResourceNames().Single(str => str.EndsWith(filePath));
+                    resourceStream = Assembly.GetEntryAssembly().GetManifestResourceStream(resourceName);
+                }
+                else
+                {
+                    resourceName = filePath;
+                    resourceStream = new FileStream(filePath, FileMode.Open);
+                }
+                XElement configElement = XElement.Load(resourceStream);
+                foreach (XElement childElement in configElement.Elements())
+                {
+                    switch (childElement.Name.ToString())
                     {
-                        switch (childElement.Name.ToString())
-                        {
-                            case "DependencyModules":
-                                List<Assembly> loadedAssemblies = new List<Assembly>();
-                                foreach (XElement dependency in childElement.Elements())
+                        case "DependencyModules":
+                            List<Assembly> loadedAssemblies = new List<Assembly>();
+                            foreach (XElement dependency in childElement.Elements())
+                            {
+                                try
                                 {
-                                    try
-                                    {
-                                        Assembly loadedModule = Assembly.LoadFile($"{Path.GetFullPath(dependency.Value)}.dll");
-                                        loadedAssemblies.Add(loadedModule);
-                                    }
-                                    catch (FileNotFoundException)
-                                    {
-                                        Console.Error.WriteLine($"[CorgEng Config Error]: Couldn't located module {dependency.Value}.dll");
-                                    }
+                                    Assembly loadedModule = Assembly.LoadFile($"{Path.GetFullPath(dependency.Value)}.dll");
+                                    loadedAssemblies.Add(loadedModule);
                                 }
-                                LoadedAssemblyModules = loadedAssemblies;
-                                break;
-                            default:
-                                Console.Error.WriteLine($"[CorgEng Config Error]: Error parsing config, unknown config attribute {childElement.Name}.");
-                                break;
-                        }
+                                catch (FileNotFoundException)
+                                {
+                                    Console.Error.WriteLine($"[CorgEng Config Error]: Couldn't located module {dependency.Value}.dll");
+                                }
+                            }
+                            LoadedAssemblyModules = loadedAssemblies;
+                            break;
+                        default:
+                            Console.Error.WriteLine($"[CorgEng Config Error]: Error parsing config, unknown config attribute {childElement.Name}.");
+                            break;
                     }
                 }
+                resourceStream.Close();
             }
             catch (System.Exception e)
             {
                 Console.Error.WriteLine("CorgEng: A fatal exception has occured during configuration loading!");
                 Console.Error.WriteLine(e.Message);
+                Console.Error.WriteLine(e.StackTrace);
                 Console.Error.WriteLine("The program may be corrupted or incorrectly configured.");
                 Console.Error.WriteLine("Please reinstall the program and ensure that if developing a CorgEng game, the config is set as an embedded resource.");
                 Console.Error.WriteLine("The application will now be terminated.");
                 Console.Error.WriteLine("Press any key to continue...");
-                Console.ReadKey();
+                if(awaitOnError)
+                    Console.ReadKey();
                 throw;
             }
             //Console

@@ -2,6 +2,7 @@
 using CorgEng.GenericInterfaces.Logging;
 using System;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace CorgEng.Logging
 {
@@ -15,6 +16,7 @@ namespace CorgEng.Logging
 
         public static int ExceptionCount = 0;
 
+        //TODO: Make this a system
         public void WriteLine(object message, LogType logType = LogType.MESSAGE)
         {
             if (message is Exception)
@@ -23,11 +25,12 @@ namespace CorgEng.Logging
             if ((logType & LogFlags) != logType)
                 return;
             DateTime logTime = DateTime.Now;
+            string logText = $"[{Thread.CurrentThread.Name ?? $"T{Thread.CurrentThread.ManagedThreadId}"}][{logType}][{logTime}]";
             lock (consoleLock)
             {
                 //Write it
                 SetConsoleColor(logType);
-                Console.Write($"[{Thread.CurrentThread.Name ?? $"T{Thread.CurrentThread.ManagedThreadId}"}][{logType}][{logTime}]");
+                Console.Write(logText);
                 Console.BackgroundColor = ConsoleColor.Black;
                 Console.ForegroundColor = ConsoleColor.Gray;
                 Console.WriteLine($" {message ?? "null"}");

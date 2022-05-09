@@ -74,6 +74,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="GLFW.NET, Version=1.0.1.0, Culture=neutral, PublicKeyToken=null" />
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\CorgEng.Core\packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -102,6 +105,7 @@
     <None Include="Content\Textures\Example\Example.texdat">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CorgEng.Core\CorgEng.Core.csproj">
@@ -115,6 +119,10 @@
     <ProjectReference Include="..\CorgEng.EntityComponentSystem\CorgEng.EntityComponentSystem.csproj">
       <Project>{4bb408b5-9afa-42e6-973d-547a84a293a5}</Project>
       <Name>CorgEng.EntityComponentSystem</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CorgEng.Font\CorgEng.Font.csproj">
+      <Project>{a18b4113-8cbf-44b3-bc4a-c27920d2f6be}</Project>
+      <Name>CorgEng.Font</Name>
     </ProjectReference>
     <ProjectReference Include="..\CorgEng.GenericInterfaces\CorgEng.GenericInterfaces.csproj">
       <Project>{E87F196E-5BF2-4AAF-8209-9F66A4F4B0EB}</Project>
@@ -132,6 +140,10 @@
       <Project>{bfc5583f-3a05-43e4-9d07-81d80b1ec685}</Project>
       <Name>CorgEng.Rendering</Name>
     </ProjectReference>
+    <ProjectReference Include="..\CorgEng.UserInterface\CorgEng.UserInterface.csproj">
+      <Project>{19e048d9-1587-40cc-bee3-e1883a21fec8}</Project>
+      <Name>CorgEng.UserInterface</Name>
+    </ProjectReference>
     <ProjectReference Include="..\CorgEng.UtilityTypes\CorgEng.UtilityTypes.csproj">
       <Project>{f9ccd4d7-9af2-4167-9f31-a2879d82f854}</Project>
       <Name>CorgEng.UtilityTypes</Name>
@@ -143,6 +155,9 @@
   <ItemGroup />
   <ItemGroup>
     <Content Include="Content\Textures\Example\Example.bmp">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\UserInterface\UserInterfaceSimple.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

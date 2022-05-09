@@ -120,6 +120,7 @@ namespace CorgEng.EntityComponentSystem.Systems
                         Logger?.WriteLine(e, LogType.ERROR);
                     }
                 }
+
             }
             //Terminated
             Logger?.WriteLine($"Terminated EntitySystem thread: {this}", LogType.LOG);

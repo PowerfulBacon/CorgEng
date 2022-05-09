@@ -22,6 +22,92 @@ namespace CorgEng.Tests.UtilityTypes
         }
 
         [TestMethod]
+        public void TestBatchMassAdd()
+        {
+            TestBatch batch = new TestBatch();
+            BatchElement<TestBatch> first = new BatchElement<TestBatch>(new BindableProperty<IVector<float>>[] {
+                new BindableProperty<IVector<float>>(new Vector<float>(1, 1, 1)),
+                new BindableProperty<IVector<float>>(new Vector<float>(9, 9)),
+                new BindableProperty<IVector<float>>(new Vector<float>(9)),
+                new BindableProperty<IVector<float>>(new Vector<float>(9, 9, 9)),
+            });
+            batch.Add(first);
+            BatchElement<TestBatch> second = new BatchElement<TestBatch>(new BindableProperty<IVector<float>>[] {
+                new BindableProperty<IVector<float>>(new Vector<float>(2, 2, 2)),
+                new BindableProperty<IVector<float>>(new Vector<float>(9, 9)),
+                new BindableProperty<IVector<float>>(new Vector<float>(9)),
+                new BindableProperty<IVector<float>>(new Vector<float>(9, 9, 9)),
+            });
+            batch.Add(second);
+            BatchElement<TestBatch> third = new BatchElement<TestBatch>(new BindableProperty<IVector<float>>[] {
+                new BindableProperty<IVector<float>>(new Vector<float>(3, 3, 3)),
+                new BindableProperty<IVector<float>>(new Vector<float>(9, 9)),
+                new BindableProperty<IVector<float>>(new Vector<float>(9)),
+                new BindableProperty<IVector<float>>(new Vector<float>(9, 9, 9)),
+            });
+            batch.Add(third);
+            BatchElement<TestBatch> forth = new BatchElement<TestBatch>(new BindableProperty<IVector<float>>[] {
+                new BindableProperty<IVector<float>>(new Vector<float>(4, 4, 4)),
+                new BindableProperty<IVector<float>>(new Vector<float>(9, 9)),
+                new BindableProperty<IVector<float>>(new Vector<float>(9)),
+                new BindableProperty<IVector<float>>(new Vector<float>(9, 9, 9)),
+            });
+            batch.Add(forth);
+            Assert.AreEqual(1, batch.GetArray(0, 0)[0]);
+            Assert.AreEqual(1, batch.GetArray(0, 0)[1]);
+            Assert.AreEqual(1, batch.GetArray(0, 0)[2]);
+            Assert.AreEqual(2, batch.GetArray(0, 0)[3]);
+            Assert.AreEqual(2, batch.GetArray(0, 0)[4]);
+            Assert.AreEqual(2, batch.GetArray(0, 0)[5]);
+            Assert.AreEqual(3, batch.GetArray(0, 0)[6]);
+            Assert.AreEqual(3, batch.GetArray(0, 0)[7]);
+            Assert.AreEqual(3, batch.GetArray(0, 0)[8]);
+            Assert.AreEqual(4, batch.GetArray(0, 0)[9]);
+            Assert.AreEqual(4, batch.GetArray(0, 0)[10]);
+            Assert.AreEqual(4, batch.GetArray(0, 0)[11]);
+        }
+
+        [TestMethod]
+        public void TestBatchUpdate()
+        {
+            TestBatch batch = new TestBatch();
+            BatchElement<TestBatch> first = new BatchElement<TestBatch>(new BindableProperty<IVector<float>>[] {
+                new BindableProperty<IVector<float>>(new Vector<float>(1, 1, 1)),
+                new BindableProperty<IVector<float>>(new Vector<float>(9, 9)),
+                new BindableProperty<IVector<float>>(new Vector<float>(9)),
+                new BindableProperty<IVector<float>>(new Vector<float>(9, 9, 9)),
+            });
+            batch.Add(first);
+            BatchElement<TestBatch> second = new BatchElement<TestBatch>(new BindableProperty<IVector<float>>[] {
+                new BindableProperty<IVector<float>>(new Vector<float>(2, 2, 2)),
+                new BindableProperty<IVector<float>>(new Vector<float>(9, 9)),
+                new BindableProperty<IVector<float>>(new Vector<float>(9)),
+                new BindableProperty<IVector<float>>(new Vector<float>(9, 9, 9)),
+            });
+            batch.Add(second);
+            BindableProperty<IVector<float>>[] bp = new BindableProperty<IVector<float>>[] {
+                new BindableProperty<IVector<float>>(new Vector<float>(3, 3, 3)),
+                new BindableProperty<IVector<float>>(new Vector<float>(9, 9)),
+                new BindableProperty<IVector<float>>(new Vector<float>(9)),
+                new BindableProperty<IVector<float>>(new Vector<float>(9, 9, 9)),
+            };
+            BatchElement<TestBatch> third = new BatchElement<TestBatch>(bp);
+            batch.Add(third);
+            BatchElement<TestBatch> forth = new BatchElement<TestBatch>(new BindableProperty<IVector<float>>[] {
+                new BindableProperty<IVector<float>>(new Vector<float>(4, 4, 4)),
+                new BindableProperty<IVector<float>>(new Vector<float>(9, 9)),
+                new BindableProperty<IVector<float>>(new Vector<float>(9)),
+                new BindableProperty<IVector<float>>(new Vector<float>(9, 9, 9)),
+            });
+            batch.Add(forth);
+            //Change BP
+            bp[0].Value = new Vector<float>(6, 6, 6);
+            Assert.AreEqual(6, batch.GetArray(0, 0)[6], $"{batch}");
+            Assert.AreEqual(6, batch.GetArray(0, 0)[7], $"{batch}");
+            Assert.AreEqual(6, batch.GetArray(0, 0)[8], $"{batch}");
+        }
+
+        [TestMethod]
         public void TestBatches()
         {
             TestBatch batch = new TestBatch(5);

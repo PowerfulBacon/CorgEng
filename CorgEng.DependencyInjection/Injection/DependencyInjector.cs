@@ -123,5 +123,51 @@ namespace CorgEng.DependencyInjection.Injection
             return null;
         }
 
+        /// <summary>
+        /// Overrides a specified dependency.
+        /// Incredibly slow due to using reflection.
+        /// </summary>
+        /// <typeparam name="DependencyInterface"></typeparam>
+        /// <param name="instantiatedDependency"></param>
+        public static void OverrideDependency<DependencyInterface>(DependencyInterface instantiatedDependency)
+        {
+            //Locate everything we need to replace
+            //Locate all members we need to inject dependencies into
+            IEnumerable<MemberInfo> requiredInjections = AppDomain.CurrentDomain.GetAssemblies().SelectMany(assembly => assembly.GetTypes().SelectMany(exportedType =>
+            {
+            return exportedType.GetFields(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic)
+                .Where(fieldInfo => fieldInfo.FieldType == typeof(DependencyInterface)
+                    && fieldInfo.GetCustomAttribute<UsingDependencyAttribute>() != null)
+                .Union<MemberInfo>(exportedType.GetProperties(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic)
+                    .Where(propertyInfo => propertyInfo.PropertyType == typeof(DependencyInterface)
+                        && propertyInfo.GetCustomAttribute<UsingDependencyAttribute>() != null));
+            }));
+
+            //Perform injection
+            foreach (MemberInfo memberInfo in requiredInjections)
+            {
+                try
+                {
+                    if (memberInfo is PropertyInfo property)
+                    {
+                        //Locate the type of the property
+                        Type desiredType = property.PropertyType;
+                        property.SetValue(null, instantiatedDependency);
+                    }
+                    else if (memberInfo is FieldInfo field)
+                    {
+                        Type desiredType = field.FieldType;
+                        field.SetValue(null, instantiatedDependency);
+                    }
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine($"Injection failure on {memberInfo.Name} at {memberInfo.DeclaringType}:");
+                    Console.WriteLine(e);
+                }
+            }
+            Console.WriteLine($"Injected override dependency ({typeof(DependencyInterface)}) on {requiredInjections.Count()} instances");
+        }
+
     }
 }

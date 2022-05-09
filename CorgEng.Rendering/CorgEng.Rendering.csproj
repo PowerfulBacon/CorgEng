@@ -97,9 +97,12 @@
     <Compile Include="Shaders\ShaderSet.cs" />
     <Compile Include="SpriteRendering\SpriteBatch.cs" />
     <Compile Include="SpriteRendering\SpriteRenderer.cs" />
+    <Compile Include="SpriteRendering\SpriteRendererFactory.cs" />
     <Compile Include="SpriteRendering\SpriteRenderObject.cs" />
     <Compile Include="SpriteRendering\SpriteRenderObjectFactory.cs" />
     <Compile Include="SpriteRendering\SpriteSharedRenderAttributes.cs" />
+    <Compile Include="TextRendering\TextObject.cs" />
+    <Compile Include="TextRendering\TextObjectFactory.cs" />
     <Compile Include="Textures\TextureBitmap.cs" />
     <Compile Include="Textures\TextureCache.cs" />
     <Compile Include="Textures\TextureFactory.cs" />

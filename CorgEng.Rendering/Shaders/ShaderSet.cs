@@ -84,14 +84,14 @@ namespace CorgEng.Rendering.Shaders
                 string fragInfoLog = glGetShaderInfoLog(fragment_shader);
                 if (vertInfoLog != string.Empty || fragInfoLog != string.Empty)
                 {
-                    Logger.WriteLine($"{name}.vert: {vertInfoLog}");
-                    Logger.WriteLine($"{name}.frag: {fragInfoLog}");
-                    Logger.WriteLine("Shaders failed to compile.");
+                    Logger.WriteLine($"{name}.vert: {vertInfoLog}", LogType.ERROR);
+                    Logger.WriteLine($"{name}.frag: {fragInfoLog}", LogType.ERROR);
+                    Logger.WriteLine("Shaders failed to compile.", LogType.ERROR);
                 }
                 else
                 {
                     //Print a debug message
-                    Logger.WriteLine($"Loaded {name} shaders successfully.");
+                    Logger.WriteLine($"Loaded {name} shaders successfully.", LogType.LOG);
                 }
                 //Cache the shaders for faster loading later
                 loadedShaders.Add(name, this);

@@ -9,6 +9,8 @@ namespace CorgEng.GenericInterfaces.UtilityTypes
     public interface IMatrix
     {
 
+        event EventHandler OnChange;
+
         int X { get; }
         int Y { get; }
 

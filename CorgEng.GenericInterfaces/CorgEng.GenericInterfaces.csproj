@@ -89,9 +89,15 @@
     <Compile Include="ContentLoading\IEntityDef.cs" />
     <Compile Include="ContentLoading\IInstantiatable.cs" />
     <Compile Include="ContentLoading\IPropertyDef.cs" />
+    <Compile Include="Core\IRenderCore.cs" />
+    <Compile Include="Font\Characters\IFontCharacter.cs" />
+    <Compile Include="Font\Fonts\IFont.cs" />
+    <Compile Include="Font\Fonts\IFontFactory.cs" />
     <Compile Include="InputHandler\IInputHandler.cs" />
     <Compile Include="Logging\ILogger.cs" />
     <Compile Include="Logging\LogType.cs" />
+    <Compile Include="MapLoader\IMapFile.cs" />
+    <Compile Include="MapLoader\IMapLoader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Rendering\Cameras\ICamera.cs" />
     <Compile Include="Rendering\Cameras\Isometric\IIsometricCamera.cs" />
@@ -102,17 +108,36 @@
     <Compile Include="Rendering\Positioning\IWorldPosition.cs" />
     <Compile Include="Rendering\Renderers\IRenderer.cs" />
     <Compile Include="Rendering\Renderers\SpriteRendering\ISpriteRenderer.cs" />
+    <Compile Include="Rendering\Renderers\SpriteRendering\ISpriteRendererFactory.cs" />
     <Compile Include="Rendering\RenderObjects\IRenderObject.cs" />
     <Compile Include="Rendering\RenderObjects\SpriteRendering\ISpriteRenderObject.cs" />
     <Compile Include="Rendering\RenderObjects\SpriteRendering\ISpriteRenderObjectFactory.cs" />
     <Compile Include="Rendering\Shaders\IShaderFactory.cs" />
     <Compile Include="Rendering\Shaders\IShaderSet.cs" />
     <Compile Include="Rendering\SharedRenderAttributes\ISharedRenderAttributes.cs" />
+    <Compile Include="Rendering\SharedRenderAttributes\ISpriteSharedRenderAttributes.cs" />
     <Compile Include="Rendering\Textures\Bitmap\IBitmapFactory.cs" />
     <Compile Include="Rendering\Textures\DirectionalModes.cs" />
     <Compile Include="Rendering\Textures\ITexture.cs" />
     <Compile Include="Rendering\Textures\ITextureFactory.cs" />
     <Compile Include="Rendering\Textures\ITextureState.cs" />
+    <Compile Include="Rendering\Text\ITextObject.cs" />
+    <Compile Include="Rendering\Text\ITextObjectFactory.cs" />
+    <Compile Include="UserInterface\Anchors\AnchorDirections.cs" />
+    <Compile Include="UserInterface\Anchors\AnchorUnits.cs" />
+    <Compile Include="UserInterface\Anchors\IAnchor.cs" />
+    <Compile Include="UserInterface\Anchors\IAnchorDetailFactory.cs" />
+    <Compile Include="UserInterface\Anchors\IAnchorDetails.cs" />
+    <Compile Include="UserInterface\Anchors\IAnchorFactory.cs" />
+    <Compile Include="UserInterface\Components\IUserInterfaceComponent.cs" />
+    <Compile Include="UserInterface\Components\IUserInterfaceComponentFactory.cs" />
+    <Compile Include="UserInterface\Components\IUserInterfaceRenderCore.cs" />
+    <Compile Include="UserInterface\Generators\IUserInterfaceXmlLoader.cs" />
+    <Compile Include="UserInterface\Rendering\IUserInterfaceRenderCoreFactory.cs" />
+    <Compile Include="UserInterface\Rendering\Renderer\IUserInterfaceRenderer.cs" />
+    <Compile Include="UserInterface\Rendering\Renderer\IUserInterfaceRendererFactory.cs" />
+    <Compile Include="UserInterface\Rendering\RenderObject\IUserInterfaceRenderObject.cs" />
+    <Compile Include="UserInterface\Rendering\RenderObject\IUserInterfaceRenderObjectFactory.cs" />
     <Compile Include="UtilityTypes\Batches\IBatch.cs" />
     <Compile Include="UtilityTypes\Batches\IBatchElement.cs" />
     <Compile Include="UtilityTypes\IBindableProperty.cs" />
@@ -123,5 +148,6 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

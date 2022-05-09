@@ -14,7 +14,23 @@ namespace CorgEng.GenericInterfaces.Rendering.RenderObjects
     public interface IRenderObject : IInstantiatable
     {
 
-        IBindableProperty<IVector<float>> WorldPosition { get; }
+        /// <summary>
+        /// The transform applied to this render object.
+        /// Used externally, will trigger updates to the transform rows automatically.
+        /// </summary>
+        IBindableProperty<IMatrix> Transform { get; }
+
+        /// <summary>
+        /// The first row of the transfomation matrix.
+        /// Updated internally by the renderers and shouldn't be interfaced with directly.
+        /// </summary>
+        IBindableProperty<IVector<float>> TransformFirstRow { get; }
+
+        /// <summary>
+        /// The second row of the transfomation matrix.
+        /// Updated internally by the renderers and shouldn't be interfaced with directly.
+        /// </summary>
+        IBindableProperty<IVector<float>> TransformSecondRow { get; }
 
         void SetBelongingBatchElement<BatchType>(IBatchElement<BatchType> heldBatch)
             where BatchType : IBatch<BatchType>;

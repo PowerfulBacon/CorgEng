@@ -9,13 +9,18 @@ using CorgEng.EntityComponentSystem.Implementations.Rendering.SpriteRendering;
 using CorgEng.EntityComponentSystem.Implementations.Transform;
 using CorgEng.Example.Common.Components.Camera;
 using CorgEng.Example.Components.PlayerMovement;
+using CorgEng.GenericInterfaces.Font.Fonts;
 using CorgEng.GenericInterfaces.Rendering;
 using CorgEng.GenericInterfaces.Rendering.Cameras.Isometric;
 using CorgEng.GenericInterfaces.Rendering.Renderers.SpriteRendering;
 using CorgEng.GenericInterfaces.Rendering.RenderObjects.SpriteRendering;
 using CorgEng.GenericInterfaces.Rendering.Shaders;
+using CorgEng.GenericInterfaces.Rendering.Text;
 using CorgEng.GenericInterfaces.Rendering.Textures;
+using CorgEng.GenericInterfaces.UserInterface.Components;
+using CorgEng.GenericInterfaces.UserInterface.Generators;
 using CorgEng.UtilityTypes;
+using CorgEng.UtilityTypes.Vectors;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -23,6 +28,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using static OpenGL.Gl;
 
 namespace CorgEng.Example
 {
@@ -34,7 +40,9 @@ namespace CorgEng.Example
             private Entity renderableEntity;
 
             [UsingDependency]
-            private static ISpriteRenderer spriteRenderer;
+            private static ISpriteRendererFactory SpriteRendererFactory;
+
+            private ISpriteRenderer spriteRenderer;
 
             [UsingDependency]
             private static ISpriteRenderObjectFactory spriteRenderObjectFactory;
@@ -42,22 +50,53 @@ namespace CorgEng.Example
             [UsingDependency]
             private static ITextureFactory textureFactory;
 
+            //Example user interface
+            [UsingDependency]
+            private static IUserInterfaceXmlLoader UserInterfaceXmlLoader;
+
+            [UsingDependency]
+            private static IFontFactory FontFactory;
+
+            [UsingDependency]
+            private static ITextObjectFactory TextObjectFactory;
+
+            private IUserInterfaceComponent rootInterfaceComponent;
+
             public override void Initialize()
             {
 
+                spriteRenderer = SpriteRendererFactory.CreateSpriteRenderer();
+
                 spriteRenderer?.Initialize();
-                
+
+                //Load a user interface (Yes, I know this shouldn't be in the render core)
+                rootInterfaceComponent = UserInterfaceXmlLoader?.LoadUserInterface("Content/UserInterface/UserInterfaceSimple.xml");
+                rootInterfaceComponent.SetWidth(500, 500);
+                rootInterfaceComponent.Fullscreen = true;
+
                 //Create and setup a renderable thing
-                renderableEntity = new Entity();
-                renderableEntity.AddComponent(new SpriteRenderComponent());
-                renderableEntity.AddComponent(new TransformComponent());
-                new SetSpriteEvent("example").Raise(renderableEntity);
-                new SetSpriteRendererEvent(spriteRenderer).Raise(renderableEntity);
+                for (int x = 0; x < 39; x++)
+                {
+                    for (int y = 0; y < 641; y++)
+                    {
+                        renderableEntity = new Entity();
+                        renderableEntity.AddComponent(new SpriteRenderComponent());
+                        renderableEntity.AddComponent(new TransformComponent());
+                        new SetPositionEvent(new Vector<float>(x, y)).Raise(renderableEntity);
+                        new SetSpriteEvent("example").Raise(renderableEntity);
+                        new SetSpriteRendererEvent(spriteRenderer).Raise(renderableEntity);
+                    }
+                }
+
+                IFont font = FontFactory.GetFont("CourierCode");
+                ITextObject textObject = TextObjectFactory.CreateTextObject(spriteRenderer, font, "CorgEng.Font");
+                textObject.StartRendering();
             }
 
             public override void PerformRender()
             {
                 spriteRenderer?.Render(CorgEngMain.MainCamera);
+                rootInterfaceComponent?.DrawToFramebuffer(FrameBufferUint);
             }
         }
 
@@ -93,11 +132,6 @@ namespace CorgEng.Example
             //Shut down the program once it has been closed
             //and clean everything up.
             CorgEngMain.Shutdown();
-            //Ask for a line of code
-#if DEBUG
-            Console.WriteLine("Program finished execution, press any key to continue...");
-            Console.ReadKey();
-#endif
         }
     }
 }
