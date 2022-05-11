@@ -8,6 +8,12 @@ A modularised, multi-threaded ECS based game engine.
 
 [CorgEng Documentation Contents Page](https://hackmd.io/UnZmbyzhR3GR7silkiitig)
 
+## Example
+
+See CorgEng.Example for examples of how to create CorgEng applications that utilize the important features.
+
+https://github.com/PowerfulBacon/CorgEng/tree/main/CorgEng.Example
+
 ## Getting Started
 
 See CorgEng.Example for an example project of how to get started. A more complex example with implementations of ECS will be coming soon.
