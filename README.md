@@ -82,3 +82,8 @@ Signals store data and can be raised against an entity.
 When a signal is raised, any systems listening for the signal will be notified and can then perform some action.
 
 ## Render Cores
+
+Render Cores are the way that CorgEng handles rendering. A render core is a framebuffer that can be bound and drawn to. It has a width and height that can be dynamically modified.
+To display a render core, you can render it to any other render core or the main screen.
+CorgEng will automatically draw the main render core to the screen every frame.
+This allows for the simple application of post-processing effects and culling which will be useful for parts of the game such as UI.
