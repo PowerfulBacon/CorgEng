@@ -1,0 +1,106 @@
+{
+    "textures": [
+      {
+          "id": "human.blank",
+          "file": "human.bmp",
+          "width": 32,
+          "height": 32,
+          "index_x": 0,
+          "index_y": 0
+      },
+      {
+          "id": "human.ghost",
+          "file": "human.bmp",
+          "width": 32,
+          "height": 32,
+          "directional": "CARDINAL",
+          "index_x": 1,
+          "index_y": 0
+      },
+      {
+          "id": "human.body_cloaked",
+          "file": "human.bmp",
+          "width": 32,
+          "height": 32,
+          "directional": "CARDINAL",
+          "animation_frames": 7,
+          "animation_rewind": true,
+          "animation_delays": [
+             1,
+             1,
+             1,
+             1,
+             1,
+             1,
+             1,
+          ],
+          "index_x": 5,
+          "index_y": 0
+      },
+      {
+          "id": "human.electrocuted_generic",
+          "file": "human.bmp",
+          "width": 32,
+          "height": 32,
+          "directional": "CARDINAL",
+          "animation_frames": 3,
+          "animation_delays": [
+             0.8,
+             0.8,
+             0.8,
+          ],
+          "index_x": 6,
+          "index_y": 4
+      },
+      {
+          "id": "human.electrocuted_base",
+          "file": "human.bmp",
+          "width": 32,
+          "height": 32,
+          "directional": "CARDINAL",
+          "animation_frames": 3,
+          "animation_delays": [
+             0.8,
+             0.8,
+             0.8,
+          ],
+          "index_x": 0,
+          "index_y": 5
+      },
+      {
+          "id": "human.husk",
+          "file": "human.bmp",
+          "width": 32,
+          "height": 32,
+          "directional": "CARDINAL",
+          "index_x": 3,
+          "index_y": 7
+      },
+      {
+          "id": "human.skeleton",
+          "file": "human.bmp",
+          "width": 32,
+          "height": 32,
+          "directional": "CARDINAL",
+          "index_x": 7,
+          "index_y": 7
+      },
+      {
+          "id": "human.zombie",
+          "file": "human.bmp",
+          "width": 32,
+          "height": 32,
+          "directional": "CARDINAL",
+          "index_x": 2,
+          "index_y": 8
+      },
+      {
+          "id": "human.human_basic",
+          "file": "human.bmp",
+          "width": 32,
+          "height": 32,
+          "index_x": 6,
+          "index_y": 8
+      },
+  ]
+}

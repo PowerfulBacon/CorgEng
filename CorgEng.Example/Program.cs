@@ -42,7 +42,7 @@ namespace CorgEng.Example
             [UsingDependency]
             private static ISpriteRendererFactory SpriteRendererFactory;
 
-            private ISpriteRenderer spriteRenderer;
+            internal ISpriteRenderer spriteRenderer;
 
             [UsingDependency]
             private static ISpriteRenderObjectFactory spriteRenderObjectFactory;
@@ -70,20 +70,21 @@ namespace CorgEng.Example
                 spriteRenderer?.Initialize();
 
                 //Load a user interface (Yes, I know this shouldn't be in the render core)
-                rootInterfaceComponent = UserInterfaceXmlLoader?.LoadUserInterface("Content/UserInterface/UserInterfaceSimple.xml");
-                rootInterfaceComponent.SetWidth(500, 500);
-                rootInterfaceComponent.Fullscreen = true;
+                //rootInterfaceComponent = UserInterfaceXmlLoader?.LoadUserInterface("Content/UserInterface/UserInterfaceSimple.xml");
+                //rootInterfaceComponent.SetWidth(500, 500);
+                //rootInterfaceComponent.Fullscreen = true;
 
                 //Create and setup a renderable thing
                 for (int x = 0; x < 39; x++)
                 {
-                    for (int y = 0; y < 641; y++)
+                    for (int y = 0; y < 600; y++)
                     {
                         renderableEntity = new Entity();
                         renderableEntity.AddComponent(new SpriteRenderComponent());
                         renderableEntity.AddComponent(new TransformComponent());
+                        renderableEntity.AddComponent(new PlayerMovementComponent());
                         new SetPositionEvent(new Vector<float>(x, y)).Raise(renderableEntity);
-                        new SetSpriteEvent("example").Raise(renderableEntity);
+                        new SetSpriteEvent("human.ghost").Raise(renderableEntity);
                         new SetSpriteRendererEvent(spriteRenderer).Raise(renderableEntity);
                     }
                 }
@@ -96,7 +97,7 @@ namespace CorgEng.Example
             public override void PerformRender()
             {
                 spriteRenderer?.Render(CorgEngMain.MainCamera);
-                rootInterfaceComponent?.DrawToFramebuffer(FrameBufferUint);
+                //rootInterfaceComponent?.DrawToFramebuffer(FrameBufferUint);
             }
         }
 
@@ -118,14 +119,17 @@ namespace CorgEng.Example
             //Create the entity to hold and move the camera
             Entity mainCameraEntity = new Entity();
             mainCameraEntity.AddComponent(new TransformComponent());
-            mainCameraEntity.AddComponent(new PlayerMovementComponent());
+            //mainCameraEntity.AddComponent(new PlayerMovementComponent());
             mainCameraEntity.AddComponent(new CameraComponent(camera));
+            mainCameraEntity.AddComponent(new SpriteRenderComponent());
 
             //Set the main camera
             CorgEngMain.SetMainCamera(camera);
             //Set the render core
             ExampleRenderCore erc = new ExampleRenderCore();
             CorgEngMain.SetRenderCore(erc);
+            new SetSpriteEvent("human.ghost").Raise(mainCameraEntity);
+            new SetSpriteRendererEvent(erc.spriteRenderer).Raise(mainCameraEntity);
             //Transfer control of the main thread to the CorgEng
             //rendering thread
             CorgEngMain.TransferToRenderingThread();
