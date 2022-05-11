@@ -10,6 +10,11 @@ namespace CorgEng.EntityComponentSystem.Events
     {
 
         /// <summary>
+        /// If true, this event will be networked.
+        /// </summary>
+        public abstract bool NetworkedEvent { get; }
+
+        /// <summary>
         /// Raise this event against a specified target
         /// </summary>
         public void Raise(Entity target)
@@ -36,6 +41,16 @@ namespace CorgEng.EntityComponentSystem.Events
             foreach (SystemEventHandlerDelegate systemEventHandler in systemEventHandlers)
                 systemEventHandler.Invoke(null, null, this);
         }
+
+        /// <summary>
+        /// Serialize this event for network transmission
+        /// </summary>
+        public virtual byte[] Serialize() => throw new NotImplementedException();
+
+        /// <summary>
+        /// Deserialize a serialized event
+        /// </summary>
+        public virtual void Deserialize(byte[] data) => throw new NotImplementedException();
 
     }
 }

@@ -12,6 +12,8 @@ namespace CorgEng.EntityComponentSystem.Events.Events
 
         public Component Component { get; set; }
 
+        public override bool NetworkedEvent => false;
+
         public ComponentRemovedEvent(Component component)
         {
             Component = component;

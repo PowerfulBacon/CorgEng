@@ -7,9 +7,12 @@ namespace CorgEng.EntityComponentSystem.Events.Events
 
         public Component Component { get; set; }
 
+        public override bool NetworkedEvent => false;
+
         public ComponentAddedEvent(Component component)
         {
             Component = component;
         }
+
     }
 }
