@@ -82,7 +82,7 @@ namespace CorgEng.Example
                         renderableEntity = new Entity();
                         renderableEntity.AddComponent(new SpriteRenderComponent());
                         renderableEntity.AddComponent(new TransformComponent());
-                        renderableEntity.AddComponent(new PlayerMovementComponent());
+                        //renderableEntity.AddComponent(new PlayerMovementComponent());
                         new SetPositionEvent(new Vector<float>(x, y)).Raise(renderableEntity);
                         new SetSpriteEvent("human.ghost").Raise(renderableEntity);
                         new SetSpriteRendererEvent(spriteRenderer).Raise(renderableEntity);
@@ -119,7 +119,7 @@ namespace CorgEng.Example
             //Create the entity to hold and move the camera
             Entity mainCameraEntity = new Entity();
             mainCameraEntity.AddComponent(new TransformComponent());
-            //mainCameraEntity.AddComponent(new PlayerMovementComponent());
+            mainCameraEntity.AddComponent(new PlayerMovementComponent());
             mainCameraEntity.AddComponent(new CameraComponent(camera));
             mainCameraEntity.AddComponent(new SpriteRenderComponent());
 
