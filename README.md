@@ -4,7 +4,7 @@ https://discord.gg/6hgfjRrVJP
 
 # CorgEng
 
-A modularised, high-performance, scalable, multi-threaded ECS based game engine.
+A modularised, ECS-based game engine with high performance, scalability and collaberation built in mind.
 
 [CorgEng Documentation Contents Page](https://hackmd.io/UnZmbyzhR3GR7silkiitig)
 
