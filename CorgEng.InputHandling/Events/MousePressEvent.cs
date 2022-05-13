@@ -25,6 +25,8 @@ namespace CorgEng.InputHandling.Events
 
         public ModifierKeys ModifierKeys { get; set; }
 
+        public override bool NetworkedEvent => false;
+
         public MousePressEvent(double cursorX, double cursorY, MouseButton mouseButton, ModifierKeys modifierKeys)
         {
             CursorX = cursorX;

@@ -11,9 +11,11 @@ namespace CorgEng.InputHandling.Events
     public class KeyReleaseEvent : Event
     {
 
-        Keys Key { get; set; }
+        public Keys Key { get; set; }
 
-        ModifierKeys ModifierKeys { get; set; }
+        public ModifierKeys ModifierKeys { get; set; }
+
+        public override bool NetworkedEvent => true;
 
         public KeyReleaseEvent(Keys key, ModifierKeys modifierKeys)
         {
@@ -21,5 +23,25 @@ namespace CorgEng.InputHandling.Events
             ModifierKeys = modifierKeys;
         }
 
+        public unsafe override byte[] Serialize()
+        {
+            short keyValue = (short)Key;
+            byte* bytePointer = (byte*)&keyValue;
+            return new byte[] {
+                *bytePointer,
+                *(bytePointer + 1),
+                (byte)ModifierKeys
+            };
+        }
+
+        public unsafe override void Deserialize(byte[] data)
+        {
+            fixed (byte* keyPointer = data)
+            {
+                short value = *keyPointer;
+                Key = (Keys)value;
+                ModifierKeys = *(ModifierKeys*)(keyPointer + 2);
+            }
+        }
     }
 }
