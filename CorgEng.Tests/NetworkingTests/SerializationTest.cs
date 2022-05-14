@@ -23,7 +23,8 @@ namespace CorgEng.Tests.NetworkingTests
         [TestMethod]
         public void TestSerialization()
         {
-            Random random = new Random();
+            //Give it a seed, so tests are repeatable
+            Random random = new Random(0);
             //Get all event classes
             IEnumerable<Type> Events = AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany(assembly => assembly.GetTypes()

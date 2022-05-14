@@ -25,22 +25,22 @@ namespace CorgEng.InputHandling.Events
 
         public unsafe override byte[] Serialize()
         {
-            short keyValue = (short)Key;
-            byte* bytePointer = (byte*)&keyValue;
+            //Get the key as a ushort pointer
+            Keys tempKeys = Key;
+            byte* keyPointer = (byte*)&tempKeys;
             return new byte[] {
-                *bytePointer,
-                *(bytePointer + 1),
+                *keyPointer,
+                *(keyPointer + 1),
                 (byte)ModifierKeys
             };
         }
 
         public unsafe override void Deserialize(byte[] data)
         {
-            fixed (byte* keyPointer = data)
+            fixed (byte* dataPointer = data)
             {
-                short value = *keyPointer;
-                Key = (Keys)value;
-                ModifierKeys = *(ModifierKeys*)(keyPointer + 2);
+                Key = (Keys)(*(ushort*)dataPointer);
+                ModifierKeys = (ModifierKeys)(*(dataPointer + 2));
             }
         }
     }

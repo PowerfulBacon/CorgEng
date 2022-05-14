@@ -139,6 +139,10 @@
       <Project>{58dc11a7-998a-40a3-a73a-80bdb521fed4}</Project>
       <Name>CorgEng.Logging</Name>
     </ProjectReference>
+    <ProjectReference Include="..\CorgEng.Networking\CorgEng.Networking.csproj">
+      <Project>{1d5738b7-bc6f-46ef-8c49-47622af0d74a}</Project>
+      <Name>CorgEng.Networking</Name>
+    </ProjectReference>
     <ProjectReference Include="..\CorgEng.Rendering\CorgEng.Rendering.csproj">
       <Project>{bfc5583f-3a05-43e4-9d07-81d80b1ec685}</Project>
       <Name>CorgEng.Rendering</Name>

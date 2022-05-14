@@ -94,6 +94,7 @@
     <Compile Include="DependencyInjection\DependencyTests.cs" />
     <Compile Include="EntityComponentSystem\SignalTests.cs" />
     <Compile Include="FontTests\FontTests.cs" />
+    <Compile Include="NetworkingTests\NetworkingTest.cs" />
     <Compile Include="NetworkingTests\SerializationTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Stubs\IRenderCoreStubFactory.cs" />
@@ -145,6 +146,10 @@
     <ProjectReference Include="..\CorgEng.Logging\CorgEng.Logging.csproj">
       <Project>{58DC11A7-998A-40A3-A73A-80BDB521FED4}</Project>
       <Name>CorgEng.Logging</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CorgEng.Networking\CorgEng.Networking.csproj">
+      <Project>{1d5738b7-bc6f-46ef-8c49-47622af0d74a}</Project>
+      <Name>CorgEng.Networking</Name>
     </ProjectReference>
     <ProjectReference Include="..\CorgEng.Rendering\CorgEng.Rendering.csproj">
       <Project>{bfc5583f-3a05-43e4-9d07-81d80b1ec685}</Project>

@@ -5,7 +5,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{1D5738B7-BC6F-46EF-8C49-47622AF0D74A}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <OutputType>Library</OutputType>
     <RootNamespace>CorgEng.Networking</RootNamespace>
     <AssemblyName>CorgEng.Networking</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
@@ -32,6 +32,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -43,15 +46,28 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Networking\NetworkingClient.cs" />
+    <Compile Include="Networking\NetworkPacketQueue.cs" />
+    <Compile Include="Networking\Server\NetworkingServer.cs" />
+    <Compile Include="Packets\NetworkMessage.cs" />
+    <Compile Include="Packets\NetworkMessageFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\CorgEng.Core\CorgEng.Core.csproj">
+      <Project>{9CCC4A6B-2D13-425D-8C72-B034151EC11C}</Project>
+      <Name>CorgEng.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\CorgEng.DependencyInjection\CorgEng.DependencyInjection.csproj">
       <Project>{913A2BE9-E596-4202-8DA1-ADF02AE63618}</Project>
       <Name>CorgEng.DependencyInjection</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CorgEng.GenericInterfaces\CorgEng.GenericInterfaces.csproj">
+      <Project>{E87F196E-5BF2-4AAF-8209-9F66A4F4B0EB}</Project>
+      <Name>CorgEng.GenericInterfaces</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

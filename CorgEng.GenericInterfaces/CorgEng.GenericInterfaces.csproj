@@ -98,6 +98,15 @@
     <Compile Include="Logging\LogType.cs" />
     <Compile Include="MapLoader\IMapFile.cs" />
     <Compile Include="MapLoader\IMapLoader.cs" />
+    <Compile Include="Networking\Clients\IClient.cs" />
+    <Compile Include="Networking\Clients\IClientFactory.cs" />
+    <Compile Include="Networking\Networking\DisconnectReason.cs" />
+    <Compile Include="Networking\Networking\INetworkingClient.cs" />
+    <Compile Include="Networking\Networking\Server\INetworkingServer.cs" />
+    <Compile Include="Networking\Packets\INetworkMessage.cs" />
+    <Compile Include="Networking\Packets\INetworkMessageFactory.cs" />
+    <Compile Include="Networking\Packets\NetworkingConstants.cs" />
+    <Compile Include="Networking\Packets\PacketHeaders.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Rendering\Cameras\ICamera.cs" />
     <Compile Include="Rendering\Cameras\Isometric\IIsometricCamera.cs" />

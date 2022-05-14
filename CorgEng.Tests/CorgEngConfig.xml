@@ -8,6 +8,7 @@
     <Module>CorgEng.InputHandling</Module>
     <Module>CorgEng.Logging</Module>
     <Module>CorgEng.Rendering</Module>
+    <Module>CorgEng.Networking</Module>
     <Module>CorgEng.UtilityTypes</Module>
     <Module>CorgEng.UserInterface</Module>
   </DependencyModules>

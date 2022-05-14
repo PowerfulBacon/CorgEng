@@ -21,7 +21,7 @@ namespace CorgEng.InputHandling.Events
 
         public unsafe override byte[] Serialize()
         {
-            double value;
+            double value = ScrollDelta;
             byte* bytePointer = (byte*)&value;
             return new byte[] {
                 *bytePointer,
