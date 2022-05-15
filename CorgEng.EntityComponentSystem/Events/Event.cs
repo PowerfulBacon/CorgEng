@@ -1,4 +1,8 @@
-﻿using CorgEng.EntityComponentSystem.Entities;
+﻿using CorgEng.Core.Dependencies;
+using CorgEng.EntityComponentSystem.Entities;
+using CorgEng.EntityComponentSystem.Events.Events;
+using CorgEng.GenericInterfaces.Networking.Networking;
+using CorgEng.GenericInterfaces.Networking.Packets;
 using System;
 using System.Collections.Generic;
 using static CorgEng.EntityComponentSystem.Entities.Entity;
@@ -21,10 +25,11 @@ namespace CorgEng.EntityComponentSystem.Events
         {
             //Handle the signal
             target.HandleSignal(this);
-            //Inform the networker that a signal has been raised
+            //Inform the entity that networked event was raised
             if (NetworkedEvent)
             {
-                //TODO: Send a message to the networker.
+                //Skip directly to signal handling
+                target.HandleSignal(new NetworkedEventRaisedEvent(this));
             }
         }
 
