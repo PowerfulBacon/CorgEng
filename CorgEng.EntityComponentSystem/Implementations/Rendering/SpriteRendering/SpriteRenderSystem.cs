@@ -1,5 +1,6 @@
 ﻿using CorgEng.Core.Dependencies;
 using CorgEng.EntityComponentSystem.Entities;
+using CorgEng.EntityComponentSystem.Events.Events;
 using CorgEng.EntityComponentSystem.Implementations.Transform;
 using CorgEng.EntityComponentSystem.Systems;
 using CorgEng.GenericInterfaces.Logging;
@@ -30,6 +31,16 @@ namespace CorgEng.EntityComponentSystem.Implementations.Rendering.SpriteRenderin
             RegisterLocalEvent<SpriteRenderComponent, SetSpriteEvent>(OnSetSprite);
             RegisterLocalEvent<SpriteRenderComponent, SetSpriteRendererEvent>(OnSetRenderer);
             RegisterLocalEvent<SpriteRenderComponent, MoveEvent>(OnEntityMoved);
+            RegisterLocalEvent<SpriteRenderComponent, DeleteEntityEvent>(OnEntityDestroyed);
+        }
+
+        private void OnEntityDestroyed(Entity entity, SpriteRenderComponent spriteRenderComponent, DeleteEntityEvent entityDeletedEvent)
+        {
+            //Stop rendering
+            if (spriteRenderComponent.SpriteRenderer != null && spriteRenderComponent.SpriteRenderObject != null)
+                spriteRenderComponent.SpriteRenderer.StopRendering(spriteRenderComponent.SpriteRenderObject);
+            spriteRenderComponent.SpriteRenderer = null;
+            spriteRenderComponent.SpriteRenderObject = null;
         }
 
         /// <summary>

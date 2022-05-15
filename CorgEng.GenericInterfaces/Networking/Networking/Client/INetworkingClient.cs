@@ -5,7 +5,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CorgEng.GenericInterfaces.Networking.Networking
+namespace CorgEng.GenericInterfaces.Networking.Networking.Client
 {
 
     public delegate void ConnectionSuccess(IPAddress ipAddress);

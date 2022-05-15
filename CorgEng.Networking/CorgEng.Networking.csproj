@@ -46,8 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Networking\NetworkingClient.cs" />
-    <Compile Include="Networking\NetworkPacketQueue.cs" />
+    <Compile Include="Networking\Client\NetworkingClient.cs" />
     <Compile Include="Networking\Server\NetworkingServer.cs" />
     <Compile Include="Packets\NetworkMessage.cs" />
     <Compile Include="Packets\NetworkMessageFactory.cs" />

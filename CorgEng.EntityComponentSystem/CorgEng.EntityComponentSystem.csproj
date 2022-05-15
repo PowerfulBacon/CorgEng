@@ -85,9 +85,13 @@
     <Compile Include="Components\Component.cs" />
     <Compile Include="Components\ComponentManager.cs" />
     <Compile Include="Components\Exceptions\ComponentException.cs" />
+    <Compile Include="Entities\EntityManager.cs" />
     <Compile Include="Events\Events\ComponentAddedEvent.cs" />
     <Compile Include="Events\Events\ComponentRemovedEvent.cs" />
+    <Compile Include="Events\Events\EntityDeletedEvent.cs" />
     <Compile Include="Events\Events\GameClosedEvent.cs" />
+    <Compile Include="Implementations\Deletion\DeleteableComponent.cs" />
+    <Compile Include="Implementations\Deletion\EntityDeletionSystem.cs" />
     <Compile Include="Implementations\Rendering\SpriteRendering\SetSpriteEvent.cs" />
     <Compile Include="Implementations\Rendering\SpriteRendering\SetSpriteRendererEvent.cs" />
     <Compile Include="Implementations\Rendering\SpriteRendering\SpriteRenderComponent.cs" />

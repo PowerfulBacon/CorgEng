@@ -1,5 +1,6 @@
 ﻿using CorgEng.Core.Dependencies;
 using CorgEng.GenericInterfaces.Networking.Networking;
+using CorgEng.GenericInterfaces.Networking.Networking.Client;
 using CorgEng.GenericInterfaces.Networking.Networking.Server;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
