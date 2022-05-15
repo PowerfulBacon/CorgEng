@@ -19,7 +19,13 @@ namespace CorgEng.EntityComponentSystem.Events
         /// </summary>
         public void Raise(Entity target)
         {
+            //Handle the signal
             target.HandleSignal(this);
+            //Inform the networker that a signal has been raised
+            if (NetworkedEvent)
+            {
+                //TODO: Send a message to the networker.
+            }
         }
 
         /// <summary>
