@@ -33,5 +33,10 @@ namespace CorgEng.GenericInterfaces.Networking.Networking.Client
         /// <param name="timeout">The timeout time of the server</param>
         void AttemptConnection(string address, int port, int timeout = 5000);
 
+        /// <summary>
+        /// Disconnect the client and cleanup any client stored stuff
+        /// </summary>
+        void Cleanup();
+
     }
 }

@@ -23,6 +23,13 @@ namespace CorgEng.Tests.NetworkingTests
         [UsingDependency]
         private static INetworkingClient Client;
 
+        [TestCleanup]
+        public void AfterTest()
+        {
+            Server.Cleanup();
+            Client.Cleanup();
+        }
+
         [TestMethod]
         [Timeout(1500)]
         public void TestNetworkConnection()

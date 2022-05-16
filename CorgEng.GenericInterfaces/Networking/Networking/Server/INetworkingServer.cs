@@ -26,5 +26,10 @@ namespace CorgEng.GenericInterfaces.Networking.Networking.Server
         /// </summary>
         void QueueMessage(INetworkMessage message);
 
+        /// <summary>
+        /// Terminate the networking and cleanup the server
+        /// </summary>
+        void Cleanup();
+
     }
 }
