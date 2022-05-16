@@ -141,7 +141,7 @@ namespace CorgEng.Tests.EntityComponentSystem
             TestComponent testComponent = new TestComponent();
             testEntity.AddComponent(testComponent);
             //Remove the component
-            testEntity.RemoveComponent(testComponent);
+            testEntity.RemoveComponent(testComponent, false);
             //Test sending signal no longer works
             //Send a test signal
             new TestEvent().Raise(testEntity);
@@ -164,7 +164,7 @@ namespace CorgEng.Tests.EntityComponentSystem
             SecondaryTestComponent secondaryTestComponent = new SecondaryTestComponent();
             testEntity.AddComponent(secondaryTestComponent);
             //Remove the component
-            testEntity.RemoveComponent(testComponent);
+            testEntity.RemoveComponent(testComponent, false);
             //Test sending signal no longer works
             //Send a test signal
             new TestEvent().Raise(testEntity);
