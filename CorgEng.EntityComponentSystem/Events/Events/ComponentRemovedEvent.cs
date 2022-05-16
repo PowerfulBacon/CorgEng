@@ -10,7 +10,7 @@ namespace CorgEng.EntityComponentSystem.Events.Events
     public class ComponentRemovedEvent : Event
     {
 
-        internal Component Component { get; set; }
+        public Component Component { get; set; }
 
         public override bool NetworkedEvent { get; } = false;
 

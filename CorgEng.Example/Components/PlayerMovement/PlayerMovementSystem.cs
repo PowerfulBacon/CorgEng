@@ -73,7 +73,7 @@ namespace CorgEng.Example.Components.PlayerMovement
                         {
                             if (component is PlayerMovementComponent)
                             {
-                                entity.RemoveComponent(component);
+                                entity.RemoveComponent(component, true);
                                 return;
                             }
                         }

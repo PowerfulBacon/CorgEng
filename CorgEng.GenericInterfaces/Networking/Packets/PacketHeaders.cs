@@ -15,5 +15,7 @@ namespace CorgEng.GenericInterfaces.Networking.Packets
         CONNECTION_ACCEPT,
         //Connection rejected
         CONNECTION_REJECT,
+        //On event raised
+        EVENT_RAISED,
     }
 }

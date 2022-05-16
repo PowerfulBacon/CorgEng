@@ -1,7 +1,11 @@
-﻿using CorgEng.EntityComponentSystem.Entities;
+﻿using CorgEng.Core.Dependencies;
+using CorgEng.EntityComponentSystem.Entities;
 using CorgEng.EntityComponentSystem.Events.Events;
 using CorgEng.EntityComponentSystem.Implementations.Transform;
 using CorgEng.EntityComponentSystem.Systems;
+using CorgEng.GenericInterfaces.Networking.Networking;
+using CorgEng.GenericInterfaces.Networking.Packets;
+using CorgEng.UtilityTypes.Vectors;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +16,12 @@ namespace CorgEng.Networking.EntitySystems
 {
     internal class NetworkSystem : EntitySystem
     {
+
+        [UsingDependency]
+        private static IServerCommunicator ServerCommunicator;
+
+        [UsingDependency]
+        private INetworkMessageFactory NetworkMessageFactory;
 
         public override void SystemSetup()
         {
@@ -25,7 +35,14 @@ namespace CorgEng.Networking.EntitySystems
         /// </summary>
         private void OnNetworkedEventRaised(Entity entity, TransformComponent transformComponent, NetworkedEventRaisedEvent networkedEventRaisedEvent)
         {
-
+            if (ServerCommunicator?.IsServer ?? false)
+            {
+                ServerCommunicator.SendToReleventClients(
+                    NetworkMessageFactory.CreateMessage(PacketHeaders.EVENT_RAISED, networkedEventRaisedEvent.Serialize()),
+                    transformComponent.Position,
+                    new Vector<float>(1, 1, 1)
+                    );
+            }
         }
 
     }
