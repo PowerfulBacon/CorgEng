@@ -2,8 +2,10 @@
 using CorgEng.DependencyInjection.Dependencies;
 using CorgEng.GenericInterfaces.Logging;
 using CorgEng.GenericInterfaces.Networking;
+using CorgEng.GenericInterfaces.Networking.Clients;
 using CorgEng.GenericInterfaces.Networking.Networking.Server;
 using CorgEng.GenericInterfaces.Networking.Packets;
+using CorgEng.Networking.Events;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,6 +23,9 @@ namespace CorgEng.Networking.Networking.Server
 
         [UsingDependency]
         private static ILogger Logger;
+
+        [UsingDependency]
+        private static IClientFactory ClientFactory;
 
         /// <summary>
         /// The client we are using to communicate
@@ -109,11 +114,25 @@ namespace CorgEng.Networking.Networking.Server
 
         private void HandleConnectionRequest(IPEndPoint sender)
         {
+            //Refuse connection if already connected
+            if (connectedClients.ContainsKey(sender.Address))
+            {
+                //Create connection packet
+                List<byte> rejectionPacket = new List<byte>(BitConverter.GetBytes((int)PacketHeaders.CONNECTION_ACCEPT));
+                rejectionPacket.AddRange(Encoding.ASCII.GetBytes("Already connected to server."));
+                udpClient.Send(rejectionPacket.ToArray(), rejectionPacket.Count, sender);
+                return;
+            }
             //Just accept it for now
             Logger?.WriteLine($"Accepting connection from {sender}", LogType.DEBUG);
             //Create connection packet
             byte[] connectionPacket = BitConverter.GetBytes((int)PacketHeaders.CONNECTION_ACCEPT);
             udpClient.Send(connectionPacket, connectionPacket.Length, sender);
+            //Create a client
+            IClient createdClient = ClientFactory.CreateClient("default", sender.Address);
+            connectedClients.Add(sender.Address, createdClient);
+            //Send a connection event globally
+            new ClientConnectedEvent(createdClient).RaiseGlobally();
         }
 
         public void QueueMessage(INetworkMessage message)

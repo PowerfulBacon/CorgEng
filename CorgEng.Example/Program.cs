@@ -77,6 +77,7 @@ namespace CorgEng.Example
                 //rootInterfaceComponent.Fullscreen = true;
 
                 //Create and setup a renderable thing
+                /* SERVER STUFF
                 for (int x = 0; x < 39; x++)
                 {
                     for (int y = 0; y < 600; y++)
@@ -90,6 +91,7 @@ namespace CorgEng.Example
                         new SetSpriteRendererEvent(spriteRenderer).Raise(renderableEntity);
                     }
                 }
+                */
 
                 IFont font = FontFactory.GetFont("CourierCode");
                 ITextObject textObject = TextObjectFactory.CreateTextObject(spriteRenderer, font, "CorgEng.Font");
