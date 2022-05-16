@@ -38,5 +38,41 @@ namespace CorgEng.Tests.NetworkingTests
 
         }
 
+        [TestMethod]
+        public void TestMultiConnectionFailure()
+        {
+            throw new NotImplementedException();
+        }
+
+        [TestMethod]
+        public void TestSendingToServer()
+        {
+            throw new NotImplementedException();
+        }
+
+        [TestMethod]
+        public void TestSendingToClient()
+        {
+            throw new NotImplementedException();
+        }
+
+        [TestMethod]
+        public void TestClientKick()
+        {
+            throw new NotImplementedException();
+        }
+
+        [TestMethod]
+        public void TestBanning()
+        {
+            throw new NotImplementedException();
+        }
+
+        [TestMethod]
+        public void TestNetworkedEvent()
+        {
+            throw new NotImplementedException();
+        }
+
     }
 }
