@@ -11,6 +11,11 @@ namespace CorgEng.GenericInterfaces.Networking.Networking.Server
     {
 
         /// <summary>
+        /// Called every time a network message is received
+        /// </summary>
+        event NetworkMessageRecieved NetworkMessageReceived;
+
+        /// <summary>
         /// The tick rate of the server
         /// How many times per second will packets be sent off.
         /// </summary>

@@ -46,15 +46,21 @@ namespace CorgEng.Tests.NetworkingTests
         }
 
         [TestMethod]
-        public void TestMultiConnectionFailure()
-        {
-            throw new NotImplementedException();
-        }
-
-        [TestMethod]
         public void TestSendingToServer()
         {
+            bool success = false;
+            Server.StartHosting(5000);
+            Client.OnConnectionSuccess += (IPAddress ipAddress) => { success = true; };
+            Client.OnConnectionFailed += (IPAddress ipAddress, DisconnectReason disconnectReason, string reasonText) => { Assert.Fail("Connection failed, server rejected connection."); };
+            Client.AttemptConnection("127.0.0.1", 5000, 1000);
+
+            //Await connection to the serve
+            while (!success)
+                Thread.Sleep(0);
+
+            //Send a client message to the server
             throw new NotImplementedException();
+
         }
 
         [TestMethod]

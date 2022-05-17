@@ -22,6 +22,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -31,6 +32,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject />
@@ -46,6 +48,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Clients\ClientAddress.cs" />
+    <Compile Include="Config\NetworkConfig.cs" />
     <Compile Include="EntitySystems\NetworkSystem.cs" />
     <Compile Include="Events\ClientConnectedEvent.cs" />
     <Compile Include="Events\ClientDisconnectedEvent.cs" />
@@ -53,6 +57,8 @@
     <Compile Include="Networking\Server\NetworkingServer.cs" />
     <Compile Include="Packets\NetworkMessage.cs" />
     <Compile Include="Packets\NetworkMessageFactory.cs" />
+    <Compile Include="Packets\PacketQueues\PacketQueue.cs" />
+    <Compile Include="Packets\PacketQueues\QueuedPacket.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -80,8 +86,6 @@
       <Name>CorgEng.UtilityTypes</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Clients\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

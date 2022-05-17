@@ -1,4 +1,5 @@
 ﻿using CorgEng.GenericInterfaces.Networking.Packets;
+using CorgEng.GenericInterfaces.Networking.Packets.PacketQueues;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,13 +21,17 @@ namespace CorgEng.Networking.Packets
             packetContent.CopyTo(content, 6);
         }
 
+        public int Length => content.Length;
+
         public byte[] GetBytes()
         {
-            //First 4 bytes: Packet header
-            //Next 2 bytes: Packet Length
-            //Rest: packet contents
             return content;
         }
 
+        public void InsertBytes(IQueuedPacket target)
+        {
+            content.CopyTo(target.Data, target.TopPointer);
+            target.TopPointer += Length;
+        }
     }
 }

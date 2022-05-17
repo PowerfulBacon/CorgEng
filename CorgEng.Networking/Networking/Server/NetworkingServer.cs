@@ -3,6 +3,7 @@ using CorgEng.DependencyInjection.Dependencies;
 using CorgEng.GenericInterfaces.Logging;
 using CorgEng.GenericInterfaces.Networking;
 using CorgEng.GenericInterfaces.Networking.Clients;
+using CorgEng.GenericInterfaces.Networking.Networking;
 using CorgEng.GenericInterfaces.Networking.Networking.Server;
 using CorgEng.GenericInterfaces.Networking.Packets;
 using CorgEng.Networking.Events;
@@ -46,6 +47,8 @@ namespace CorgEng.Networking.Networking.Server
         /// A dictionary containing all connected clients
         /// </summary>
         private Dictionary<IPAddress, IClient> connectedClients = new Dictionary<IPAddress, IClient>();
+
+        public event NetworkMessageRecieved NetworkMessageReceived;
 
         /// <summary>
         /// Set the server transmission tick rate
@@ -140,5 +143,9 @@ namespace CorgEng.Networking.Networking.Server
             throw new NotImplementedException();
         }
 
+        public void Cleanup()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
