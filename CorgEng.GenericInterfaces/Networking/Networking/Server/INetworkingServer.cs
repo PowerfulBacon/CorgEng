@@ -1,4 +1,5 @@
-﻿using CorgEng.GenericInterfaces.Networking.Packets;
+﻿using CorgEng.GenericInterfaces.Networking.Clients;
+using CorgEng.GenericInterfaces.Networking.Packets;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,7 +30,7 @@ namespace CorgEng.GenericInterfaces.Networking.Networking.Server
         /// <summary>
         /// Queue a message to send
         /// </summary>
-        void QueueMessage(INetworkMessage message);
+        void QueueMessage(IClientAddress targets, INetworkMessage message);
 
         /// <summary>
         /// Terminate the networking and cleanup the server

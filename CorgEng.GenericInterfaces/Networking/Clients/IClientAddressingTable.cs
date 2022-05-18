@@ -10,19 +10,39 @@ namespace CorgEng.GenericInterfaces.Networking.Clients
     /// <summary>
     /// Each client gets a unique ID upon joining
     /// </summary>
-    public unsafe interface IClientAddressingTable
+    public interface IClientAddressingTable
     {
 
         /// <summary>
         /// Add an address to the addressing table
         /// </summary>
-        void AddAddress(IPAddress address);
+        IClientAddress AddAddress(IPAddress address);
+
+        /// <summary>
+        /// Remove an IP address from 
+        /// </summary>
+        void RemoveAddress(IPAddress address);
 
         /// <summary>
         /// Get a pointer to the first byte and the length in bytes of
         /// the flag representation value of an address.
         /// </summary>
-        byte* GetFlagRepresentation(IPAddress address, out int length);
+        IClientAddress GetFlagRepresentation(IPAddress address);
+
+        /// <summary>
+        /// Get the client address that represents everyone.
+        /// </summary>
+        IClientAddress GetEveryone();
+
+        /// <summary>
+        /// Clear the addressing table (For disconnect scenarios)
+        /// </summary>
+        void Clear();
+
+        /// <summary>
+        /// Completely reset the addressing table
+        /// </summary>
+        void Reset();
 
     }
 }

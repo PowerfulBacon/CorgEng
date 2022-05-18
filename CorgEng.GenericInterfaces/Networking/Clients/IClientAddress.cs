@@ -16,5 +16,11 @@ namespace CorgEng.GenericInterfaces.Networking.Clients
 
         int AddressBytes { get; }
 
+        bool HasFlag(IClientAddress searchingFor);
+
+        void EnableFlag(IClientAddress enablingFlag);
+
+        void DisableFlag(IClientAddress disablingFlag);
+
     }
 }

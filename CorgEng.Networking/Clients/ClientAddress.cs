@@ -11,24 +11,25 @@ namespace CorgEng.Networking.Clients
     internal class ClientAddress : IClientAddress
     {
 
-        private IntPtr intPtr;
+        //Prevent GC
+        private byte[] byteArray;
 
-        public unsafe byte* AddressPointer { get; }
+        public unsafe byte* AddressPointer { get; private set; }
 
-        public int AddressBytes { get; }
+        public int AddressBytes { get; private set; }
 
         public unsafe ClientAddress(int clientIndex)
         {
-            int bytesRequired = (int)Math.Ceiling(clientIndex / 8.0);
+            int bytesRequired = Math.Max((int)Math.Ceiling(clientIndex / 8.0), 1);
             AddressBytes = bytesRequired;
-            intPtr = Marshal.AllocHGlobal(bytesRequired);
-            AddressPointer = (byte*)Marshal.AllocHGlobal(bytesRequired).ToPointer();
-        }
 
-        ~ClientAddress()
-        {
-            //Free the memory
-            Marshal.FreeHGlobal(intPtr);
+            byteArray = new byte[bytesRequired];
+            fixed (byte* bytePointer = byteArray)
+            {
+                AddressPointer = bytePointer;
+            }
+            if(clientIndex != 0)
+                AddressPointer[bytesRequired - 1] = (byte)Math.Pow(2, ((clientIndex - 1) % 8));
         }
 
         public unsafe override bool Equals(object obj)
@@ -61,5 +62,51 @@ namespace CorgEng.Networking.Clients
             return hashCode;
         }
 
+        public unsafe bool HasFlag(IClientAddress searchingFor)
+        {
+            for (int i = 0; i < searchingFor.AddressBytes; i++)
+            {
+                byte searchingForByte = searchingFor.AddressPointer[i];
+                if (i >= AddressBytes && searchingForByte > 0)
+                    return false;
+                if ((AddressPointer[i] & searchingForByte) != searchingForByte)
+                    return false;
+            }
+            return true;
+        }
+
+        public unsafe void EnableFlag(IClientAddress enablingFlag)
+        {
+            //Check if we need to allocate more memory for this flag
+            if (enablingFlag.AddressBytes > AddressBytes)
+            {
+                //Old memory will be garbage collected
+                //Allocate new memory
+                AddressBytes = enablingFlag.AddressBytes;
+                //Store temporarilly for copying across
+                byte[] temp = byteArray;
+                //Create a new byte array
+                byteArray = new byte[AddressBytes];
+                temp.CopyTo(byteArray, 0);
+                fixed (byte* bytePointer = byteArray)
+                {
+                    AddressPointer = bytePointer;
+                }
+            }
+            //Enable the flags
+            for (int i = 0; i < AddressBytes; i++)
+            {
+                AddressPointer[i] |= enablingFlag.AddressPointer[i];
+            }
+        }
+
+        public unsafe void DisableFlag(IClientAddress disablingFlag)
+        {
+            //Locate and disable the specified flag
+            for (int i = 0; i < Math.Min(AddressBytes, disablingFlag.AddressBytes); i++)
+            {
+                AddressPointer[i] &= (byte)~disablingFlag.AddressPointer[i];
+            }
+        }
     }
 }

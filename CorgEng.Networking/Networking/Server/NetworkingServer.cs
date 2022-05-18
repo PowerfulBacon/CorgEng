@@ -6,9 +6,11 @@ using CorgEng.GenericInterfaces.Networking.Clients;
 using CorgEng.GenericInterfaces.Networking.Networking;
 using CorgEng.GenericInterfaces.Networking.Networking.Server;
 using CorgEng.GenericInterfaces.Networking.Packets;
+using CorgEng.GenericInterfaces.Networking.Packets.PacketQueues;
 using CorgEng.Networking.Events;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
@@ -28,6 +30,17 @@ namespace CorgEng.Networking.Networking.Server
         [UsingDependency]
         private static IClientFactory ClientFactory;
 
+        [UsingDependency]
+        private static IClientAddressingTable ClientAddressingTable;
+
+        [UsingDependency]
+        private static INetworkMessageFactory NetworkMessageFactory;
+
+        [UsingDependency]
+        private static IPacketQueueFactory PacketQueueFactory;
+
+        private IPacketQueue PacketQueue;
+
         /// <summary>
         /// The client we are using to communicate
         /// </summary>
@@ -36,7 +49,7 @@ namespace CorgEng.Networking.Networking.Server
         /// <summary>
         /// Mark false if the server should shut down
         /// </summary>
-        private volatile bool running = true;
+        private volatile bool running = false;
 
         /// <summary>
         /// The port the server is currently running on.
@@ -57,6 +70,11 @@ namespace CorgEng.Networking.Networking.Server
 
         public void StartHosting(int port)
         {
+            //Initialize the packet queue
+            if (PacketQueue == default)
+            {
+                PacketQueue = PacketQueueFactory.CreatePacketQueue();
+            }
             //We are already connected to the UDP client
             if (udpClient != null && udpClient.Client.Connected)
             {
@@ -68,14 +86,66 @@ namespace CorgEng.Networking.Networking.Server
             this.port = port;
             //Start the server (Doesn't connect to anything, just listens)
             udpClient = new UdpClient(port);
+            //Start running the serve
+            running = true;
             //Start the networking thread
-            Thread serverThread = new Thread(NetworkingServerThread);
+            Thread serverThread = new Thread(NetworkListenerThread);
             serverThread.Name = $"Networking server ({port})";
             serverThread.Start();
         }
 
-        private void NetworkingServerThread()
+        /// <summary>
+        /// The sender thread.
+        /// Runs when it needs to, transmits data to the server
+        /// with a set tick rate.
+        /// </summary>
+        private void NetworkSenderThread(UdpClient client)
         {
+            Logger?.WriteLine($"Server sender for port:{port} thread successfull started.", LogType.DEBUG);
+            Stopwatch stopwatch = new Stopwatch();
+            double inverseTickrate = 1000.0 / TickRate;
+            while (running && (client.Client?.Connected ?? false))
+            {
+                try
+                {
+                    //Create a stopwatch to get the current time
+                    stopwatch.Restart();
+                    //Transmit packets
+                    while (PacketQueue.HasMessages())
+                    {
+                        Logger?.WriteLine("TODO IS HERE", LogType.TEMP);
+                        //BIG TODO
+                        //TODO: SEND THIS TO WHOEVER WE NEED TO SEND THIS TO
+                        //BIG TODO
+                        //Dequeue the packet from the queue
+                        IQueuedPacket queuedPacket = PacketQueue.DequeuePacket();
+                        //Transmit the packet to the server
+                        byte[] data = queuedPacket.Data;
+                        //Asynchronously send the data
+                        //We send all the data straight to the server.
+                        //The client cannot communicate with other clients.
+                        //Get all the clients we want to send this to
+                        udpClient.SendAsync(data, data.Length);
+                        Logger?.WriteLine($"Sending message of size {data.Length} to some clients!", LogType.TEMP);
+                    }
+                    //Wait for variable time to maintain the tick rate
+                    stopwatch.Stop();
+                    double elapsedMilliseconds = stopwatch.ElapsedMilliseconds;
+                    double waitTime = inverseTickrate - elapsedMilliseconds;
+                    //Sleep the thread
+                    Thread.Sleep((int)waitTime);
+                }
+                catch (Exception e)
+                {
+                    Logger?.WriteLine(e, LogType.ERROR);
+                }
+            }
+            Logger?.WriteLine($"Server sender thread terminated", LogType.ERROR);
+        }
+
+        private void NetworkListenerThread()
+        {
+            Logger?.WriteLine($"Server listening thread started on port {port}.", LogType.MESSAGE);
             while (running)
             {
                 try
@@ -84,6 +154,7 @@ namespace CorgEng.Networking.Networking.Server
                     IPEndPoint remoteEndPoint = new IPEndPoint(IPAddress.Any, port);
                     byte[] incomingData = udpClient.Receive(ref remoteEndPoint);
                     Task.Run(() => HandleMessage(remoteEndPoint, incomingData));
+                    Logger?.WriteLine($"Message of size {incomingData.Length} recieved from client.", LogType.TEMP);
                 }
                 catch (Exception e)
                 {
@@ -96,22 +167,29 @@ namespace CorgEng.Networking.Networking.Server
 
         private void HandleMessage(IPEndPoint sender, byte[] message)
         {
-            //Check the message header
-            //Process messages
-            int packetHeader = BitConverter.ToInt32(message, 0);
-            if (connectedClients.ContainsKey(sender.Address))
+            try
             {
-
-            }
-            else
-            {
-                //Switch the message
-                switch ((PacketHeaders)packetHeader)
+                //Check the message header
+                //Process messages
+                int packetHeader = BitConverter.ToInt32(message, 0);
+                if (connectedClients.ContainsKey(sender.Address))
                 {
-                    case PacketHeaders.CONNECTION_REQUEST:
-                        HandleConnectionRequest(sender);
-                        return;
+
                 }
+                else
+                {
+                    //Switch the message
+                    switch ((PacketHeaders)packetHeader)
+                    {
+                        case PacketHeaders.CONNECTION_REQUEST:
+                            HandleConnectionRequest(sender);
+                            return;
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Logger?.WriteLine(e, LogType.ERROR);
             }
         }
 
@@ -120,17 +198,18 @@ namespace CorgEng.Networking.Networking.Server
             //Refuse connection if already connected
             if (connectedClients.ContainsKey(sender.Address))
             {
-                //Create connection packet
-                List<byte> rejectionPacket = new List<byte>(BitConverter.GetBytes((int)PacketHeaders.CONNECTION_ACCEPT));
-                rejectionPacket.AddRange(Encoding.ASCII.GetBytes("Already connected to server."));
-                udpClient.Send(rejectionPacket.ToArray(), rejectionPacket.Count, sender);
+                //Create rejection packet
+                QueueMessage(
+                    ClientAddressingTable.GetFlagRepresentation(sender.Address),
+                    NetworkMessageFactory.CreateMessage(PacketHeaders.CONNECTION_REJECT, Encoding.ASCII.GetBytes("Already connected to server.")));
                 return;
             }
             //Just accept it for now
             Logger?.WriteLine($"Accepting connection from {sender}", LogType.DEBUG);
             //Create connection packet
-            byte[] connectionPacket = BitConverter.GetBytes((int)PacketHeaders.CONNECTION_ACCEPT);
-            udpClient.Send(connectionPacket, connectionPacket.Length, sender);
+            QueueMessage(
+                ClientAddressingTable.GetFlagRepresentation(sender.Address),
+                NetworkMessageFactory.CreateMessage(PacketHeaders.CONNECTION_ACCEPT, new byte[0]));
             //Create a client
             IClient createdClient = ClientFactory.CreateClient("default", sender.Address);
             connectedClients.Add(sender.Address, createdClient);
@@ -138,14 +217,18 @@ namespace CorgEng.Networking.Networking.Server
             new ClientConnectedEvent(createdClient).RaiseGlobally();
         }
 
-        public void QueueMessage(INetworkMessage message)
+        public void QueueMessage(IClientAddress targets, INetworkMessage message)
         {
-            throw new NotImplementedException();
+            PacketQueue.QueueMessage(targets, message);
         }
 
         public void Cleanup()
         {
-            throw new NotImplementedException();
+            Logger?.WriteLine("Server cleanup called", LogType.LOG);
+            running = false;
+            udpClient.Close();
+            udpClient.Dispose();
+            udpClient = null;
         }
     }
 }

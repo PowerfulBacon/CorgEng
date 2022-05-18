@@ -30,6 +30,14 @@ namespace CorgEng.Networking.Packets.PacketQueues
             TopPointer = 0;
         }
 
+        public QueuedPacket(IClientAddress targets, byte[] data)
+        {
+            Targets = targets;
+            Data = new byte[NetworkConfig.PacketMaxSizeBytes];
+            data.CopyTo(Data, 0);
+            TopPointer = data.Length;
+        }
+
         public bool CanInsert(int length)
         {
             return Data.Length - TopPointer >= length;

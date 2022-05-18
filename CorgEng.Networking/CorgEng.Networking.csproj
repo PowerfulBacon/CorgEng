@@ -49,6 +49,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Clients\ClientAddress.cs" />
+    <Compile Include="Clients\ClientAddressFactory.cs" />
+    <Compile Include="Clients\ClientAddressingTable.cs" />
     <Compile Include="Config\NetworkConfig.cs" />
     <Compile Include="EntitySystems\NetworkSystem.cs" />
     <Compile Include="Events\ClientConnectedEvent.cs" />
@@ -58,7 +60,9 @@
     <Compile Include="Packets\NetworkMessage.cs" />
     <Compile Include="Packets\NetworkMessageFactory.cs" />
     <Compile Include="Packets\PacketQueues\PacketQueue.cs" />
+    <Compile Include="Packets\PacketQueues\PacketQueueFactory.cs" />
     <Compile Include="Packets\PacketQueues\QueuedPacket.cs" />
+    <Compile Include="Packets\PacketQueues\QueuedPacketFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

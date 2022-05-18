@@ -27,10 +27,13 @@ namespace CorgEng.Networking.Networking.Client
         private static ILogger Logger;
 
         [UsingDependency]
-        private INetworkMessageFactory NetworkMessageFactory;
+        private static INetworkMessageFactory NetworkMessageFactory;
 
         [UsingDependency]
-        private IPacketQueueFactory PacketQueueFactory;
+        private static IPacketQueueFactory PacketQueueFactory;
+
+        [UsingDependency]
+        private static IClientAddressingTable ClientAddressingTable;
 
         private IPacketQueue PacketQueue;
 
@@ -39,6 +42,11 @@ namespace CorgEng.Networking.Networking.Client
         public event ConnectionFailed OnConnectionFailed;
 
         public event NetworkMessageRecieved NetworkMessageReceived;
+
+        /// <summary>
+        /// The client address that relates to the server
+        /// </summary>
+        private IClientAddress ServerAddress;
 
         /// <summary>
         /// The client that we are using to communicate
@@ -68,20 +76,20 @@ namespace CorgEng.Networking.Networking.Client
         /// <summary>
         /// Are we running, or should we shutdown
         /// </summary>
-        private volatile bool running = true;
+        private volatile bool running = false;
 
         public int TickRate { get; set; } = 32;
-
-        public NetworkingClient()
-        {
-            PacketQueue = PacketQueueFactory.CreatePacketQueue();
-        }
 
         /// <summary>
         /// Attempt connection to a network address
         /// </summary>
         public void AttemptConnection(string address, int port, int timeout = 5000)
         {
+            //Init packet queue
+            if (PacketQueue == null)
+            {
+                PacketQueue = PacketQueueFactory.CreatePacketQueue();
+            }
             //Check if we are connected to a server
             if (connected || connecting)
             {
@@ -92,58 +100,79 @@ namespace CorgEng.Networking.Networking.Client
             //Mark us as attempting to connect
             connecting = true;
             Logger?.WriteLine($"Attempting connection to {address}:{port} (Timeout: {timeout}ms)", LogType.MESSAGE);
+            //Clear the existing addressing table
+            ClientAddressingTable.Clear();
+            ServerAddress = null;
             //Attempt a connection
             udpClient = new UdpClient();
             udpClient.Connect(ipAddress, port);
             //Begin the timeout task
             Task.Run(() =>
             {
-                float timeLeft = timeout;
-                while (timeLeft > 0)
+                try
                 {
-                    //Check occassionally
-                    Thread.Sleep(50);
-                    //Reduce the time left
-                    timeLeft -= 50;
-                    //Check connected
-                    if (udpClient.Client.Connected)
+                    float timeLeft = timeout;
+                    while (timeLeft > 0)
                     {
-                        //Set the port and address
-                        this.port = port;
-                        this.address = ipAddress;
-                        //Connection was successful, send connection packet
-                        //Start the timeout task
-                        Task.Run(() =>
+                        //Check occassionally
+                        Thread.Sleep(50);
+                        //Reduce the time left
+                        timeLeft -= 50;
+                        //Check connected
+                        if (udpClient.Client.Connected)
                         {
-                            //Sleep for timeout
-                            Thread.Sleep(timeout);
-                            //Check if connection valid
-                            if (connected || udpClient == null)
-                                return;
-                            //Stop connecting
-                            connecting = false;
-                            //Disconnect
-                            udpClient.Close();
-                            //Timed out
-                            OnConnectionFailed?.Invoke(ipAddress, DisconnectReason.TIMEOUT, "Connection timed out, server is not responding to connection requests.");
-                        });
-                        //Start the networking thread
-                        Thread networkingThread = new Thread(() => NetworkListenerThread(udpClient));
-                        networkingThread.Name = $"Networking thread ({address}:{port})";
-                        networkingThread.Start();
-                        //Log message
-                        Logger?.WriteLine($"UDPClient connection established, sending connection request to server...", LogType.MESSAGE);
-                        //Create connection packet
-                        INetworkMessage networkMessage = NetworkMessageFactory.CreateMessage(PacketHeaders.CONNECTION_REQUEST, new byte[0]);
-                        //Send connection packet
-                        QueueMessage(networkMessage);
-                        return;
+                            //Set the port and address
+                            this.port = port;
+                            this.address = ipAddress;
+                            //Add the server's address to the addressing table
+                            ServerAddress = ClientAddressingTable.AddAddress(ipAddress);
+                            //Connection was successful, send connection packet
+                            //Start the timeout task
+                            Task.Run(() =>
+                            {
+                                //Sleep for timeout
+                                Thread.Sleep(timeout);
+                                //Check if connection valid
+                                if (connected || udpClient == null)
+                                    return;
+                                //Stop connecting
+                                connecting = false;
+                                //Cleanup
+                                Cleanup();
+                                //Log message
+                                Logger?.WriteLine($"Connection to {address}:{port} timed out due to server not responding to our messages (Server is online but ignoring us).", LogType.LOG);
+                                //Timed out
+                                OnConnectionFailed?.Invoke(ipAddress, DisconnectReason.TIMEOUT, "Connection timed out, server is not responding to connection requests.");
+                            });
+                            //Start the networking thread
+                            running = true;
+                            Thread networkingThread = new Thread(() => NetworkListenerThread(udpClient));
+                            networkingThread.Name = $"Client Listener thread ({address}:{port})";
+                            networkingThread.Start();
+                            //Start the sender thread
+                            Thread senderThread = new Thread(() => NetworkSenderThread(udpClient));
+                            senderThread.Name = $"Client Sender thread ({address}:{port})";
+                            senderThread.Start();
+                            //Log message
+                            Logger?.WriteLine($"UDPClient connection established, sending connection request to server...", LogType.MESSAGE);
+                            //Create connection packet
+                            INetworkMessage networkMessage = NetworkMessageFactory.CreateMessage(PacketHeaders.CONNECTION_REQUEST, new byte[0]);
+                            //Send connection packet
+                            QueueMessage(ServerAddress, networkMessage);
+                            return;
+                        }
                     }
+                    //Stop connecting
+                    connecting = false;
+                    //Time out
+                    Logger?.WriteLine($"Connection to {address}:{port} timed out due to failing to connect to server (Server is offline).", LogType.LOG);
+                    //Timed out
+                    OnConnectionFailed?.Invoke(ipAddress, DisconnectReason.TIMEOUT, "Connection timed out, failed to connect to server.");
                 }
-                //Stop connecting
-                connecting = false;
-                //Timed out
-                OnConnectionFailed?.Invoke(ipAddress, DisconnectReason.TIMEOUT, "Connection timed out, failed to connect to server.");
+                catch (Exception e)
+                {
+                    Logger?.WriteLine(e, LogType.ERROR);
+                }
             });
         }
 
@@ -176,10 +205,18 @@ namespace CorgEng.Networking.Networking.Client
                     {
                         //Dequeue the packet from the queue
                         IQueuedPacket queuedPacket = PacketQueue.DequeuePacket();
+                        //Error checking
+                        if (!queuedPacket.Targets.HasFlag(ServerAddress))
+                        {
+                            throw new Exception("Attempting to send a packet at a target other than the server.");
+                        }
                         //Transmit the packet to the server
-                        byte[] data = queuedPacket.GetData();
+                        byte[] data = queuedPacket.Data;
                         //Asynchronously send the data
+                        //We send all the data straight to the server.
+                        //The client cannot communicate with other clients.
                         udpClient.SendAsync(data, data.Length);
+                        Logger?.WriteLine($"Sending message of size {data.Length} to the server!", LogType.TEMP);
                     }
                     //Wait for variable time to maintain the tick rate
                     stopwatch.Stop();
@@ -193,6 +230,7 @@ namespace CorgEng.Networking.Networking.Client
                     Logger?.WriteLine(e, LogType.ERROR);
                 }
             }
+            Logger?.WriteLine($"Client sender thread terminated", LogType.ERROR);
         }
 
         /// <summary>
@@ -223,24 +261,34 @@ namespace CorgEng.Networking.Networking.Client
 
         private void ProcessPacket(IPEndPoint sender, byte[] data)
         {
-            //Ignore messages from people we weren't connecting to.
-            //All communications must go through the server.
-            //This is for security reasons, so a hacked client can't tell other players
-            //invalid information.
-            if (!sender.Address.Equals(address))
-                return;
-            //Convert the packet into the individual messages
-            int messagePointer = 0;
-            while (messagePointer < data.Length)
+            try
             {
-                //Read the integer (First 4 bytes is the size of the message)
-                int packetSize = BitConverter.ToInt32(data, messagePointer);
-                //Read the packet header
-                PacketHeaders packetHeader = (PacketHeaders)BitConverter.ToInt32(data, messagePointer + 0x04);
-                //Get the data and pass it on
-                HandleMessage(sender, packetHeader, data, messagePointer + 0x08, packetSize - 0x08);
-                //Move the message pointer along
-                messagePointer += packetSize;
+                //Ignore messages from people we weren't connecting to.
+                //All communications must go through the server.
+                //This is for security reasons, so a hacked client can't tell other players
+                //invalid information.
+                if (!sender.Address.Equals(address))
+                {
+                    return;
+                }
+                //Convert the packet into the individual messages
+                int messagePointer = 0;
+                while (messagePointer < data.Length)
+                {
+                    //Read the integer (First 4 bytes is the size of the message)
+                    int packetSize = BitConverter.ToInt32(data, messagePointer);
+                    //Read the packet header
+                    PacketHeaders packetHeader = (PacketHeaders)BitConverter.ToInt32(data, messagePointer + 0x04);
+                    //Get the data and pass it on
+                    HandleMessage(sender, packetHeader, data, messagePointer + 0x08, packetSize - 0x08);
+                    //Move the message pointer along
+                    messagePointer += packetSize;
+                }
+                Logger?.WriteLine($"Successfully handled message from the server", LogType.WARNING);
+            }
+            catch (Exception e)
+            {
+                Logger?.WriteLine(e, LogType.ERROR);
             }
         }
 
@@ -249,12 +297,6 @@ namespace CorgEng.Networking.Networking.Client
         /// </summary>
         private void HandleMessage(IPEndPoint sender, PacketHeaders header, byte[] data, int start, int length)
         {
-            //Ignore messages from people we weren't connecting to.
-            //All communications must go through the server.
-            //This is for security reasons, so a hacked client can't tell other players
-            //invalid information.
-            if (!sender.Address.Equals(address))
-                return;
             //Process messages
             if (!connected)
             {
@@ -287,17 +329,27 @@ namespace CorgEng.Networking.Networking.Client
                         //Trigger the connection rejected event
                         OnConnectionFailed?.Invoke(address, DisconnectReason.CONNECTION_REJECTED, rejectionMessage);
                         return;
+                    default:
+                        Logger?.WriteLine($"Unknown packet header: {header}. This packet may be a bug or from a malicious attack (Debug build is on, so this message is shown which may slow the server down).", LogType.WARNING);
+                        return;
                 }
             }
             else
             {
+                Logger?.WriteLine($"ALREADYED CONNECTED TO SERVE", LogType.WARNING);
                 //Handle connected packets
             }
         }
 
         public void Cleanup()
         {
-            throw new NotImplementedException();
+            Logger?.WriteLine("Client cleanup called", LogType.LOG);
+            running = false;
+            udpClient.Close();
+            udpClient.Dispose();
+            udpClient = null;
+            connected = false;
+            connecting = false;
         }
     }
 }

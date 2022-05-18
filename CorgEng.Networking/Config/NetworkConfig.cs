@@ -1,4 +1,5 @@
-﻿using CorgEng.GenericInterfaces.Networking.Config;
+﻿using CorgEng.DependencyInjection.Dependencies;
+using CorgEng.GenericInterfaces.Networking.Config;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +8,8 @@ using System.Threading.Tasks;
 
 namespace CorgEng.Networking.Config
 {
-    public class NetworkConfig : INetworkConfig
+    [Dependency]
+    internal class NetworkConfig : INetworkConfig
     {
 
         private static int _tickrate = 32;

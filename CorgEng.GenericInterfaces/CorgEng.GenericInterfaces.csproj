@@ -100,6 +100,7 @@
     <Compile Include="MapLoader\IMapLoader.cs" />
     <Compile Include="Networking\Clients\IClient.cs" />
     <Compile Include="Networking\Clients\IClientAddress.cs" />
+    <Compile Include="Networking\Clients\IClientAddressFactory.cs" />
     <Compile Include="Networking\Clients\IClientAddressingTable.cs" />
     <Compile Include="Networking\Clients\IClientFactory.cs" />
     <Compile Include="Networking\Config\NetworkConfig.cs" />

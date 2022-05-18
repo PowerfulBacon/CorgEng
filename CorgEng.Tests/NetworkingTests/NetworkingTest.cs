@@ -46,6 +46,7 @@ namespace CorgEng.Tests.NetworkingTests
         }
 
         [TestMethod]
+        [Timeout(1500)]
         public void TestSendingToServer()
         {
             bool success = false;
