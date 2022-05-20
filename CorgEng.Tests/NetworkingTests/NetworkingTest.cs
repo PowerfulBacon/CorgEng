@@ -53,17 +53,19 @@ namespace CorgEng.Tests.NetworkingTests
         [Timeout(1500)]
         public void TestSendingToServer()
         {
+            bool connected = false;
             bool success = false;
             Server.StartHosting(5001);
             Client.OnConnectionFailed += (IPAddress ipAddress, DisconnectReason disconnectReason, string reasonText) => { Assert.Inconclusive("Connection failed, server rejected connection."); };
+            Client.OnConnectionSuccess += (IPAddress ipAddress) => { connected = true; };
             Client.AttemptConnection("127.0.0.1", 5001, 1000);
 
             //Await connection to the server
-            while (!success)
+            while (!connected)
                 Thread.Sleep(0);
 
             //Send a client message to the server
-            
+            Assert.Inconclusive("Test isn't implemented");
 
         }
 
@@ -104,20 +106,20 @@ namespace CorgEng.Tests.NetworkingTests
         [TestMethod]
         public void TestClientKick()
         {
-            throw new NotImplementedException();
+            Assert.Inconclusive("Test isn't implemented");
         }
 
         [TestMethod]
         public void TestBanning()
         {
-            throw new NotImplementedException();
+            Assert.Inconclusive("Test isn't implemented");
         }
 
         [TestMethod]
         [Timeout(1500)]
         public void TestNetworkedEvent()
         {
-            throw new NotImplementedException();
+            Assert.Inconclusive("Test isn't implemented");
         }
 
     }
