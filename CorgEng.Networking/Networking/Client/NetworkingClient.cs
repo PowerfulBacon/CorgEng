@@ -330,8 +330,8 @@ namespace CorgEng.Networking.Networking.Client
         {
             Logger?.WriteLine("Client cleanup called", LogType.LOG);
             running = false;
-            udpClient.Close();
-            udpClient.Dispose();
+            udpClient?.Close();
+            udpClient?.Dispose();
             udpClient = null;
             connected = false;
             connecting = false;
