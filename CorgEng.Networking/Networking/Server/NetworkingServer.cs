@@ -179,7 +179,7 @@ namespace CorgEng.Networking.Networking.Server
                 int packetHeader = BitConverter.ToInt32(message, 0);
                 if (connectedClients.ContainsKey(sender.Address))
                 {
-                    
+                    Logger?.WriteLine("Recieved message from connected client", LogType.TEMP);
                 }
                 else
                 {
@@ -236,6 +236,7 @@ namespace CorgEng.Networking.Networking.Server
             udpClient = null;
             PacketQueue = null;
             ClientAddressingTable = null;
+            connectedClients = new Dictionary<IPAddress, IClient>();
         }
     }
 }

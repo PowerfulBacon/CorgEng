@@ -54,9 +54,9 @@ namespace CorgEng.Tests.NetworkingTests
         public void TestSendingToServer()
         {
             bool success = false;
-            Server.StartHosting(5000);
+            Server.StartHosting(5001);
             Client.OnConnectionFailed += (IPAddress ipAddress, DisconnectReason disconnectReason, string reasonText) => { Assert.Inconclusive("Connection failed, server rejected connection."); };
-            Client.AttemptConnection("127.0.0.1", 5000, 1000);
+            Client.AttemptConnection("127.0.0.1", 5001, 1000);
 
             //Await connection to the server
             while (!success)
@@ -73,7 +73,7 @@ namespace CorgEng.Tests.NetworkingTests
         {
             bool connected = false;
             bool success = false;
-            Server.StartHosting(5000);
+            Server.StartHosting(5002);
             Client.OnConnectionFailed += (IPAddress ipAddress, DisconnectReason disconnectReason, string reasonText) => { Assert.Inconclusive("Connection failed, server rejected connection."); };
             Client.OnConnectionSuccess += (IPAddress ipAddress) => { connected = true; };
             Client.NetworkMessageReceived += (PacketHeaders packetHeader, byte[] message) =>
@@ -85,7 +85,7 @@ namespace CorgEng.Tests.NetworkingTests
                     success = true;
                 }
             };
-            Client.AttemptConnection("127.0.0.1", 5000, 1000);
+            Client.AttemptConnection("127.0.0.1", 5002, 1000);
 
             //Await connection to the server
             while (!connected)
