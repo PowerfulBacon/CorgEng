@@ -262,6 +262,7 @@ namespace CorgEng.Networking.Networking.Server
             PacketQueue = null;
             ClientAddressingTable = null;
             connectedClients = new Dictionary<IPAddress, IClient>();
+            NetworkMessageReceived = null;
         }
     }
 }

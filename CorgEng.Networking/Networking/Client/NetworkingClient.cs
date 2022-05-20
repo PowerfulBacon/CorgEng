@@ -335,6 +335,9 @@ namespace CorgEng.Networking.Networking.Client
             udpClient = null;
             connected = false;
             connecting = false;
+            NetworkMessageReceived = null;
+            OnConnectionFailed = null;
+            OnConnectionSuccess = null;
         }
     }
 }
