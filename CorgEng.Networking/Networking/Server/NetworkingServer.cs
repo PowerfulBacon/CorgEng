@@ -33,7 +33,7 @@ namespace CorgEng.Networking.Networking.Server
         [UsingDependency]
         private static IClientAddressingTableFactory ClientAddressingTableFactory;
 
-        private IClientAddressingTable ClientAddressingTable;
+        public IClientAddressingTable ClientAddressingTable { get; private set; }
 
         [UsingDependency]
         private static INetworkMessageFactory NetworkMessageFactory;
@@ -126,12 +126,11 @@ namespace CorgEng.Networking.Networking.Server
                     {
                         //Get the queued packet
                         IQueuedPacket queuedPacket = PacketQueue.DequeuePacket();
-                        Logger?.WriteLine($"Sending message to {queuedPacket.Targets.GetClients().Count()} clients.", LogType.TEMP);
 
                         //Get a list of all clients we want to send to
                         foreach (IClient target in queuedPacket.Targets.GetClients())
                         {
-                            target.SendMessage(udpClient, queuedPacket.Data);
+                            target.SendMessage(udpClient, queuedPacket.Data, queuedPacket.TopPointer);
                         }
                     }
                     //Wait for variable time to maintain the tick rate
@@ -180,7 +179,7 @@ namespace CorgEng.Networking.Networking.Server
                 int packetHeader = BitConverter.ToInt32(message, 0);
                 if (connectedClients.ContainsKey(sender.Address))
                 {
-
+                    
                 }
                 else
                 {
@@ -235,6 +234,8 @@ namespace CorgEng.Networking.Networking.Server
             udpClient.Close();
             udpClient.Dispose();
             udpClient = null;
+            PacketQueue = null;
+            ClientAddressingTable = null;
         }
     }
 }

@@ -16,8 +16,8 @@ namespace CorgEng.Networking.Packets
         public NetworkMessage(PacketHeaders packetHeader, byte[] packetContent)
         {
             content = new byte[6 + packetContent.Length];
-            BitConverter.GetBytes((int)packetHeader).CopyTo(content, 0);
-            BitConverter.GetBytes((short)packetContent.Length).CopyTo(content, 4);
+            BitConverter.GetBytes((short)packetContent.Length).CopyTo(content, 0x00);
+            BitConverter.GetBytes((int)packetHeader).CopyTo(content, 0x02);
             packetContent.CopyTo(content, 6);
         }
 

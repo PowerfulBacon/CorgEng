@@ -198,8 +198,7 @@ namespace CorgEng.Networking.Networking.Client
                         //Asynchronously send the data
                         //We send all the data straight to the server.
                         //The client cannot communicate with other clients.
-                        udpClient.SendAsync(data, data.Length);
-                        Logger?.WriteLine($"Sending message of size {data.Length} to the server!", LogType.TEMP);
+                        udpClient.SendAsync(data, queuedPacket.TopPointer);
                     }
                     //Wait for variable time to maintain the tick rate
                     stopwatch.Stop();
@@ -260,16 +259,15 @@ namespace CorgEng.Networking.Networking.Client
                 {
                     int originalPoint = messagePointer;
                     //Read the integer (First 4 bytes is the size of the message)
-                    int packetSize = BitConverter.ToInt32(data, originalPoint);
+                    int packetSize = BitConverter.ToInt16(data, originalPoint);
                     //Move the message pointer along
-                    messagePointer += packetSize;
+                    messagePointer += packetSize + 0x06;
                     //Read the packet header
-                    PacketHeaders packetHeader = (PacketHeaders)BitConverter.ToInt32(data, originalPoint + 0x04);
+                    PacketHeaders packetHeader = (PacketHeaders)BitConverter.ToInt32(data, originalPoint + 0x02);
                     //Get the data and pass it on
-                    HandleMessage(sender, packetHeader, data, originalPoint + 0x08, packetSize - 0x08);
+                    HandleMessage(sender, packetHeader, data, originalPoint + 0x06, packetSize);
                     
                 }
-                Logger?.WriteLine($"Successfully handled message from the server", LogType.WARNING);
             }
             catch (Exception e)
             {
@@ -314,15 +312,17 @@ namespace CorgEng.Networking.Networking.Client
                         //Trigger the connection rejected event
                         OnConnectionFailed?.Invoke(address, DisconnectReason.CONNECTION_REJECTED, rejectionMessage);
                         return;
+#if DEBUG
                     default:
                         Logger?.WriteLine($"Unknown packet header: {header}. This packet may be a bug or from a malicious attack (Debug build is on, so this message is shown which may slow the server down).", LogType.WARNING);
                         return;
+#endif
                 }
             }
             else
             {
-                Logger?.WriteLine($"ALREADYED CONNECTED TO SERVE", LogType.WARNING);
                 //Handle connected packets
+                NetworkMessageReceived?.Invoke(header, data.Skip(start).Take(length).ToArray());
             }
         }
 

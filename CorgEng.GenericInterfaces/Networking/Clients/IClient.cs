@@ -24,7 +24,7 @@ namespace CorgEng.GenericInterfaces.Networking
         /// <summary>
         /// Sends a message to this client.
         /// </summary>
-        void SendMessage(UdpClient udpClient, byte[] message);
+        void SendMessage(UdpClient udpClient, byte[] message, int amount);
 
         /// <summary>
         /// Forcefully disconnect a client from the server

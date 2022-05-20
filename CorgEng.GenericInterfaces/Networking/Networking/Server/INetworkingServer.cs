@@ -17,6 +17,11 @@ namespace CorgEng.GenericInterfaces.Networking.Networking.Server
         event NetworkMessageRecieved NetworkMessageReceived;
 
         /// <summary>
+        /// The addressing table of the server
+        /// </summary>
+        IClientAddressingTable ClientAddressingTable { get; }
+
+        /// <summary>
         /// The tick rate of the server
         /// How many times per second will packets be sent off.
         /// </summary>

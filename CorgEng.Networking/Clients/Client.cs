@@ -32,9 +32,10 @@ namespace CorgEng.Networking.Clients
             throw new NotImplementedException();
         }
 
-        public void SendMessage(UdpClient udpClient, byte[] message)
+        public void SendMessage(UdpClient udpClient, byte[] message, int amount)
         {
-            udpClient.SendAsync(message, message.Length, ClientEndPoint);
+            udpClient.SendAsync(message, amount, ClientEndPoint);
         }
+
     }
 }

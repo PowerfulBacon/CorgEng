@@ -2,6 +2,7 @@
 using CorgEng.GenericInterfaces.Networking.Networking;
 using CorgEng.GenericInterfaces.Networking.Networking.Client;
 using CorgEng.GenericInterfaces.Networking.Networking.Server;
+using CorgEng.GenericInterfaces.Networking.Packets;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
@@ -22,6 +23,9 @@ namespace CorgEng.Tests.NetworkingTests
 
         [UsingDependency]
         private static INetworkingClient Client;
+
+        [UsingDependency]
+        private static INetworkMessageFactory MessageFactory;
 
         [TestCleanup]
         public void AfterTest()
@@ -51,23 +55,50 @@ namespace CorgEng.Tests.NetworkingTests
         {
             bool success = false;
             Server.StartHosting(5000);
-            Client.OnConnectionSuccess += (IPAddress ipAddress) => { success = true; };
-            Client.OnConnectionFailed += (IPAddress ipAddress, DisconnectReason disconnectReason, string reasonText) => { Assert.Fail("Connection failed, server rejected connection."); };
+            Client.OnConnectionFailed += (IPAddress ipAddress, DisconnectReason disconnectReason, string reasonText) => { Assert.Inconclusive("Connection failed, server rejected connection."); };
             Client.AttemptConnection("127.0.0.1", 5000, 1000);
 
-            //Await connection to the serve
+            //Await connection to the server
             while (!success)
                 Thread.Sleep(0);
 
             //Send a client message to the server
-            throw new NotImplementedException();
+            
 
         }
 
         [TestMethod]
+        [Timeout(1500)]
         public void TestSendingToClient()
         {
-            throw new NotImplementedException();
+            bool connected = false;
+            bool success = false;
+            Server.StartHosting(5000);
+            Client.OnConnectionFailed += (IPAddress ipAddress, DisconnectReason disconnectReason, string reasonText) => { Assert.Inconclusive("Connection failed, server rejected connection."); };
+            Client.OnConnectionSuccess += (IPAddress ipAddress) => { connected = true; };
+            Client.NetworkMessageReceived += (PacketHeaders packetHeader, byte[] message) =>
+            {
+                if (packetHeader == PacketHeaders.NETWORKING_TEST)
+                {
+                    if (Encoding.ASCII.GetString(message) != "CORRECT")
+                        Assert.Fail($"Recieved message did not contain correct content, content recieved: '{Encoding.ASCII.GetString(message)}'");
+                    success = true;
+                }
+            };
+            Client.AttemptConnection("127.0.0.1", 5000, 1000);
+
+            //Await connection to the server
+            while (!connected)
+                Thread.Sleep(0);
+
+            //Send a server message to the client
+            Server.QueueMessage(
+                Server.ClientAddressingTable.GetEveryone(),
+                MessageFactory.CreateMessage(PacketHeaders.NETWORKING_TEST, Encoding.ASCII.GetBytes("CORRECT"))
+                );
+
+            while (!success)
+                Thread.Sleep(0);
         }
 
         [TestMethod]
@@ -83,6 +114,7 @@ namespace CorgEng.Tests.NetworkingTests
         }
 
         [TestMethod]
+        [Timeout(1500)]
         public void TestNetworkedEvent()
         {
             throw new NotImplementedException();
