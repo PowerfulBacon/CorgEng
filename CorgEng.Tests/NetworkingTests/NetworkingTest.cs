@@ -58,14 +58,31 @@ namespace CorgEng.Tests.NetworkingTests
             Server.StartHosting(5001);
             Client.OnConnectionFailed += (IPAddress ipAddress, DisconnectReason disconnectReason, string reasonText) => { Assert.Inconclusive("Connection failed, server rejected connection."); };
             Client.OnConnectionSuccess += (IPAddress ipAddress) => { connected = true; };
+
+            Server.NetworkMessageReceived += (PacketHeaders packetHeader, byte[] message, int start, int end) =>
+            {
+                if (packetHeader == PacketHeaders.NETWORKING_TEST)
+                {
+                    string gotMessage = Encoding.ASCII.GetString(message.Skip(start).Take(end).ToArray());
+                    if (gotMessage != "CORRECT")
+                        Assert.Fail($"Recieved message did not contain correct content, content recieved: '{gotMessage}'");
+                    success = true;
+                }
+            };
+
             Client.AttemptConnection("127.0.0.1", 5001, 1000);
 
             //Await connection to the server
             while (!connected)
                 Thread.Sleep(0);
 
-            //Send a client message to the server
-            Assert.Inconclusive("Test isn't implemented");
+            //Send a server message to the client
+            Client.QueueMessage(
+                MessageFactory.CreateMessage(PacketHeaders.NETWORKING_TEST, Encoding.ASCII.GetBytes("CORRECT"))
+                );
+
+            while (!success)
+                Thread.Sleep(0);
 
         }
 
@@ -78,12 +95,13 @@ namespace CorgEng.Tests.NetworkingTests
             Server.StartHosting(5002);
             Client.OnConnectionFailed += (IPAddress ipAddress, DisconnectReason disconnectReason, string reasonText) => { Assert.Inconclusive("Connection failed, server rejected connection."); };
             Client.OnConnectionSuccess += (IPAddress ipAddress) => { connected = true; };
-            Client.NetworkMessageReceived += (PacketHeaders packetHeader, byte[] message) =>
+            Client.NetworkMessageReceived += (PacketHeaders packetHeader, byte[] message, int start, int end) =>
             {
                 if (packetHeader == PacketHeaders.NETWORKING_TEST)
                 {
-                    if (Encoding.ASCII.GetString(message) != "CORRECT")
-                        Assert.Fail($"Recieved message did not contain correct content, content recieved: '{Encoding.ASCII.GetString(message)}'");
+                    string gotMessage = Encoding.ASCII.GetString(message.Skip(start).Take(end).ToArray());
+                    if (gotMessage != "CORRECT")
+                        Assert.Fail($"Recieved message did not contain correct content, content recieved: '{gotMessage}'");
                     success = true;
                 }
             };

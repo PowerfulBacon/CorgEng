@@ -158,7 +158,7 @@ namespace CorgEng.Networking.Networking.Server
                     //Recieve messages
                     IPEndPoint remoteEndPoint = new IPEndPoint(IPAddress.Any, port);
                     byte[] incomingData = udpClient.Receive(ref remoteEndPoint);
-                    Task.Run(() => HandleMessage(remoteEndPoint, incomingData));
+                    Task.Run(() => ProcessPacket(remoteEndPoint, incomingData));
                     Logger?.WriteLine($"Message of size {incomingData.Length} recieved from client.", LogType.TEMP);
                 }
                 catch (Exception e)
@@ -170,21 +170,46 @@ namespace CorgEng.Networking.Networking.Server
             Logger?.WriteLine($"Networking server shut down.", LogType.MESSAGE);
         }
 
-        private void HandleMessage(IPEndPoint sender, byte[] message)
+        private void ProcessPacket(IPEndPoint sender, byte[] data)
+        {
+            try
+            {
+                //Convert the packet into the individual messages
+                int messagePointer = 0;
+                while (messagePointer < data.Length)
+                {
+                    int originalPoint = messagePointer;
+                    //Read the integer (First 4 bytes is the size of the message)
+                    int packetSize = BitConverter.ToInt16(data, originalPoint);
+                    //Move the message pointer along
+                    messagePointer += packetSize + 0x06;
+                    //Read the packet header
+                    PacketHeaders packetHeader = (PacketHeaders)BitConverter.ToInt32(data, originalPoint + 0x02);
+                    //Get the data and pass it on
+                    HandleMessage(sender, packetHeader, data, originalPoint + 0x06, packetSize);
+
+                }
+            }
+            catch (Exception e)
+            {
+                Logger?.WriteLine(e, LogType.ERROR);
+            }
+        }
+
+        private void HandleMessage(IPEndPoint sender, PacketHeaders header, byte[] data, int start, int length)
         {
             try
             {
                 //Check the message header
                 //Process messages
-                int packetHeader = BitConverter.ToInt32(message, 0);
                 if (connectedClients.ContainsKey(sender.Address))
                 {
-                    Logger?.WriteLine("Recieved message from connected client", LogType.TEMP);
+                    NetworkMessageReceived?.Invoke(header, data, start, length);
                 }
                 else
                 {
                     //Switch the message
-                    switch ((PacketHeaders)packetHeader)
+                    switch (header)
                     {
                         case PacketHeaders.CONNECTION_REQUEST:
                             HandleConnectionRequest(sender);

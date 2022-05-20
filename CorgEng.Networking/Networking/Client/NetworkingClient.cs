@@ -322,7 +322,7 @@ namespace CorgEng.Networking.Networking.Client
             else
             {
                 //Handle connected packets
-                NetworkMessageReceived?.Invoke(header, data.Skip(start).Take(length).ToArray());
+                NetworkMessageReceived?.Invoke(header, data, start, length);
             }
         }
 
