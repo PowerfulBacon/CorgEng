@@ -231,8 +231,8 @@ namespace CorgEng.Networking.Networking.Server
         {
             Logger?.WriteLine("Server cleanup called", LogType.LOG);
             running = false;
-            udpClient.Close();
-            udpClient.Dispose();
+            udpClient?.Close();
+            udpClient?.Dispose();
             udpClient = null;
             PacketQueue = null;
             ClientAddressingTable = null;
