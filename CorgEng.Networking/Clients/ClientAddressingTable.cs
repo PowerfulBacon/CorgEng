@@ -1,4 +1,5 @@
 ﻿using CorgEng.DependencyInjection.Dependencies;
+using CorgEng.GenericInterfaces.Networking;
 using CorgEng.GenericInterfaces.Networking.Clients;
 using System;
 using System.Collections.Generic;
@@ -9,19 +10,18 @@ using System.Threading.Tasks;
 
 namespace CorgEng.Networking.Clients
 {
-    [Dependency]
     internal class ClientAddressingTable : IClientAddressingTable
     {
 
         private int maxValue = 0;
 
-        IClientAddress everyone = new ClientAddress(0);
+        IClientAddress everyone = new ClientAddress(0, null);
 
-        private Dictionary<IPAddress, IClientAddress> clientAddresses = new Dictionary<IPAddress, IClientAddress>();
+        private Dictionary<IClient, IClientAddress> clientAddresses = new Dictionary<IClient, IClientAddress>();
 
         private List<IClientAddress> unusedAddresses = new List<IClientAddress>();
 
-        public IClientAddress AddAddress(IPAddress address)
+        public IClientAddress AddClient(IClient client)
         {
             //Locate the first free value
             if (unusedAddresses.Count > 0)
@@ -29,12 +29,12 @@ namespace CorgEng.Networking.Clients
                 //Allocate the first address
                 IClientAddress firstAddress = unusedAddresses[0];
                 unusedAddresses.RemoveAt(0);
-                clientAddresses.Add(address, firstAddress);
+                clientAddresses.Add(client, firstAddress);
                 return firstAddress;
             }
             //Allocate a new address
-            ClientAddress allocated = new ClientAddress(++maxValue);
-            clientAddresses.Add(address, allocated);
+            ClientAddress allocated = new ClientAddress(++maxValue, client);
+            clientAddresses.Add(client, allocated);
             everyone.EnableFlag(allocated);
             return allocated;
         }
@@ -46,7 +46,7 @@ namespace CorgEng.Networking.Clients
         {
             for (int i = clientAddresses.Count - 1; i >= 0; i--)
             {
-                RemoveAddress(clientAddresses.Keys.ElementAt(i));
+                RemoveClient(clientAddresses.Keys.ElementAt(i));
             }
         }
 
@@ -55,24 +55,24 @@ namespace CorgEng.Networking.Clients
             return everyone;
         }
 
-        public IClientAddress GetFlagRepresentation(IPAddress address)
+        public IClientAddress GetFlagRepresentation(IClient client)
         {
-            return clientAddresses[address];
+            return clientAddresses[client];
         }
 
-        public void RemoveAddress(IPAddress address)
+        public void RemoveClient(IClient client)
         {
-            IClientAddress clientAddress = clientAddresses[address];
+            IClientAddress clientAddress = clientAddresses[client];
             unusedAddresses.Add(clientAddress);
-            clientAddresses.Remove(address);
+            clientAddresses.Remove(client);
         }
 
         public void Reset()
         {
             Clear();
             maxValue = 0;
-            everyone = new ClientAddress(0);
-            clientAddresses = new Dictionary<IPAddress, IClientAddress>();
+            everyone = new ClientAddress(0, null);
+            clientAddresses = new Dictionary<IClient, IClientAddress>();
             unusedAddresses = new List<IClientAddress>();
         }
     }

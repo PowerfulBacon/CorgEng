@@ -31,7 +31,9 @@ namespace CorgEng.Networking.Networking.Server
         private static IClientFactory ClientFactory;
 
         [UsingDependency]
-        private static IClientAddressingTable ClientAddressingTable;
+        private static IClientAddressingTableFactory ClientAddressingTableFactory;
+
+        private IClientAddressingTable ClientAddressingTable;
 
         [UsingDependency]
         private static INetworkMessageFactory NetworkMessageFactory;
@@ -70,6 +72,10 @@ namespace CorgEng.Networking.Networking.Server
 
         public void StartHosting(int port)
         {
+            if (ClientAddressingTable == default)
+            {
+                ClientAddressingTable = ClientAddressingTableFactory.CreateAddressingTable();
+            }
             //Initialize the packet queue
             if (PacketQueue == default)
             {
@@ -90,8 +96,13 @@ namespace CorgEng.Networking.Networking.Server
             running = true;
             //Start the networking thread
             Thread serverThread = new Thread(NetworkListenerThread);
-            serverThread.Name = $"Networking server ({port})";
+            serverThread.Name = $"Networking Listener ({port})";
             serverThread.Start();
+            //Start the transmission thread
+            Thread transmissionThread = new Thread(NetworkSenderThread);
+            transmissionThread.Name = $"Networking Transmitter ({port})";
+            transmissionThread.Start();
+
         }
 
         /// <summary>
@@ -99,12 +110,12 @@ namespace CorgEng.Networking.Networking.Server
         /// Runs when it needs to, transmits data to the server
         /// with a set tick rate.
         /// </summary>
-        private void NetworkSenderThread(UdpClient client)
+        private void NetworkSenderThread()
         {
             Logger?.WriteLine($"Server sender for port:{port} thread successfull started.", LogType.DEBUG);
             Stopwatch stopwatch = new Stopwatch();
             double inverseTickrate = 1000.0 / TickRate;
-            while (running && (client.Client?.Connected ?? false))
+            while (running)
             {
                 try
                 {
@@ -113,20 +124,15 @@ namespace CorgEng.Networking.Networking.Server
                     //Transmit packets
                     while (PacketQueue.HasMessages())
                     {
-                        Logger?.WriteLine("TODO IS HERE", LogType.TEMP);
-                        //BIG TODO
-                        //TODO: SEND THIS TO WHOEVER WE NEED TO SEND THIS TO
-                        //BIG TODO
-                        //Dequeue the packet from the queue
+                        //Get the queued packet
                         IQueuedPacket queuedPacket = PacketQueue.DequeuePacket();
-                        //Transmit the packet to the server
-                        byte[] data = queuedPacket.Data;
-                        //Asynchronously send the data
-                        //We send all the data straight to the server.
-                        //The client cannot communicate with other clients.
-                        //Get all the clients we want to send this to
-                        udpClient.SendAsync(data, data.Length);
-                        Logger?.WriteLine($"Sending message of size {data.Length} to some clients!", LogType.TEMP);
+                        Logger?.WriteLine($"Sending message to {queuedPacket.Targets.GetClients().Count()} clients.", LogType.TEMP);
+
+                        //Get a list of all clients we want to send to
+                        foreach (IClient target in queuedPacket.Targets.GetClients())
+                        {
+                            target.SendMessage(udpClient, queuedPacket.Data);
+                        }
                     }
                     //Wait for variable time to maintain the tick rate
                     stopwatch.Stop();
@@ -200,19 +206,19 @@ namespace CorgEng.Networking.Networking.Server
             {
                 //Create rejection packet
                 QueueMessage(
-                    ClientAddressingTable.GetFlagRepresentation(sender.Address),
+                    ClientAddressingTable.GetFlagRepresentation(connectedClients[sender.Address]),
                     NetworkMessageFactory.CreateMessage(PacketHeaders.CONNECTION_REJECT, Encoding.ASCII.GetBytes("Already connected to server.")));
                 return;
             }
             //Just accept it for now
             Logger?.WriteLine($"Accepting connection from {sender}", LogType.DEBUG);
+            //Create a client
+            IClient createdClient = ClientFactory.CreateClient("default", sender);
+            connectedClients.Add(sender.Address, createdClient);
             //Create connection packet
             QueueMessage(
-                ClientAddressingTable.GetFlagRepresentation(sender.Address),
+                ClientAddressingTable.AddClient(createdClient),
                 NetworkMessageFactory.CreateMessage(PacketHeaders.CONNECTION_ACCEPT, new byte[0]));
-            //Create a client
-            IClient createdClient = ClientFactory.CreateClient("default", sender.Address);
-            connectedClients.Add(sender.Address, createdClient);
             //Send a connection event globally
             new ClientConnectedEvent(createdClient).RaiseGlobally();
         }

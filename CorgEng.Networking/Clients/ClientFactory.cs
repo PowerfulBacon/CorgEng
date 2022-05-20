@@ -4,24 +4,18 @@ using CorgEng.GenericInterfaces.Networking.Clients;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace CorgEng.Networking.Clients
 {
     [Dependency]
-    internal class ClientAddressFactory : IClientAddressFactory
+    internal class ClientFactory : IClientFactory
     {
-
-        public IClientAddress CreateAddress(int clientId, IClient client)
+        public IClient CreateClient(string username, IPEndPoint clientEndPoint)
         {
-            return new ClientAddress(clientId, client);
+            return new Client(username, clientEndPoint);
         }
-
-        public IClientAddress CreateEmptyAddress()
-        {
-            return new ClientAddress(0, null);
-        }
-
     }
 }

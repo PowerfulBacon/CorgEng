@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -13,7 +14,7 @@ namespace CorgEng.GenericInterfaces.Networking
         /// <summary>
         /// The IP address of the client
         /// </summary>
-        IPAddress ClientAddress { get; }
+        IPEndPoint ClientEndPoint { get; }
 
         /// <summary>
         /// The username attached to this client
@@ -23,7 +24,7 @@ namespace CorgEng.GenericInterfaces.Networking
         /// <summary>
         /// Sends a message to this client.
         /// </summary>
-        void SendMessage(byte[] message);
+        void SendMessage(UdpClient udpClient, byte[] message);
 
         /// <summary>
         /// Forcefully disconnect a client from the server

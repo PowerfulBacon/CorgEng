@@ -48,9 +48,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Clients\Client.cs" />
     <Compile Include="Clients\ClientAddress.cs" />
     <Compile Include="Clients\ClientAddressFactory.cs" />
     <Compile Include="Clients\ClientAddressingTable.cs" />
+    <Compile Include="Clients\ClientAddressingTableFactory.cs" />
+    <Compile Include="Clients\ClientFactory.cs" />
     <Compile Include="Config\NetworkConfig.cs" />
     <Compile Include="EntitySystems\NetworkSystem.cs" />
     <Compile Include="Events\ClientConnectedEvent.cs" />

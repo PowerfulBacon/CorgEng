@@ -32,9 +32,6 @@ namespace CorgEng.Networking.Networking.Client
         [UsingDependency]
         private static IPacketQueueFactory PacketQueueFactory;
 
-        [UsingDependency]
-        private static IClientAddressingTable ClientAddressingTable;
-
         private IPacketQueue PacketQueue;
 
         public event ConnectionSuccess OnConnectionSuccess;
@@ -42,11 +39,6 @@ namespace CorgEng.Networking.Networking.Client
         public event ConnectionFailed OnConnectionFailed;
 
         public event NetworkMessageRecieved NetworkMessageReceived;
-
-        /// <summary>
-        /// The client address that relates to the server
-        /// </summary>
-        private IClientAddress ServerAddress;
 
         /// <summary>
         /// The client that we are using to communicate
@@ -100,9 +92,6 @@ namespace CorgEng.Networking.Networking.Client
             //Mark us as attempting to connect
             connecting = true;
             Logger?.WriteLine($"Attempting connection to {address}:{port} (Timeout: {timeout}ms)", LogType.MESSAGE);
-            //Clear the existing addressing table
-            ClientAddressingTable.Clear();
-            ServerAddress = null;
             //Attempt a connection
             udpClient = new UdpClient();
             udpClient.Connect(ipAddress, port);
@@ -125,7 +114,6 @@ namespace CorgEng.Networking.Networking.Client
                             this.port = port;
                             this.address = ipAddress;
                             //Add the server's address to the addressing table
-                            ServerAddress = ClientAddressingTable.AddAddress(ipAddress);
                             //Connection was successful, send connection packet
                             //Start the timeout task
                             Task.Run(() =>
@@ -158,7 +146,7 @@ namespace CorgEng.Networking.Networking.Client
                             //Create connection packet
                             INetworkMessage networkMessage = NetworkMessageFactory.CreateMessage(PacketHeaders.CONNECTION_REQUEST, new byte[0]);
                             //Send connection packet
-                            QueueMessage(ServerAddress, networkMessage);
+                            QueueMessage(networkMessage);
                             return;
                         }
                     }
@@ -179,9 +167,9 @@ namespace CorgEng.Networking.Networking.Client
         /// <summary>
         /// Send a networking message to the server
         /// </summary>
-        public void QueueMessage(IClientAddress target, INetworkMessage message)
+        public void QueueMessage(INetworkMessage message)
         {
-            PacketQueue?.QueueMessage(target, message);
+            PacketQueue?.QueueMessage(null, message);
         }
 
         /// <summary>
@@ -205,11 +193,6 @@ namespace CorgEng.Networking.Networking.Client
                     {
                         //Dequeue the packet from the queue
                         IQueuedPacket queuedPacket = PacketQueue.DequeuePacket();
-                        //Error checking
-                        if (!queuedPacket.Targets.HasFlag(ServerAddress))
-                        {
-                            throw new Exception("Attempting to send a packet at a target other than the server.");
-                        }
                         //Transmit the packet to the server
                         byte[] data = queuedPacket.Data;
                         //Asynchronously send the data
@@ -275,14 +258,16 @@ namespace CorgEng.Networking.Networking.Client
                 int messagePointer = 0;
                 while (messagePointer < data.Length)
                 {
+                    int originalPoint = messagePointer;
                     //Read the integer (First 4 bytes is the size of the message)
-                    int packetSize = BitConverter.ToInt32(data, messagePointer);
-                    //Read the packet header
-                    PacketHeaders packetHeader = (PacketHeaders)BitConverter.ToInt32(data, messagePointer + 0x04);
-                    //Get the data and pass it on
-                    HandleMessage(sender, packetHeader, data, messagePointer + 0x08, packetSize - 0x08);
+                    int packetSize = BitConverter.ToInt32(data, originalPoint);
                     //Move the message pointer along
                     messagePointer += packetSize;
+                    //Read the packet header
+                    PacketHeaders packetHeader = (PacketHeaders)BitConverter.ToInt32(data, originalPoint + 0x04);
+                    //Get the data and pass it on
+                    HandleMessage(sender, packetHeader, data, originalPoint + 0x08, packetSize - 0x08);
+                    
                 }
                 Logger?.WriteLine($"Successfully handled message from the server", LogType.WARNING);
             }

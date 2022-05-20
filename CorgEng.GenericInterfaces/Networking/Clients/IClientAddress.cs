@@ -22,5 +22,7 @@ namespace CorgEng.GenericInterfaces.Networking.Clients
 
         void DisableFlag(IClientAddress disablingFlag);
 
+        IEnumerable<IClient> GetClients();
+
     }
 }

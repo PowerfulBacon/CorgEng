@@ -13,7 +13,7 @@ namespace CorgEng.GenericInterfaces.Networking.Clients
         /// <summary>
         /// Create a client with specified IP address
         /// </summary>
-        IClient CreateClient(string username, IPAddress clientIpAddress);
+        IClient CreateClient(string username, IPEndPoint clientEndPoint);
 
     }
 }

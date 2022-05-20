@@ -6,12 +6,10 @@ using System.Threading.Tasks;
 
 namespace CorgEng.GenericInterfaces.Networking.Clients
 {
-    public interface IClientAddressFactory
+    public interface IClientAddressingTableFactory
     {
 
-        IClientAddress CreateEmptyAddress();
-
-        IClientAddress CreateAddress(int clientId, IClient client);
+        IClientAddressingTable CreateAddressingTable();
 
     }
 }

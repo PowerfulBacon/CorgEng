@@ -1,4 +1,5 @@
-﻿using CorgEng.GenericInterfaces.Networking.Clients;
+﻿using CorgEng.GenericInterfaces.Networking;
+using CorgEng.GenericInterfaces.Networking.Clients;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,10 +19,15 @@ namespace CorgEng.Networking.Clients
 
         public int AddressBytes { get; private set; }
 
-        public unsafe ClientAddress(int clientIndex)
+        private List<IClient> clients = new List<IClient>();
+
+        public unsafe ClientAddress(int clientIndex, IClient client)
         {
             int bytesRequired = Math.Max((int)Math.Ceiling(clientIndex / 8.0), 1);
             AddressBytes = bytesRequired;
+
+            if (client != null)
+                clients.Add(client);
 
             byteArray = new byte[bytesRequired];
             fixed (byte* bytePointer = byteArray)
@@ -98,6 +104,8 @@ namespace CorgEng.Networking.Clients
             {
                 AddressPointer[i] |= enablingFlag.AddressPointer[i];
             }
+            //Add all clients
+            clients.AddRange(enablingFlag.GetClients());
         }
 
         public unsafe void DisableFlag(IClientAddress disablingFlag)
@@ -107,6 +115,16 @@ namespace CorgEng.Networking.Clients
             {
                 AddressPointer[i] &= (byte)~disablingFlag.AddressPointer[i];
             }
+            //Remove all clients
+            foreach (IClient client in disablingFlag.GetClients())
+            {
+                clients.Remove(client);
+            }
+        }
+
+        public IEnumerable<IClient> GetClients()
+        {
+            return clients;
         }
     }
 }

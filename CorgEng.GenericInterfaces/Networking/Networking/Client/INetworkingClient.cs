@@ -43,7 +43,7 @@ namespace CorgEng.GenericInterfaces.Networking.Networking.Client
         /// <summary>
         /// Queue message for transmission to the server
         /// </summary>
-        void QueueMessage(IClientAddress targets, INetworkMessage message);
+        void QueueMessage(INetworkMessage message);
 
         /// <summary>
         /// Disconnect the client and cleanup any client stored stuff

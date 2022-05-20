@@ -22,8 +22,17 @@ namespace CorgEng.Networking.Packets.PacketQueues
 
         private Dictionary<IClientAddress, Stack<IQueuedPacket>> queuedPackets = new Dictionary<IClientAddress, Stack<IQueuedPacket>>();
 
+        private Stack<IQueuedPacket> untargettedPackets = new Stack<IQueuedPacket>();
+
         public IQueuedPacket DequeuePacket()
         {
+            lock (untargettedPackets)
+            {
+                if (untargettedPackets.Count > 0)
+                {
+                    return untargettedPackets.Pop();
+                }
+            }
             lock (queuedPackets)
             {
                 //Dequeue from top stack
@@ -44,14 +53,43 @@ namespace CorgEng.Networking.Packets.PacketQueues
 
         public bool HasMessages()
         {
-            lock (queuedPackets)
+            lock (untargettedPackets)
             {
-                return queuedPackets.Count > 0;
+                lock (queuedPackets)
+                {
+                    return queuedPackets.Count > 0 || untargettedPackets.Count > 0;
+                }
             }
         }
 
         public void QueueMessage(IClientAddress targets, INetworkMessage message)
         {
+            if (targets == null)
+            {
+                lock (untargettedPackets)
+                {
+                    //If there are no elements, queue directly
+                    Stack<IQueuedPacket> packetStack = untargettedPackets;
+                    if (packetStack.Count == 0)
+                    {
+                        packetStack.Push(QueuedPacketFactory.CreatePacket(null, message.GetBytes()));
+                        return;
+                    }
+                    //Pull the top element of the queue
+                    IQueuedPacket topPacket = packetStack.Peek();
+                    //Can we add our data into this packet?
+                    if (topPacket.CanInsert(message.Length))
+                    {
+                        message.InsertBytes(topPacket);
+                    }
+                    else
+                    {
+                        //Queue a new message
+                        packetStack.Push(QueuedPacketFactory.CreatePacket(null, message.GetBytes()));
+                    }
+                }
+                return;
+            }
             lock (queuedPackets)
             {
                 //Create the new queue

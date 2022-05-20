@@ -16,18 +16,18 @@ namespace CorgEng.GenericInterfaces.Networking.Clients
         /// <summary>
         /// Add an address to the addressing table
         /// </summary>
-        IClientAddress AddAddress(IPAddress address);
+        IClientAddress AddClient(IClient client);
 
         /// <summary>
         /// Remove an IP address from 
         /// </summary>
-        void RemoveAddress(IPAddress address);
+        void RemoveClient(IClient client);
 
         /// <summary>
         /// Get a pointer to the first byte and the length in bytes of
         /// the flag representation value of an address.
         /// </summary>
-        IClientAddress GetFlagRepresentation(IPAddress address);
+        IClientAddress GetFlagRepresentation(IClient client);
 
         /// <summary>
         /// Get the client address that represents everyone.
