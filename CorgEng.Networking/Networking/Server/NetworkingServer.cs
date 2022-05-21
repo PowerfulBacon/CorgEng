@@ -66,6 +66,21 @@ namespace CorgEng.Networking.Networking.Server
         public event NetworkMessageRecieved NetworkMessageReceived;
 
         /// <summary>
+        /// The trigger that gets activated when shutdown is triggered
+        /// </summary>
+        private readonly AutoResetEvent shutdownThreadTrigger = new AutoResetEvent(false);
+
+        /// <summary>
+        /// The countdown event that allows the shutdown method to wait until threads are shutdown.
+        /// </summary>
+        private readonly CountdownEvent shutdownCountdown = new CountdownEvent(2);
+
+        /// <summary>
+        /// Have we ever been started?
+        /// </summary>
+        private bool started = false;
+
+        /// <summary>
         /// Set the server transmission tick rate
         /// </summary>
         public int TickRate { get; set; } = 32;
@@ -102,7 +117,8 @@ namespace CorgEng.Networking.Networking.Server
             Thread transmissionThread = new Thread(NetworkSenderThread);
             transmissionThread.Name = $"Networking Transmitter ({port})";
             transmissionThread.Start();
-
+            shutdownCountdown.Reset();
+            started = true;
         }
 
         /// <summary>
@@ -138,7 +154,7 @@ namespace CorgEng.Networking.Networking.Server
                     double elapsedMilliseconds = stopwatch.ElapsedMilliseconds;
                     double waitTime = inverseTickrate - elapsedMilliseconds;
                     //Sleep the thread
-                    Thread.Sleep((int)waitTime);
+                    shutdownThreadTrigger.WaitOne((int)waitTime);
                 }
                 catch (Exception e)
                 {
@@ -146,6 +162,7 @@ namespace CorgEng.Networking.Networking.Server
                 }
             }
             Logger?.WriteLine($"Server sender thread terminated", LogType.ERROR);
+            shutdownCountdown.Signal();
         }
 
         private void NetworkListenerThread()
@@ -168,6 +185,7 @@ namespace CorgEng.Networking.Networking.Server
             }
             //Log shutdown
             Logger?.WriteLine($"Networking server shut down.", LogType.MESSAGE);
+            shutdownCountdown.Signal();
         }
 
         private void ProcessPacket(IPEndPoint sender, byte[] data)
@@ -254,8 +272,9 @@ namespace CorgEng.Networking.Networking.Server
 
         public void Cleanup()
         {
-            Logger?.WriteLine("Server cleanup called", LogType.LOG);
+            Logger?.WriteLine("Server cleanup called...", LogType.LOG);
             running = false;
+            shutdownThreadTrigger.Set();
             udpClient?.Close();
             udpClient?.Dispose();
             udpClient = null;
@@ -263,6 +282,14 @@ namespace CorgEng.Networking.Networking.Server
             ClientAddressingTable = null;
             connectedClients = new Dictionary<IPAddress, IClient>();
             NetworkMessageReceived = null;
+            Logger?.WriteLine("Waiting for server cleanup completion...", LogType.LOG);
+            //Wait for the threads to be closed
+            if(started)
+                shutdownCountdown.Wait();
+            //Reset
+            shutdownThreadTrigger.Reset();
+            started = false;
+            Logger?.WriteLine("Server cleanup completed!", LogType.LOG);
         }
     }
 }
