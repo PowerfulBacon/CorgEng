@@ -1,4 +1,5 @@
 ﻿using CorgEng.Core.Dependencies;
+using CorgEng.GenericInterfaces.Logging;
 using CorgEng.GenericInterfaces.Networking.Networking;
 using CorgEng.GenericInterfaces.Networking.Networking.Client;
 using CorgEng.GenericInterfaces.Networking.Networking.Server;
@@ -27,11 +28,15 @@ namespace CorgEng.Tests.NetworkingTests
         [UsingDependency]
         private static INetworkMessageFactory MessageFactory;
 
+        [UsingDependency]
+        private static ILogger Logger;
+
         [TestCleanup]
         public void AfterTest()
         {
             Server.Cleanup();
             Client.Cleanup();
+            Logger?.WriteLine("TEST COMPLETED", LogType.DEBUG);
         }
 
         [TestMethod]
