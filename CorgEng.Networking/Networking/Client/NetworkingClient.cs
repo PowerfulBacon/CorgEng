@@ -343,6 +343,21 @@ namespace CorgEng.Networking.Networking.Client
             {
                 //Handle connected packets
                 NetworkMessageReceived?.Invoke(header, data, start, length);
+                //Handle the event
+                switch (header)
+                {
+                   /*case PacketHeaders.EVENT_RAISED:
+                        //First we need to figure out what event is being raised
+                        //Now we need to deserialize the byte data into the actual packet data
+                        //Since implementation of this is specific to the classes, we need to create
+                        //the correct class.
+                        return;*/
+#if DEBUG
+                    default:
+                        Logger?.WriteLine($"Unknown packet header: {header}. This packet may be a bug or from a malicious attack (Debug build is on, so this message is shown which may slow the server down).", LogType.WARNING);
+                        return;
+#endif
+                }
             }
         }
 
