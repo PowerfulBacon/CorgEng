@@ -35,7 +35,7 @@ namespace CorgEng.Tests.NetworkingTests
         }
 
         [TestMethod]
-        [Timeout(1500)]
+        [Timeout(3000)]
         public void TestNetworkConnection()
         {
             bool success = false;
@@ -50,7 +50,7 @@ namespace CorgEng.Tests.NetworkingTests
         }
 
         [TestMethod]
-        [Timeout(1500)]
+        [Timeout(3000)]
         public void TestSendingToServer()
         {
             bool connected = false;
@@ -87,7 +87,7 @@ namespace CorgEng.Tests.NetworkingTests
         }
 
         [TestMethod]
-        [Timeout(1500)]
+        [Timeout(3000)]
         public void TestSendingToClient()
         {
             bool connected = false;
@@ -134,10 +134,18 @@ namespace CorgEng.Tests.NetworkingTests
         }
 
         [TestMethod]
-        [Timeout(1500)]
+        [Timeout(3000)]
         public void TestNetworkedEvent()
         {
-            Assert.Inconclusive("Test isn't implemented");
+            //Connect to the server
+            bool success = false;
+            Server.StartHosting(5003);
+            Client.OnConnectionSuccess += (IPAddress ipAddress) => { success = true; };
+            Client.OnConnectionFailed += (IPAddress ipAddress, DisconnectReason disconnectReason, string reasonText) => { Assert.Fail("Connection failed, server rejected connection."); };
+            Client.AttemptConnection("127.0.0.1", 5003, 1000);
+
+            while (!success)
+                Thread.Sleep(0);
         }
 
     }
