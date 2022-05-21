@@ -1,9 +1,15 @@
 ﻿using CorgEng.Core.Dependencies;
+using CorgEng.EntityComponentSystem.Components;
+using CorgEng.EntityComponentSystem.Entities;
+using CorgEng.EntityComponentSystem.Events;
+using CorgEng.EntityComponentSystem.Systems;
+using CorgEng.GenericInterfaces.ContentLoading;
 using CorgEng.GenericInterfaces.Logging;
 using CorgEng.GenericInterfaces.Networking.Networking;
 using CorgEng.GenericInterfaces.Networking.Networking.Client;
 using CorgEng.GenericInterfaces.Networking.Networking.Server;
 using CorgEng.GenericInterfaces.Networking.Packets;
+using CorgEng.Networking.EntitySystems;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
@@ -138,10 +144,67 @@ namespace CorgEng.Tests.NetworkingTests
             Assert.Inconclusive("Test isn't implemented");
         }
 
+        private class NetworkedTestEvent : Event
+        {
+            public override bool NetworkedEvent => true;
+
+            public int testNumber { get; set; }
+
+            public override void Deserialize(byte[] data)
+            {
+                testNumber = BitConverter.ToInt32(data, 0);
+            }
+
+            public override byte[] Serialize()
+            {
+                return BitConverter.GetBytes(testNumber);
+            }
+        }
+
+        private class NetworkedTestComponent : Component
+        {
+            public override bool SetProperty(string name, IPropertyDef property)
+            {
+                return false;
+            }
+        }
+
+        private class NetworkedTestEntitySystem : EntitySystem
+        {
+
+            public int signalRecievedCount = 0;
+
+            public override void SystemSetup()
+            {
+                RegisterGlobalEvent<NetworkedTestEvent>(AcceptTestEvent);
+            }
+
+            private void AcceptTestEvent(NetworkedTestEvent networkedTestEvent)
+            {
+                Logger?.WriteLine("System recieved an event!", LogType.DEBUG);
+                if (networkedTestEvent.testNumber != 142)
+                    throw new Exception("Invalid networked test event number");
+                signalRecievedCount++;
+            }
+
+        }
+
+        /// <summary>
+        /// Since we are running the client and host on the same instance,
+        /// events will be duplicated. We need to make sure we recieve 2 events.
+        /// </summary>
         [TestMethod]
         [Timeout(3000)]
         public void TestNetworkedEvent()
         {
+            //Set up a test entity system
+            NetworkedTestEntitySystem networkedTestEntitySystem = new NetworkedTestEntitySystem();
+            networkedTestEntitySystem.SystemSetup();
+
+            //Start a networking system
+            NetworkSystem networkSystem = new NetworkSystem();
+            networkSystem.SystemSetup();
+
             //Connect to the server
             bool success = false;
             Server.StartHosting(5003);
@@ -150,6 +213,16 @@ namespace CorgEng.Tests.NetworkingTests
             Client.AttemptConnection("127.0.0.1", 5003, 1000);
 
             while (!success)
+                Thread.Sleep(0);
+
+            //Raise a global event
+            NetworkedTestEvent testEvent = new NetworkedTestEvent();
+            testEvent.testNumber = 142;
+            testEvent.RaiseGlobally();
+
+            Logger?.WriteLine("Test event raised globally", LogType.DEBUG);
+
+            while (networkedTestEntitySystem.signalRecievedCount != 2)
                 Thread.Sleep(0);
         }
 

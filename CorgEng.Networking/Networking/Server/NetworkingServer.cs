@@ -119,6 +119,7 @@ namespace CorgEng.Networking.Networking.Server
             transmissionThread.Start();
             shutdownCountdown.Reset();
             started = true;
+            ServerCommunicator.server = this;
         }
 
         /// <summary>
@@ -282,6 +283,8 @@ namespace CorgEng.Networking.Networking.Server
             ClientAddressingTable = null;
             connectedClients = new Dictionary<IPAddress, IClient>();
             NetworkMessageReceived = null;
+            if(ServerCommunicator.server == this)
+                ServerCommunicator.server = null;
             Logger?.WriteLine("Waiting for server cleanup completion...", LogType.LOG);
             //Wait for the threads to be closed
             if(started)

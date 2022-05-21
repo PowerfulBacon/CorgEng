@@ -14,18 +14,26 @@ using System.Threading.Tasks;
 
 namespace CorgEng.Networking.EntitySystems
 {
-    internal class NetworkSystem : EntitySystem
+    public class NetworkSystem : EntitySystem
     {
 
         [UsingDependency]
         private static IServerCommunicator ServerCommunicator;
 
         [UsingDependency]
-        private INetworkMessageFactory NetworkMessageFactory;
+        private static INetworkMessageFactory NetworkMessageFactory;
 
         public override void SystemSetup()
         {
             RegisterLocalEvent<TransformComponent, NetworkedEventRaisedEvent>(OnNetworkedEventRaised);
+            RegisterGlobalEvent<NetworkedEventRaisedEvent>(OnGlobalNetworkedEventRaised);
+        }
+
+        private void OnGlobalNetworkedEventRaised(NetworkedEventRaisedEvent networkedEventRaisedEvent)
+        {
+            ServerCommunicator?.SendToClients(
+                NetworkMessageFactory.CreateMessage(PacketHeaders.EVENT_RAISED, networkedEventRaisedEvent.RaisedEvent.Serialize())
+                );
         }
 
         /// <summary>
@@ -35,14 +43,11 @@ namespace CorgEng.Networking.EntitySystems
         /// </summary>
         private void OnNetworkedEventRaised(Entity entity, TransformComponent transformComponent, NetworkedEventRaisedEvent networkedEventRaisedEvent)
         {
-            if (ServerCommunicator?.IsServer ?? false)
-            {
-                ServerCommunicator.SendToReleventClients(
-                    NetworkMessageFactory.CreateMessage(PacketHeaders.EVENT_RAISED, networkedEventRaisedEvent.Serialize()),
-                    transformComponent.Position,
-                    new Vector<float>(1, 1, 1)
-                    );
-            }
+            ServerCommunicator?.SendToReleventClients(
+                NetworkMessageFactory.CreateMessage(PacketHeaders.EVENT_RAISED, networkedEventRaisedEvent.RaisedEvent.Serialize()),
+                transformComponent.Position,
+                new Vector<float>(1, 1, 1)
+                );
         }
 
     }

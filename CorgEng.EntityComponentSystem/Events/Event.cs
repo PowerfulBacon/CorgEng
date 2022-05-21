@@ -51,6 +51,21 @@ namespace CorgEng.EntityComponentSystem.Events
             List<SystemEventHandlerDelegate> systemEventHandlers = RegisteredSystemSignalHandlers[key];
             foreach (SystemEventHandlerDelegate systemEventHandler in systemEventHandlers)
                 systemEventHandler.Invoke(null, null, this);
+            //Inform globally that a networked event was raised
+            if (NetworkedEvent)
+            {
+                //Skip directly to signal handling
+                //Locate all event types we are listening for
+                EventComponentPair networkKey = new EventComponentPair(typeof(NetworkedEventRaisedEvent), typeof(GlobalEventComponent));
+                //Locate the monitoring system's callback handler
+                if (!RegisteredSystemSignalHandlers.ContainsKey(networkKey))
+                {
+                    return;
+                }
+                List<SystemEventHandlerDelegate> networkedEventHandlers = RegisteredSystemSignalHandlers[networkKey];
+                foreach (SystemEventHandlerDelegate systemEventHandler in networkedEventHandlers)
+                    systemEventHandler.Invoke(null, null, new NetworkedEventRaisedEvent(this));
+            }
         }
 
         /// <summary>

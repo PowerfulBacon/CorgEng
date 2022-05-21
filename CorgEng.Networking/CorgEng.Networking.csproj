@@ -60,6 +60,7 @@
     <Compile Include="Events\ClientDisconnectedEvent.cs" />
     <Compile Include="Networking\Client\NetworkingClient.cs" />
     <Compile Include="Networking\Server\NetworkingServer.cs" />
+    <Compile Include="Networking\Server\ServerCommunicator.cs" />
     <Compile Include="Packets\NetworkMessage.cs" />
     <Compile Include="Packets\NetworkMessageFactory.cs" />
     <Compile Include="Packets\PacketQueues\PacketQueue.cs" />

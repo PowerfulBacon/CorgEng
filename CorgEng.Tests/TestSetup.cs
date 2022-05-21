@@ -2,6 +2,7 @@
 using CorgEng.DependencyInjection.Injection;
 using CorgEng.GenericInterfaces.Rendering.Textures;
 using CorgEng.GenericInterfaces.UserInterface.Rendering;
+using CorgEng.Networking.EntitySystems;
 using CorgEng.Tests.Stubs;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
