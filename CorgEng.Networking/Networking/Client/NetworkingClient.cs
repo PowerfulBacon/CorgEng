@@ -70,6 +70,21 @@ namespace CorgEng.Networking.Networking.Client
         /// </summary>
         private volatile bool running = false;
 
+        /// <summary>
+        /// The trigger that gets activated when shutdown is triggered
+        /// </summary>
+        private readonly AutoResetEvent shutdownThreadTrigger = new AutoResetEvent(false);
+
+        /// <summary>
+        /// The countdown event that allows the shutdown method to wait until threads are shutdown.
+        /// </summary>
+        private readonly CountdownEvent shutdownCountdown = new CountdownEvent(2);
+
+        /// <summary>
+        /// Have we ever been started?
+        /// </summary>
+        private bool started = false;
+
         public int TickRate { get; set; } = 32;
 
         /// <summary>
@@ -141,6 +156,9 @@ namespace CorgEng.Networking.Networking.Client
                             Thread senderThread = new Thread(() => NetworkSenderThread(udpClient));
                             senderThread.Name = $"Client Sender thread ({address}:{port})";
                             senderThread.Start();
+                            //Started
+                            started = true;
+                            shutdownCountdown.Reset();
                             //Log message
                             Logger?.WriteLine($"UDPClient connection established, sending connection request to server...", LogType.MESSAGE);
                             //Create connection packet
@@ -205,7 +223,7 @@ namespace CorgEng.Networking.Networking.Client
                     double elapsedMilliseconds = stopwatch.ElapsedMilliseconds;
                     double waitTime = inverseTickrate - elapsedMilliseconds;
                     //Sleep the thread
-                    Thread.Sleep((int)waitTime);
+                    shutdownThreadTrigger.WaitOne((int)waitTime);
                 }
                 catch (Exception e)
                 {
@@ -213,6 +231,7 @@ namespace CorgEng.Networking.Networking.Client
                 }
             }
             Logger?.WriteLine($"Client sender thread terminated", LogType.ERROR);
+            shutdownCountdown.Signal();
         }
 
         /// <summary>
@@ -239,6 +258,7 @@ namespace CorgEng.Networking.Networking.Client
             }
             //Disconnected
             Logger?.WriteLine("Disconnected from remote server.", LogType.MESSAGE);
+            shutdownCountdown.Signal();
         }
 
         private void ProcessPacket(IPEndPoint sender, byte[] data)
@@ -330,6 +350,7 @@ namespace CorgEng.Networking.Networking.Client
         {
             Logger?.WriteLine("Client cleanup called", LogType.LOG);
             running = false;
+            shutdownThreadTrigger.Set();
             udpClient?.Close();
             udpClient?.Dispose();
             udpClient = null;
@@ -338,6 +359,14 @@ namespace CorgEng.Networking.Networking.Client
             NetworkMessageReceived = null;
             OnConnectionFailed = null;
             OnConnectionSuccess = null;
+            Logger?.WriteLine("Waiting for client cleanup completion...", LogType.LOG);
+            //Wait for the threads to be closed
+            if (started)
+                shutdownCountdown.Wait();
+            //Reset
+            shutdownThreadTrigger.Reset();
+            started = false;
+            Logger?.WriteLine("Client cleanup completed!", LogType.LOG);
         }
     }
 }
