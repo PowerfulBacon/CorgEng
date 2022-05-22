@@ -1,0 +1,14 @@
+﻿<CorgEngConfig>
+  <!--Specify which modules we need to load dynamically-->
+  <DependencyModules>
+    <Module>CorgEng.ContentLoading</Module>
+    <Module>CorgEng.DependencyInjection</Module>
+    <Module>CorgEng.EntityComponentSystem</Module>
+    <Module>CorgEng.Example</Module>
+    <Module>CorgEng.InputHandling</Module>
+    <Module>CorgEng.Logging</Module>
+    <Module>CorgEng.Networking</Module>
+    <Module>CorgEng.UtilityTypes</Module>
+    <Module>CorgEng.UserInterface</Module>
+  </DependencyModules>
+</CorgEngConfig>

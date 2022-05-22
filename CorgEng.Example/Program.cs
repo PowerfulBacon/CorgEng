@@ -11,6 +11,7 @@ using CorgEng.Example.Common.Components.Camera;
 using CorgEng.Example.Components.PlayerMovement;
 using CorgEng.GenericInterfaces.Font.Fonts;
 using CorgEng.GenericInterfaces.Networking.Networking;
+using CorgEng.GenericInterfaces.Networking.Networking.Client;
 using CorgEng.GenericInterfaces.Networking.Networking.Server;
 using CorgEng.GenericInterfaces.Rendering;
 using CorgEng.GenericInterfaces.Rendering.Cameras.Isometric;
@@ -108,6 +109,9 @@ namespace CorgEng.Example
         [UsingDependency]
         private static IIsometricCameraFactory isometricCameraFactory;
 
+        [UsingDependency]
+        private static INetworkingClient NetworkingClient;
+
         static void Main(string[] args)
         {
             //Load the application config
@@ -116,6 +120,9 @@ namespace CorgEng.Example
             //This creates the window and loads all
             //modules that are dependencies
             CorgEngMain.Initialize();
+
+            //Connect to our server
+            NetworkingClient.AttemptConnection("127.0.0.1", 5000);
 
             //Camera an isometric camera
             IIsometricCamera camera = isometricCameraFactory.CreateCamera();

@@ -55,6 +55,7 @@ namespace CorgEng.Networking
             ushort number = 1;
             foreach (Type type in LocatedEvents)
             {
+                Logger.WriteLine($"NETWORK VERSION: #{number}: {type.AssemblyQualifiedName}", LogType.DEBUG);
                 networkEventToType.Add(number, type);
                 networkedEventIDs.Add(type, number++);
             }
@@ -79,14 +80,22 @@ namespace CorgEng.Networking
         /// </summary>
         public static ushort GetNetworkedID(this Event targetEvent)
         {
-            ushort output = 0;
+            ushort output;
             networkedEventIDs.TryGetValue(targetEvent.GetType(), out output);
             return output;
         }
 
+        /// <summary>
+        /// Completely abritrary function, no idea how good or bad this is.
+        /// </summary>
         private static int GenerateServerVersion()
         {
-            return -1430992642 + EqualityComparer<Dictionary<Type, ushort>>.Default.GetHashCode(networkedEventIDs);
+            int value = -1430992642;
+            foreach (Type t in networkedEventIDs.Keys)
+            {
+                value = unchecked(17 * value + t.AssemblyQualifiedName.GetHashCode());
+            }
+            return value;
         }
     }
 }

@@ -9,6 +9,12 @@ namespace CorgEng.GenericInterfaces.Networking.Config
     public interface INetworkConfig
     {
 
+        bool NetworkingActive { get; set; }
+
+        bool ProcessServerSystems { get; set; }
+
+        bool ProcessClientSystems { get; set; }
+
         int TickRate { set; get; }
 
         int PacketMaxSizeBytes { set; get; }

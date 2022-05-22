@@ -104,7 +104,7 @@
     <Compile Include="Networking\Clients\IClientAddressingTable.cs" />
     <Compile Include="Networking\Clients\IClientAddressingTableFactory.cs" />
     <Compile Include="Networking\Clients\IClientFactory.cs" />
-    <Compile Include="Networking\Config\NetworkConfig.cs" />
+    <Compile Include="Networking\Config\INetworkConfig.cs" />
     <Compile Include="Networking\Networking\DisconnectReason.cs" />
     <Compile Include="Networking\Networking\Client\INetworkingClient.cs" />
     <Compile Include="Networking\Networking\MessageReceived.cs" />

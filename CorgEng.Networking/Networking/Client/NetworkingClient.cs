@@ -4,6 +4,7 @@ using CorgEng.DependencyInjection.Dependencies;
 using CorgEng.EntityComponentSystem.Events;
 using CorgEng.GenericInterfaces.Logging;
 using CorgEng.GenericInterfaces.Networking.Clients;
+using CorgEng.GenericInterfaces.Networking.Config;
 using CorgEng.GenericInterfaces.Networking.Networking;
 using CorgEng.GenericInterfaces.Networking.Networking.Client;
 using CorgEng.GenericInterfaces.Networking.Packets;
@@ -32,6 +33,9 @@ namespace CorgEng.Networking.Networking.Client
 
         [UsingDependency]
         private static IPacketQueueFactory PacketQueueFactory;
+
+        [UsingDependency]
+        private static INetworkConfig NetworkConfig;
 
         private IPacketQueue PacketQueue;
 
@@ -103,6 +107,8 @@ namespace CorgEng.Networking.Networking.Client
             {
                 throw new Exception("Cannot connect to server, we are already connected!");
             }
+            //Enable networking
+            NetworkConfig.NetworkingActive = true;
             //Format the IP address
             IPAddress ipAddress = IPAddress.Parse(address);
             //Mark us as attempting to connect
@@ -315,6 +321,7 @@ namespace CorgEng.Networking.Networking.Client
                         //Conection accepted :)
                         connecting = false;
                         connected = true;
+                        NetworkConfig.ProcessClientSystems = true;
                         //Trigger the connection success event
                         OnConnectionSuccess?.Invoke(address);
                         //Start the network transmission thread
@@ -385,6 +392,9 @@ namespace CorgEng.Networking.Networking.Client
             NetworkMessageReceived = null;
             OnConnectionFailed = null;
             OnConnectionSuccess = null;
+            NetworkConfig.ProcessClientSystems = false;
+            if (!NetworkConfig.ProcessServerSystems)
+                NetworkConfig.NetworkingActive = false;
             Logger?.WriteLine("Waiting for client cleanup completion...", LogType.LOG);
             //Wait for the threads to be closed
             if (started)

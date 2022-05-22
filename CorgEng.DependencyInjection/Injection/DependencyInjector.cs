@@ -135,12 +135,12 @@ namespace CorgEng.DependencyInjection.Injection
             //Locate all members we need to inject dependencies into
             IEnumerable<MemberInfo> requiredInjections = AppDomain.CurrentDomain.GetAssemblies().SelectMany(assembly => assembly.GetTypes().SelectMany(exportedType =>
             {
-            return exportedType.GetFields(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic)
-                .Where(fieldInfo => fieldInfo.FieldType == typeof(DependencyInterface)
-                    && fieldInfo.GetCustomAttribute<UsingDependencyAttribute>() != null)
-                .Union<MemberInfo>(exportedType.GetProperties(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic)
-                    .Where(propertyInfo => propertyInfo.PropertyType == typeof(DependencyInterface)
-                        && propertyInfo.GetCustomAttribute<UsingDependencyAttribute>() != null));
+                return exportedType.GetFields(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic)
+                    .Where(fieldInfo => fieldInfo.FieldType == typeof(DependencyInterface)
+                        && fieldInfo.GetCustomAttribute<UsingDependencyAttribute>() != null)
+                    .Union<MemberInfo>(exportedType.GetProperties(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic)
+                        .Where(propertyInfo => propertyInfo.PropertyType == typeof(DependencyInterface)
+                            && propertyInfo.GetCustomAttribute<UsingDependencyAttribute>() != null));
             }));
 
             //Perform injection

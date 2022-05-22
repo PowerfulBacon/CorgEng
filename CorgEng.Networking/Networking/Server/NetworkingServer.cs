@@ -3,6 +3,7 @@ using CorgEng.DependencyInjection.Dependencies;
 using CorgEng.GenericInterfaces.Logging;
 using CorgEng.GenericInterfaces.Networking;
 using CorgEng.GenericInterfaces.Networking.Clients;
+using CorgEng.GenericInterfaces.Networking.Config;
 using CorgEng.GenericInterfaces.Networking.Networking;
 using CorgEng.GenericInterfaces.Networking.Networking.Server;
 using CorgEng.GenericInterfaces.Networking.Packets;
@@ -40,6 +41,9 @@ namespace CorgEng.Networking.Networking.Server
 
         [UsingDependency]
         private static IPacketQueueFactory PacketQueueFactory;
+
+        [UsingDependency]
+        private static INetworkConfig NetworkConfig;
 
         private IPacketQueue PacketQueue;
 
@@ -101,6 +105,8 @@ namespace CorgEng.Networking.Networking.Server
             {
                 throw new Exception($"Server on port {port} is already running.");
             }
+            //Start networking
+            NetworkConfig.NetworkingActive = true;
             //Log
             Logger?.WriteLine($"Starting UDP server on port {port}.", LogType.MESSAGE);
             //Set the listening port
@@ -120,6 +126,7 @@ namespace CorgEng.Networking.Networking.Server
             shutdownCountdown.Reset();
             started = true;
             ServerCommunicator.server = this;
+            NetworkConfig.ProcessServerSystems = true;
         }
 
         /// <summary>
@@ -223,6 +230,7 @@ namespace CorgEng.Networking.Networking.Server
                 //Process messages
                 if (connectedClients.ContainsKey(sender.Address))
                 {
+                    Logger?.WriteLine($"Unhandled header: {header}");
                     NetworkMessageReceived?.Invoke(header, data, start, length);
                 }
                 else
@@ -257,6 +265,7 @@ namespace CorgEng.Networking.Networking.Server
             int clientVersionID = BitConverter.ToInt32(data, start);
             if (clientVersionID != EventNetworkExtensions.NetworkedID)
             {
+                Logger?.WriteLine($"Incoming client has incorrect version ID: {clientVersionID}, expected: {EventNetworkExtensions.NetworkedID}");
                 //Create rejection packet
                 QueueMessage(
                     ClientAddressingTable.GetFlagRepresentation(connectedClients[sender.Address]),
@@ -293,7 +302,10 @@ namespace CorgEng.Networking.Networking.Server
             ClientAddressingTable = null;
             connectedClients = new Dictionary<IPAddress, IClient>();
             NetworkMessageReceived = null;
-            if(ServerCommunicator.server == this)
+            NetworkConfig.ProcessServerSystems = false;
+            if (!NetworkConfig.ProcessClientSystems)
+                NetworkConfig.NetworkingActive = false;
+            if (ServerCommunicator.server == this)
                 ServerCommunicator.server = null;
             Logger?.WriteLine("Waiting for server cleanup completion...", LogType.LOG);
             //Wait for the threads to be closed

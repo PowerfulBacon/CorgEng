@@ -7,6 +7,7 @@ using CorgEng.EntityComponentSystem.Events;
 using CorgEng.EntityComponentSystem.Events.Events;
 using CorgEng.GenericInterfaces.ContentLoading;
 using CorgEng.GenericInterfaces.Logging;
+using CorgEng.GenericInterfaces.Networking.Config;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -33,6 +34,12 @@ namespace CorgEng.EntityComponentSystem.Systems
 
         [UsingDependency]
         private static ILogger Logger;
+
+        /// <summary>
+        /// Network config, null if the application doesn't have networking capabilities.
+        /// </summary>
+        [UsingDependency]
+        private static INetworkConfig NetworkConfig;
 
         internal delegate void SystemEventHandlerDelegate(Entity entity, Component component, Event signal);
 
@@ -162,11 +169,17 @@ namespace CorgEng.EntityComponentSystem.Systems
                     RegisteredSystemSignalHandlers.Add(eventComponentPair, new List<SystemEventHandlerDelegate>());
                 RegisteredSystemSignalHandlers[eventComponentPair].Add((Entity entity, Component component, Event signal) =>
                 {
+                    //Check if we don't process
+                    if (NetworkConfig != null
+                        && NetworkConfig.NetworkingActive
+                        && ((SystemFlags & EntitySystemFlags.HOST_SYSTEM) == 0 || !NetworkConfig.ProcessServerSystems)
+                        && ((SystemFlags & EntitySystemFlags.CLIENT_SYSTEM) == 0 || !NetworkConfig.ProcessClientSystems))
+                        return;
                     invokationQueue.Enqueue(() =>
                     {
                         eventHandler((GEvent)signal);
                     });
-                    if(isWaiting)
+                    if (isWaiting)
                         waitHandle.Set();
                 });
             }
@@ -195,6 +208,12 @@ namespace CorgEng.EntityComponentSystem.Systems
                     RegisteredSystemSignalHandlers.Add(eventComponentPair, new List<SystemEventHandlerDelegate>());
                 RegisteredSystemSignalHandlers[eventComponentPair].Add((Entity entity, Component component, Event signal) =>
                 {
+                    //Check if we don't process
+                    if (NetworkConfig != null
+                        && NetworkConfig.NetworkingActive
+                        && ((SystemFlags & EntitySystemFlags.HOST_SYSTEM) == 0 || !NetworkConfig.ProcessServerSystems)
+                        && ((SystemFlags & EntitySystemFlags.CLIENT_SYSTEM) == 0 || !NetworkConfig.ProcessClientSystems))
+                        return;
                     invokationQueue.Enqueue(() =>
                     {
                         eventHandler(entity, (GComponent)component, (GEvent)signal);
