@@ -209,7 +209,7 @@ namespace CorgEng.Tests.NetworkingTests
         /// </summary>
         [TestMethod]
         [Timeout(3000)]
-        public void TestNetworkedEvent()
+        public void TestGlobalNetworkedEvent()
         {
             //Set up a test entity system
             NetworkedTestEntitySystem networkedTestEntitySystem = new NetworkedTestEntitySystem();

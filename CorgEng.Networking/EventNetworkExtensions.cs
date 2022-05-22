@@ -26,6 +26,8 @@ namespace CorgEng.Networking
         /// </summary>
         private static Dictionary<Type, ushort> networkedEventIDs = new Dictionary<Type, ushort>();
 
+        private static Dictionary<ushort, Type> networkEventToType = new Dictionary<ushort, Type>();
+
         public static int NetworkedID { get; private set; }
 
         /// <summary>
@@ -53,6 +55,7 @@ namespace CorgEng.Networking
             ushort number = 1;
             foreach (Type type in LocatedEvents)
             {
+                networkEventToType.Add(number, type);
                 networkedEventIDs.Add(type, number++);
             }
             //TODO:
@@ -66,9 +69,9 @@ namespace CorgEng.Networking
         /// <summary>
         /// Returns the type of an event based on a provided network ID
         /// </summary>
-        internal static Type GetTypeFromNetworkedID(ushort networkedID)
+        internal static Event GetEventFromNetworkedID(ushort networkedID)
         {
-            throw new NotImplementedException();
+            return FormatterServices.GetUninitializedObject(networkEventToType[networkedID]) as Event;
         }
 
         /// <summary>

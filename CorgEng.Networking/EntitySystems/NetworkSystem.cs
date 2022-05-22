@@ -33,7 +33,7 @@ namespace CorgEng.Networking.EntitySystems
         private void OnGlobalNetworkedEventRaised(NetworkedEventRaisedEvent networkedEventRaisedEvent)
         {
             ServerCommunicator?.SendToClients(
-                NetworkMessageFactory.CreateMessage(PacketHeaders.EVENT_RAISED, InjectEventCode(networkedEventRaisedEvent.RaisedEvent))
+                NetworkMessageFactory.CreateMessage(PacketHeaders.GLOBAL_EVENT_RAISED, InjectEventCode(networkedEventRaisedEvent.RaisedEvent))
                 );
         }
 
@@ -45,7 +45,7 @@ namespace CorgEng.Networking.EntitySystems
         private void OnNetworkedEventRaised(Entity entity, TransformComponent transformComponent, NetworkedEventRaisedEvent networkedEventRaisedEvent)
         {
             ServerCommunicator?.SendToReleventClients(
-                NetworkMessageFactory.CreateMessage(PacketHeaders.EVENT_RAISED, InjectEventCode(networkedEventRaisedEvent.RaisedEvent)),
+                NetworkMessageFactory.CreateMessage(PacketHeaders.LOCAL_EVENT_RAISED, InjectEventCode(networkedEventRaisedEvent.RaisedEvent)),
                 transformComponent.Position,
                 new Vector<float>(1, 1, 1)
                 );
@@ -55,9 +55,9 @@ namespace CorgEng.Networking.EntitySystems
         private byte[] InjectEventCode(Event e)
         {
             byte[] data = e.Serialize();
-            byte[] output = new byte[data.Length + 4];
+            byte[] output = new byte[data.Length + 2];
             BitConverter.GetBytes(e.GetNetworkedID()).CopyTo(output, 0);
-            data.CopyTo(output, 4);
+            data.CopyTo(output, 2);
             return output;
         }
 

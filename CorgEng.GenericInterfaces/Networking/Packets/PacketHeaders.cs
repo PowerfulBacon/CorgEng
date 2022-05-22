@@ -16,7 +16,9 @@ namespace CorgEng.GenericInterfaces.Networking.Packets
         //Connection rejected
         CONNECTION_REJECT,
         //On event raised
-        EVENT_RAISED,
+        GLOBAL_EVENT_RAISED,
+        //Local event raised
+        LOCAL_EVENT_RAISED,
         //Networking test message
         NETWORKING_TEST,
     }

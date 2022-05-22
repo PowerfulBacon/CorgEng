@@ -1,6 +1,7 @@
 ﻿using CorgEng.Core;
 using CorgEng.Core.Dependencies;
 using CorgEng.DependencyInjection.Dependencies;
+using CorgEng.EntityComponentSystem.Events;
 using CorgEng.GenericInterfaces.Logging;
 using CorgEng.GenericInterfaces.Networking.Clients;
 using CorgEng.GenericInterfaces.Networking.Networking;
@@ -350,13 +351,17 @@ namespace CorgEng.Networking.Networking.Client
                 //Handle the event
                 switch (header)
                 {
-                   case PacketHeaders.EVENT_RAISED:
+                   case PacketHeaders.GLOBAL_EVENT_RAISED:
                         //First we need to figure out what event is being raised
                         //Now we need to deserialize the byte data into the actual packet data
                         //Since implementation of this is specific to the classes, we need to create
                         //the correct class.
-                        int raisedEvent = BitConverter.ToInt32(data, start);
-                        Logger?.WriteLine($"Event {raisedEvent} was raised!");
+                        ushort eventID = BitConverter.ToUInt16(data, start);
+                        //Get the event that was raised
+                        Event raisedEvent = EventNetworkExtensions.GetEventFromNetworkedID(eventID);
+                        //Deserialize the event
+                        raisedEvent.Deserialize(data.Skip(start + 0x02).Take(length).ToArray());
+                        raisedEvent.RaiseGlobally();
                         return;
 #if DEBUG
                     default:
