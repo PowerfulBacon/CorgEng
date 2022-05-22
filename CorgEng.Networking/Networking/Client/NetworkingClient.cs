@@ -162,7 +162,11 @@ namespace CorgEng.Networking.Networking.Client
                             //Log message
                             Logger?.WriteLine($"UDPClient connection established, sending connection request to server...", LogType.MESSAGE);
                             //Create connection packet
-                            INetworkMessage networkMessage = NetworkMessageFactory.CreateMessage(PacketHeaders.CONNECTION_REQUEST, new byte[0]);
+                            INetworkMessage networkMessage = NetworkMessageFactory.CreateMessage(
+                                PacketHeaders.CONNECTION_REQUEST,
+                                //Insert the networked ID into 0x00
+                                BitConverter.GetBytes(EventNetworkExtensions.NetworkedID)
+                                );
                             //Send connection packet
                             QueueMessage(networkMessage);
                             return;
@@ -346,12 +350,14 @@ namespace CorgEng.Networking.Networking.Client
                 //Handle the event
                 switch (header)
                 {
-                   /*case PacketHeaders.EVENT_RAISED:
+                   case PacketHeaders.EVENT_RAISED:
                         //First we need to figure out what event is being raised
                         //Now we need to deserialize the byte data into the actual packet data
                         //Since implementation of this is specific to the classes, we need to create
                         //the correct class.
-                        return;*/
+                        int raisedEvent = BitConverter.ToInt32(data, start);
+                        Logger?.WriteLine($"Event {raisedEvent} was raised!");
+                        return;
 #if DEBUG
                     default:
                         Logger?.WriteLine($"Unknown packet header: {header}. This packet may be a bug or from a malicious attack (Debug build is on, so this message is shown which may slow the server down).", LogType.WARNING);

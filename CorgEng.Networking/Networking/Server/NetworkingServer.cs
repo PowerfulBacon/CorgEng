@@ -231,7 +231,7 @@ namespace CorgEng.Networking.Networking.Server
                     switch (header)
                     {
                         case PacketHeaders.CONNECTION_REQUEST:
-                            HandleConnectionRequest(sender);
+                            HandleConnectionRequest(sender, data, start, length);
                             return;
                     }
                 }
@@ -242,7 +242,7 @@ namespace CorgEng.Networking.Networking.Server
             }
         }
 
-        private void HandleConnectionRequest(IPEndPoint sender)
+        private void HandleConnectionRequest(IPEndPoint sender, byte[] data, int start, int length)
         {
             //Refuse connection if already connected
             if (connectedClients.ContainsKey(sender.Address))
@@ -251,6 +251,16 @@ namespace CorgEng.Networking.Networking.Server
                 QueueMessage(
                     ClientAddressingTable.GetFlagRepresentation(connectedClients[sender.Address]),
                     NetworkMessageFactory.CreateMessage(PacketHeaders.CONNECTION_REJECT, Encoding.ASCII.GetBytes("Already connected to server.")));
+                return;
+            }
+            //Check version identifier
+            int clientVersionID = BitConverter.ToInt32(data, start);
+            if (clientVersionID != EventNetworkExtensions.NetworkedID)
+            {
+                //Create rejection packet
+                QueueMessage(
+                    ClientAddressingTable.GetFlagRepresentation(connectedClients[sender.Address]),
+                    NetworkMessageFactory.CreateMessage(PacketHeaders.CONNECTION_REJECT, Encoding.ASCII.GetBytes($"Networked version ID mismatch, {EventNetworkExtensions.NetworkedID} =/= {clientVersionID}")));
                 return;
             }
             //Just accept it for now

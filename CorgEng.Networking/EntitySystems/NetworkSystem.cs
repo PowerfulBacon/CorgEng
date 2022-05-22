@@ -1,5 +1,6 @@
 ﻿using CorgEng.Core.Dependencies;
 using CorgEng.EntityComponentSystem.Entities;
+using CorgEng.EntityComponentSystem.Events;
 using CorgEng.EntityComponentSystem.Events.Events;
 using CorgEng.EntityComponentSystem.Implementations.Transform;
 using CorgEng.EntityComponentSystem.Systems;
@@ -32,7 +33,7 @@ namespace CorgEng.Networking.EntitySystems
         private void OnGlobalNetworkedEventRaised(NetworkedEventRaisedEvent networkedEventRaisedEvent)
         {
             ServerCommunicator?.SendToClients(
-                NetworkMessageFactory.CreateMessage(PacketHeaders.EVENT_RAISED, networkedEventRaisedEvent.RaisedEvent.Serialize())
+                NetworkMessageFactory.CreateMessage(PacketHeaders.EVENT_RAISED, InjectEventCode(networkedEventRaisedEvent.RaisedEvent))
                 );
         }
 
@@ -44,10 +45,20 @@ namespace CorgEng.Networking.EntitySystems
         private void OnNetworkedEventRaised(Entity entity, TransformComponent transformComponent, NetworkedEventRaisedEvent networkedEventRaisedEvent)
         {
             ServerCommunicator?.SendToReleventClients(
-                NetworkMessageFactory.CreateMessage(PacketHeaders.EVENT_RAISED, networkedEventRaisedEvent.RaisedEvent.Serialize()),
+                NetworkMessageFactory.CreateMessage(PacketHeaders.EVENT_RAISED, InjectEventCode(networkedEventRaisedEvent.RaisedEvent)),
                 transformComponent.Position,
                 new Vector<float>(1, 1, 1)
                 );
+        }
+
+        //Kind of slow due to a lot of memory allocation :(
+        private byte[] InjectEventCode(Event e)
+        {
+            byte[] data = e.Serialize();
+            byte[] output = new byte[data.Length + 4];
+            BitConverter.GetBytes(e.GetNetworkedID()).CopyTo(output, 0);
+            data.CopyTo(output, 4);
+            return output;
         }
 
     }

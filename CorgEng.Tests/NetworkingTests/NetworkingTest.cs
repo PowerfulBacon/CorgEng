@@ -9,6 +9,7 @@ using CorgEng.GenericInterfaces.Networking.Networking;
 using CorgEng.GenericInterfaces.Networking.Networking.Client;
 using CorgEng.GenericInterfaces.Networking.Networking.Server;
 using CorgEng.GenericInterfaces.Networking.Packets;
+using CorgEng.Networking;
 using CorgEng.Networking.EntitySystems;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
@@ -36,6 +37,19 @@ namespace CorgEng.Tests.NetworkingTests
 
         [UsingDependency]
         private static ILogger Logger;
+
+        private static bool initialized = false;
+
+        [TestInitialize]
+        public void NetworkingTests()
+        {
+            if (!initialized)
+            {
+                //Initialize networked IDs
+                EventNetworkExtensions.CreateNetworkedIDs();
+                initialized = true;
+            }
+        }
 
         [TestCleanup]
         public void AfterTest()
@@ -220,7 +234,7 @@ namespace CorgEng.Tests.NetworkingTests
             testEvent.testNumber = 142;
             testEvent.RaiseGlobally();
 
-            Logger?.WriteLine("Test event raised globally", LogType.DEBUG);
+            Logger?.WriteLine($"Test event raised globally, ID: {testEvent.GetNetworkedID()}", LogType.DEBUG);
 
             while (networkedTestEntitySystem.signalRecievedCount != 2)
                 Thread.Sleep(0);
