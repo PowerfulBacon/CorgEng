@@ -26,6 +26,9 @@ namespace CorgEng.EntityComponentSystem.Implementations.Rendering.SpriteRenderin
         [UsingDependency]
         private static ILogger Log;
 
+        //Runs only on the client, contains no server-side logic.
+        public override EntitySystemFlags SystemFlags { get; } = EntitySystemFlags.CLIENT_SYSTEM;
+
         public override void SystemSetup()
         {
             RegisterLocalEvent<SpriteRenderComponent, SetSpriteEvent>(OnSetSprite);

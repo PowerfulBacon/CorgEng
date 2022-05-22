@@ -50,6 +50,9 @@ namespace CorgEng.Tests.EntityComponentSystem
     internal class TestEntitySystem : EntitySystem
     {
 
+        //Just run on everything
+        public override EntitySystemFlags SystemFlags { get; } = EntitySystemFlags.HOST_SYSTEM | EntitySystemFlags.CLIENT_SYSTEM;
+
         public override void SystemSetup()
         {
             RegisterLocalEvent<TestComponent, TestEvent>(HandleTestEvent);

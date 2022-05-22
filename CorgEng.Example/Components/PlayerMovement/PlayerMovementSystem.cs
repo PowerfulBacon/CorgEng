@@ -22,6 +22,9 @@ namespace CorgEng.Example.Components.PlayerMovement
 
         private static List<Entity> playerEntities = new List<Entity>();
 
+        //Logic executed on the server that moves players when requested.
+        public override EntitySystemFlags SystemFlags { get; } = EntitySystemFlags.HOST_SYSTEM;
+
         public override void SystemSetup()
         {
             RegisterLocalEvent<PlayerMovementComponent, ComponentAddedEvent>(OnComponentAdded);

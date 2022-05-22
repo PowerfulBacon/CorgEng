@@ -58,6 +58,11 @@ namespace CorgEng.EntityComponentSystem.Systems
         /// </summary>
         private static List<EntitySystem> EntitySystems = new List<EntitySystem>();
 
+        /// <summary>
+        /// The flags of this system
+        /// </summary>
+        public abstract EntitySystemFlags SystemFlags { get; }
+
         public EntitySystem()
         {
             Thread thread = new Thread(SystemThread);
@@ -94,6 +99,7 @@ namespace CorgEng.EntityComponentSystem.Systems
         [ModuleTerminate]
         private static void TerminateSubsystems()
         {
+            //Dummy event that wakes up all sleeping subsystems so they can terminate themselves.
             new GameClosedEvent().RaiseGlobally();
         }
 

@@ -12,6 +12,9 @@ namespace CorgEng.EntityComponentSystem.Implementations.Transform
     public sealed class TransformSystem : EntitySystem
     {
 
+        //Runs only on the server, triggers MoveEvents from position change events.
+        public override EntitySystemFlags SystemFlags { get; } = EntitySystemFlags.HOST_SYSTEM;
+
         public override void SystemSetup()
         {
             RegisterLocalEvent<TransformComponent, SetPositionEvent>(SetEntityPosition);

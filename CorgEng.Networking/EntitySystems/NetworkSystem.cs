@@ -24,6 +24,8 @@ namespace CorgEng.Networking.EntitySystems
         [UsingDependency]
         private static INetworkMessageFactory NetworkMessageFactory;
 
+        public override EntitySystemFlags SystemFlags { get; } = EntitySystemFlags.HOST_SYSTEM;
+
         public override void SystemSetup()
         {
             RegisterLocalEvent<TransformComponent, NetworkedEventRaisedEvent>(OnNetworkedEventRaised);

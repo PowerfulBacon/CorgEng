@@ -16,6 +16,9 @@ namespace CorgEng.Example.Common.Components.Camera
 
         private static List<Entity> playerEntities = new List<Entity>();
 
+        //Contains camera logic which only the client knows about
+        public override EntitySystemFlags SystemFlags { get; } = EntitySystemFlags.CLIENT_SYSTEM;
+
         public override void SystemSetup()
         {
             RegisterLocalEvent<CameraComponent, MoveEvent>(OnCameraMoved);

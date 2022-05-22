@@ -12,6 +12,10 @@ namespace CorgEng.EntityComponentSystem.Implementations.Deletion
     internal class EntityDeletionSystem : EntitySystem
     {
 
+        //Executes on the client and the server to delete
+        //entities when requested.
+        public override EntitySystemFlags SystemFlags { get; } = EntitySystemFlags.HOST_SYSTEM | EntitySystemFlags.CLIENT_SYSTEM;
+
         public override void SystemSetup()
         {
             RegisterLocalEvent<DeleteableComponent, DeleteEntityEvent>(OnEntityDeleted);

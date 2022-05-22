@@ -188,6 +188,8 @@ namespace CorgEng.Tests.NetworkingTests
 
             public int signalRecievedCount = 0;
 
+            public override EntitySystemFlags SystemFlags { get; } = EntitySystemFlags.HOST_SYSTEM | EntitySystemFlags.CLIENT_SYSTEM;
+
             public override void SystemSetup()
             {
                 RegisterGlobalEvent<NetworkedTestEvent>(AcceptTestEvent);
