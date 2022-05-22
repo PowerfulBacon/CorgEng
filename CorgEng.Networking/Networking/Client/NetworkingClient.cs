@@ -366,6 +366,7 @@ namespace CorgEng.Networking.Networking.Client
                         ushort eventID = BitConverter.ToUInt16(data, start);
                         //Get the event that was raised
                         Event raisedEvent = EventNetworkExtensions.GetEventFromNetworkedID(eventID);
+                        Logger.WriteLine($"global event raised of type {raisedEvent.GetType()}");
                         //Deserialize the event
                         raisedEvent.Deserialize(data.Skip(start + 0x02).Take(length).ToArray());
                         raisedEvent.RaiseGlobally();

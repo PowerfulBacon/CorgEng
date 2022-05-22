@@ -156,6 +156,7 @@ namespace CorgEng.Networking.Networking.Server
                         {
                             target.SendMessage(udpClient, queuedPacket.Data, queuedPacket.TopPointer);
                         }
+                        Logger?.WriteLine($"Message of size {queuedPacket.TopPointer} sent to clients.", LogType.TEMP);
                     }
                     //Wait for variable time to maintain the tick rate
                     stopwatch.Stop();

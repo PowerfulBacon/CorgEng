@@ -73,6 +73,10 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="GLFW.NET, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\CorgEng.Example\bin\x64\Debug\GLFW.NET.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -106,9 +110,9 @@
       <Project>{4BB408B5-9AFA-42E6-973D-547A84A293A5}</Project>
       <Name>CorgEng.EntityComponentSystem</Name>
     </ProjectReference>
-    <ProjectReference Include="..\CorgEng.Example\CorgEng.Example.csproj">
-      <Project>{14E8A473-E0B8-4CB2-BA76-B322FA0EDADF}</Project>
-      <Name>CorgEng.Example</Name>
+    <ProjectReference Include="..\CorgEng.Example.Shared\CorgEng.Example.Shared.csproj">
+      <Project>{24be2b70-cd23-4052-899e-445393ffa2b4}</Project>
+      <Name>CorgEng.Example.Shared</Name>
     </ProjectReference>
     <ProjectReference Include="..\CorgEng.GenericInterfaces\CorgEng.GenericInterfaces.csproj">
       <Project>{e87f196e-5bf2-4aaf-8209-9f66a4f4b0eb}</Project>

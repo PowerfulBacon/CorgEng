@@ -44,13 +44,12 @@ namespace CorgEng.EntityComponentSystem.Events
             //Locate all event types we are listening for
             EventComponentPair key = new EventComponentPair(GetType(), typeof(GlobalEventComponent));
             //Locate the monitoring system's callback handler
-            if (!RegisteredSystemSignalHandlers.ContainsKey(key))
+            if (RegisteredSystemSignalHandlers.ContainsKey(key))
             {
-                return;
+                List<SystemEventHandlerDelegate> systemEventHandlers = RegisteredSystemSignalHandlers[key];
+                foreach (SystemEventHandlerDelegate systemEventHandler in systemEventHandlers)
+                    systemEventHandler.Invoke(null, null, this);
             }
-            List<SystemEventHandlerDelegate> systemEventHandlers = RegisteredSystemSignalHandlers[key];
-            foreach (SystemEventHandlerDelegate systemEventHandler in systemEventHandlers)
-                systemEventHandler.Invoke(null, null, this);
             //Inform globally that a networked event was raised
             if (NetworkedEvent)
             {

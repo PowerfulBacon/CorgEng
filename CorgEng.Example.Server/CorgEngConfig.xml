@@ -4,7 +4,7 @@
     <Module>CorgEng.ContentLoading</Module>
     <Module>CorgEng.DependencyInjection</Module>
     <Module>CorgEng.EntityComponentSystem</Module>
-    <Module>CorgEng.Example</Module>
+    <Module>CorgEng.Example.Shared</Module>
     <Module>CorgEng.InputHandling</Module>
     <Module>CorgEng.Logging</Module>
     <Module>CorgEng.Networking</Module>

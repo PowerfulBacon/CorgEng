@@ -87,10 +87,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Common\Components\Camera\CameraComponent.cs" />
-    <Compile Include="Common\Components\Camera\CameraSystem.cs" />
-    <Compile Include="Components\PlayerMovement\PlayerMovementComponent.cs" />
-    <Compile Include="Components\PlayerMovement\PlayerMovementSystem.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -122,6 +118,10 @@
     <ProjectReference Include="..\CorgEng.EntityComponentSystem\CorgEng.EntityComponentSystem.csproj">
       <Project>{4bb408b5-9afa-42e6-973d-547a84a293a5}</Project>
       <Name>CorgEng.EntityComponentSystem</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CorgEng.Example.Shared\CorgEng.Example.Shared.csproj">
+      <Project>{24be2b70-cd23-4052-899e-445393ffa2b4}</Project>
+      <Name>CorgEng.Example.Shared</Name>
     </ProjectReference>
     <ProjectReference Include="..\CorgEng.Font\CorgEng.Font.csproj">
       <Project>{a18b4113-8cbf-44b3-bc4a-c27920d2f6be}</Project>

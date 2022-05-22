@@ -20,6 +20,9 @@ namespace CorgEng.Example.Components.PlayerMovement
     public class PlayerMovementSystem : EntitySystem
     {
 
+        [UsingDependency]
+        private static ILogger Logger;
+
         private static List<Entity> playerEntities = new List<Entity>();
 
         //Logic executed on the server that moves players when requested.
