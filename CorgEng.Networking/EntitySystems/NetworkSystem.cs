@@ -30,6 +30,16 @@ namespace CorgEng.Networking.EntitySystems
         {
             RegisterLocalEvent<TransformComponent, NetworkedEventRaisedEvent>(OnNetworkedEventRaised);
             RegisterGlobalEvent<NetworkedEventRaisedEvent>(OnGlobalNetworkedEventRaised);
+            RegisterGlobalEvent<NewEntityEvent>(OnNewEntity);
+        }
+
+        /// <summary>
+        /// Called when a new entity is created.
+        /// Informs the clients to create that new entity.
+        /// </summary>
+        private void OnNewEntity(NewEntityEvent newEntityEvent)
+        {
+
         }
 
         private void OnGlobalNetworkedEventRaised(NetworkedEventRaisedEvent networkedEventRaisedEvent)

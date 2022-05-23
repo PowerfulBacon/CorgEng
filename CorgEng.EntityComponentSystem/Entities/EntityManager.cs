@@ -1,4 +1,5 @@
 ﻿using CorgEng.Core.Dependencies;
+using CorgEng.EntityComponentSystem.Events.Events;
 using CorgEng.GenericInterfaces.Logging;
 using System;
 using System.Collections.Generic;
@@ -26,6 +27,8 @@ namespace CorgEng.EntityComponentSystem.Entities
                 Logger?.WriteLine($"Extended the entity list to {entityList.Length} entities.", LogType.DEBUG);
             }
             entityList[entity.Identifier] = entity;
+            //Raise a new entity created event
+            new NewEntityEvent(entity.Identifier).RaiseGlobally();
         }
 
         public static void RemoveEntity(Entity entity)

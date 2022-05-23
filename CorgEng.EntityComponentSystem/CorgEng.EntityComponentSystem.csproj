@@ -94,6 +94,7 @@
     <Compile Include="Events\Events\EntityDeletedEvent.cs" />
     <Compile Include="Events\Events\GameClosedEvent.cs" />
     <Compile Include="Events\Events\NetworkedEventRaisedEvent.cs" />
+    <Compile Include="Events\Events\NewEntityEvent.cs" />
     <Compile Include="Implementations\Deletion\DeleteableComponent.cs" />
     <Compile Include="Implementations\Deletion\EntityDeletionSystem.cs" />
     <Compile Include="Implementations\Rendering\SpriteRendering\SetSpriteEvent.cs" />
