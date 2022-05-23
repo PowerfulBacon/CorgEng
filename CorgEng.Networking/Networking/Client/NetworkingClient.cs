@@ -90,6 +90,11 @@ namespace CorgEng.Networking.Networking.Client
         /// </summary>
         private bool started = false;
 
+        /// <summary>
+        /// If this is true when shutdownThreadTrigger is raised, task will immediately end.
+        /// </summary>
+        private bool cancelToken = false;
+
         public int TickRate { get; set; } = 32;
 
         /// <summary>
@@ -126,7 +131,9 @@ namespace CorgEng.Networking.Networking.Client
                     while (timeLeft > 0)
                     {
                         //Check occassionally
-                        Thread.Sleep(50);
+                        shutdownThreadTrigger.WaitOne(50);
+                        if (cancelToken)
+                            return;
                         //Reduce the time left
                         timeLeft -= 50;
                         //Check connected
@@ -141,7 +148,9 @@ namespace CorgEng.Networking.Networking.Client
                             Task.Run(() =>
                             {
                                 //Sleep for timeout
-                                Thread.Sleep(timeout);
+                                shutdownThreadTrigger.WaitOne(timeout);
+                                if (cancelToken)
+                                    return;
                                 //Check if connection valid
                                 if (connected || udpClient == null)
                                     return;
@@ -382,6 +391,7 @@ namespace CorgEng.Networking.Networking.Client
 
         public void Cleanup()
         {
+            cancelToken = true;
             Logger?.WriteLine("Client cleanup called", LogType.LOG);
             running = false;
             shutdownThreadTrigger.Set();
@@ -403,6 +413,7 @@ namespace CorgEng.Networking.Networking.Client
             //Reset
             shutdownThreadTrigger.Reset();
             started = false;
+            cancelToken = false;
             Logger?.WriteLine("Client cleanup completed!", LogType.LOG);
         }
     }
