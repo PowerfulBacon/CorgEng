@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29102.190
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32328.378
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CorgEng.Core", "CorgEng.Core.csproj", "{9CCC4A6B-2D13-425D-8C72-B034151EC11C}"
 EndProject
@@ -280,8 +280,8 @@ Global
 		{EB32BAE1-083D-4ECC-9627-BC83B8300A40}.Release|x86.Build.0 = Release|x86
 		{24BE2B70-CD23-4052-899E-445393FFA2B4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{24BE2B70-CD23-4052-899E-445393FFA2B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{24BE2B70-CD23-4052-899E-445393FFA2B4}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{24BE2B70-CD23-4052-899E-445393FFA2B4}.Debug|x64.Build.0 = Debug|Any CPU
+		{24BE2B70-CD23-4052-899E-445393FFA2B4}.Debug|x64.ActiveCfg = Debug|x64
+		{24BE2B70-CD23-4052-899E-445393FFA2B4}.Debug|x64.Build.0 = Debug|x64
 		{24BE2B70-CD23-4052-899E-445393FFA2B4}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{24BE2B70-CD23-4052-899E-445393FFA2B4}.Debug|x86.Build.0 = Debug|Any CPU
 		{24BE2B70-CD23-4052-899E-445393FFA2B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
