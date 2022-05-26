@@ -4,7 +4,7 @@ using System;
 namespace CorgEng.UtilityTypes.Vectors
 {
 
-    public class Vector<T> : IVector<T>
+    public struct Vector<T> : IVector<T>
     {
 
         public static Vector<float> Zero => new Vector<float>(0, 0);

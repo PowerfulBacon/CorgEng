@@ -1,5 +1,6 @@
 ﻿using CorgEng.EntityComponentSystem.Components;
 using CorgEng.GenericInterfaces.ContentLoading;
+using CorgEng.GenericInterfaces.Networking.Attributes;
 using CorgEng.UtilityTypes.Vectors;
 using System;
 using System.Collections.Generic;
@@ -21,6 +22,7 @@ namespace CorgEng.EntityComponentSystem.Implementations.Transform
         /// <summary>
         /// Start with a zero value
         /// </summary>
+        [NetworkSerialized]
         public Vector<float> Position { get; internal set; } = new Vector<float>(0, 0);
 
         public override bool SetProperty(string name, IPropertyDef property)

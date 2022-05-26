@@ -29,8 +29,18 @@ namespace CorgEng.Networking.EntitySystems
 
         public override void SystemSetup()
         {
+            RegisterLocalEvent<NetworkTransformComponent, ComponentAddedEvent>(OnComponentAdded);
             RegisterLocalEvent<NetworkTransformComponent, NetworkedEventRaisedEvent>(OnNetworkedEventRaised);
             RegisterGlobalEvent<NetworkedEventRaisedEvent>(OnGlobalNetworkedEventRaised);
+        }
+
+        /// <summary>
+        /// Called when a component is added to a specified entity.
+        /// This will be networked to all clients in view of the entity.
+        /// </summary>
+        private void OnComponentAdded(Entity entity, NetworkTransformComponent transformComponent, ComponentAddedEvent componentAddedEvent)
+        {
+
         }
 
         /// <summary>

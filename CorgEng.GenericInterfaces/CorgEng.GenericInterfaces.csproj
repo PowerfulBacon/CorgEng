@@ -98,6 +98,7 @@
     <Compile Include="Logging\LogType.cs" />
     <Compile Include="MapLoader\IMapFile.cs" />
     <Compile Include="MapLoader\IMapLoader.cs" />
+    <Compile Include="Networking\Attributes\NetworkSerialized.cs" />
     <Compile Include="Networking\Clients\IClient.cs" />
     <Compile Include="Networking\Clients\IClientAddress.cs" />
     <Compile Include="Networking\Clients\IClientAddressFactory.cs" />

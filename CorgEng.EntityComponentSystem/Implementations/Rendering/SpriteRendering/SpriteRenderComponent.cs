@@ -1,5 +1,6 @@
 ﻿using CorgEng.EntityComponentSystem.Components;
 using CorgEng.GenericInterfaces.ContentLoading;
+using CorgEng.GenericInterfaces.Networking.Attributes;
 using CorgEng.GenericInterfaces.Rendering.Renderers.SpriteRendering;
 using CorgEng.GenericInterfaces.Rendering.RenderObjects.SpriteRendering;
 using CorgEng.GenericInterfaces.UtilityTypes;
@@ -17,6 +18,7 @@ namespace CorgEng.EntityComponentSystem.Implementations.Rendering.SpriteRenderin
 
         public IVector<float> CachedPosition { get; set; } = null;
 
+        [NetworkSerialized]
         public string Sprite { get; internal set; }
 
         public ISpriteRenderObject SpriteRenderObject { get; internal set; }
