@@ -1,18 +1,24 @@
-﻿using CorgEng.GenericInterfaces.UtilityTypes;
+﻿using CorgEng.GenericInterfaces.Networking.Serialisation;
+using CorgEng.GenericInterfaces.UtilityTypes;
 using System;
+using System.Runtime.InteropServices;
 
 namespace CorgEng.UtilityTypes.Vectors
 {
 
-    public struct Vector<T> : IVector<T>
+    public struct Vector<T> : IVector<T>, ICustomSerialisationBehaviour
+        where T : unmanaged
     {
 
         public static Vector<float> Zero => new Vector<float>(0, 0);
+
+        private int sizeOfT;
 
         public Vector(params T[] values)
         {
             Values = values;
             OnChange = null;
+            sizeOfT = Marshal.SizeOf(typeof(T));
         }
 
         private T[] Values;
@@ -311,6 +317,7 @@ namespace CorgEng.UtilityTypes.Vectors
         public static implicit operator Vector<long>(Vector<T> a) => Convert<long>(a);
 
         private static Vector<L> Convert<L>(Vector<T> a)
+            where L : unmanaged
         {
             //Create the new vector
             Vector<L> vector = new Vector<L>(new L[a.Dimensions]);
@@ -350,5 +357,36 @@ namespace CorgEng.UtilityTypes.Vectors
             return hashCode;
         }
 
+        public int GetSerialisationLength()
+        {
+            return sizeOfT * Values.Length;
+        }
+
+        //TODO: Stop using pointers and use some endian-safe conversion method.
+        public unsafe void SerialiseInto(byte[] array, int index)
+        {
+            fixed (byte* bytePointer = array)
+            {
+                //Move the byte forward forward to the specified index.
+                T* tPointer = (T*)(bytePointer + index);
+                for (int i = 0; i < Values.Length; i++)
+                {
+                    tPointer[i] = Values[i];
+                }
+            }
+        }
+
+        public unsafe void DeserialiseFrom(byte[] array, int index, int length)
+        {
+            Values = new T[length / sizeOfT];
+            fixed (byte* bytePointer = array)
+            {
+                T* tPointer = (T*)(bytePointer + index);
+                for (int i = 0; i < length / sizeOfT; i++)
+                {
+                    Values[i] = tPointer[i];
+                }
+            }
+        }
     }
 }
