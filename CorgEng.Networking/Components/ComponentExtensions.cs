@@ -3,6 +3,7 @@ using CorgEng.Core.Modules;
 using CorgEng.EntityComponentSystem.Components;
 using CorgEng.GenericInterfaces.Logging;
 using CorgEng.GenericInterfaces.Networking.Attributes;
+using CorgEng.GenericInterfaces.Networking.Serialisation;
 using CorgEng.UtilityTypes.Vectors;
 using System;
 using System.Collections.Generic;
@@ -55,7 +56,7 @@ namespace CorgEng.Networking.Components
                     if (propertyInfo.PropertyType == typeof(string))
                         continue;
                     //Ensure that we are a value type
-                    if (!propertyInfo.PropertyType.IsValueType)
+                    if (!propertyInfo.PropertyType.IsPrimitive && !typeof(ICustomSerialisationBehaviour).IsAssignableFrom(propertyInfo.PropertyType))
                     {
                         Logger?.WriteLine($"{propertyInfo.PropertyType} is not a value type, serialization errors may occur!", LogType.ERROR);
                         continue;
@@ -63,7 +64,7 @@ namespace CorgEng.Networking.Components
                     //Generic struct handling
                     if (propertyInfo.PropertyType.IsGenericType)
                     {
-                        if (!propertyInfo.PropertyType.GetGenericTypeDefinition().IsValueType)
+                        if (!propertyInfo.PropertyType.IsPrimitive && propertyInfo.PropertyType != typeof(string) && !typeof(ICustomSerialisationBehaviour).IsAssignableFrom(propertyInfo.PropertyType))
                         {
                             Logger?.WriteLine($"{propertyInfo.PropertyType.GetGenericTypeDefinition()} (Inside of {propertyInfo.PropertyType}) is not a value type, serialization errors may occur!", LogType.ERROR);
                             continue;
@@ -81,8 +82,7 @@ namespace CorgEng.Networking.Components
             //Set length to 0
             length = 0;
             //Perform serialization
-            //TODO
-            throw new NotImplementedException();
+            
         }
 
         /// <summary>
