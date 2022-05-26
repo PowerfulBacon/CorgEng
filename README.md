@@ -20,6 +20,8 @@ See CorgEng.Example for an example project of how to get started. A more complex
 
 A quick summary of the important features and how to use them are listed below.
 
+## General Concepts / Notes
+
 Events in CorgEng are all asynchronous and cannot return the results of that event call. Events cannot return, as this would require them to be synchronous which would result in subsystems depending on other subsystems creating potential bottlenecks when scaling games up to a large number of entities/users.
 A solution to this issue is by using event chains. The result of one event call could be to call another event given some conditions on that system. If the conditions to the event are not met, then the event chain is broken and the actions from the event will not occur.
 For example:
