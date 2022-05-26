@@ -6,6 +6,7 @@ using CorgEng.EntityComponentSystem.Implementations.Transform;
 using CorgEng.EntityComponentSystem.Systems;
 using CorgEng.GenericInterfaces.Networking.Networking;
 using CorgEng.GenericInterfaces.Networking.Packets;
+using CorgEng.Networking.Components;
 using CorgEng.UtilityTypes.Vectors;
 using System;
 using System.Collections.Generic;
@@ -28,20 +29,13 @@ namespace CorgEng.Networking.EntitySystems
 
         public override void SystemSetup()
         {
-            RegisterLocalEvent<TransformComponent, NetworkedEventRaisedEvent>(OnNetworkedEventRaised);
+            RegisterLocalEvent<NetworkTransformComponent, NetworkedEventRaisedEvent>(OnNetworkedEventRaised);
             RegisterGlobalEvent<NetworkedEventRaisedEvent>(OnGlobalNetworkedEventRaised);
-            RegisterGlobalEvent<NewEntityEvent>(OnNewEntity);
         }
 
         /// <summary>
-        /// Called when a new entity is created.
-        /// Informs the clients to create that new entity.
+        /// Called when a global event is raised. Networks that event to all clients.
         /// </summary>
-        private void OnNewEntity(NewEntityEvent newEntityEvent)
-        {
-
-        }
-
         private void OnGlobalNetworkedEventRaised(NetworkedEventRaisedEvent networkedEventRaisedEvent)
         {
             ServerCommunicator?.SendToClients(
@@ -54,7 +48,7 @@ namespace CorgEng.Networking.EntitySystems
         /// Uses the transform component to determine if the entity is near a camera,
         /// so any networked events need to has a transform component on the entity.
         /// </summary>
-        private void OnNetworkedEventRaised(Entity entity, TransformComponent transformComponent, NetworkedEventRaisedEvent networkedEventRaisedEvent)
+        private void OnNetworkedEventRaised(Entity entity, NetworkTransformComponent transformComponent, NetworkedEventRaisedEvent networkedEventRaisedEvent)
         {
             ServerCommunicator?.SendToReleventClients(
                 NetworkMessageFactory.CreateMessage(PacketHeaders.LOCAL_EVENT_RAISED, InjectEventCode(networkedEventRaisedEvent.RaisedEvent)),

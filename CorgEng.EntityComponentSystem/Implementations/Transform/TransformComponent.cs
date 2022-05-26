@@ -9,7 +9,13 @@ using System.Threading.Tasks;
 
 namespace CorgEng.EntityComponentSystem.Implementations.Transform
 {
-    public sealed class TransformComponent : Component
+    /// <summary>
+    /// Represents the transform of the attached entity, allowing it to be rendered
+    /// with different positions, scales or rotations.
+    /// This component is not networked, for a networked transform variant, use
+    /// NetworkedTransformComponent from CorgEng.Networking.
+    /// </summary>
+    public class TransformComponent : Component
     {
 
         /// <summary>

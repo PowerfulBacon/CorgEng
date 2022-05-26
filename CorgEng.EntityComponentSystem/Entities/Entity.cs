@@ -4,6 +4,7 @@ using CorgEng.EntityComponentSystem.Events;
 using CorgEng.GenericInterfaces.Logging;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Threading;
 
 namespace CorgEng.EntityComponentSystem.Entities
@@ -76,8 +77,11 @@ namespace CorgEng.EntityComponentSystem.Entities
         /// <param name="component">A reference to the component to be added</param>
         public void AddComponent(Component component)
         {
-            Components.Add(component);
-            component.OnComponentAdded(this);
+            lock (Components)
+            {
+                Components.Add(component);
+                component.OnComponentAdded(this);
+            }
         }
 
         /// <summary>
@@ -86,8 +90,11 @@ namespace CorgEng.EntityComponentSystem.Entities
         /// <param name="component">The reference to the component to remove</param>
         public void RemoveComponent(Component component, bool networked)
         {
-            component.OnComponentRemoved(this, networked);
-            Components.Remove(component);
+            lock (Components)
+            {
+                component.OnComponentRemoved(this, networked);
+                Components.Remove(component);
+            }
         }
 
         /// <summary>
