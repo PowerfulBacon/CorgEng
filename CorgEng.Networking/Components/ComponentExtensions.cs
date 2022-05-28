@@ -93,16 +93,16 @@ namespace CorgEng.Networking.Components
             foreach (PropertyInfo propertyInfo in targetPropertyInfomation)
             {
 
-                if (propertyInfo.PropertyType == typeof(ICustomSerialisationBehaviour))
+                if (typeof(ICustomSerialisationBehaviour).IsAssignableFrom(propertyInfo.PropertyType))
                 {
                     ICustomSerialisationBehaviour thing = (ICustomSerialisationBehaviour)FormatterServices.GetUninitializedObject(propertyInfo.PropertyType);
                     thing.DeserialiseFrom(binaryReader);
                     propertyInfo.SetValue(component, thing);
                 }
-                else if (propertyInfo.PropertyType == typeof(byte[]))
+                else if (propertyInfo.PropertyType == typeof(string))
                 {
                     ushort length = binaryReader.ReadUInt16();
-                    propertyInfo.SetValue(component, binaryReader.ReadBytes(length));
+                    propertyInfo.SetValue(component, Encoding.ASCII.GetString(binaryReader.ReadBytes(length)));
                 }
                 else if (propertyInfo.PropertyType == typeof(byte))
                     propertyInfo.SetValue(component, binaryReader.ReadByte());

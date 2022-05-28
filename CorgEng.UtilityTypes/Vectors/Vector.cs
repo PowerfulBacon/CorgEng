@@ -341,7 +341,7 @@ namespace CorgEng.UtilityTypes.Vectors
 
         public override string ToString()
         {
-            return $"{{{string.Join(", ", this)}}}";
+            return $"{{{string.Join(", ", Values)}}}";
         }
 
         public override bool Equals(object obj)
@@ -365,17 +365,18 @@ namespace CorgEng.UtilityTypes.Vectors
             return 4 + sizeOfT * Values.Length;
         }
 
-        public unsafe void DeserialiseFrom(BinaryReader binaryReader)
+        public void DeserialiseFrom(BinaryReader binaryReader)
         {
             int length = binaryReader.ReadInt32();
             //Construct
+            //new T[length] causes a stack overflow exception.
             Values = new T[length];
             OnChange = null;
             sizeOfT = Marshal.SizeOf(typeof(T));
             //Read Ts
-            for (int i = 0; i < length; i++)
+            for (int i = length - 1; i >= 0; i--)
             {
-                if (typeof(T) == typeof(ICustomSerialisationBehaviour))
+                if (typeof(ICustomSerialisationBehaviour).IsAssignableFrom(typeof(T)))
                 {
                     ICustomSerialisationBehaviour thing = (ICustomSerialisationBehaviour)FormatterServices.GetUninitializedObject(typeof(T));
                     thing.DeserialiseFrom(binaryReader);

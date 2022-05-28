@@ -88,8 +88,9 @@ namespace CorgEng.Tests.NetworkingTests
                             string randomString = "";
                             for (int i = 0; i < 100; i++)
                             {
-                                randomString = $"{randomString}{(char)random.Next(0, 255)}";
+                                randomString = $"{randomString}{Convert.ToChar(random.Next(0, 127))}";
                             }
+                            //Convert to ASCII
                             appliedValue = randomString;
                         }
                         else if (componentProperty.PropertyType == typeof(Vector<int>))
@@ -116,6 +117,7 @@ namespace CorgEng.Tests.NetworkingTests
                     }
                     //Serialize the data
                     byte[] serializedData = instantiatedComponent.AutoSerialize();
+                    Logger?.WriteLine($"SERIALIZED COMPONENT (Length: {serializedData.Length}): {string.Join(",", serializedData)}", LogType.DEBUG);
                     //Deserialize
                     Component deserializedType = (Component)FormatterServices.GetUninitializedObject(type);
                     deserializedType.AutoDeserialize(serializedData);
@@ -192,7 +194,7 @@ namespace CorgEng.Tests.NetworkingTests
                             string randomString = "";
                             for (int i = 0; i < 100; i++)
                             {
-                                randomString = $"{randomString}{(char)random.Next(0, 255)}";
+                                randomString = $"{randomString}{(char)random.Next(0, 127)}";
                             }
                             appliedValue = randomString;
                         }
@@ -220,6 +222,7 @@ namespace CorgEng.Tests.NetworkingTests
                     }
                     //Serialize the data
                     byte[] serializedData = instantiatedEvent.Serialize();
+                    Logger?.WriteLine($"SERIALIZED COMPONENT (Length: {serializedData.Length}): {string.Join(",", serializedData)}", LogType.DEBUG);
                     //Deserialize
                     Event deserializedType = (Event)FormatterServices.GetUninitializedObject(type);
                     deserializedType.Deserialize(serializedData);
