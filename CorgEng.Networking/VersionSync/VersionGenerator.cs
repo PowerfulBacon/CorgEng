@@ -1,21 +1,18 @@
 ﻿using CorgEng.Core.Dependencies;
 using CorgEng.Core.Modules;
+using CorgEng.EntityComponentSystem.Components;
 using CorgEng.EntityComponentSystem.Events;
 using CorgEng.GenericInterfaces.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CorgEng.Networking
+namespace CorgEng.Networking.VersionSync
 {
-    /// <summary>
-    /// Provides extensions for the event class that add in networked IDs
-    /// </summary>
-    public static class EventNetworkExtensions
+    internal class VersionGenerator
     {
 
         [UsingDependency]
@@ -43,14 +40,19 @@ namespace CorgEng.Networking
             Event e;
             IOrderedEnumerable<Type> LocatedEvents = AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany(assembly => assembly.GetTypes()
-                .Where(t => typeof(Event).IsAssignableFrom(t) && !t.IsAbstract &&
-                    //Create a temporary instance to check if its networked
-                    (e = (Event)FormatterServices.GetUninitializedObject(t)).NetworkedEvent))
+                .Where(t => !t.IsAbstract &&
+                    ((
+                        typeof(Event).IsAssignableFrom(t) && 
+                        //Create a temporary instance to check if its networked
+                        (e = (Event)FormatterServices.GetUninitializedObject(t)).NetworkedEvent
+                    ) || (
+                        typeof(Component).IsAssignableFrom(t)
+                    ))))
                 .OrderBy(networkedEvent =>
-                    {
-                        //return 0;
-                        return networkedEvent.AssemblyQualifiedName;
-                    });
+                {
+                    //return 0;
+                    return networkedEvent.AssemblyQualifiedName;
+                });
             //Assign all events a non-0 ID.
             ushort number = 1;
             foreach (Type type in LocatedEvents)
@@ -64,7 +66,7 @@ namespace CorgEng.Networking
             int versionID = GenerateServerVersion();
             NetworkedID = versionID;
             //Print message
-            Logger?.WriteLine($"Generated IDs for {number-1} networked events, current networked version ID: {versionID}", LogType.MESSAGE);
+            Logger?.WriteLine($"Generated IDs for {number - 1} networked events, current networked version ID: {versionID}", LogType.MESSAGE);
         }
 
         /// <summary>
@@ -97,5 +99,6 @@ namespace CorgEng.Networking
             }
             return value;
         }
+
     }
 }

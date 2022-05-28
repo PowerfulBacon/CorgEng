@@ -9,6 +9,7 @@ using CorgEng.GenericInterfaces.Networking.Networking.Server;
 using CorgEng.GenericInterfaces.Networking.Packets;
 using CorgEng.GenericInterfaces.Networking.Packets.PacketQueues;
 using CorgEng.Networking.Events;
+using CorgEng.Networking.VersionSync;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;

@@ -7,6 +7,7 @@ using CorgEng.EntityComponentSystem.Systems;
 using CorgEng.GenericInterfaces.Networking.Networking;
 using CorgEng.GenericInterfaces.Networking.Packets;
 using CorgEng.Networking.Components;
+using CorgEng.Networking.VersionSync;
 using CorgEng.UtilityTypes.Vectors;
 using System;
 using System.Collections.Generic;

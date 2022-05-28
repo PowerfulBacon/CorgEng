@@ -120,6 +120,7 @@
     <Compile Include="Networking\Packets\PacketQueues\IQueuedPacket.cs" />
     <Compile Include="Networking\Packets\PacketQueues\IQueuedPacketFactory.cs" />
     <Compile Include="Networking\Serialisation\ICustomSerialisationBehaviour.cs" />
+    <Compile Include="Networking\VersionSync\IVersionSynced.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Rendering\Cameras\ICamera.cs" />
     <Compile Include="Rendering\Cameras\Isometric\IIsometricCamera.cs" />
