@@ -265,13 +265,13 @@ namespace CorgEng.Networking.Networking.Server
             }
             //Check version identifier
             int clientVersionID = BitConverter.ToInt32(data, start);
-            if (clientVersionID != EventNetworkExtensions.NetworkedID)
+            if (clientVersionID != VersionGenerator.NetworkVersion)
             {
-                Logger?.WriteLine($"Incoming client has incorrect version ID: {clientVersionID}, expected: {EventNetworkExtensions.NetworkedID}");
+                Logger?.WriteLine($"Incoming client has incorrect version ID: {clientVersionID}, expected: {VersionGenerator.NetworkVersion}");
                 //Create rejection packet
                 QueueMessage(
                     ClientAddressingTable.GetFlagRepresentation(connectedClients[sender.Address]),
-                    NetworkMessageFactory.CreateMessage(PacketHeaders.CONNECTION_REJECT, Encoding.ASCII.GetBytes($"Networked version ID mismatch, {EventNetworkExtensions.NetworkedID} =/= {clientVersionID}")));
+                    NetworkMessageFactory.CreateMessage(PacketHeaders.CONNECTION_REJECT, Encoding.ASCII.GetBytes($"Networked version ID mismatch, {VersionGenerator.NetworkVersion} =/= {clientVersionID}")));
                 return;
             }
             //Just accept it for now

@@ -13,7 +13,7 @@ namespace CorgEng.EntityComponentSystem.Implementations.Transform
 
         public Vector<float> NewPosition { get; set; }
 
-        public override bool NetworkedEvent => false;
+        public override bool IsSynced => false;
 
         public SetPositionEvent(Vector<float> newPosition)
         {

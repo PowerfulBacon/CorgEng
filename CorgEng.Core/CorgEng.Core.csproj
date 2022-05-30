@@ -101,6 +101,7 @@
     <Compile Include="Rendering\RenderMaster.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include=".editorconfig" />
     <None Include="Content\Icons\error.texdat">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

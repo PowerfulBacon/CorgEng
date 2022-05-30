@@ -73,7 +73,7 @@ namespace CorgEng.Networking.EntitySystems
         {
             byte[] data = e.Serialize();
             byte[] output = new byte[data.Length + 2];
-            BitConverter.GetBytes(e.GetNetworkedID()).CopyTo(output, 0);
+            BitConverter.GetBytes(e.GetNetworkedIdentifier()).CopyTo(output, 0);
             data.CopyTo(output, 2);
             return output;
         }

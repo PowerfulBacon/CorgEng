@@ -46,7 +46,7 @@ namespace CorgEng.Tests.NetworkingTests
             if (!initialized)
             {
                 //Initialize networked IDs
-                EventNetworkExtensions.CreateNetworkedIDs();
+                VersionGenerator.CreateNetworkedIDs();
                 initialized = true;
             }
         }
@@ -160,7 +160,7 @@ namespace CorgEng.Tests.NetworkingTests
 
         private class NetworkedTestEvent : Event
         {
-            public override bool NetworkedEvent => true;
+            public override bool IsSynced => true;
 
             public int testNumber { get; set; }
 
@@ -236,7 +236,7 @@ namespace CorgEng.Tests.NetworkingTests
             testEvent.testNumber = 142;
             testEvent.RaiseGlobally();
 
-            Logger?.WriteLine($"Test event raised globally, ID: {testEvent.GetNetworkedID()}", LogType.DEBUG);
+            Logger?.WriteLine($"Test event raised globally, ID: {testEvent.GetNetworkedIdentifier()}", LogType.DEBUG);
 
             while (networkedTestEntitySystem.signalRecievedCount != 2)
                 Thread.Sleep(0);

@@ -11,7 +11,7 @@ namespace CorgEng.Networking.Events
     public class ClientDisconnectedEvent : Event
     {
 
-        public override bool NetworkedEvent => false;
+        public override bool IsSynced => false;
 
         public IClient Client { get; set; }
 

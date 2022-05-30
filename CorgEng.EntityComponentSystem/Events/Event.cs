@@ -3,6 +3,7 @@ using CorgEng.EntityComponentSystem.Entities;
 using CorgEng.EntityComponentSystem.Events.Events;
 using CorgEng.GenericInterfaces.Networking.Networking;
 using CorgEng.GenericInterfaces.Networking.Packets;
+using CorgEng.GenericInterfaces.Networking.VersionSync;
 using System;
 using System.Collections.Generic;
 using static CorgEng.EntityComponentSystem.Entities.Entity;
@@ -10,13 +11,13 @@ using static CorgEng.EntityComponentSystem.Systems.EntitySystem;
 
 namespace CorgEng.EntityComponentSystem.Events
 {
-    public abstract class Event
+    public abstract class Event : IVersionSynced
     {
 
         /// <summary>
         /// If true, this event will be networked.
         /// </summary>
-        public abstract bool NetworkedEvent { get; }
+        public abstract bool IsSynced { get; }
 
         /// <summary>
         /// Raise this event against a specified target
@@ -26,7 +27,7 @@ namespace CorgEng.EntityComponentSystem.Events
             //Handle the signal
             target.HandleSignal(this);
             //Inform the entity that networked event was raised
-            if (NetworkedEvent)
+            if (IsSynced)
             {
                 //Skip directly to signal handling
                 target.HandleSignal(new NetworkedEventRaisedEvent(this));
@@ -51,7 +52,7 @@ namespace CorgEng.EntityComponentSystem.Events
                     systemEventHandler.Invoke(null, null, this);
             }
             //Inform globally that a networked event was raised
-            if (NetworkedEvent)
+            if (IsSynced)
             {
                 //Skip directly to signal handling
                 //Locate all event types we are listening for

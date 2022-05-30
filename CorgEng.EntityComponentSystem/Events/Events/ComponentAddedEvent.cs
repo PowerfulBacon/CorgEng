@@ -7,7 +7,7 @@ namespace CorgEng.EntityComponentSystem.Events.Events
 
         public Component Component { get; set; }
 
-        public override bool NetworkedEvent => false;
+        public override bool IsSynced => false;
 
         public ComponentAddedEvent(Component component)
         {

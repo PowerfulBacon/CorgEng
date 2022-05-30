@@ -12,7 +12,7 @@ namespace CorgEng.EntityComponentSystem.Implementations.Rendering.SpriteRenderin
 
         public string TextureFile { get; set; }
 
-        public override bool NetworkedEvent => true;
+        public override bool IsSynced => true;
 
         public SetSpriteEvent(string textureFile)
         {

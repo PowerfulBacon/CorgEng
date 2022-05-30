@@ -12,12 +12,12 @@ namespace CorgEng.EntityComponentSystem.Events.Events
 
         public Component Component { get; set; }
 
-        public override bool NetworkedEvent { get; } = false;
+        public override bool IsSynced { get; } = false;
 
         public ComponentRemovedEvent(Component component, bool networked)
         {
             Component = component;
-            NetworkedEvent = networked;
+            IsSynced = networked;
         }
     }
 }

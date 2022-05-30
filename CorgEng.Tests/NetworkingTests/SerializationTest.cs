@@ -156,7 +156,7 @@ namespace CorgEng.Tests.NetworkingTests
                         continue;
                     }
                     Event instantiatedEvent = (Event)FormatterServices.GetUninitializedObject(type);
-                    if (!instantiatedEvent.NetworkedEvent)
+                    if (!instantiatedEvent.IsSynced)
                     {
                         Logger?.WriteLine($"Skipped {type.Name} (Not a networked event)");
                         continue;

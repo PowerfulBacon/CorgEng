@@ -13,7 +13,7 @@ namespace CorgEng.EntityComponentSystem.Implementations.Transform
 
         public Vector<float> TranslationDelta { get; set; }
 
-        public override bool NetworkedEvent => false;
+        public override bool IsSynced => false;
 
         public TranslateEvent(Vector<float> translationDelta)
         {

@@ -167,6 +167,7 @@
     <Compile Include="UtilityTypes\IBindablePropertyGroup.cs" />
     <Compile Include="UtilityTypes\IMatrix.cs" />
     <Compile Include="UtilityTypes\IVector.cs" />
+    <Compile Include="World\IWorld.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -94,11 +94,12 @@
     <Compile Include="Clients\ClientAddressingTable.cs" />
     <Compile Include="Clients\ClientAddressingTableFactory.cs" />
     <Compile Include="Clients\ClientFactory.cs" />
+    <Compile Include="Components\ClientComponent.cs" />
     <Compile Include="Components\ComponentExtensions.cs" />
     <Compile Include="Components\NetworkTransformComponent.cs" />
     <Compile Include="Config\NetworkConfig.cs" />
+    <Compile Include="EntitySystems\ClientSystem.cs" />
     <Compile Include="EntitySystems\NetworkSystem.cs" />
-    <Compile Include="VersionSync\EventNetworkExtensions.cs" />
     <Compile Include="Events\ClientConnectedEvent.cs" />
     <Compile Include="Events\ClientDisconnectedEvent.cs" />
     <Compile Include="Networking\Client\NetworkingClient.cs" />

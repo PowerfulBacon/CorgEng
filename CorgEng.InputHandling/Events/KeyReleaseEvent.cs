@@ -15,7 +15,7 @@ namespace CorgEng.InputHandling.Events
 
         public ModifierKeys ModifierKeys { get; set; }
 
-        public override bool NetworkedEvent => true;
+        public override bool IsSynced => true;
 
         public KeyReleaseEvent(Keys key, ModifierKeys modifierKeys)
         {

@@ -13,7 +13,7 @@ namespace CorgEng.EntityComponentSystem.Implementations.Rendering.SpriteRenderin
 
         public ISpriteRenderer Target { get; set; }
 
-        public override bool NetworkedEvent => false;
+        public override bool IsSynced => false;
 
         public SetSpriteRendererEvent(ISpriteRenderer target)
         {

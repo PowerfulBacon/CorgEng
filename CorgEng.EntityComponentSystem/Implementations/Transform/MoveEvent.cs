@@ -16,7 +16,7 @@ namespace CorgEng.EntityComponentSystem.Implementations.Transform
         public Vector<float> NewPosition { get; set; }
 
         //Clients need to know about this
-        public override bool NetworkedEvent => true;
+        public override bool IsSynced => true;
 
         public MoveEvent(Vector<float> oldPosition, Vector<float> newPosition)
         {

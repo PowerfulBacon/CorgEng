@@ -16,14 +16,14 @@ namespace CorgEng.Tests.EntityComponentSystem
 
     internal class OtherEvent : Event
     {
-        public override bool NetworkedEvent => false;
+        public override bool IsSynced => false;
     }
 
     internal class TestEvent : Event
     {
         public int TestID { get; }
 
-        public override bool NetworkedEvent => false;
+        public override bool IsSynced => false;
 
         public TestEvent()
         {

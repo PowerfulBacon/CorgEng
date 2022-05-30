@@ -13,7 +13,7 @@ namespace CorgEng.InputHandling.Events
 
         public Keys Key { get; }
 
-        public override bool NetworkedEvent => false;
+        public override bool IsSynced => false;
 
         public KeyHeldEvent(Keys key)
         {

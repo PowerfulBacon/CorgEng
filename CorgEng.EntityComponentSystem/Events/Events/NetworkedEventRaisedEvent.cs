@@ -12,7 +12,7 @@ namespace CorgEng.EntityComponentSystem.Events.Events
         public Event RaisedEvent { get; set; }
 
         //If this is made true, event will trigger an infinite loop and die
-        public override bool NetworkedEvent => false;
+        public override bool IsSynced => false;
 
         public NetworkedEventRaisedEvent(Event raisedEvent)
         {

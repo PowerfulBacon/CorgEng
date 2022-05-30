@@ -9,7 +9,7 @@ namespace CorgEng.EntityComponentSystem.Events.Events
     public class DeleteEntityEvent : Event
     {
 
-        public override bool NetworkedEvent { get; } = true;
+        public override bool IsSynced { get; } = true;
 
         public override byte[] Serialize()
         {

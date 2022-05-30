@@ -9,7 +9,7 @@ namespace CorgEng.EntityComponentSystem.Events.Events
     public class GameClosedEvent : Event
     {
 
-        public override bool NetworkedEvent => false;
+        public override bool IsSynced => false;
 
         public override void Deserialize(byte[] data)
         {

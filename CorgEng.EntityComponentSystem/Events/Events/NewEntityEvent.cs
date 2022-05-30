@@ -9,7 +9,7 @@ namespace CorgEng.EntityComponentSystem.Events.Events
     public class NewEntityEvent : Event
     {
 
-        public override bool NetworkedEvent => true;
+        public override bool IsSynced => true;
 
         public int Identifier { get; set; }
 
