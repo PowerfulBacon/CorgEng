@@ -163,9 +163,13 @@
     <Compile Include="UserInterface\Rendering\RenderObject\IUserInterfaceRenderObjectFactory.cs" />
     <Compile Include="UtilityTypes\Batches\IBatch.cs" />
     <Compile Include="UtilityTypes\Batches\IBatchElement.cs" />
+    <Compile Include="UtilityTypes\BinaryLists\IBinaryList.cs" />
+    <Compile Include="UtilityTypes\BinaryLists\IBinaryListFactory.cs" />
+    <Compile Include="UtilityTypes\BinaryLists\IPositionBasedBinaryListFactory.cs" />
     <Compile Include="UtilityTypes\IBindableProperty.cs" />
     <Compile Include="UtilityTypes\IBindablePropertyGroup.cs" />
     <Compile Include="UtilityTypes\IMatrix.cs" />
+    <Compile Include="UtilityTypes\BinaryLists\IPositionBasedBinaryList.cs" />
     <Compile Include="UtilityTypes\IVector.cs" />
     <Compile Include="World\IWorld.cs" />
   </ItemGroup>
