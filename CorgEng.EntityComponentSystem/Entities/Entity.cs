@@ -34,6 +34,11 @@ namespace CorgEng.EntityComponentSystem.Entities
         public List<Component> Components { get; } = new List<Component>();
 
         /// <summary>
+        /// The index of this entity in the contents array of the parent.
+        /// </summary>
+        public int ContentsIndex { get; set; } = -1;
+
+        /// <summary>
         /// Components register themselves to this when needed, and this gets fired off to the component
         /// which then can fire off itself to the system.
         /// </summary>

@@ -77,6 +77,8 @@ namespace CorgEng.UtilityTypes.PositionBasedBinaryLists
 
         public T _ElementAt(int index)
         {
+            if (index < 0 || index >= binaryListElements.Count)
+                return default(T);
             return binaryListElements.ElementAt(index).value;
         }
 

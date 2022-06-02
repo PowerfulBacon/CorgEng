@@ -43,6 +43,7 @@
   <ItemGroup>
     <Compile Include="EntitySystems\WorldSystem.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="WorldTracking\WorldTile.cs" />
     <Compile Include="WorldTracking\WorldTracker.cs" />
   </ItemGroup>
   <ItemGroup>
