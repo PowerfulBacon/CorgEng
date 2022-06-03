@@ -111,6 +111,7 @@
     <Compile Include="UtilityTypes\MatrixTests\MultiplicationMatrixTests.cs" />
     <Compile Include="UtilityTypes\MatrixTests\TranslationMatrixTests.cs" />
     <Compile Include="UtilityTypes\VectorTests.cs" />
+    <Compile Include="World\WorldTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

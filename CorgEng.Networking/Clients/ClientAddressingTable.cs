@@ -1,5 +1,4 @@
 ﻿using CorgEng.DependencyInjection.Dependencies;
-using CorgEng.GenericInterfaces.Networking;
 using CorgEng.GenericInterfaces.Networking.Clients;
 using System;
 using System.Collections.Generic;

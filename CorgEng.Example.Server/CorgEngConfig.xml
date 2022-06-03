@@ -10,5 +10,6 @@
     <Module>CorgEng.Networking</Module>
     <Module>CorgEng.UtilityTypes</Module>
     <Module>CorgEng.UserInterface</Module>
+    <Module>CorgEng.World</Module>
   </DependencyModules>
 </CorgEngConfig>

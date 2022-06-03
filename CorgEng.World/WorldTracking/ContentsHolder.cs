@@ -1,5 +1,6 @@
 ﻿using CorgEng.EntityComponentSystem.Entities;
 using CorgEng.GenericInterfaces.EntityComponentSystem;
+using CorgEng.GenericInterfaces.World;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace CorgEng.World.WorldTracking
 {
-    internal class WorldTile
+    internal class ContentsHolder : IContentsHolder
     {
 
         /// <summary>
@@ -37,6 +38,11 @@ namespace CorgEng.World.WorldTracking
         /// Maximum value used in the array
         /// </summary>
         private int nextInsertionPointer = 0;
+
+        public IEnumerable<IEntity> GetContents()
+        {
+            throw new NotImplementedException();
+        }
 
         public void Insert(IEntity entity)
         {

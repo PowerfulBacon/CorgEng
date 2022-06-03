@@ -1,4 +1,5 @@
 ﻿using CorgEng.DependencyInjection.Dependencies;
+using CorgEng.GenericInterfaces.Networking.Clients;
 using CorgEng.GenericInterfaces.Networking.Networking;
 using CorgEng.GenericInterfaces.Networking.Packets;
 using CorgEng.GenericInterfaces.UtilityTypes;
@@ -17,6 +18,11 @@ namespace CorgEng.Networking.Networking.Server
         public static NetworkingServer server;
 
         public bool IsServer => server != null;
+
+        public void SendToClient(INetworkMessage networkMessage, IClient client)
+        {
+            server.QueueMessage(server.ClientAddressingTable.GetFlagRepresentation(client), networkMessage);
+        }
 
         public void SendToClients(INetworkMessage networkMessage)
         {

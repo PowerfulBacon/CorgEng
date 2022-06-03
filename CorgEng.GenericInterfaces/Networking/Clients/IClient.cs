@@ -6,7 +6,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CorgEng.GenericInterfaces.Networking
+namespace CorgEng.GenericInterfaces.Networking.Clients
 {
     public interface IClient
     {
@@ -15,6 +15,11 @@ namespace CorgEng.GenericInterfaces.Networking
         /// The IP address of the client
         /// </summary>
         IPEndPoint ClientEndPoint { get; }
+
+        /// <summary>
+        /// The view details of the client
+        /// </summary>
+        ClientView View { get; }
 
         /// <summary>
         /// The username attached to this client

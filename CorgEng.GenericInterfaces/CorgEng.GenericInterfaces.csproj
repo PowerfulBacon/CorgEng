@@ -103,6 +103,7 @@
     <Compile Include="MapLoader\IMapFile.cs" />
     <Compile Include="MapLoader\IMapLoader.cs" />
     <Compile Include="Networking\Attributes\NetworkSerializedAttribute.cs" />
+    <Compile Include="Networking\Clients\ClientView.cs" />
     <Compile Include="Networking\Clients\IClient.cs" />
     <Compile Include="Networking\Clients\IClientAddress.cs" />
     <Compile Include="Networking\Clients\IClientAddressFactory.cs" />
@@ -113,6 +114,7 @@
     <Compile Include="Networking\Networking\DisconnectReason.cs" />
     <Compile Include="Networking\Networking\Client\INetworkingClient.cs" />
     <Compile Include="Networking\Networking\MessageReceived.cs" />
+    <Compile Include="Networking\Networking\Server\IEntityCommunicator.cs" />
     <Compile Include="Networking\Networking\Server\IServerCommunicator.cs" />
     <Compile Include="Networking\Networking\Server\INetworkingServer.cs" />
     <Compile Include="Networking\Packets\INetworkMessage.cs" />
@@ -123,6 +125,8 @@
     <Compile Include="Networking\Packets\PacketQueues\IPacketQueueFactory.cs" />
     <Compile Include="Networking\Packets\PacketQueues\IQueuedPacket.cs" />
     <Compile Include="Networking\Packets\PacketQueues\IQueuedPacketFactory.cs" />
+    <Compile Include="Networking\PrototypeManager\IPrototype.cs" />
+    <Compile Include="Networking\PrototypeManager\IPrototypeManager.cs" />
     <Compile Include="Networking\Serialisation\ICustomSerialisationBehaviour.cs" />
     <Compile Include="Networking\VersionSync\IVersionSynced.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -176,6 +180,7 @@
     <Compile Include="UtilityTypes\BinaryLists\IPositionBasedBinaryList.cs" />
     <Compile Include="UtilityTypes\IVector.cs" />
     <Compile Include="World\IWorld.cs" />
+    <Compile Include="World\IContentsHolder.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

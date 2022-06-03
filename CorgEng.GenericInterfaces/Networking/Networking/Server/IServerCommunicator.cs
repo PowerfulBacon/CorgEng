@@ -1,4 +1,5 @@
-﻿using CorgEng.GenericInterfaces.Networking.Packets;
+﻿using CorgEng.GenericInterfaces.Networking.Clients;
+using CorgEng.GenericInterfaces.Networking.Packets;
 using CorgEng.GenericInterfaces.UtilityTypes;
 using System;
 using System.Collections.Generic;
@@ -27,6 +28,13 @@ namespace CorgEng.GenericInterfaces.Networking.Networking
         /// Send to clients whom this may concern
         /// </summary>
         void SendToReleventClients(INetworkMessage networkMessage, IVector<float> position, IVector<float> scale);
+
+        /// <summary>
+        /// Send a message to a particular client
+        /// </summary>
+        /// <param name="networkMessage"></param>
+        /// <param name="client"></param>
+        void SendToClient(INetworkMessage networkMessage, IClient client);
 
     }
 }

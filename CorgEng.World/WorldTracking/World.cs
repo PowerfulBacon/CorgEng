@@ -22,35 +22,35 @@ namespace CorgEng.World.WorldTracking
         [UsingDependency]
         private static IBinaryListFactory BinaryListFactory;
 
-        private IBinaryList<IPositionBasedBinaryList<WorldTile>> _worldtiles;
+        private IBinaryList<IPositionBasedBinaryList<ContentsHolder>> _worldtiles;
 
-        private IBinaryList<IPositionBasedBinaryList<WorldTile>> WorldTiles
+        private IBinaryList<IPositionBasedBinaryList<ContentsHolder>> WorldTiles
         {
             get
             {
                 if (_worldtiles == null)
-                    _worldtiles = BinaryListFactory.CreateEmpty<IPositionBasedBinaryList<WorldTile>>();
+                    _worldtiles = BinaryListFactory.CreateEmpty<IPositionBasedBinaryList<ContentsHolder>>();
                 return _worldtiles;
             }
         }
 
         public void AddEntity(IEntity entity, double x, double y, int mapLevel)
         {
-            IPositionBasedBinaryList<WorldTile> targetLevel = WorldTiles.ElementWithKey(mapLevel);
+            IPositionBasedBinaryList<ContentsHolder> targetLevel = WorldTiles.ElementWithKey(mapLevel);
             //Get the z-level to affect
             if (targetLevel == null)
             {
-                targetLevel = PositionBasedBinaryListFactory.CreateEmpty<WorldTile>();
+                targetLevel = PositionBasedBinaryListFactory.CreateEmpty<ContentsHolder>();
                 WorldTiles.Add(mapLevel, targetLevel);
             }
             //Get the position to affect
             int xInteger = (int)Math.Floor(x);
             int yInteger = (int)Math.Floor(y);
             //Add the entity
-            WorldTile worldTile = targetLevel.Get(xInteger, yInteger);
+            ContentsHolder worldTile = targetLevel.Get(xInteger, yInteger);
             if (worldTile == null)
             {
-                worldTile = new WorldTile();
+                worldTile = new ContentsHolder();
                 targetLevel.Add(xInteger, yInteger, worldTile);
             }
             worldTile.Insert(entity);
@@ -58,7 +58,7 @@ namespace CorgEng.World.WorldTracking
 
         public void RemoveEntity(IEntity entity, double x, double y, int mapLevel)
         {
-            IPositionBasedBinaryList<WorldTile> targetLevel = WorldTiles.ElementWithKey(mapLevel);
+            IPositionBasedBinaryList<ContentsHolder> targetLevel = WorldTiles.ElementWithKey(mapLevel);
             //Target doesn't exist
             if (targetLevel == null)
                 return;
@@ -67,7 +67,7 @@ namespace CorgEng.World.WorldTracking
             int xInteger = (int)Math.Floor(x);
             int yInteger = (int)Math.Floor(y);
             //Add the entity
-            WorldTile worldTile = targetLevel.Get(xInteger, yInteger);
+            ContentsHolder worldTile = targetLevel.Get(xInteger, yInteger);
             if (worldTile == null)
                 return;
             worldTile.Remove(entity);

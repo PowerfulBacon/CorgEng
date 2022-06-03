@@ -12,5 +12,6 @@
     <Module>CorgEng.Rendering</Module>
     <Module>CorgEng.UtilityTypes</Module>
     <Module>CorgEng.UserInterface</Module>
+    <Module>CorgEng.World</Module>
   </DependencyModules>
 </CorgEngConfig>
