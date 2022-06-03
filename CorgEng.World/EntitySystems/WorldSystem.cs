@@ -16,12 +16,16 @@ namespace CorgEng.World.EntitySystems
     internal class WorldSystem : EntitySystem
     {
 
+        [UsingDependency]
+        private static IWorld WorldAccess;
+
         public override EntitySystemFlags SystemFlags { get; } = EntitySystemFlags.HOST_SYSTEM;
 
         public override void SystemSetup()
         {
             RegisterLocalEvent<TransformComponent, ComponentAddedEvent>(OnEntityCreated);
             RegisterLocalEvent<TransformComponent, MoveEvent>(OnEntityMoved);
+            RegisterLocalEvent<TransformComponent, DeleteEntityEvent>(OnEntityDeleted);
         }
 
         /// <summary>
@@ -33,7 +37,8 @@ namespace CorgEng.World.EntitySystems
         /// <param name="componentAddedEvent"></param>
         private void OnEntityCreated(IEntity entity, TransformComponent transformComponent, ComponentAddedEvent componentAddedEvent)
         {
-            
+            //Add the entity to the world
+            WorldAccess.AddEntity(entity, transformComponent.Position.X, transformComponent.Position.Y, 0);
         }
 
         /// <summary>
@@ -44,7 +49,13 @@ namespace CorgEng.World.EntitySystems
         /// <param name="moveEvent"></param>
         private void OnEntityMoved(IEntity entity, TransformComponent transformComponent, MoveEvent moveEvent)
         {
+            WorldAccess.RemoveEntity(entity, moveEvent.OldPosition.X, moveEvent.NewPosition.Y, 0);
+            WorldAccess.AddEntity(entity, transformComponent.Position.X, transformComponent.Position.Y, 0);
+        }
 
+        private void OnEntityDeleted(IEntity entity, TransformComponent transformComponent, DeleteEntityEvent OnEntityDeleted)
+        {
+            WorldAccess.RemoveEntity(entity, transformComponent.Position.X, transformComponent.Position.Y, 0);
         }
 
     }
