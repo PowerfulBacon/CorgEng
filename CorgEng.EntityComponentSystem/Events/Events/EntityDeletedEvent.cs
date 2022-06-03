@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CorgEng.GenericInterfaces.EntityComponentSystem;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,17 +7,15 @@ using System.Threading.Tasks;
 
 namespace CorgEng.EntityComponentSystem.Events.Events
 {
-    public class DeleteEntityEvent : Event
+    public class DeleteEntityEvent : INetworkedEvent
     {
 
-        public override bool IsSynced { get; } = true;
-
-        public override byte[] Serialize()
+        public byte[] Serialize()
         {
             return new byte[0];
         }
 
-        public override void Deserialize(byte[] data)
+        public void Deserialize(byte[] data)
         { }
     }
 }

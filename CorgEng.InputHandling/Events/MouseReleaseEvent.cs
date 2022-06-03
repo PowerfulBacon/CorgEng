@@ -1,4 +1,5 @@
 ﻿using CorgEng.EntityComponentSystem.Events;
+using CorgEng.GenericInterfaces.EntityComponentSystem;
 using GLFW;
 using System;
 using System.Collections.Generic;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace CorgEng.InputHandling.Events
 {
-    public class MouseReleaseEvent : Event
+    public class MouseReleaseEvent : IEvent
     {
         /// <summary>
         /// Cursor X position, from -1 to 1 (-1 being left side of screen and 1 being the right)
@@ -23,8 +24,6 @@ namespace CorgEng.InputHandling.Events
         public MouseButton MouseButton { get; set; }
 
         public ModifierKeys ModifierKeys { get; set; }
-
-        public override bool IsSynced => false;
 
         public MouseReleaseEvent(double cursorX, double cursorY, MouseButton mouseButton, ModifierKeys modifierKeys)
         {

@@ -6,6 +6,7 @@ using CorgEng.EntityComponentSystem.Entities;
 using CorgEng.EntityComponentSystem.Events;
 using CorgEng.EntityComponentSystem.Events.Events;
 using CorgEng.GenericInterfaces.ContentLoading;
+using CorgEng.GenericInterfaces.EntityComponentSystem;
 using CorgEng.GenericInterfaces.Logging;
 using CorgEng.GenericInterfaces.Networking.Config;
 using System;
@@ -41,7 +42,7 @@ namespace CorgEng.EntityComponentSystem.Systems
         [UsingDependency]
         private static INetworkConfig NetworkConfig;
 
-        internal delegate void SystemEventHandlerDelegate(Entity entity, Component component, Event signal);
+        internal delegate void SystemEventHandlerDelegate(IEntity entity, IComponent component, IEvent signal);
 
         /// <summary>
         /// Matches event and component types to registered signal handlers on systems
@@ -151,7 +152,7 @@ namespace CorgEng.EntityComponentSystem.Systems
         /// <typeparam name="GEvent">The type of the global event to subscribe to.</typeparam>
         /// <param name="eventHandler">The method to be invoked when the global event is raised.</param>
         public void RegisterGlobalEvent<GEvent>(Action<GEvent> eventHandler)
-            where GEvent : Event
+            where GEvent : IEvent
         {
             //Register the component to recieve the target event on the event manager
             lock (EventManager.RegisteredEvents)
@@ -167,7 +168,7 @@ namespace CorgEng.EntityComponentSystem.Systems
             {
                 if (!RegisteredSystemSignalHandlers.ContainsKey(eventComponentPair))
                     RegisteredSystemSignalHandlers.Add(eventComponentPair, new List<SystemEventHandlerDelegate>());
-                RegisteredSystemSignalHandlers[eventComponentPair].Add((Entity entity, Component component, Event signal) =>
+                RegisteredSystemSignalHandlers[eventComponentPair].Add((IEntity entity, IComponent component, IEvent signal) =>
                 {
                     //Check if we don't process
                     if (NetworkConfig != null
@@ -188,9 +189,9 @@ namespace CorgEng.EntityComponentSystem.Systems
         /// <summary>
         /// Register to a local event
         /// </summary>
-        public void RegisterLocalEvent<GComponent, GEvent>(Action<Entity, GComponent, GEvent> eventHandler)
+        public void RegisterLocalEvent<GComponent, GEvent>(Action<IEntity, GComponent, GEvent> eventHandler)
             where GComponent : Component
-            where GEvent : Event
+            where GEvent : IEvent
         {
             //Register the component to recieve the target event on the event manager
             lock (EventManager.RegisteredEvents)
@@ -206,7 +207,7 @@ namespace CorgEng.EntityComponentSystem.Systems
             {
                 if (!RegisteredSystemSignalHandlers.ContainsKey(eventComponentPair))
                     RegisteredSystemSignalHandlers.Add(eventComponentPair, new List<SystemEventHandlerDelegate>());
-                RegisteredSystemSignalHandlers[eventComponentPair].Add((Entity entity, Component component, Event signal) =>
+                RegisteredSystemSignalHandlers[eventComponentPair].Add((IEntity entity, IComponent component, IEvent signal) =>
                 {
                     //Check if we don't process
                     if (NetworkConfig != null

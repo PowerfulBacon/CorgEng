@@ -1,4 +1,5 @@
 ﻿using CorgEng.EntityComponentSystem.Components;
+using CorgEng.GenericInterfaces.EntityComponentSystem;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,17 +8,14 @@ using System.Threading.Tasks;
 
 namespace CorgEng.EntityComponentSystem.Events.Events
 {
-    public class ComponentRemovedEvent : Event
+    public class ComponentRemovedEvent : IEvent
     {
 
-        public Component Component { get; set; }
+        public IComponent Component { get; set; }
 
-        public override bool IsSynced { get; } = false;
-
-        public ComponentRemovedEvent(Component component, bool networked)
+        public ComponentRemovedEvent(IComponent component)
         {
             Component = component;
-            IsSynced = networked;
         }
     }
 }

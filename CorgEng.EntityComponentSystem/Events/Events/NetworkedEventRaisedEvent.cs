@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CorgEng.GenericInterfaces.EntityComponentSystem;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,15 +7,12 @@ using System.Threading.Tasks;
 
 namespace CorgEng.EntityComponentSystem.Events.Events
 {
-    public class NetworkedEventRaisedEvent : Event
+    public class NetworkedEventRaisedEvent : IEvent
     {
 
-        public Event RaisedEvent { get; set; }
+        public INetworkedEvent RaisedEvent { get; set; }
 
-        //If this is made true, event will trigger an infinite loop and die
-        public override bool IsSynced => false;
-
-        public NetworkedEventRaisedEvent(Event raisedEvent)
+        public NetworkedEventRaisedEvent(INetworkedEvent raisedEvent)
         {
             RaisedEvent = raisedEvent;
         }

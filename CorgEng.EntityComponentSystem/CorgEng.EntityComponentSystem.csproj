@@ -88,6 +88,7 @@
     <Compile Include="Components\Component.cs" />
     <Compile Include="Components\ComponentManager.cs" />
     <Compile Include="Components\Exceptions\ComponentException.cs" />
+    <Compile Include="Components\ComponentExtensions.cs" />
     <Compile Include="Entities\EntityManager.cs" />
     <Compile Include="Events\Events\ComponentAddedEvent.cs" />
     <Compile Include="Events\Events\ComponentRemovedEvent.cs" />

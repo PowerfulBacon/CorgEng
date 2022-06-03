@@ -1,6 +1,7 @@
 ﻿using CorgEng.EntityComponentSystem.Entities;
 using CorgEng.EntityComponentSystem.Events.Events;
 using CorgEng.EntityComponentSystem.Systems;
+using CorgEng.GenericInterfaces.EntityComponentSystem;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,7 +22,7 @@ namespace CorgEng.EntityComponentSystem.Implementations.Deletion
             RegisterLocalEvent<DeleteableComponent, DeleteEntityEvent>(OnEntityDeleted);
         }
 
-        private void OnEntityDeleted(Entity entity, DeleteableComponent deleteableComponent, DeleteEntityEvent entityDeletedEvent)
+        private void OnEntityDeleted(IEntity entity, DeleteableComponent deleteableComponent, DeleteEntityEvent entityDeletedEvent)
         {
             //Delete the entity
             entity.Delete();

@@ -3,6 +3,7 @@ using CorgEng.EntityComponentSystem.Entities;
 using CorgEng.EntityComponentSystem.Events.Events;
 using CorgEng.EntityComponentSystem.Implementations.Transform;
 using CorgEng.EntityComponentSystem.Systems;
+using CorgEng.GenericInterfaces.EntityComponentSystem;
 using CorgEng.GenericInterfaces.Logging;
 using CorgEng.GenericInterfaces.Rendering.RenderObjects.SpriteRendering;
 using CorgEng.GenericInterfaces.Rendering.Textures;
@@ -37,7 +38,7 @@ namespace CorgEng.EntityComponentSystem.Implementations.Rendering.SpriteRenderin
             RegisterLocalEvent<SpriteRenderComponent, DeleteEntityEvent>(OnEntityDestroyed);
         }
 
-        private void OnEntityDestroyed(Entity entity, SpriteRenderComponent spriteRenderComponent, DeleteEntityEvent entityDeletedEvent)
+        private void OnEntityDestroyed(IEntity entity, SpriteRenderComponent spriteRenderComponent, DeleteEntityEvent entityDeletedEvent)
         {
             //Stop rendering
             if (spriteRenderComponent.SpriteRenderer != null && spriteRenderComponent.SpriteRenderObject != null)
@@ -49,7 +50,7 @@ namespace CorgEng.EntityComponentSystem.Implementations.Rendering.SpriteRenderin
         /// <summary>
         /// Called when the parent entity is moved.
         /// </summary>
-        private void OnEntityMoved(Entity entity, SpriteRenderComponent spriteRenderComponent, MoveEvent moveEvent)
+        private void OnEntityMoved(IEntity entity, SpriteRenderComponent spriteRenderComponent, MoveEvent moveEvent)
         {
             if (spriteRenderComponent.SpriteRenderObject == null)
             {
@@ -62,7 +63,7 @@ namespace CorgEng.EntityComponentSystem.Implementations.Rendering.SpriteRenderin
             }
         }
 
-        private void OnSetRenderer(Entity entity, SpriteRenderComponent spriteRenderComponent, SetSpriteRendererEvent setSpriteRenderer)
+        private void OnSetRenderer(IEntity entity, SpriteRenderComponent spriteRenderComponent, SetSpriteRendererEvent setSpriteRenderer)
         {
             //If we are being rendered, stop being rendered
             if (spriteRenderComponent.SpriteRenderer != null && spriteRenderComponent.SpriteRenderObject != null)
@@ -74,7 +75,7 @@ namespace CorgEng.EntityComponentSystem.Implementations.Rendering.SpriteRenderin
                 spriteRenderComponent.SpriteRenderer.StartRendering(spriteRenderComponent.SpriteRenderObject);
         }
 
-        private void OnSetSprite(Entity entity, SpriteRenderComponent spriteRenderComponent, SetSpriteEvent setSpriteEvent)
+        private void OnSetSprite(IEntity entity, SpriteRenderComponent spriteRenderComponent, SetSpriteEvent setSpriteEvent)
         {
             //Store the sprite being used
             spriteRenderComponent.Sprite = setSpriteEvent.TextureFile;

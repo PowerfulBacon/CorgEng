@@ -43,13 +43,17 @@
   <ItemGroup>
     <Compile Include="EntitySystems\WorldSystem.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="WorldTracking\World.cs" />
     <Compile Include="WorldTracking\WorldTile.cs" />
-    <Compile Include="WorldTracking\WorldTracker.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CorgEng.Core\CorgEng.Core.csproj">
       <Project>{9CCC4A6B-2D13-425D-8C72-B034151EC11C}</Project>
       <Name>CorgEng.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CorgEng.DependencyInjection\CorgEng.DependencyInjection.csproj">
+      <Project>{913A2BE9-E596-4202-8DA1-ADF02AE63618}</Project>
+      <Name>CorgEng.DependencyInjection</Name>
     </ProjectReference>
     <ProjectReference Include="..\CorgEng.EntityComponentSystem\CorgEng.EntityComponentSystem.csproj">
       <Project>{4BB408B5-9AFA-42E6-973D-547A84A293A5}</Project>

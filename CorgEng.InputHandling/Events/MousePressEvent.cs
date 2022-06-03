@@ -1,4 +1,5 @@
 ﻿using CorgEng.EntityComponentSystem.Events;
+using CorgEng.GenericInterfaces.EntityComponentSystem;
 using GLFW;
 using System;
 using System.Collections.Generic;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace CorgEng.InputHandling.Events
 {
-    public class MousePressEvent : Event
+    public class MousePressEvent : IEvent
     {
 
         /// <summary>
@@ -24,8 +25,6 @@ namespace CorgEng.InputHandling.Events
         public MouseButton MouseButton { get; set; }
 
         public ModifierKeys ModifierKeys { get; set; }
-
-        public override bool IsSynced => false;
 
         public MousePressEvent(double cursorX, double cursorY, MouseButton mouseButton, ModifierKeys modifierKeys)
         {

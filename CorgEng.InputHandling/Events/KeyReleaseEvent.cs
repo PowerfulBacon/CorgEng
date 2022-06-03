@@ -1,4 +1,5 @@
 ﻿using CorgEng.EntityComponentSystem.Events;
+using CorgEng.GenericInterfaces.EntityComponentSystem;
 using GLFW;
 using System;
 using System.Collections.Generic;
@@ -8,14 +9,12 @@ using System.Threading.Tasks;
 
 namespace CorgEng.InputHandling.Events
 {
-    public class KeyReleaseEvent : Event
+    public class KeyReleaseEvent : INetworkedEvent
     {
 
         public Keys Key { get; set; }
 
         public ModifierKeys ModifierKeys { get; set; }
-
-        public override bool IsSynced => true;
 
         public KeyReleaseEvent(Keys key, ModifierKeys modifierKeys)
         {
@@ -23,7 +22,7 @@ namespace CorgEng.InputHandling.Events
             ModifierKeys = modifierKeys;
         }
 
-        public unsafe override byte[] Serialize()
+        public unsafe byte[] Serialize()
         {
             //Get the key as a ushort pointer
             Keys tempKeys = Key;
@@ -35,7 +34,7 @@ namespace CorgEng.InputHandling.Events
             };
         }
 
-        public unsafe override void Deserialize(byte[] data)
+        public unsafe void Deserialize(byte[] data)
         {
             fixed (byte* dataPointer = data)
             {

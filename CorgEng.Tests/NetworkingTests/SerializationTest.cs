@@ -1,6 +1,7 @@
 ﻿using CorgEng.Core.Dependencies;
 using CorgEng.EntityComponentSystem.Components;
 using CorgEng.EntityComponentSystem.Events;
+using CorgEng.GenericInterfaces.EntityComponentSystem;
 using CorgEng.GenericInterfaces.Logging;
 using CorgEng.GenericInterfaces.Networking.Attributes;
 using CorgEng.Networking.Components;
@@ -143,7 +144,7 @@ namespace CorgEng.Tests.NetworkingTests
             //Get all event classes
             IEnumerable<Type> Events = AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany(assembly => assembly.GetTypes()
-                .Where(type => typeof(Event).IsAssignableFrom(type)));
+                .Where(type => typeof(INetworkedEvent).IsAssignableFrom(type)));
             Logger?.WriteLine($"Located {Events.Count()} events to test.", LogType.LOG);
             //Begin testing
             foreach (Type type in Events)
@@ -155,12 +156,7 @@ namespace CorgEng.Tests.NetworkingTests
                         Logger?.WriteLine($"Skipped {type.Name} (Abstract event)");
                         continue;
                     }
-                    Event instantiatedEvent = (Event)FormatterServices.GetUninitializedObject(type);
-                    if (!instantiatedEvent.IsSynced)
-                    {
-                        Logger?.WriteLine($"Skipped {type.Name} (Not a networked event)");
-                        continue;
-                    }
+                    INetworkedEvent instantiatedEvent = (INetworkedEvent)FormatterServices.GetUninitializedObject(type);
                     //Randomise the properties with getters and setters
                     //Only test public properties (Private indicates it isn't networked)
                     IEnumerable<PropertyInfo> eventProperties = type.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.SetProperty | BindingFlags.GetProperty)
@@ -224,7 +220,7 @@ namespace CorgEng.Tests.NetworkingTests
                     byte[] serializedData = instantiatedEvent.Serialize();
                     Logger?.WriteLine($"SERIALIZED COMPONENT (Length: {serializedData.Length}): {string.Join(",", serializedData)}", LogType.DEBUG);
                     //Deserialize
-                    Event deserializedType = (Event)FormatterServices.GetUninitializedObject(type);
+                    INetworkedEvent deserializedType = (INetworkedEvent)FormatterServices.GetUninitializedObject(type);
                     deserializedType.Deserialize(serializedData);
                     //Verify
                     foreach (PropertyInfo property in appliedValues.Keys)

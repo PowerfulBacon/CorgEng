@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CorgEng.GenericInterfaces.EntityComponentSystem;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,10 +7,8 @@ using System.Threading.Tasks;
 
 namespace CorgEng.EntityComponentSystem.Events.Events
 {
-    public class NewEntityEvent : Event
+    public class NewEntityEvent : INetworkedEvent
     {
-
-        public override bool IsSynced => true;
 
         public int Identifier { get; set; }
 
@@ -18,12 +17,12 @@ namespace CorgEng.EntityComponentSystem.Events.Events
             Identifier = identifier;
         }
 
-        public override void Deserialize(byte[] data)
+        public void Deserialize(byte[] data)
         {
             Identifier = BitConverter.ToInt32(data, 0);
         }
 
-        public override byte[] Serialize()
+        public byte[] Serialize()
         {
             return BitConverter.GetBytes(Identifier);
         }

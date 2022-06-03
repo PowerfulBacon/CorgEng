@@ -1,6 +1,7 @@
 ﻿using CorgEng.EntityComponentSystem.Entities;
 using CorgEng.EntityComponentSystem.Implementations.Transform;
 using CorgEng.EntityComponentSystem.Systems;
+using CorgEng.GenericInterfaces.EntityComponentSystem;
 using CorgEng.Networking.Components;
 using System;
 using System.Collections.Generic;
@@ -33,7 +34,7 @@ namespace CorgEng.Networking.EntitySystems
         /// <param name="entity"></param>
         /// <param name="clientComponent"></param>
         /// <param name="moveEvent"></param>
-        private void OnClientMoved(Entity entity, ClientComponent clientComponent, MoveEvent moveEvent)
+        private void OnClientMoved(IEntity entity, ClientComponent clientComponent, MoveEvent moveEvent)
         {
             //Calculate what should be added to view.
             //Send this information across to the client.

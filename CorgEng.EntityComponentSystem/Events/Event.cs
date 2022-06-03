@@ -1,6 +1,7 @@
 ﻿using CorgEng.Core.Dependencies;
 using CorgEng.EntityComponentSystem.Entities;
 using CorgEng.EntityComponentSystem.Events.Events;
+using CorgEng.GenericInterfaces.EntityComponentSystem;
 using CorgEng.GenericInterfaces.Networking.Networking;
 using CorgEng.GenericInterfaces.Networking.Packets;
 using CorgEng.GenericInterfaces.Networking.VersionSync;
@@ -11,72 +12,80 @@ using static CorgEng.EntityComponentSystem.Systems.EntitySystem;
 
 namespace CorgEng.EntityComponentSystem.Events
 {
-    public abstract class Event : IVersionSynced
-    {
 
-        /// <summary>
-        /// If true, this event will be networked.
-        /// </summary>
-        public abstract bool IsSynced { get; }
+    public static class EventExtensions
+    {
 
         /// <summary>
         /// Raise this event against a specified target
         /// </summary>
-        public void Raise(Entity target)
+        public static void Raise(this IEvent signal, IEntity target)
         {
             //Handle the signal
-            target.HandleSignal(this);
+            target.HandleSignal(signal);
+        }
+
+        /// <summary>
+        /// Raise this event and network it
+        /// </summary>
+        public static void Raise(this INetworkedEvent signal, IEntity target)
+        {
+            //Handle the signal
+            target.HandleSignal(signal);
             //Inform the entity that networked event was raised
-            if (IsSynced)
+            //Skip directly to signal handling
+            target.HandleSignal(new NetworkedEventRaisedEvent(signal));
+        }
+
+        /// <summary>
+        /// Raise the event globally
+        /// </summary>
+        public static void RaiseGlobally(this IEvent signal)
+        {
+            //Check if we have any registered signals
+            if (!EventManager.RegisteredEvents.ContainsKey(typeof(GlobalEventComponent)))
+                return;
+            //Locate all event types we are listening for
+            EventComponentPair key = new EventComponentPair(signal.GetType(), typeof(GlobalEventComponent));
+            //Locate the monitoring system's callback handler
+            if (RegisteredSystemSignalHandlers.ContainsKey(key))
             {
-                //Skip directly to signal handling
-                target.HandleSignal(new NetworkedEventRaisedEvent(this));
+                List<SystemEventHandlerDelegate> systemEventHandlers = RegisteredSystemSignalHandlers[key];
+                foreach (SystemEventHandlerDelegate systemEventHandler in systemEventHandlers)
+                    systemEventHandler.Invoke(null, null, signal);
             }
         }
 
         /// <summary>
         /// Raise the event globally
         /// </summary>
-        public void RaiseGlobally()
+        public static void RaiseGlobally(this INetworkedEvent signal)
         {
             //Check if we have any registered signals
             if (!EventManager.RegisteredEvents.ContainsKey(typeof(GlobalEventComponent)))
                 return;
             //Locate all event types we are listening for
-            EventComponentPair key = new EventComponentPair(GetType(), typeof(GlobalEventComponent));
+            EventComponentPair key = new EventComponentPair(signal.GetType(), typeof(GlobalEventComponent));
             //Locate the monitoring system's callback handler
             if (RegisteredSystemSignalHandlers.ContainsKey(key))
             {
                 List<SystemEventHandlerDelegate> systemEventHandlers = RegisteredSystemSignalHandlers[key];
                 foreach (SystemEventHandlerDelegate systemEventHandler in systemEventHandlers)
-                    systemEventHandler.Invoke(null, null, this);
+                    systemEventHandler.Invoke(null, null, signal);
             }
             //Inform globally that a networked event was raised
-            if (IsSynced)
+            //Skip directly to signal handling
+            //Locate all event types we are listening for
+            EventComponentPair networkKey = new EventComponentPair(typeof(NetworkedEventRaisedEvent), typeof(GlobalEventComponent));
+            //Locate the monitoring system's callback handler
+            if (!RegisteredSystemSignalHandlers.ContainsKey(networkKey))
             {
-                //Skip directly to signal handling
-                //Locate all event types we are listening for
-                EventComponentPair networkKey = new EventComponentPair(typeof(NetworkedEventRaisedEvent), typeof(GlobalEventComponent));
-                //Locate the monitoring system's callback handler
-                if (!RegisteredSystemSignalHandlers.ContainsKey(networkKey))
-                {
-                    return;
-                }
-                List<SystemEventHandlerDelegate> networkedEventHandlers = RegisteredSystemSignalHandlers[networkKey];
-                foreach (SystemEventHandlerDelegate systemEventHandler in networkedEventHandlers)
-                    systemEventHandler.Invoke(null, null, new NetworkedEventRaisedEvent(this));
+                return;
             }
+            List<SystemEventHandlerDelegate> networkedEventHandlers = RegisteredSystemSignalHandlers[networkKey];
+            foreach (SystemEventHandlerDelegate systemEventHandler in networkedEventHandlers)
+                systemEventHandler.Invoke(null, null, new NetworkedEventRaisedEvent(signal));
         }
-
-        /// <summary>
-        /// Serialize this event for network transmission
-        /// </summary>
-        public virtual byte[] Serialize() => throw new NotImplementedException();
-
-        /// <summary>
-        /// Deserialize a serialized event
-        /// </summary>
-        public virtual void Deserialize(byte[] data) => throw new NotImplementedException();
 
     }
 }

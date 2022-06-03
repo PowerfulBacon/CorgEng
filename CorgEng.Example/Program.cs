@@ -5,6 +5,7 @@ using CorgEng.DependencyInjection;
 using CorgEng.DependencyInjection.Injection;
 using CorgEng.EntityComponentSystem;
 using CorgEng.EntityComponentSystem.Entities;
+using CorgEng.EntityComponentSystem.Events;
 using CorgEng.EntityComponentSystem.Implementations.Rendering.SpriteRendering;
 using CorgEng.EntityComponentSystem.Implementations.Transform;
 using CorgEng.Example.Common.Components.Camera;

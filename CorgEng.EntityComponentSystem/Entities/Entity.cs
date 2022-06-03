@@ -1,6 +1,7 @@
 ﻿using CorgEng.Core.Dependencies;
 using CorgEng.EntityComponentSystem.Components;
 using CorgEng.EntityComponentSystem.Events;
+using CorgEng.GenericInterfaces.EntityComponentSystem;
 using CorgEng.GenericInterfaces.Logging;
 using System;
 using System.Collections.Generic;
@@ -9,19 +10,11 @@ using System.Threading;
 
 namespace CorgEng.EntityComponentSystem.Entities
 {
-    public class Entity
+
+    public class Entity : IEntity
     {
 
-        internal delegate void InternalSignalHandleDelegate(Entity entity, Event signal);
-
-        private static int GarbageCollectionCount = 0;
-
-        private static int DeletionCount = 0;
-
-        /// <summary>
-        /// Amount of created entities
-        /// </summary>
-        private static int CreatedEntityCount = 0;
+        internal delegate void InternalSignalHandleDelegate(IEntity entity, IEvent signal);
 
         /// <summary>
         /// The identifier for the entity. Used to find a specific entity.
@@ -31,7 +24,7 @@ namespace CorgEng.EntityComponentSystem.Entities
         /// <summary>
         /// List of all components attached to this entity
         /// </summary>
-        public List<Component> Components { get; } = new List<Component>();
+        public List<IComponent> Components { get; } = new List<IComponent>();
 
         /// <summary>
         /// The index of this entity in the contents array of the parent.
@@ -46,41 +39,20 @@ namespace CorgEng.EntityComponentSystem.Entities
 
         public Entity()
         {
-            Identifier = CreatedEntityCount;
+            Identifier = EntityManager.CreatedEntityCount;
             EntityManager.RegisterEntity(this);
-        }
-
-        /// <summary>
-        /// Delete this entity, remove all references to it.
-        /// Triggered when an EntityDeletedEvent is raised against an entity.
-        /// 
-        /// EntityDeletedEvent
-        /// -> Networking
-        /// -> Deletion System Raised
-        /// -> Delete() method
-        /// -> Component local removal + EntityManager removal
-        /// </summary>
-        internal void Delete()
-        {
-            Interlocked.Increment(ref DeletionCount);
-            EntityManager.RemoveEntity(this);
-            //Remove all components
-            for (int i = Components.Count; i >= 0; i--)
-            {
-                RemoveComponent(Components[i], false);
-            }
         }
 
         ~Entity()
         {
-            Interlocked.Increment(ref GarbageCollectionCount);
+            Interlocked.Increment(ref EntityManager.GarbageCollectionCount);
         }
 
         /// <summary>
         /// Add a component to the specified entity
         /// </summary>
         /// <param name="component">A reference to the component to be added</param>
-        public void AddComponent(Component component)
+        public void AddComponent(IComponent component)
         {
             lock (Components)
             {
@@ -93,11 +65,11 @@ namespace CorgEng.EntityComponentSystem.Entities
         /// Remove a component from the specified entity.
         /// </summary>
         /// <param name="component">The reference to the component to remove</param>
-        public void RemoveComponent(Component component, bool networked)
+        public void RemoveComponent(IComponent component, bool networked)
         {
             lock (Components)
             {
-                component.OnComponentRemoved(this, networked);
+                component.OnComponentRemoved(this);
                 Components.Remove(component);
             }
         }
@@ -106,7 +78,7 @@ namespace CorgEng.EntityComponentSystem.Entities
         /// Internal method for handling signals.
         /// </summary>
         /// <param name="signal"></param>
-        internal void HandleSignal(Event signal)
+        public void HandleSignal(IEvent signal)
         {
             //Verify that this signal is being listened for
             if (EventListeners == null)

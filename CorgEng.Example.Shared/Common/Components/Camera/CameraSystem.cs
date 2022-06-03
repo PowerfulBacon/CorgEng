@@ -1,7 +1,9 @@
 ﻿using CorgEng.EntityComponentSystem.Entities;
+using CorgEng.EntityComponentSystem.Events;
 using CorgEng.EntityComponentSystem.Events.Events;
 using CorgEng.EntityComponentSystem.Implementations.Transform;
 using CorgEng.EntityComponentSystem.Systems;
+using CorgEng.GenericInterfaces.EntityComponentSystem;
 using CorgEng.InputHandling.Events;
 using System;
 using System.Collections.Generic;
@@ -14,7 +16,7 @@ namespace CorgEng.Example.Common.Components.Camera
     public class CameraSystem : EntitySystem
     {
 
-        private static List<Entity> playerEntities = new List<Entity>();
+        private static List<IEntity> playerEntities = new List<IEntity>();
 
         //Contains camera logic which only the client knows about
         public override EntitySystemFlags SystemFlags { get; } = EntitySystemFlags.CLIENT_SYSTEM;
@@ -28,20 +30,20 @@ namespace CorgEng.Example.Common.Components.Camera
             RegisterLocalEvent<CameraComponent, MouseScrollEvent>(OnMouseScrolled);
         }
 
-        private void OnCameraMoved(Entity entity, CameraComponent cameraComponent, MoveEvent moveEvent)
+        private void OnCameraMoved(IEntity entity, CameraComponent cameraComponent, MoveEvent moveEvent)
         {
             cameraComponent.Camera.X = moveEvent.NewPosition.X;
             cameraComponent.Camera.Y = moveEvent.NewPosition.Y;
         }
 
-        public void OnComponentRemoved(Entity entity, CameraComponent cameraComponent, ComponentRemovedEvent componentRemovedEvent)
+        public void OnComponentRemoved(IEntity entity, CameraComponent cameraComponent, ComponentRemovedEvent componentRemovedEvent)
         {
             if (componentRemovedEvent.Component != cameraComponent)
                 return;
             playerEntities.Remove(entity);
         }
 
-        public void OnComponentAdded(Entity entity, CameraComponent cameraComponent, ComponentAddedEvent componentAddEvent)
+        public void OnComponentAdded(IEntity entity, CameraComponent cameraComponent, ComponentAddedEvent componentAddEvent)
         {
             if (componentAddEvent.Component != cameraComponent)
                 return;
@@ -51,13 +53,13 @@ namespace CorgEng.Example.Common.Components.Camera
         //cheese
         public void OnMouseScroll(MouseScrollEvent scrollEvent)
         {
-            foreach (Entity entity in playerEntities)
+            foreach (IEntity entity in playerEntities)
             {
                 scrollEvent.Raise(entity);
             }
         }
 
-        public void OnMouseScrolled(Entity entity, CameraComponent cameraComponent, MouseScrollEvent scrollEvent)
+        public void OnMouseScrolled(IEntity entity, CameraComponent cameraComponent, MouseScrollEvent scrollEvent)
         {
             cameraComponent.Camera.Width -= (float)scrollEvent.ScrollDelta;
             cameraComponent.Camera.Height -= (float)scrollEvent.ScrollDelta;

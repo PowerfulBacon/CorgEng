@@ -3,6 +3,7 @@ using CorgEng.EntityComponentSystem.Entities;
 using CorgEng.EntityComponentSystem.Events.Events;
 using CorgEng.EntityComponentSystem.Implementations.Transform;
 using CorgEng.EntityComponentSystem.Systems;
+using CorgEng.GenericInterfaces.EntityComponentSystem;
 using CorgEng.GenericInterfaces.World;
 using System;
 using System.Collections.Generic;
@@ -30,7 +31,7 @@ namespace CorgEng.World.EntitySystems
         /// <param name="entity"></param>
         /// <param name="transformComponent"></param>
         /// <param name="componentAddedEvent"></param>
-        private void OnEntityCreated(Entity entity, TransformComponent transformComponent, ComponentAddedEvent componentAddedEvent)
+        private void OnEntityCreated(IEntity entity, TransformComponent transformComponent, ComponentAddedEvent componentAddedEvent)
         {
             
         }
@@ -41,7 +42,7 @@ namespace CorgEng.World.EntitySystems
         /// <param name="entity"></param>
         /// <param name="transformComponent"></param>
         /// <param name="moveEvent"></param>
-        private void OnEntityMoved(Entity entity, TransformComponent transformComponent, MoveEvent moveEvent)
+        private void OnEntityMoved(IEntity entity, TransformComponent transformComponent, MoveEvent moveEvent)
         {
 
         }

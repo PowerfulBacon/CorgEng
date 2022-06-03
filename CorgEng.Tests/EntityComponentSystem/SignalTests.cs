@@ -5,6 +5,7 @@ using CorgEng.EntityComponentSystem.Entities;
 using CorgEng.EntityComponentSystem.Events;
 using CorgEng.EntityComponentSystem.Systems;
 using CorgEng.GenericInterfaces.ContentLoading;
+using CorgEng.GenericInterfaces.EntityComponentSystem;
 using CorgEng.GenericInterfaces.Logging;
 using CorgEng.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -14,16 +15,13 @@ using System.Threading;
 namespace CorgEng.Tests.EntityComponentSystem
 {
 
-    internal class OtherEvent : Event
+    internal class OtherEvent : IEvent
     {
-        public override bool IsSynced => false;
     }
 
-    internal class TestEvent : Event
+    internal class TestEvent : IEvent
     {
         public int TestID { get; }
-
-        public override bool IsSynced => false;
 
         public TestEvent()
         {
@@ -60,7 +58,7 @@ namespace CorgEng.Tests.EntityComponentSystem
             RegisterGlobalEvent<TestEvent>(HandleGlobalEvent);
         }
 
-        private void HandleTestEvent(Entity entity, TestComponent component, TestEvent eventDetails)
+        private void HandleTestEvent(IEntity entity, TestComponent component, TestEvent eventDetails)
         {
             if (eventDetails.TestID != SignalTests.currentTestId)
             {
@@ -73,7 +71,7 @@ namespace CorgEng.Tests.EntityComponentSystem
             Console.WriteLine(SignalTests.handlesReceieved);
         }
 
-        private void HandleSecondaryTestEvent(Entity entity, SecondaryTestComponent component, TestEvent eventDetails)
+        private void HandleSecondaryTestEvent(IEntity entity, SecondaryTestComponent component, TestEvent eventDetails)
         {
             if (eventDetails.TestID != SignalTests.currentTestId)
             {

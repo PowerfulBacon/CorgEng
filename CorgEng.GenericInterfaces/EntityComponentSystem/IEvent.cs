@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CorgEng.GenericInterfaces.Networking.VersionSync
+namespace CorgEng.GenericInterfaces.EntityComponentSystem
 {
-    public interface IVersionSynced
+    public interface IEvent
     {
 
     }

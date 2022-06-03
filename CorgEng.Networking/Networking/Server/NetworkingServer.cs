@@ -1,5 +1,6 @@
 ﻿using CorgEng.Core.Dependencies;
 using CorgEng.DependencyInjection.Dependencies;
+using CorgEng.EntityComponentSystem.Events;
 using CorgEng.GenericInterfaces.Logging;
 using CorgEng.GenericInterfaces.Networking;
 using CorgEng.GenericInterfaces.Networking.Clients;

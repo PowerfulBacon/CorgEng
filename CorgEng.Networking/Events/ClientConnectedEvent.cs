@@ -1,4 +1,5 @@
 ﻿using CorgEng.EntityComponentSystem.Events;
+using CorgEng.GenericInterfaces.EntityComponentSystem;
 using CorgEng.GenericInterfaces.Networking;
 using System;
 using System.Collections.Generic;
@@ -11,10 +12,8 @@ namespace CorgEng.Networking.Events
     /// <summary>
     /// Called when a client is connected
     /// </summary>
-    public class ClientConnectedEvent : Event
+    public class ClientConnectedEvent : IEvent
     {
-
-        public override bool IsSynced => false;
 
         public IClient Client { get; set; }
 

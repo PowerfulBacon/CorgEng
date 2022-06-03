@@ -2,9 +2,11 @@
 using CorgEng.Core.Dependencies;
 using CorgEng.EntityComponentSystem.Components;
 using CorgEng.EntityComponentSystem.Entities;
+using CorgEng.EntityComponentSystem.Events;
 using CorgEng.EntityComponentSystem.Events.Events;
 using CorgEng.EntityComponentSystem.Implementations.Transform;
 using CorgEng.EntityComponentSystem.Systems;
+using CorgEng.GenericInterfaces.EntityComponentSystem;
 using CorgEng.GenericInterfaces.Logging;
 using CorgEng.InputHandling.Events;
 using CorgEng.UtilityTypes.Vectors;
@@ -23,7 +25,7 @@ namespace CorgEng.Example.Components.PlayerMovement
         [UsingDependency]
         private static ILogger Logger;
 
-        private static List<Entity> playerEntities = new List<Entity>();
+        private static List<IEntity> playerEntities = new List<IEntity>();
 
         //Logic executed on the server that moves players when requested.
         public override EntitySystemFlags SystemFlags { get; } = EntitySystemFlags.HOST_SYSTEM;
@@ -35,14 +37,14 @@ namespace CorgEng.Example.Components.PlayerMovement
             RegisterGlobalEvent<KeyHeldEvent>(OnKeyHeld);
         }
 
-        public void OnComponentRemoved(Entity entity, PlayerMovementComponent playerMovementComponent, ComponentRemovedEvent componentRemovedEvent)
+        public void OnComponentRemoved(IEntity entity, PlayerMovementComponent playerMovementComponent, ComponentRemovedEvent componentRemovedEvent)
         {
             if (componentRemovedEvent.Component != playerMovementComponent)
                 return;
             playerEntities.Remove(entity);
         }
 
-        public void OnComponentAdded(Entity entity, PlayerMovementComponent playerMovementComponent, ComponentAddedEvent componentAddEvent)
+        public void OnComponentAdded(IEntity entity, PlayerMovementComponent playerMovementComponent, ComponentAddedEvent componentAddEvent)
         {
             if (componentAddEvent.Component != playerMovementComponent)
                 return;
@@ -54,28 +56,28 @@ namespace CorgEng.Example.Components.PlayerMovement
             switch (keyHeldEvent.Key)
             {
                 case Keys.W:
-                    playerEntities.ForEach((Entity entity) => {
+                    playerEntities.ForEach((IEntity entity) => {
                         new TranslateEvent(new Vector<float>(0, (float)CorgEngMain.DeltaTime)).Raise(entity);
                     });
                     break;
                 case Keys.S:
-                    playerEntities.ForEach((Entity entity) => {
+                    playerEntities.ForEach((IEntity entity) => {
                         new TranslateEvent(new Vector<float>(0, -(float)CorgEngMain.DeltaTime)).Raise(entity);
                     });
                     break;
                 case Keys.D:
-                    playerEntities.ForEach((Entity entity) => {
+                    playerEntities.ForEach((IEntity entity) => {
                         new TranslateEvent(new Vector<float>((float)CorgEngMain.DeltaTime, 0)).Raise(entity);
                     });
                     break;
                 case Keys.A:
-                    playerEntities.ForEach((Entity entity) => {
+                    playerEntities.ForEach((IEntity entity) => {
                         new TranslateEvent(new Vector<float>(-(float)CorgEngMain.DeltaTime, 0)).Raise(entity);
                     });
                     break;
                 case Keys.K:
-                    playerEntities.ForEach((Entity entity) => {
-                        foreach(Component component in entity.Components)
+                    playerEntities.ForEach((IEntity entity) => {
+                        foreach(IComponent component in entity.Components)
                         {
                             if (component is PlayerMovementComponent)
                             {

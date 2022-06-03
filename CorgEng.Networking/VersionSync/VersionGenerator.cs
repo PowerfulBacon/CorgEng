@@ -42,9 +42,7 @@ namespace CorgEng.Networking.VersionSync
             IOrderedEnumerable<Type> LocatedTypes = AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany(assembly => assembly.GetTypes()
                 .Where(t => !t.IsAbstract &&
-                        typeof(IVersionSynced).IsAssignableFrom(t) && 
-                        //Create a temporary instance to check if its networked
-                        (e = (IVersionSynced)FormatterServices.GetUninitializedObject(t)).IsSynced
+                        typeof(IVersionSynced).IsAssignableFrom(t)
                     ))
                 .OrderBy(networkedType =>
                 {

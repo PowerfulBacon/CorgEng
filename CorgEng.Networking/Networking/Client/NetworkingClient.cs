@@ -2,6 +2,7 @@
 using CorgEng.Core.Dependencies;
 using CorgEng.DependencyInjection.Dependencies;
 using CorgEng.EntityComponentSystem.Events;
+using CorgEng.GenericInterfaces.EntityComponentSystem;
 using CorgEng.GenericInterfaces.Logging;
 using CorgEng.GenericInterfaces.Networking.Clients;
 using CorgEng.GenericInterfaces.Networking.Config;
@@ -375,7 +376,7 @@ namespace CorgEng.Networking.Networking.Client
                         //the correct class.
                         ushort eventID = BitConverter.ToUInt16(data, start);
                         //Get the event that was raised
-                        Event raisedEvent = VersionGenerator.CreateTypeFromIdentifier<Event>(eventID);
+                        INetworkedEvent raisedEvent = VersionGenerator.CreateTypeFromIdentifier<INetworkedEvent>(eventID);
                         Logger.WriteLine($"global event raised of type {raisedEvent.GetType()}");
                         //Deserialize the event
                         raisedEvent.Deserialize(data.Skip(start + 0x02).Take(length).ToArray());

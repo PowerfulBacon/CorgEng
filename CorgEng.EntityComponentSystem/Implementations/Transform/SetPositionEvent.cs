@@ -1,4 +1,5 @@
 ﻿using CorgEng.EntityComponentSystem.Events;
+using CorgEng.GenericInterfaces.EntityComponentSystem;
 using CorgEng.UtilityTypes.Vectors;
 using System;
 using System.Collections.Generic;
@@ -8,12 +9,10 @@ using System.Threading.Tasks;
 
 namespace CorgEng.EntityComponentSystem.Implementations.Transform
 {
-    public sealed class SetPositionEvent : Event
+    public sealed class SetPositionEvent : IEvent
     {
 
         public Vector<float> NewPosition { get; set; }
-
-        public override bool IsSynced => false;
 
         public SetPositionEvent(Vector<float> newPosition)
         {

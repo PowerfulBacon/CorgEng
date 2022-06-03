@@ -4,6 +4,7 @@ using CorgEng.EntityComponentSystem.Entities;
 using CorgEng.EntityComponentSystem.Events;
 using CorgEng.EntityComponentSystem.Systems;
 using CorgEng.GenericInterfaces.ContentLoading;
+using CorgEng.GenericInterfaces.EntityComponentSystem;
 using CorgEng.GenericInterfaces.Logging;
 using CorgEng.GenericInterfaces.Networking.Networking;
 using CorgEng.GenericInterfaces.Networking.Networking.Client;
@@ -158,18 +159,17 @@ namespace CorgEng.Tests.NetworkingTests
             Assert.Inconclusive("Test isn't implemented");
         }
 
-        private class NetworkedTestEvent : Event
+        private class NetworkedTestEvent : INetworkedEvent
         {
-            public override bool IsSynced => true;
 
             public int testNumber { get; set; }
 
-            public override void Deserialize(byte[] data)
+            public void Deserialize(byte[] data)
             {
                 testNumber = BitConverter.ToInt32(data, 0);
             }
 
-            public override byte[] Serialize()
+            public byte[] Serialize()
             {
                 return BitConverter.GetBytes(testNumber);
             }

@@ -4,6 +4,7 @@ using CorgEng.EntityComponentSystem.Events;
 using CorgEng.EntityComponentSystem.Events.Events;
 using CorgEng.EntityComponentSystem.Implementations.Transform;
 using CorgEng.EntityComponentSystem.Systems;
+using CorgEng.GenericInterfaces.EntityComponentSystem;
 using CorgEng.GenericInterfaces.Networking.Networking;
 using CorgEng.GenericInterfaces.Networking.Packets;
 using CorgEng.Networking.Components;
@@ -39,7 +40,7 @@ namespace CorgEng.Networking.EntitySystems
         /// Called when a component is added to a specified entity.
         /// This will be networked to all clients in view of the entity.
         /// </summary>
-        private void OnComponentAdded(Entity entity, NetworkTransformComponent transformComponent, ComponentAddedEvent componentAddedEvent)
+        private void OnComponentAdded(IEntity entity, NetworkTransformComponent transformComponent, ComponentAddedEvent componentAddedEvent)
         {
 
         }
@@ -59,7 +60,7 @@ namespace CorgEng.Networking.EntitySystems
         /// Uses the transform component to determine if the entity is near a camera,
         /// so any networked events need to has a transform component on the entity.
         /// </summary>
-        private void OnNetworkedEventRaised(Entity entity, NetworkTransformComponent transformComponent, NetworkedEventRaisedEvent networkedEventRaisedEvent)
+        private void OnNetworkedEventRaised(IEntity entity, NetworkTransformComponent transformComponent, NetworkedEventRaisedEvent networkedEventRaisedEvent)
         {
             ServerCommunicator?.SendToReleventClients(
                 NetworkMessageFactory.CreateMessage(PacketHeaders.LOCAL_EVENT_RAISED, InjectEventCode(networkedEventRaisedEvent.RaisedEvent)),
@@ -69,7 +70,7 @@ namespace CorgEng.Networking.EntitySystems
         }
 
         //Kind of slow due to a lot of memory allocation :(
-        private byte[] InjectEventCode(Event e)
+        private byte[] InjectEventCode(INetworkedEvent e)
         {
             byte[] data = e.Serialize();
             byte[] output = new byte[data.Length + 2];

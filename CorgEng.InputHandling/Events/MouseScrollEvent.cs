@@ -1,4 +1,5 @@
 ﻿using CorgEng.EntityComponentSystem.Events;
+using CorgEng.GenericInterfaces.EntityComponentSystem;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,19 +8,17 @@ using System.Threading.Tasks;
 
 namespace CorgEng.InputHandling.Events
 {
-    public class MouseScrollEvent : Event
+    public class MouseScrollEvent : INetworkedEvent
     {
 
         public double ScrollDelta { get; set; }
-
-        public override bool IsSynced => true;
 
         public MouseScrollEvent(double scrollDelta)
         {
             ScrollDelta = scrollDelta;
         }
 
-        public unsafe override byte[] Serialize()
+        public unsafe byte[] Serialize()
         {
             double value = ScrollDelta;
             byte* bytePointer = (byte*)&value;
@@ -35,7 +34,7 @@ namespace CorgEng.InputHandling.Events
             };
         }
 
-        public unsafe override void Deserialize(byte[] data)
+        public unsafe void Deserialize(byte[] data)
         {
             fixed (byte* dataPointer = data)
             {

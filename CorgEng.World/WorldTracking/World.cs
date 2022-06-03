@@ -1,7 +1,8 @@
 ﻿using CorgEng.Core.Dependencies;
+using CorgEng.DependencyInjection.Dependencies;
 using CorgEng.EntityComponentSystem.Entities;
 using CorgEng.GenericInterfaces.UtilityTypes.BinaryLists;
-using CorgEng.UtilityTypes.PositionBasedBinaryLists;
+using CorgEng.GenericInterfaces.World;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +11,8 @@ using System.Threading.Tasks;
 
 namespace CorgEng.World.WorldTracking
 {
-    internal class WorldTracker
+    [Dependency]
+    internal class World : IWorld
     {
 
         [UsingDependency]

@@ -1,10 +1,13 @@
 ﻿using CorgEng.Core.Dependencies;
+using CorgEng.EntityComponentSystem.Events;
 using CorgEng.EntityComponentSystem.Events.Events;
+using CorgEng.GenericInterfaces.EntityComponentSystem;
 using CorgEng.GenericInterfaces.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace CorgEng.EntityComponentSystem.Entities
@@ -15,13 +18,22 @@ namespace CorgEng.EntityComponentSystem.Entities
         [UsingDependency]
         private static ILogger Logger;
 
-        private static Entity[] entityList = new Entity[1024];
+        private static IEntity[] entityList = new IEntity[1024];
 
-        public static void RegisterEntity(Entity entity)
+        internal static int GarbageCollectionCount = 0;
+
+        internal static int DeletionCount = 0;
+
+        /// <summary>
+        /// Amount of created entities
+        /// </summary>
+        internal static int CreatedEntityCount = 0;
+
+        public static void RegisterEntity(IEntity entity)
         {
             while (entityList.Length < entity.Identifier)
             {
-                Entity[] newEntityList = new Entity[entityList.Length * 2];
+                IEntity[] newEntityList = new IEntity[entityList.Length * 2];
                 entityList.CopyTo(newEntityList, 0);
                 entityList = newEntityList;
                 Logger?.WriteLine($"Extended the entity list to {entityList.Length} entities.", LogType.DEBUG);
@@ -31,14 +43,35 @@ namespace CorgEng.EntityComponentSystem.Entities
             new NewEntityEvent(entity.Identifier).RaiseGlobally();
         }
 
-        public static void RemoveEntity(Entity entity)
+        public static void RemoveEntity(IEntity entity)
         {
             entityList[entity.Identifier] = null;
         }
 
-        public static Entity GetEntity(int identifier)
+        public static IEntity GetEntity(int identifier)
         {
             return entityList[identifier];
+        }
+
+        /// <summary>
+        /// Delete this entity, remove all references to it.
+        /// Triggered when an EntityDeletedEvent is raised against an entity.
+        /// 
+        /// EntityDeletedEvent
+        /// -> Networking
+        /// -> Deletion System Raised
+        /// -> Delete() method
+        /// -> Component local removal + EntityManager removal
+        /// </summary>
+        internal static void Delete(this IEntity entity)
+        {
+            Interlocked.Increment(ref DeletionCount);
+            EntityManager.RemoveEntity(entity);
+            //Remove all components
+            for (int i = entity.Components.Count; i >= 0; i--)
+            {
+                entity.RemoveComponent(entity.Components[i], false);
+            }
         }
 
     }

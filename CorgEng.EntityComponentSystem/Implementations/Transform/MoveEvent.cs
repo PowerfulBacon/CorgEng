@@ -1,4 +1,5 @@
 ﻿using CorgEng.EntityComponentSystem.Events;
+using CorgEng.GenericInterfaces.EntityComponentSystem;
 using CorgEng.UtilityTypes.Vectors;
 using System;
 using System.Collections.Generic;
@@ -8,15 +9,12 @@ using System.Threading.Tasks;
 
 namespace CorgEng.EntityComponentSystem.Implementations.Transform
 {
-    public class MoveEvent : Event
+    public class MoveEvent : INetworkedEvent
     {
 
         public Vector<float> OldPosition { get; set; }
 
         public Vector<float> NewPosition { get; set; }
-
-        //Clients need to know about this
-        public override bool IsSynced => true;
 
         public MoveEvent(Vector<float> oldPosition, Vector<float> newPosition)
         {
@@ -24,7 +22,7 @@ namespace CorgEng.EntityComponentSystem.Implementations.Transform
             NewPosition = newPosition;
         }
 
-        public unsafe override byte[] Serialize()
+        public unsafe byte[] Serialize()
         {
             //Get the old position pointers
             float oldPositionX = OldPosition.X;
@@ -69,7 +67,7 @@ namespace CorgEng.EntityComponentSystem.Implementations.Transform
             };
         }
 
-        public unsafe override void Deserialize(byte[] data)
+        public unsafe void Deserialize(byte[] data)
         {
             fixed (byte* arrayStart = data)
             {
