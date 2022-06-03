@@ -1,4 +1,5 @@
 ﻿using CorgEng.EntityComponentSystem.Entities;
+using CorgEng.GenericInterfaces.EntityComponentSystem;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,19 +31,19 @@ namespace CorgEng.World.WorldTracking
         /// </summary>
         private int fragmentationFactor = 0;
 
-        private Entity[] contentsArray = new Entity[DEFAULT_CONTENT_ARRAY_SIZE];
+        private IEntity[] contentsArray = new IEntity[DEFAULT_CONTENT_ARRAY_SIZE];
 
         /// <summary>
         /// Maximum value used in the array
         /// </summary>
         private int nextInsertionPointer = 0;
 
-        public void Insert(Entity entity)
+        public void Insert(IEntity entity)
         {
             //Array needs growing
             while (nextInsertionPointer == contentsArray.Length)
             {
-                Entity[] arrayRef = contentsArray;
+                IEntity[] arrayRef = contentsArray;
                 contentsArray = new Entity[arrayRef.Length * ARRAY_GROWTH_FACTORY];
                 arrayRef.CopyTo(contentsArray, 0);
             }
@@ -70,7 +71,7 @@ namespace CorgEng.World.WorldTracking
             nextInsertionPointer++;
         }
 
-        public void Remove(Entity entity)
+        public void Remove(IEntity entity)
         {
             //Validation check
             if (contentsArray[entity.ContentsIndex] != entity)

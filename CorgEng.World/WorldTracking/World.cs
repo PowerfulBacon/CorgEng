@@ -1,6 +1,7 @@
 ﻿using CorgEng.Core.Dependencies;
 using CorgEng.DependencyInjection.Dependencies;
 using CorgEng.EntityComponentSystem.Entities;
+using CorgEng.GenericInterfaces.EntityComponentSystem;
 using CorgEng.GenericInterfaces.UtilityTypes.BinaryLists;
 using CorgEng.GenericInterfaces.World;
 using System;
@@ -33,7 +34,7 @@ namespace CorgEng.World.WorldTracking
             }
         }
 
-        public void AddEntity(Entity entity, double x, double y, int mapLevel)
+        public void AddEntity(IEntity entity, double x, double y, int mapLevel)
         {
             IPositionBasedBinaryList<WorldTile> targetLevel = WorldTiles.ElementWithKey(mapLevel);
             //Get the z-level to affect
@@ -55,7 +56,7 @@ namespace CorgEng.World.WorldTracking
             worldTile.Insert(entity);
         }
 
-        public void RemoveEntity(Entity entity, double x, double y, int mapLevel)
+        public void RemoveEntity(IEntity entity, double x, double y, int mapLevel)
         {
             IPositionBasedBinaryList<WorldTile> targetLevel = WorldTiles.ElementWithKey(mapLevel);
             //Target doesn't exist
