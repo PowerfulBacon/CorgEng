@@ -89,7 +89,39 @@ namespace CorgEng.Networking.EntitySystems
                 }
             }
 
-            //TODO: Horizontal stuff too
+            //Horizontal stuff too
+            int lowerY;
+            int upperY;
+            if (newBottom < oldBottom)
+            {
+                lowerY = newBottom;
+                upperY = oldBottom;
+            }
+            else
+            {
+                lowerY = oldTop;
+                upperY = newTop;
+            }
+
+            //Process the vertical delta
+            for (int x = newLeft; x <= newRight; x++)
+            {
+                //TODO: Refactor me
+                if (x >= lowerX && x <= upperX)
+                    continue;
+                for (int y = lowerY; y <= upperY; y++)
+                {
+                    //Get information about the world tile we want to transmit
+                    //TODO: Z-Levels
+                    IContentsHolder contentsHolder = WorldAccess.GetContentsAt(x, y, 0);
+                    //Get a list of all entities that need to be sent
+                    //Painfully expensive
+                    foreach (IEntity entityToTransmit in contentsHolder.GetContents())
+                    {
+                        EntityCommunicator.CommunicateEntity(entityToTransmit, clientComponent.AttachedClient);
+                    }
+                }
+            }
 
         }
 
