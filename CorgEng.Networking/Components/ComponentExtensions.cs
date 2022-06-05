@@ -28,7 +28,7 @@ namespace CorgEng.Networking.Components
         /// A cache of the property infos we need to serialize against their type.
         /// Reflection can be incredibly slow, so caching this information is a requirement.
         /// </summary>
-        private static Dictionary<Type, IEnumerable<PropertyInfo>> propertyInfoCache = new Dictionary<Type, IEnumerable<PropertyInfo>>();
+        internal static Dictionary<Type, IEnumerable<PropertyInfo>> propertyInfoCache = new Dictionary<Type, IEnumerable<PropertyInfo>>();
 
         /// <summary>
         /// Enumerates through all component types and finds all properties that have
@@ -49,6 +49,10 @@ namespace CorgEng.Networking.Components
                 //Get all fields on this member
                 IEnumerable<PropertyInfo> serializedPropertyFields = componentType.GetProperties()
                     .Where(propertyInfo => propertyInfo.GetCustomAttribute<NetworkSerializedAttribute>() != null);
+                if (serializedPropertyFields.Count() > sizeof(long) * 8)
+                {
+                    Logger?.WriteLine($"Component of type {componentType} has more than {sizeof(long) * 8} networked properties. This may cause issues with networking entities due to component identification using flags.");
+                }
                 //Add to the property info cache
                 propertyInfoCache.Add(componentType, serializedPropertyFields);
                 //Check for serialization errors

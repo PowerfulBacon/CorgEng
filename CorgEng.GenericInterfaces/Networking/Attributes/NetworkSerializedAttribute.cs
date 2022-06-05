@@ -9,5 +9,8 @@ namespace CorgEng.GenericInterfaces.Networking.Attributes
     [AttributeUsage(AttributeTargets.Property)]
     public class NetworkSerializedAttribute : Attribute
     {
+
+        public bool prototypeInclude = true;
+
     }
 }

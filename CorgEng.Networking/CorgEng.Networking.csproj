@@ -112,6 +112,8 @@
     <Compile Include="Packets\PacketQueues\QueuedPacket.cs" />
     <Compile Include="Packets\PacketQueues\QueuedPacketFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Prototypes\Prototype.cs" />
+    <Compile Include="Prototypes\PrototypeManager.cs" />
     <Compile Include="VersionSync\VersionGenerator.cs" />
   </ItemGroup>
   <ItemGroup>

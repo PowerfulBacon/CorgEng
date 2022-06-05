@@ -21,5 +21,9 @@ namespace CorgEng.GenericInterfaces.Networking.Packets
         LOCAL_EVENT_RAISED,
         //Networking test message
         NETWORKING_TEST,
+        //Recieved information about a prototype
+        PROTOTYPE_INFO,
+        //Client requests information about a prototype
+        REQUEST_PROTOTYPE,
     }
 }

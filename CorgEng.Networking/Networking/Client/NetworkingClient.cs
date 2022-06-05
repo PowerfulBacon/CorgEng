@@ -382,6 +382,8 @@ namespace CorgEng.Networking.Networking.Client
                         raisedEvent.Deserialize(data.Skip(start + 0x02).Take(length).ToArray());
                         raisedEvent.RaiseGlobally();
                         return;
+                    case PacketHeaders.PROTOTYPE_INFO:
+                        //Recieved information about a prototype.
 #if DEBUG
                     default:
                         Logger?.WriteLine($"Unknown packet header: {header}. This packet may be a bug or from a malicious attack (Debug build is on, so this message is shown which may slow the server down).", LogType.WARNING);
