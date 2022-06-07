@@ -18,6 +18,10 @@ namespace CorgEng.Networking.Prototypes
 
         public uint Identifier { get; set; } = PrototypeIdentifierHighest++;
 
+        /// <summary>
+        /// The prototype components
+        /// 
+        /// </summary>
         Dictionary<Type, Dictionary<PropertyInfo, object>> prototypeComponents = new Dictionary<Type, Dictionary<PropertyInfo, object>>();
 
         public IEntity CreateEntityFromPrototype()
@@ -46,6 +50,8 @@ namespace CorgEng.Networking.Prototypes
 
         public byte[] SerializePrototype()
         {
+            List<byte> serialized = new List<byte>();
+
         }
 
     }

@@ -25,7 +25,7 @@ namespace CorgEng.Networking.Prototypes
         private struct UniqueComponentIdentification
         {
             public int componentIdentifier;
-            public long propertyIdentifier;
+            public IList<long> propertyIdentifier;
         }
 
         [UsingDependency]
@@ -41,7 +41,9 @@ namespace CorgEng.Networking.Prototypes
         private TreeNode<long, IPrototype> PrototypeTree = new TreeNode<long, IPrototype>();
 
         /// <summary>
-        /// Gets the prototype related to an entity
+        /// Gets the prototype related to an entity.
+        /// This code is pretty long, this probably needs caching or it might be worse
+        /// than just sending the whole entity every time.
         /// </summary>
         /// <param name="entity"></param>
         /// <returns></returns>
@@ -64,15 +66,13 @@ namespace CorgEng.Networking.Prototypes
                 //Get the component sycned ID
                 UniqueComponentIdentification uniqueComponentIdentification = new UniqueComponentIdentification();
                 uniqueComponentIdentification.componentIdentifier = component.GetNetworkedIdentifier();
-                uniqueComponentIdentification.propertyIdentifier = 0;
+                uniqueComponentIdentification.propertyIdentifier = new List<long>();
                 componentIdentifiers.Add(uniqueComponentIdentification.componentIdentifier, uniqueComponentIdentification);
                 IEnumerable<PropertyInfo> componentTypes = ComponentExtensions.propertyInfoCache[componentType];
-                //Fetch all prototyped properties
-                int j = 0;
-                foreach (PropertyInfo propertyInfo in componentTypes)
+                foreach (PropertyInfo property in componentTypes)
                 {
-                    uniqueComponentIdentification.propertyIdentifier += 1 << j;
-                    j = (j + 1) % (sizeof(long) * 8);
+                    long value = property.GetValue(component).GetHashCode();
+                    uniqueComponentIdentification.propertyIdentifier.Add(value);
                 }
             }
             //Now we need to traverse the prototype tree to see if it already exists
@@ -84,7 +84,10 @@ namespace CorgEng.Networking.Prototypes
                 //First go to the component identifier
                 current = current.GotoChildOrCreate(componentIdentification.componentIdentifier);
                 //Then go to the property identifiers
-                current = current.GotoChildOrCreate(componentIdentification.propertyIdentifier);
+                foreach (long componentValue in componentIdentification.propertyIdentifier)
+                {
+                    current = current.GotoChildOrCreate(componentValue);
+                }
             }
             //The current node is now the prototype we require
             if (current.Value != null)

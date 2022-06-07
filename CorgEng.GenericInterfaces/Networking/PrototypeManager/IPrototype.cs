@@ -1,4 +1,5 @@
 ﻿using CorgEng.GenericInterfaces.EntityComponentSystem;
+using CorgEng.GenericInterfaces.Networking.VersionSync;
 using System;
 using System.Collections.Generic;
 using System.Linq;

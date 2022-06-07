@@ -49,10 +49,6 @@ namespace CorgEng.Networking.Components
                 //Get all fields on this member
                 IEnumerable<PropertyInfo> serializedPropertyFields = componentType.GetProperties()
                     .Where(propertyInfo => propertyInfo.GetCustomAttribute<NetworkSerializedAttribute>() != null);
-                if (serializedPropertyFields.Count() > sizeof(long) * 8)
-                {
-                    Logger?.WriteLine($"Component of type {componentType} has more than {sizeof(long) * 8} networked properties. This may cause issues with networking entities due to component identification using flags.");
-                }
                 //Add to the property info cache
                 propertyInfoCache.Add(componentType, serializedPropertyFields);
                 //Check for serialization errors
