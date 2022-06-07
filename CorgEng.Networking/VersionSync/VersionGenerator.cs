@@ -65,6 +65,13 @@ namespace CorgEng.Networking.VersionSync
             Logger?.WriteLine($"Generated IDs for {number - 1} networked types, current networked version ID: {versionID}", LogType.MESSAGE);
         }
 
+        public static ushort GetNetworkedIdentifier(this Type type)
+        {
+            ushort output;
+            networkedTypeIds.TryGetValue(type, out output);
+            return output;
+        }
+
         public static ushort GetNetworkedIdentifier(this IVersionSynced versionSyncedType)
         {
             ushort output;
