@@ -96,6 +96,7 @@
     <Compile Include="FontTests\FontTests.cs" />
     <Compile Include="NetworkingTests\ClientAddressTests.cs" />
     <Compile Include="NetworkingTests\NetworkingTest.cs" />
+    <Compile Include="NetworkingTests\PrototypeTests.cs" />
     <Compile Include="NetworkingTests\SerializationTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Stubs\IRenderCoreStubFactory.cs" />
