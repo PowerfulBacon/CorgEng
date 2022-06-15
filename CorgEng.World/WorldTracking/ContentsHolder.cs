@@ -32,16 +32,16 @@ namespace CorgEng.World.WorldTracking
         /// </summary>
         private int fragmentationFactor = 0;
 
-        private IEntity[] contentsArray = new IEntity[DEFAULT_CONTENT_ARRAY_SIZE];
+        internal IEntity[] contentsArray = new IEntity[DEFAULT_CONTENT_ARRAY_SIZE];
 
         /// <summary>
         /// Maximum value used in the array
         /// </summary>
-        private int nextInsertionPointer = 0;
-
+        internal int nextInsertionPointer = 0;
+        
         public IEnumerable<IEntity> GetContents()
         {
-            throw new NotImplementedException();
+            return new ContentsEnumerable(this);
         }
 
         public void Insert(IEntity entity)

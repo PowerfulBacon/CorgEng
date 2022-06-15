@@ -3,13 +3,19 @@ using CorgEng.EntityComponentSystem.Components;
 using CorgEng.EntityComponentSystem.Entities;
 using CorgEng.GenericInterfaces.ContentLoading;
 using CorgEng.GenericInterfaces.EntityComponentSystem;
+using CorgEng.GenericInterfaces.Logging;
 using CorgEng.GenericInterfaces.Networking.Attributes;
+using CorgEng.GenericInterfaces.Networking.Networking;
+using CorgEng.GenericInterfaces.Networking.Networking.Client;
+using CorgEng.GenericInterfaces.Networking.Networking.Server;
 using CorgEng.GenericInterfaces.Networking.PrototypeManager;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace CorgEng.Tests.NetworkingTests
@@ -40,9 +46,35 @@ namespace CorgEng.Tests.NetworkingTests
         [UsingDependency]
         private static IPrototypeManager PrototypeManager;
 
-        [TestMethod]
-        public void TextPrototypes()
+        [UsingDependency]
+        private static INetworkingServer Server;
+
+        [UsingDependency]
+        private static INetworkingClient Client;
+
+        [UsingDependency]
+        private static ILogger Logger;
+
+        [TestCleanup]
+        public void AfterTest()
         {
+            Server.Cleanup();
+            Client.Cleanup();
+        }
+
+        [TestMethod]
+        [Timeout(10000)]
+        public void TestPrototypes()
+        {
+            bool success = false;
+            Server.StartHosting(5000);
+            Client.OnConnectionSuccess += (IPAddress ipAddress) => { success = true; };
+            Client.OnConnectionFailed += (IPAddress ipAddress, DisconnectReason disconnectReason, string reasonText) => { Assert.Fail("Connection failed, server rejected connection."); };
+            Client.AttemptConnection("127.0.0.1", 5000, 1000);
+
+            while (!success)
+                Thread.Sleep(0);
+
             //Create an entity
             IEntity entity = new Entity();
             TestComponent testComponent = new TestComponent();
@@ -53,6 +85,11 @@ namespace CorgEng.Tests.NetworkingTests
             //Serialize the entity's prototype
             IPrototype collectedPrototype = PrototypeManager.GetPrototype(entity);
             byte[] serialisedPrototype = collectedPrototype.SerializePrototype();
+
+            //Log the serialised prototype
+            string logMessage = string.Join("|", serialisedPrototype);
+            Logger.WriteLine(logMessage, LogType.DEBUG);
+
             //Deserialize the entity's prototype
             IPrototype deserialisedPrototype = PrototypeManager.GetProtoype(serialisedPrototype);
             IEntity createdEntity = deserialisedPrototype.CreateEntityFromPrototype();

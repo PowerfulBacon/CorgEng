@@ -1,5 +1,7 @@
-﻿using CorgEng.EntityComponentSystem.Entities;
+﻿using CorgEng.Core.Dependencies;
+using CorgEng.EntityComponentSystem.Entities;
 using CorgEng.GenericInterfaces.EntityComponentSystem;
+using CorgEng.GenericInterfaces.Logging;
 using CorgEng.GenericInterfaces.Networking.PrototypeManager;
 using CorgEng.GenericInterfaces.Networking.Serialisation;
 using CorgEng.Networking.Components;
@@ -18,6 +20,9 @@ namespace CorgEng.Networking.Prototypes
 {
     internal class Prototype : IPrototype
     {
+
+        [UsingDependency]
+        private static ILogger Logger;
 
         private static uint PrototypeIdentifierHighest = 0;
 
@@ -49,7 +54,7 @@ namespace CorgEng.Networking.Prototypes
 
         public void DeserializePrototype(byte[] data)
         {
-            null;
+            throw new NotImplementedException();
         }
 
         public byte[] SerializePrototype()
@@ -58,7 +63,7 @@ namespace CorgEng.Networking.Prototypes
             //Write the prototype identifier
             int size = 0;
             objectsToWrite.Add(Identifier);
-            size += sizeof(ushort);
+            size += sizeof(uint);
             //Go through each component and serialize it
             foreach (Type componentType in prototypeComponents.Keys)
             {
@@ -74,6 +79,7 @@ namespace CorgEng.Networking.Prototypes
                     size += Marshal.SizeOf(valueToWrite);
                 }
             }
+            Logger?.WriteLine($"Creating a memory stream with size: {size}", LogType.TEMP);
             //Begin the writing process
             byte[] serializedArray = new byte[size];
             using (MemoryStream memStream = new MemoryStream(serializedArray))

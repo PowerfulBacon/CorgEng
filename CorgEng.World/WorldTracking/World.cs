@@ -56,6 +56,11 @@ namespace CorgEng.World.WorldTracking
             worldTile.Insert(entity);
         }
 
+        public IContentsHolder GetContentsAt(double x, double y, int mapLevel)
+        {
+            return WorldTiles.ElementWithKey(mapLevel)?.Get((int)Math.Floor(x), (int)Math.Floor(y));
+        }
+
         public void RemoveEntity(IEntity entity, double x, double y, int mapLevel)
         {
             IPositionBasedBinaryList<ContentsHolder> targetLevel = WorldTiles.ElementWithKey(mapLevel);

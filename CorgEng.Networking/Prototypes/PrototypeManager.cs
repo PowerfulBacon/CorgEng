@@ -1,6 +1,7 @@
 ﻿using CorgEng.Core.Dependencies;
 using CorgEng.DependencyInjection.Dependencies;
 using CorgEng.GenericInterfaces.EntityComponentSystem;
+using CorgEng.GenericInterfaces.Logging;
 using CorgEng.GenericInterfaces.Networking.Networking;
 using CorgEng.GenericInterfaces.Networking.Packets;
 using CorgEng.GenericInterfaces.Networking.PrototypeManager;
@@ -22,11 +23,14 @@ namespace CorgEng.Networking.Prototypes
     internal class PrototypeManager : IPrototypeManager
     {
 
-        private struct UniqueComponentIdentification
+        private class UniqueComponentIdentification
         {
             public int componentIdentifier;
             public IList<long> propertyIdentifier;
         }
+
+        [UsingDependency]
+        private static ILogger Logger;
 
         [UsingDependency]
         private static IBinaryListFactory BinaryListFactory;
@@ -78,8 +82,10 @@ namespace CorgEng.Networking.Prototypes
             //Now we need to traverse the prototype tree to see if it already exists
             UniqueComponentIdentification componentIdentification;
             TreeNode<long, IPrototype> current = PrototypeTree;
+            int a = componentIdentifiers.Length();
             while (componentIdentifiers.Length() > 0)
             {
+                //TODO: This stops the loop for some reason
                 componentIdentification = componentIdentifiers.TakeFirst();
                 //First go to the component identifier
                 current = current.GotoChildOrCreate(componentIdentification.componentIdentifier);
@@ -96,9 +102,9 @@ namespace CorgEng.Networking.Prototypes
             IPrototype createdPrototype = new Prototype();
             INetworkMessage message = NetworkMessageFactory.CreateMessage(
                 PacketHeaders.PROTOTYPE_INFO,
-
+                createdPrototype.SerializePrototype()
                 );
-            ServerCommunicator.SendToClients();
+            ServerCommunicator.SendToClients(message);
             return createdPrototype;
         }
 

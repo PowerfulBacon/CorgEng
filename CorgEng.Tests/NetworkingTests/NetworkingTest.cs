@@ -39,19 +39,6 @@ namespace CorgEng.Tests.NetworkingTests
         [UsingDependency]
         private static ILogger Logger;
 
-        private static bool initialized = false;
-
-        [TestInitialize]
-        public void NetworkingTests()
-        {
-            if (!initialized)
-            {
-                //Initialize networked IDs
-                VersionGenerator.CreateNetworkedIDs();
-                initialized = true;
-            }
-        }
-
         [TestCleanup]
         public void AfterTest()
         {

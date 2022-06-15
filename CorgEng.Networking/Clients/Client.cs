@@ -16,6 +16,8 @@ namespace CorgEng.Networking.Clients
 
         public string Username { get; }
 
+        public ClientView View { get; } = new ClientView();
+
         public Client(string username, IPEndPoint clientEndPoint)
         {
             Username = username;
