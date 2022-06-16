@@ -19,6 +19,12 @@ namespace CorgEng.GenericInterfaces.Networking.PrototypeManager
         uint Identifier { get; }
 
         /// <summary>
+        /// Generates this prototype based on a provided entity
+        /// </summary>
+        /// <param name="entity"></param>
+        void GenerateFromEntity(IEntity entity);
+
+        /// <summary>
         /// Create an entity based on the information in this prototype
         /// </summary>
         /// <returns>An instantiated entity based on the contents of this prototype.</returns>

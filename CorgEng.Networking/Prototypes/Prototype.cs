@@ -33,6 +33,21 @@ namespace CorgEng.Networking.Prototypes
         /// </summary>
         Dictionary<Type, Dictionary<PropertyInfo, object>> prototypeComponents = new Dictionary<Type, Dictionary<PropertyInfo, object>>();
 
+        public void GenerateFromEntity(IEntity entity)
+        {
+            foreach (IComponent component in entity.Components)
+            {
+                Dictionary<PropertyInfo, object> propertyVariableInformation = new Dictionary<PropertyInfo, object>();
+                //Load the property information
+                foreach (PropertyInfo propertyInfo in ComponentExtensions.propertyInfoCache[component.GetType()])
+                {
+                    propertyVariableInformation.Add(propertyInfo, propertyInfo.GetValue(component));
+                }
+                //Store
+                prototypeComponents.Add(component.GetType(), propertyVariableInformation);
+            }
+        }
+
         public IEntity CreateEntityFromPrototype()
         {
             IEntity createdEntity = new Entity();
@@ -76,7 +91,14 @@ namespace CorgEng.Networking.Prototypes
                 {
                     object valueToWrite = prototypeComponents[componentType][propInfo];
                     objectsToWrite.Add(valueToWrite);
-                    size += Marshal.SizeOf(valueToWrite);
+                    if (valueToWrite is string)
+                    {
+                        size += sizeof(byte) * ((string)valueToWrite).Length + sizeof(ushort);
+                    }
+                    else
+                    {
+                        size += Marshal.SizeOf(valueToWrite);
+                    }
                 }
             }
             Logger?.WriteLine($"Creating a memory stream with size: {size}", LogType.TEMP);
@@ -92,7 +114,7 @@ namespace CorgEng.Networking.Prototypes
                             ((ICustomSerialisationBehaviour)objectToWrite).SerialiseInto(binaryWriter);
                         else if (objectToWrite.GetType() == typeof(string))
                         {
-                            byte[] byteArray = Encoding.ASCII.GetBytes(objectsToWrite.ToString());
+                            byte[] byteArray = Encoding.ASCII.GetBytes(objectToWrite.ToString());
                             binaryWriter.Write((ushort)byteArray.Length);
                             binaryWriter.Write(byteArray);
                         }

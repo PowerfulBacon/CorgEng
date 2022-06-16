@@ -63,7 +63,6 @@ namespace CorgEng.Tests.NetworkingTests
         }
 
         [TestMethod]
-        [Timeout(10000)]
         public void TestPrototypes()
         {
             bool success = false;

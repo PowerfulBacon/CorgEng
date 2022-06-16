@@ -100,6 +100,7 @@ namespace CorgEng.Networking.Prototypes
                 return current.Value;
             //Create the prototype and tell all clients about the new prototype
             IPrototype createdPrototype = new Prototype();
+            createdPrototype.GenerateFromEntity(entity);
             INetworkMessage message = NetworkMessageFactory.CreateMessage(
                 PacketHeaders.PROTOTYPE_INFO,
                 createdPrototype.SerializePrototype()
