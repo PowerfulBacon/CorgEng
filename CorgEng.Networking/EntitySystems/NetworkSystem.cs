@@ -5,6 +5,7 @@ using CorgEng.EntityComponentSystem.Events.Events;
 using CorgEng.EntityComponentSystem.Implementations.Transform;
 using CorgEng.EntityComponentSystem.Systems;
 using CorgEng.GenericInterfaces.EntityComponentSystem;
+using CorgEng.GenericInterfaces.Networking.Config;
 using CorgEng.GenericInterfaces.Networking.Networking;
 using CorgEng.GenericInterfaces.Networking.Packets;
 using CorgEng.Networking.Components;
@@ -22,12 +23,15 @@ namespace CorgEng.Networking.EntitySystems
     {
 
         [UsingDependency]
+        private static INetworkConfig NetworkConfig;
+
+        [UsingDependency]
         private static IServerCommunicator ServerCommunicator;
 
         [UsingDependency]
         private static INetworkMessageFactory NetworkMessageFactory;
 
-        public override EntitySystemFlags SystemFlags { get; } = EntitySystemFlags.HOST_SYSTEM;
+        public override EntitySystemFlags SystemFlags { get; } = EntitySystemFlags.HOST_SYSTEM | EntitySystemFlags.CLIENT_SYSTEM;
 
         public override void SystemSetup()
         {
@@ -50,9 +54,18 @@ namespace CorgEng.Networking.EntitySystems
         /// </summary>
         private void OnGlobalNetworkedEventRaised(NetworkedEventRaisedEvent networkedEventRaisedEvent)
         {
-            ServerCommunicator?.SendToClients(
-                NetworkMessageFactory.CreateMessage(PacketHeaders.GLOBAL_EVENT_RAISED, InjectEventCode(networkedEventRaisedEvent.RaisedEvent))
-                );
+            if (NetworkConfig.ProcessServerSystems)
+            {
+                //Send the message to clients
+                ServerCommunicator?.SendToClients(
+                    NetworkMessageFactory.CreateMessage(PacketHeaders.GLOBAL_EVENT_RAISED, InjectEventCode(networkedEventRaisedEvent.RaisedEvent))
+                    );
+            }
+            else if (NetworkConfig.ProcessClientSystems)
+            {
+                //Send the message to the server
+            }
+            
         }
 
         /// <summary>
@@ -62,14 +75,18 @@ namespace CorgEng.Networking.EntitySystems
         /// </summary>
         private void OnNetworkedEventRaised(IEntity entity, NetworkTransformComponent transformComponent, NetworkedEventRaisedEvent networkedEventRaisedEvent)
         {
-            ServerCommunicator?.SendToReleventClients(
-                NetworkMessageFactory.CreateMessage(PacketHeaders.LOCAL_EVENT_RAISED, InjectEventCode(networkedEventRaisedEvent.RaisedEvent)),
-                transformComponent.Position,
-                new Vector<float>(1, 1, 1)
-                );
+            if (NetworkConfig.ProcessServerSystems)
+            {
+                ServerCommunicator?.SendToReleventClients(
+                    NetworkMessageFactory.CreateMessage(PacketHeaders.LOCAL_EVENT_RAISED, InjectEventCode(networkedEventRaisedEvent.RaisedEvent)),
+                    transformComponent.Position,
+                    new Vector<float>(1, 1, 1)
+                    );
+            }
         }
 
         //Kind of slow due to a lot of memory allocation :(
+        //TODO: Improve the speed of this
         private byte[] InjectEventCode(INetworkedEvent e)
         {
             byte[] data = e.Serialize();

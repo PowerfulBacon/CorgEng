@@ -2,6 +2,7 @@
 using CorgEng.EntityComponentSystem.Implementations.Transform;
 using CorgEng.EntityComponentSystem.Systems;
 using CorgEng.GenericInterfaces.EntityComponentSystem;
+using CorgEng.GenericInterfaces.Logging;
 using CorgEng.GenericInterfaces.Networking.Networking.Server;
 using CorgEng.GenericInterfaces.World;
 using CorgEng.Networking.Components;
@@ -20,6 +21,9 @@ namespace CorgEng.Networking.EntitySystems
     /// </summary>
     internal class ClientSystem : EntitySystem
     {
+
+        [UsingDependency]
+        private static ILogger Logger;
 
         [UsingDependency]
         private static IEntityCommunicator EntityCommunicator;
@@ -60,6 +64,8 @@ namespace CorgEng.Networking.EntitySystems
                     //Get information about the world tile we want to transmit
                     //TODO: Z-Levels
                     IContentsHolder contentsHolder = WorldAccess.GetContentsAt(x, y, 0);
+                    if (contentsHolder == null)
+                        continue;
                     //Get a list of all entities that need to be sent
                     //Painfully expensive
                     foreach (IEntity entityToTransmit in contentsHolder.GetContents())
@@ -68,6 +74,8 @@ namespace CorgEng.Networking.EntitySystems
                     }
                 }
             }
+
+            Logger?.WriteLine("A client connected and was sent information about their view.", LogType.DEBUG);
         }
 
         /// <summary>

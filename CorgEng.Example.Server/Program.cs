@@ -35,7 +35,6 @@ namespace CorgEng.Example.Server
 
             while (true)
             {
-                new KeyHeldEvent(Keys.W).RaiseGlobally();
                 Thread.Sleep(100);
             }
         }
