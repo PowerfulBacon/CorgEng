@@ -69,7 +69,60 @@ namespace CorgEng.Networking.Prototypes
 
         public void DeserializePrototype(byte[] data)
         {
-            throw new NotImplementedException();
+            using (MemoryStream memStream = new MemoryStream(data))
+            {
+                using (BinaryReader binaryReader = new BinaryReader(memStream))
+                {
+                    //Read the prototype identifier
+                    Identifier = binaryReader.ReadUInt32();
+                    //Read all components
+                    while (binaryReader.PeekChar() != -1)
+                    {
+                        //Read the component type identifier
+                        ushort componentTypeIdentifier = binaryReader.ReadUInt16();
+                        //Create an uninitialised version of that component
+                        IComponent uninitialisedComponent = VersionGenerator.CreateTypeFromIdentifier<IComponent>(componentTypeIdentifier);
+                        Dictionary<PropertyInfo, object> variableProperties = new Dictionary<PropertyInfo, object>();
+                        //Go ahead and set all the properties of the component
+                        foreach (PropertyInfo propInfo in ComponentExtensions.propertyInfoCache[uninitialisedComponent.GetType()])
+                        {
+                            //Set the value based on the property type
+                            if (propInfo.PropertyType == typeof(string))
+                            {
+                                ushort stringLength = binaryReader.ReadUInt16();
+                                byte[] byteArray = binaryReader.ReadBytes(stringLength);
+                                variableProperties.Add(propInfo, Encoding.ASCII.GetString(byteArray));
+                            }
+                            else if (propInfo.PropertyType == typeof(byte))
+                                variableProperties.Add(propInfo, binaryReader.ReadByte());
+                            else if (propInfo.PropertyType == typeof(char))
+                                variableProperties.Add(propInfo, binaryReader.ReadChar());
+                            else if (propInfo.PropertyType == typeof(int))
+                                variableProperties.Add(propInfo, binaryReader.ReadInt32());
+                            else if (propInfo.PropertyType == typeof(float))
+                                variableProperties.Add(propInfo, binaryReader.ReadSingle());
+                            else if (propInfo.PropertyType == typeof(double))
+                                variableProperties.Add(propInfo, binaryReader.ReadDouble());
+                            else if (propInfo.PropertyType == typeof(long))
+                                variableProperties.Add(propInfo, binaryReader.ReadInt64());
+                            else if (propInfo.PropertyType == typeof(short))
+                                variableProperties.Add(propInfo, binaryReader.ReadInt16());
+                            else if (propInfo.PropertyType == typeof(uint))
+                                variableProperties.Add(propInfo, binaryReader.ReadUInt32());
+                            else if (propInfo.PropertyType == typeof(ushort))
+                                variableProperties.Add(propInfo, binaryReader.ReadUInt16());
+                            else if (propInfo.PropertyType == typeof(ulong))
+                                variableProperties.Add(propInfo, binaryReader.ReadUInt64());
+                            else if (propInfo.PropertyType == typeof(decimal))
+                                variableProperties.Add(propInfo, binaryReader.ReadDecimal());
+                            else
+                                binaryReader.ReadBytes(Marshal.SizeOf(propInfo.PropertyType));
+                        }
+                        //Add the component to the property
+                        prototypeComponents.Add(VersionGenerator.GetTypeFromNetworkedIdentifier(componentTypeIdentifier), variableProperties);
+                    }
+                }
+            }
         }
 
         public byte[] SerializePrototype()

@@ -5,6 +5,7 @@ using CorgEng.GenericInterfaces.EntityComponentSystem;
 using CorgEng.GenericInterfaces.Networking.Networking.Server;
 using CorgEng.GenericInterfaces.World;
 using CorgEng.Networking.Components;
+using CorgEng.Networking.Events;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,7 +31,43 @@ namespace CorgEng.Networking.EntitySystems
 
         public override void SystemSetup()
         {
+            RegisterLocalEvent<ClientComponent, ClientConnectedEvent>(OnClientConnected);
             RegisterLocalEvent<ClientComponent, MoveEvent>(OnClientMoved);
+        }
+
+        /// <summary>
+        /// Called when a client connects to the server.
+        /// Transmits information about objects near them.
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <param name="clientComponent"></param>
+        /// <param name=""></param>
+        /// <param name="clientConnectedEvent"></param>
+        private void OnClientConnected(IEntity entity, ClientComponent clientComponent, ClientConnectedEvent clientConnectedEvent)
+        {
+            //Transmit the information about the entities nearby
+
+            //Calculate the new bounds
+            int left = (int)Math.Floor(clientComponent.AttachedClient.View.ViewOffsetX - clientComponent.AttachedClient.View.ViewWidth);
+            int right = (int)Math.Floor(clientComponent.AttachedClient.View.ViewOffsetX + clientComponent.AttachedClient.View.ViewWidth);
+            int top = (int)Math.Floor(clientComponent.AttachedClient.View.ViewOffsetY - clientComponent.AttachedClient.View.ViewHeight);
+            int bottom = (int)Math.Floor(clientComponent.AttachedClient.View.ViewOffsetY + clientComponent.AttachedClient.View.ViewHeight);
+
+            for (int x = left; x <= right; x++)
+            {
+                for (int y = bottom; y <= top; y++)
+                {
+                    //Get information about the world tile we want to transmit
+                    //TODO: Z-Levels
+                    IContentsHolder contentsHolder = WorldAccess.GetContentsAt(x, y, 0);
+                    //Get a list of all entities that need to be sent
+                    //Painfully expensive
+                    foreach (IEntity entityToTransmit in contentsHolder.GetContents())
+                    {
+                        EntityCommunicator.CommunicateEntity(entityToTransmit, clientComponent.AttachedClient);
+                    }
+                }
+            }
         }
 
         /// <summary>

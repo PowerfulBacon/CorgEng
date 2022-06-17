@@ -79,6 +79,11 @@ namespace CorgEng.Networking.VersionSync
             return output;
         }
 
+        public static Type GetTypeFromNetworkedIdentifier(ushort networkedID)
+        {
+            return networkIdToType[networkedID];
+        }
+
         /// <summary>
         /// Returns an uninitialized object of the type represented by the identifier of that type.
         /// </summary>

@@ -24,17 +24,6 @@ namespace CorgEng.Tests.NetworkingTests
         [UsingDependency]
         private static ILogger Logger;
 
-        private static bool setup = false;
-
-        [TestInitialize]
-        public void TestInit()
-        {
-            if (setup)
-                return;
-            setup = true;
-            ComponentExtensions.LoadPropertyInfoCache();
-        }
-
         [TestMethod]
         public void TestComponentSerialization()
         {

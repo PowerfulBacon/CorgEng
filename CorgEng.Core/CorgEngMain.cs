@@ -97,9 +97,6 @@ namespace CorgEng.Core
         /// </summary>
         public static void TransferToRenderingThread()
         {
-            double timeLeft = 1;
-            double totalDeltaTime = 0;
-            int counts = 0;
             //While the window shouldn't close
             while (!GameWindow.ShouldClose())
             {
@@ -118,14 +115,6 @@ namespace CorgEng.Core
                 //Pass the output image from the render core to the internal renderer
                 InternalRenderMaster.RenderImageToScreen(MainRenderCore);
                 DeltaTime = Glfw.Time - lastFrameTime;
-                totalDeltaTime += DeltaTime;
-                counts++;
-                timeLeft -= DeltaTime;
-                if (timeLeft < 0)
-                {
-                    Logger.WriteLine($"Average Frame Delta: {totalDeltaTime/counts}. Average FPS: {1/(totalDeltaTime/counts)}.Frame Delta Time: {DeltaTime}s. Frame rate: {1/DeltaTime}", LogType.TEMP);
-                    timeLeft = 1;
-                }
             }
         }
 

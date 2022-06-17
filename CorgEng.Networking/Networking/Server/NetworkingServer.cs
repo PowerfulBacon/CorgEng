@@ -1,6 +1,9 @@
 ﻿using CorgEng.Core.Dependencies;
 using CorgEng.DependencyInjection.Dependencies;
+using CorgEng.EntityComponentSystem.Entities;
 using CorgEng.EntityComponentSystem.Events;
+using CorgEng.EntityComponentSystem.Implementations.Transform;
+using CorgEng.GenericInterfaces.EntityComponentSystem;
 using CorgEng.GenericInterfaces.Logging;
 using CorgEng.GenericInterfaces.Networking.Clients;
 using CorgEng.GenericInterfaces.Networking.Config;
@@ -8,6 +11,7 @@ using CorgEng.GenericInterfaces.Networking.Networking;
 using CorgEng.GenericInterfaces.Networking.Networking.Server;
 using CorgEng.GenericInterfaces.Networking.Packets;
 using CorgEng.GenericInterfaces.Networking.Packets.PacketQueues;
+using CorgEng.Networking.Components;
 using CorgEng.Networking.Events;
 using CorgEng.Networking.VersionSync;
 using System;
@@ -163,8 +167,11 @@ namespace CorgEng.Networking.Networking.Server
                     stopwatch.Stop();
                     double elapsedMilliseconds = stopwatch.ElapsedMilliseconds;
                     double waitTime = inverseTickrate - elapsedMilliseconds;
-                    //Sleep the thread
-                    shutdownThreadTrigger.WaitOne((int)waitTime);
+                    if (waitTime > 0)
+                    {
+                        //Sleep the thread
+                        shutdownThreadTrigger.WaitOne((int)waitTime);
+                    }
                 }
                 catch (Exception e)
                 {
@@ -283,8 +290,12 @@ namespace CorgEng.Networking.Networking.Server
             QueueMessage(
                 ClientAddressingTable.AddClient(createdClient),
                 NetworkMessageFactory.CreateMessage(PacketHeaders.CONNECTION_ACCEPT, new byte[0]));
-            //Send a connection event globally
-            new ClientConnectedEvent(createdClient).RaiseGlobally();
+            //Create a new client entity and add what we need
+            IEntity createdEntity = new Entity();
+            createdEntity.AddComponent(new TransformComponent());
+            createdEntity.AddComponent(new ClientComponent() { AttachedClient = createdClient });
+            //Send a connection event
+            new ClientConnectedEvent(createdClient).Raise(createdEntity);
         }
 
         public void QueueMessage(IClientAddress targets, INetworkMessage message)

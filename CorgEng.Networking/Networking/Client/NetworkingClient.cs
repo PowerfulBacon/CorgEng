@@ -244,8 +244,11 @@ namespace CorgEng.Networking.Networking.Client
                     stopwatch.Stop();
                     double elapsedMilliseconds = stopwatch.ElapsedMilliseconds;
                     double waitTime = inverseTickrate - elapsedMilliseconds;
-                    //Sleep the thread
-                    shutdownThreadTrigger.WaitOne((int)waitTime);
+                    if (waitTime > 0)
+                    {
+                        //Sleep the thread
+                        shutdownThreadTrigger.WaitOne((int)waitTime);
+                    }
                 }
                 catch (Exception e)
                 {
