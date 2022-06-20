@@ -111,6 +111,7 @@
     <Compile Include="Networking\Clients\IClientAddressingTableFactory.cs" />
     <Compile Include="Networking\Clients\IClientFactory.cs" />
     <Compile Include="Networking\Config\INetworkConfig.cs" />
+    <Compile Include="Networking\Networking\Client\IClientCommunicator.cs" />
     <Compile Include="Networking\Networking\DisconnectReason.cs" />
     <Compile Include="Networking\Networking\Client\INetworkingClient.cs" />
     <Compile Include="Networking\Networking\MessageReceived.cs" />

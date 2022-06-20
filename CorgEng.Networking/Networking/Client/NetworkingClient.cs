@@ -10,6 +10,7 @@ using CorgEng.GenericInterfaces.Networking.Networking;
 using CorgEng.GenericInterfaces.Networking.Networking.Client;
 using CorgEng.GenericInterfaces.Networking.Packets;
 using CorgEng.GenericInterfaces.Networking.Packets.PacketQueues;
+using CorgEng.Networking.Networking.Server;
 using CorgEng.Networking.VersionSync;
 using System;
 using System.Collections.Generic;
@@ -124,6 +125,7 @@ namespace CorgEng.Networking.Networking.Client
             //Attempt a connection
             udpClient = new UdpClient();
             udpClient.Connect(ipAddress, port);
+            ClientCommunicator.client = this;
             //Begin the timeout task
             Task.Run(() =>
             {
@@ -229,16 +231,23 @@ namespace CorgEng.Networking.Networking.Client
                     //Create a stopwatch to get the current time
                     stopwatch.Restart();
                     //Transmit packets
-                    while (PacketQueue.HasMessages())
+                    while (PacketQueue.AcquireLockIfHasMessages())
                     {
-                        //Dequeue the packet from the queue
-                        IQueuedPacket queuedPacket = PacketQueue.DequeuePacket();
-                        //Transmit the packet to the server
-                        byte[] data = queuedPacket.Data;
-                        //Asynchronously send the data
-                        //We send all the data straight to the server.
-                        //The client cannot communicate with other clients.
-                        udpClient.SendAsync(data, queuedPacket.TopPointer);
+                        try
+                        {
+                            //Dequeue the packet from the queue
+                            IQueuedPacket queuedPacket = PacketQueue.DequeuePacket();
+                            //Transmit the packet to the server
+                            byte[] data = queuedPacket.Data;
+                            //Asynchronously send the data
+                            //We send all the data straight to the server.
+                            //The client cannot communicate with other clients.
+                            udpClient.SendAsync(data, queuedPacket.TopPointer);
+                        }
+                        finally
+                        {
+                            PacketQueue.ReleaseLock();
+                        }
                     }
                     //Wait for variable time to maintain the tick rate
                     stopwatch.Stop();
@@ -383,7 +392,7 @@ namespace CorgEng.Networking.Networking.Client
                         Logger.WriteLine($"global event raised of type {raisedEvent.GetType()}");
                         //Deserialize the event
                         raisedEvent.Deserialize(data.Skip(start + 0x02).Take(length).ToArray());
-                        raisedEvent.RaiseGlobally();
+                        raisedEvent.RaiseGlobally(false);
                         return;
                     case PacketHeaders.PROTOTYPE_INFO:
                         //Recieved information about a prototype.

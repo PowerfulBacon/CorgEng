@@ -59,7 +59,7 @@ namespace CorgEng.EntityComponentSystem.Events
         /// <summary>
         /// Raise the event globally
         /// </summary>
-        public static void RaiseGlobally(this INetworkedEvent signal)
+        public static void RaiseGlobally(this INetworkedEvent signal, bool sourcedLocally = true)
         {
             //Check if we have any registered signals
             if (!EventManager.RegisteredEvents.ContainsKey(typeof(GlobalEventComponent)))
@@ -73,6 +73,9 @@ namespace CorgEng.EntityComponentSystem.Events
                 foreach (SystemEventHandlerDelegate systemEventHandler in systemEventHandlers)
                     systemEventHandler.Invoke(null, null, signal);
             }
+            //Don't relay messages coming from other clients already
+            if (!sourcedLocally)
+                return;
             //Inform globally that a networked event was raised
             //Skip directly to signal handling
             //Locate all event types we are listening for

@@ -34,6 +34,51 @@ namespace CorgEng.Tests.NetworkingTests
         }
 
         [TestMethod]
+        public void TestHashing()
+        {
+            IClient dummyClient = GetDummyClient();
+            IClientAddress createdAddressA = ClientAddressFactory.CreateAddress(3, dummyClient);
+            IClientAddress createdAddressB = ClientAddressFactory.CreateAddress(3, dummyClient);
+            IClientAddress createdAddressC = ClientAddressFactory.CreateAddress(4, dummyClient);
+            Assert.AreEqual(createdAddressA.GetHashCode(), createdAddressB.GetHashCode());
+            Assert.AreNotEqual(createdAddressB.GetHashCode(), createdAddressC.GetHashCode());
+
+            IClientAddress referenceAddress = ClientAddressFactory.CreateAddress(0, dummyClient);
+            for (int i = 0; i < 100; i++)
+            {
+                IClientAddress addressA = ClientAddressFactory.CreateAddress(i, dummyClient);
+                IClientAddress addressB = ClientAddressFactory.CreateAddress(i, dummyClient);
+                Assert.AreEqual(addressA.GetHashCode(), addressB.GetHashCode());
+                Assert.IsTrue(addressA.Equals(addressB));
+                Assert.IsTrue(addressB.Equals(addressA));
+                Assert.AreEqual(referenceAddress.GetHashCode(), ClientAddressFactory.CreateAddress(0, dummyClient).GetHashCode());
+                Assert.AreNotEqual(referenceAddress.GetHashCode(), ClientAddressFactory.CreateAddress(i + 1, dummyClient).GetHashCode());
+            }
+        }
+
+        [TestMethod]
+        public void TestDictionary()
+        {
+            IClient dummyClient = GetDummyClient();
+            Dictionary<IClientAddress, bool> dictionary = new Dictionary<IClientAddress, bool>();
+            dictionary.Add(ClientAddressFactory.CreateAddress(3, dummyClient), true);
+            dictionary.Add(ClientAddressFactory.CreateAddress(4, dummyClient), false);
+            int sanity = 3;
+            while (dictionary.Count > 0 && sanity-- > 0)
+            {
+                KeyValuePair<IClientAddress, bool> firstElement = dictionary.First();
+                dictionary.Remove(firstElement.Key);
+            }
+            if (sanity <= 0)
+                Assert.Fail("Sanity failed, could not remove from dictionary");
+            //Test clashing addresses
+            dictionary.Add(ClientAddressFactory.CreateAddress(3, dummyClient), true);
+            Assert.ThrowsException<ArgumentException>(() => {
+                dictionary.Add(ClientAddressFactory.CreateAddress(3, dummyClient), false);
+            });
+        }
+
+        [TestMethod]
         public void TestEquality()
         {
             IClient dummyClient = GetDummyClient();

@@ -102,6 +102,7 @@
     <Compile Include="EntitySystems\NetworkSystem.cs" />
     <Compile Include="Events\ClientConnectedEvent.cs" />
     <Compile Include="Events\ClientDisconnectedEvent.cs" />
+    <Compile Include="Networking\Client\ClientCommunicator.cs" />
     <Compile Include="Networking\Client\NetworkingClient.cs" />
     <Compile Include="Networking\Server\NetworkingServer.cs" />
     <Compile Include="Networking\Server\ServerCommunicator.cs" />

@@ -23,7 +23,12 @@ namespace CorgEng.GenericInterfaces.Networking.Packets.PacketQueues
         /// <summary>
         /// Do we have any more messages to send?
         /// </summary>
-        bool HasMessages();
+        bool AcquireLockIfHasMessages();
+
+        /// <summary>
+        /// Release the acquired lock
+        /// </summary>
+        void ReleaseLock();
 
         /// <summary>
         /// Get the next packet that needs to be sent

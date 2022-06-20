@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace CorgEng.Networking.Packets.PacketQueues
@@ -24,59 +25,75 @@ namespace CorgEng.Networking.Packets.PacketQueues
 
         private Stack<IQueuedPacket> untargettedPackets = new Stack<IQueuedPacket>();
 
+        private object lockObject = new object();
+
         public IQueuedPacket DequeuePacket()
         {
-            lock (untargettedPackets)
+            if (!Monitor.IsEntered(lockObject))
             {
-                if (untargettedPackets.Count > 0)
-                {
-                    return untargettedPackets.Pop();
-                }
+                throw new Exception("Attempting to dequeue a packet without an acquired lock!");
             }
-            lock (queuedPackets)
+            if (untargettedPackets.Count > 0)
             {
-                //Dequeue from top stack
-                KeyValuePair<IClientAddress, Stack<IQueuedPacket>> topEntry = queuedPackets.First();
-                Stack<IQueuedPacket> topStack = topEntry.Value;
-                //Error case
-                if (topStack.Count == 0)
-                {
-                    queuedPackets.Remove(topEntry.Key);
-                    throw new Exception("Packet queue contained an empty stack.");
-                }
-                IQueuedPacket firstPacket = topStack.Pop();
-                if (topStack.Count == 0)
-                    queuedPackets.Remove(topEntry.Key);
-                return firstPacket;
+                return untargettedPackets.Pop();
             }
+            //Dequeue from top stack
+            IClientAddress firstKey = queuedPackets.Keys.First();
+            Stack<IQueuedPacket> topStack = queuedPackets[firstKey];
+            //Error case
+            if (topStack.Count == 0)
+            {
+                queuedPackets.Remove(firstKey);
+                throw new Exception("Packet queue contained an empty stack.");
+            }
+            IQueuedPacket firstPacket = topStack.Pop();
+            if (topStack.Count == 0)
+                queuedPackets.Remove(firstKey);
+            return firstPacket;
         }
 
-        public bool HasMessages()
+        public bool AcquireLockIfHasMessages()
         {
-            lock (untargettedPackets)
+            Monitor.Enter(lockObject);
+            if (queuedPackets.Count > 0 || untargettedPackets.Count > 0)
             {
-                lock (queuedPackets)
-                {
-                    return queuedPackets.Count > 0 || untargettedPackets.Count > 0;
-                }
+                return true;
             }
+            Monitor.Exit(lockObject);
+            return false;
+        }
+
+        public void ReleaseLock()
+        {
+            Monitor.Exit(lockObject);
         }
 
         public void QueueMessage(IClientAddress targets, INetworkMessage message)
         {
-            if (targets == null)
+            bool hasLock = false;
+            Stack<IQueuedPacket> packetStack;
+            IQueuedPacket topPacket;
+            if (Monitor.IsEntered(lockObject))
             {
-                lock (untargettedPackets)
+                hasLock = true;
+            }
+            else
+            {
+                Monitor.Enter(lockObject);
+            }
+            try
+            {
+                if (targets == null)
                 {
                     //If there are no elements, queue directly
-                    Stack<IQueuedPacket> packetStack = untargettedPackets;
+                    packetStack = untargettedPackets;
                     if (packetStack.Count == 0)
                     {
                         packetStack.Push(QueuedPacketFactory.CreatePacket(null, message.GetBytes()));
                         return;
                     }
                     //Pull the top element of the queue
-                    IQueuedPacket topPacket = packetStack.Peek();
+                    topPacket = packetStack.Peek();
                     //Can we add our data into this packet?
                     if (topPacket.CanInsert(message.Length))
                     {
@@ -87,25 +104,22 @@ namespace CorgEng.Networking.Packets.PacketQueues
                         //Queue a new message
                         packetStack.Push(QueuedPacketFactory.CreatePacket(null, message.GetBytes()));
                     }
+                    return;
                 }
-                return;
-            }
-            lock (queuedPackets)
-            {
                 //Create the new queue
                 if (!queuedPackets.ContainsKey(targets))
                 {
                     queuedPackets.Add(targets, new Stack<IQueuedPacket>());
                 }
                 //If there are no elements, queue directly
-                Stack<IQueuedPacket> packetStack = queuedPackets[targets];
+                packetStack = queuedPackets[targets];
                 if (packetStack.Count == 0)
                 {
                     packetStack.Push(QueuedPacketFactory.CreatePacket(targets, message.GetBytes()));
                     return;
                 }
                 //Pull the top element of the queue
-                IQueuedPacket topPacket = packetStack.Peek();
+                topPacket = packetStack.Peek();
                 //Can we add our data into this packet?
                 if (topPacket.CanInsert(message.Length))
                 {
@@ -115,6 +129,13 @@ namespace CorgEng.Networking.Packets.PacketQueues
                 {
                     //Queue a new message
                     packetStack.Push(QueuedPacketFactory.CreatePacket(targets, message.GetBytes()));
+                }
+            }
+            finally
+            {
+                if (!hasLock)
+                {
+                    Monitor.Exit(lockObject);
                 }
             }
         }

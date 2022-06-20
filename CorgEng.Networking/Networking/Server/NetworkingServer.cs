@@ -151,17 +151,24 @@ namespace CorgEng.Networking.Networking.Server
                     //Create a stopwatch to get the current time
                     stopwatch.Restart();
                     //Transmit packets
-                    while (PacketQueue.HasMessages())
+                    while (PacketQueue.AcquireLockIfHasMessages())
                     {
-                        //Get the queued packet
-                        IQueuedPacket queuedPacket = PacketQueue.DequeuePacket();
-
-                        //Get a list of all clients we want to send to
-                        foreach (IClient target in queuedPacket.Targets.GetClients())
+                        try
                         {
-                            target.SendMessage(udpClient, queuedPacket.Data, queuedPacket.TopPointer);
+                            //Get the queued packet
+                            IQueuedPacket queuedPacket = PacketQueue.DequeuePacket();
+
+                            //Get a list of all clients we want to send to
+                            foreach (IClient target in queuedPacket.Targets.GetClients())
+                            {
+                                target.SendMessage(udpClient, queuedPacket.Data, queuedPacket.TopPointer);
+                            }
+                            Logger?.WriteLine($"Message of size {queuedPacket.TopPointer} sent to clients.", LogType.TEMP);
                         }
-                        Logger?.WriteLine($"Message of size {queuedPacket.TopPointer} sent to clients.", LogType.TEMP);
+                        finally
+                        {
+                            PacketQueue.ReleaseLock();
+                        }
                     }
                     //Wait for variable time to maintain the tick rate
                     stopwatch.Stop();
@@ -239,7 +246,27 @@ namespace CorgEng.Networking.Networking.Server
                 //Process messages
                 if (connectedClients.ContainsKey(sender.Address))
                 {
-                    Logger?.WriteLine($"Unhandled header: {header}");
+                    switch (header)
+                    {
+                        case PacketHeaders.GLOBAL_EVENT_RAISED:
+                            //First we need to figure out what event is being raised
+                            //Now we need to deserialize the byte data into the actual packet data
+                            //Since implementation of this is specific to the classes, we need to create
+                            //the correct class.
+                            ushort eventID = BitConverter.ToUInt16(data, start);
+                            //Get the event that was raised
+                            INetworkedEvent raisedEvent = VersionGenerator.CreateTypeFromIdentifier<INetworkedEvent>(eventID);
+                            Logger.WriteLine($"global event raised of type {raisedEvent.GetType()}");
+                            //Deserialize the event
+                            raisedEvent.Deserialize(data.Skip(start + 0x02).Take(length).ToArray());
+                            raisedEvent.RaiseGlobally(false);
+                            break;
+#if DEBUG
+                        default:
+                            Logger?.WriteLine($"Unhandled header: {header}");
+                            break;
+#endif
+                    }
                     NetworkMessageReceived?.Invoke(header, data, start, length);
                 }
                 else

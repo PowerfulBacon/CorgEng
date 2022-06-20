@@ -62,7 +62,7 @@ namespace CorgEng.Networking.Clients
             int hashCode = -1466858141;
             for (int i = 0; i < AddressBytes; i++)
             {
-                hashCode = unchecked(hashCode * 17 + AddressPointer[i]);
+                hashCode = unchecked(hashCode * 17 + byteArray[i]);
             }
             return hashCode;
         }

@@ -7,6 +7,7 @@ using CorgEng.EntityComponentSystem.Systems;
 using CorgEng.GenericInterfaces.EntityComponentSystem;
 using CorgEng.GenericInterfaces.Networking.Config;
 using CorgEng.GenericInterfaces.Networking.Networking;
+using CorgEng.GenericInterfaces.Networking.Networking.Client;
 using CorgEng.GenericInterfaces.Networking.Packets;
 using CorgEng.Networking.Components;
 using CorgEng.Networking.VersionSync;
@@ -27,6 +28,9 @@ namespace CorgEng.Networking.EntitySystems
 
         [UsingDependency]
         private static IServerCommunicator ServerCommunicator;
+
+        [UsingDependency]
+        private static IClientCommunicator ClientCommunicator;
 
         [UsingDependency]
         private static INetworkMessageFactory NetworkMessageFactory;
@@ -64,6 +68,9 @@ namespace CorgEng.Networking.EntitySystems
             else if (NetworkConfig.ProcessClientSystems)
             {
                 //Send the message to the server
+                ClientCommunicator?.SendToServer(
+                    NetworkMessageFactory.CreateMessage(PacketHeaders.GLOBAL_EVENT_RAISED, InjectEventCode(networkedEventRaisedEvent.RaisedEvent))
+                    );
             }
             
         }
