@@ -74,8 +74,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="GLFW.NET, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\CorgEng.Example\bin\x64\Debug\GLFW.NET.dll</HintPath>
+      <HintPath>..\CorgEng.Core\packages\glfw-net.3.3.1\lib\netstandard2.0\GLFW.NET.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -92,6 +91,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CorgEng.ContentLoading\CorgEng.ContentLoading.csproj">
