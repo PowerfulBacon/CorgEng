@@ -396,6 +396,7 @@ namespace CorgEng.Networking.Networking.Client
                         return;
                     case PacketHeaders.PROTOTYPE_INFO:
                         //Recieved information about a prototype.
+                        throw new NotImplementedException("This hasn't been implemented yet");
 #if DEBUG
                     default:
                         Logger?.WriteLine($"Unknown packet header: {header}. This packet may be a bug or from a malicious attack (Debug build is on, so this message is shown which may slow the server down).", LogType.WARNING);

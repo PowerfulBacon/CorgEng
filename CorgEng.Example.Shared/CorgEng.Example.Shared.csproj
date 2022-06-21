@@ -67,8 +67,8 @@
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="GLFW.NET">
-      <HintPath>..\CorgEng.Example\bin\x64\Debug\GLFW.NET.dll</HintPath>
+    <Reference Include="GLFW.NET, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\CorgEng.Core\packages\glfw-net.3.3.1\lib\netstandard2.0\GLFW.NET.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -107,6 +107,9 @@
       <Project>{F9CCD4D7-9AF2-4167-9F31-A2879D82F854}</Project>
       <Name>CorgEng.UtilityTypes</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
