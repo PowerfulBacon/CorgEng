@@ -22,15 +22,14 @@ namespace CorgEng.Tests.Performance
         [UsingDependency]
         private static IPrototypeManager PrototypeManager;
 
-#if DEBUG && !PERFORMANCE_TEST
-        private const int TEST_TIME = 100;
-#else
         private const int TEST_TIME = 5000;
-#endif
 
         [TestMethod]
         public void TestEntityToPrototypePerformance()
         {
+#if !PERFORMANCE_TEST
+            Assert.Inconclusive("Test not executed. Please enable PERFORMANCE_TEST define in order to test performance.");
+#endif
             //Create an entity
             IEntity entity = new Entity();
             TestComponent testComponent = new TestComponent();
@@ -61,6 +60,9 @@ namespace CorgEng.Tests.Performance
         [TestMethod]
         public void TestPrototypeToEntityPerformance()
         {
+#if !PERFORMANCE_TEST
+            Assert.Inconclusive("Test not executed. Please enable PERFORMANCE_TEST define in order to test performance.");
+#endif
             //Create an entity
             IEntity entity = new Entity();
             TestComponent testComponent = new TestComponent();
@@ -93,6 +95,9 @@ namespace CorgEng.Tests.Performance
         [TestMethod]
         public void TestDeserialisationPerformance()
         {
+#if !PERFORMANCE_TEST
+            Assert.Inconclusive("Test not executed. Please enable PERFORMANCE_TEST define in order to test performance.");
+#endif
 
             //Create an entity
             IEntity entity = new Entity();
@@ -127,6 +132,9 @@ namespace CorgEng.Tests.Performance
         [TestMethod]
         public void TestSerialisationPerformance()
         {
+#if !PERFORMANCE_TEST
+            Assert.Inconclusive("Test not executed. Please enable PERFORMANCE_TEST define in order to test performance.");
+#endif
 
             //Create an entity
             IEntity entity = new Entity();
