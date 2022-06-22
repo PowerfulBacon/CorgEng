@@ -51,7 +51,7 @@ namespace CorgEng.Networking.Prototypes
         /// </summary>
         /// <param name="entity"></param>
         /// <returns></returns>
-        public IPrototype GetPrototype(IEntity entity)
+        public IPrototype GetPrototype(IEntity entity, bool network = true)
         {
             //Get a list of all prototyped properties on the component
             IBinaryList<UniqueComponentIdentification> componentIdentifiers = BinaryListFactory.CreateEmpty<UniqueComponentIdentification>();
@@ -105,7 +105,8 @@ namespace CorgEng.Networking.Prototypes
                 PacketHeaders.PROTOTYPE_INFO,
                 createdPrototype.SerializePrototype()
                 );
-            ServerCommunicator.SendToClients(message);
+            if(network)
+                ServerCommunicator.SendToClients(message);
             return createdPrototype;
         }
 

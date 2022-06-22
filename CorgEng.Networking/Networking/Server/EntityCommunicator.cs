@@ -35,11 +35,6 @@ namespace CorgEng.Networking.Networking.Server
 
         private byte[] SerializeEntity(IEntity entity)
         {
-            //Determine the size required
-            int bytesRequired = sizeof(uint);
-
-            //Add to a memory stream
-            uint prototypeId = PrototypeManager.GetPrototype(entity).Identifier;
             throw new NotImplementedException();
         }
 

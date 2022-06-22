@@ -15,7 +15,7 @@ namespace CorgEng.GenericInterfaces.Networking.PrototypeManager
         /// </summary>
         /// <param name="entity"></param>
         /// <returns></returns>
-        IPrototype GetPrototype(IEntity entity);
+        IPrototype GetPrototype(IEntity entity, bool network = true);
 
         /// <summary>
         /// Gets a prototype from a serialized byte array

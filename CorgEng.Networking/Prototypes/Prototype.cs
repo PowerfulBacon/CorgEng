@@ -122,7 +122,6 @@ namespace CorgEng.Networking.Prototypes
                     size += AutoSerialiser.SerialisationLength(valueToWrite);
                 }
             }
-            Logger?.WriteLine($"Creating a memory stream with size: {size}", LogType.TEMP);
             //Begin the writing process
             byte[] serializedArray = new byte[size];
             using (MemoryStream memStream = new MemoryStream(serializedArray))
