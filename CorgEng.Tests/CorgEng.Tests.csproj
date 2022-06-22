@@ -95,6 +95,7 @@
     <Compile Include="EntityComponentSystem\SignalTests.cs" />
     <Compile Include="FontTests\FontTests.cs" />
     <Compile Include="NetworkingTests\ClientAddressTests.cs" />
+    <Compile Include="NetworkingTests\EntityCommunicatorTests.cs" />
     <Compile Include="NetworkingTests\NetworkingTest.cs" />
     <Compile Include="NetworkingTests\PacketQueueTests.cs" />
     <Compile Include="NetworkingTests\PrototypeTests.cs" />

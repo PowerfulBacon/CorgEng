@@ -31,8 +31,9 @@ namespace CorgEng.Networking.Components
         /// <summary>
         /// A cache of the property infos we need to serialize against their type.
         /// Reflection can be incredibly slow, so caching this information is a requirement.
+        /// bool - Is this prototyped.
         /// </summary>
-        internal static Dictionary<Type, IEnumerable<PropertyInfo>> propertyInfoCache = new Dictionary<Type, IEnumerable<PropertyInfo>>();
+        internal static Dictionary<Type, IEnumerable<(bool, PropertyInfo)>> propertyInfoCache = new Dictionary<Type, IEnumerable<(bool, PropertyInfo)>>();
 
         /// <summary>
         /// Enumerates through all component types and finds all properties that have
@@ -51,28 +52,29 @@ namespace CorgEng.Networking.Components
             foreach (Type componentType in locatedComponentTypes)
             {
                 //Get all fields on this member
-                IEnumerable<PropertyInfo> serializedPropertyFields = componentType.GetProperties()
-                    .Where(propertyInfo => propertyInfo.GetCustomAttribute<NetworkSerializedAttribute>() != null);
+                IEnumerable<(bool, PropertyInfo)> serializedPropertyFields = componentType.GetProperties()
+                    .Where(propertyInfo => propertyInfo.GetCustomAttribute<NetworkSerializedAttribute>() != null)
+                    .Select(propertyInfo => (propertyInfo.GetCustomAttribute<NetworkSerializedAttribute>().prototypeInclude, propertyInfo));
                 //Add to the property info cache
                 propertyInfoCache.Add(componentType, serializedPropertyFields);
                 //Check for serialization errors
-                foreach (PropertyInfo propertyInfo in serializedPropertyFields)
+                foreach ((bool, PropertyInfo) propertyInfo in serializedPropertyFields)
                 {
                     //Accept strings, despite not being value types
-                    if (propertyInfo.PropertyType == typeof(string))
+                    if (propertyInfo.Item2.PropertyType == typeof(string))
                         continue;
                     //Ensure that we are a value type
-                    if (!propertyInfo.PropertyType.IsPrimitive && !typeof(ICustomSerialisationBehaviour).IsAssignableFrom(propertyInfo.PropertyType))
+                    if (!propertyInfo.Item2.PropertyType.IsPrimitive && !typeof(ICustomSerialisationBehaviour).IsAssignableFrom(propertyInfo.Item2.PropertyType))
                     {
-                        Logger?.WriteLine($"{propertyInfo.PropertyType} is not a value type, serialization errors may occur!", LogType.ERROR);
+                        Logger?.WriteLine($"{propertyInfo.Item2.PropertyType} is not a value type, serialization errors may occur!", LogType.ERROR);
                         continue;
                     }
                     //Generic struct handling
-                    if (propertyInfo.PropertyType.IsGenericType)
+                    if (propertyInfo.Item2.PropertyType.IsGenericType)
                     {
-                        if (!propertyInfo.PropertyType.IsPrimitive && propertyInfo.PropertyType != typeof(string) && !typeof(ICustomSerialisationBehaviour).IsAssignableFrom(propertyInfo.PropertyType))
+                        if (!propertyInfo.Item2.PropertyType.IsPrimitive && propertyInfo.Item2.PropertyType != typeof(string) && !typeof(ICustomSerialisationBehaviour).IsAssignableFrom(propertyInfo.Item2.PropertyType))
                         {
-                            Logger?.WriteLine($"{propertyInfo.PropertyType.GetGenericTypeDefinition()} (Inside of {propertyInfo.PropertyType}) is not a value type, serialization errors may occur!", LogType.ERROR);
+                            Logger?.WriteLine($"{propertyInfo.Item2.PropertyType.GetGenericTypeDefinition()} (Inside of {propertyInfo.Item2.PropertyType}) is not a value type, serialization errors may occur!", LogType.ERROR);
                             continue;
                         }
                     }
@@ -89,17 +91,19 @@ namespace CorgEng.Networking.Components
         /// </summary>
         /// <param name="component">The uninitialized component to deserialise the data into</param>
         /// <param name="data">The data to deserialise.</param>
-        public static void AutoDeserialize(this Component component, byte[] data)
+        public static void AutoDeserialize(this Component component, byte[] data, bool isPrototype)
         {
-            IEnumerable<PropertyInfo> targetPropertyInfomation = propertyInfoCache[component.GetType()];
+            IEnumerable<(bool, PropertyInfo)> targetPropertyInfomation = propertyInfoCache[component.GetType()];
             //Create the binary reader
             BinaryReader binaryReader = new BinaryReader(new MemoryStream(data)); 
-            foreach (PropertyInfo propertyInfo in targetPropertyInfomation)
+            foreach ((bool, PropertyInfo) propertyInfo in targetPropertyInfomation)
             {
-                object deserialized = AutoSerialiser.Deserialize(propertyInfo.PropertyType, binaryReader);
+                if (propertyInfo.Item1 != isPrototype)
+                    continue;
+                object deserialized = AutoSerialiser.Deserialize(propertyInfo.Item2.PropertyType, binaryReader);
                 if (deserialized != null)
                 {
-                    propertyInfo.SetValue(component, deserialized);
+                    propertyInfo.Item2.SetValue(component, deserialized);
                 }
             }
         }
@@ -110,15 +114,17 @@ namespace CorgEng.Networking.Components
         /// This is such a mess.
         /// </summary>
         /// <returns>Returns a byte array representing the component serialized.</returns>
-        public static byte[] AutoSerialize(this Component component)
+        public static byte[] AutoSerialize(this Component component, bool isPrototype)
         {
-            IEnumerable<PropertyInfo> targetPropertyInfomation = propertyInfoCache[component.GetType()];
+            IEnumerable<(bool, PropertyInfo)> targetPropertyInfomation = propertyInfoCache[component.GetType()];
             List<object> values = new List<object>();
             //Determine the length of what we are serializing
             int requiredLength = 0;
-            foreach (PropertyInfo propertyInfo in targetPropertyInfomation)
+            foreach ((bool, PropertyInfo) propertyInfo in targetPropertyInfomation)
             {
-                object propertyValue = propertyInfo.GetValue(component);
+                if (propertyInfo.Item1 != isPrototype)
+                    continue;
+                object propertyValue = propertyInfo.Item2.GetValue(component);
                 requiredLength += AutoSerialiser.SerialisationLength(propertyValue);
                 values.Add(propertyValue);
             }

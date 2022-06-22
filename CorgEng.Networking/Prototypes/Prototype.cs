@@ -44,9 +44,11 @@ namespace CorgEng.Networking.Prototypes
             {
                 Dictionary<PropertyInfo, object> propertyVariableInformation = new Dictionary<PropertyInfo, object>();
                 //Load the property information
-                foreach (PropertyInfo propertyInfo in ComponentExtensions.propertyInfoCache[component.GetType()])
+                foreach ((bool, PropertyInfo) propertyInfo in ComponentExtensions.propertyInfoCache[component.GetType()])
                 {
-                    propertyVariableInformation.Add(propertyInfo, propertyInfo.GetValue(component));
+                    if (!propertyInfo.Item1)
+                        continue;
+                    propertyVariableInformation.Add(propertyInfo.Item2, propertyInfo.Item2.GetValue(component));
                 }
                 //Store
                 prototypeComponents.Add(component.GetType(), propertyVariableInformation);
@@ -89,9 +91,11 @@ namespace CorgEng.Networking.Prototypes
                         IComponent uninitialisedComponent = VersionGenerator.CreateTypeFromIdentifier<IComponent>(componentTypeIdentifier);
                         Dictionary<PropertyInfo, object> variableProperties = new Dictionary<PropertyInfo, object>();
                         //Go ahead and set all the properties of the component
-                        foreach (PropertyInfo propInfo in ComponentExtensions.propertyInfoCache[uninitialisedComponent.GetType()])
+                        foreach ((bool, PropertyInfo) propInfo in ComponentExtensions.propertyInfoCache[uninitialisedComponent.GetType()])
                         {
-                            variableProperties.Add(propInfo, AutoSerialiser.Deserialize(propInfo.PropertyType, binaryReader));
+                            if (!propInfo.Item1)
+                                continue;
+                            variableProperties.Add(propInfo.Item2, AutoSerialiser.Deserialize(propInfo.Item2.PropertyType, binaryReader));
                         }
                         //Add the component to the property
                         prototypeComponents.Add(VersionGenerator.GetTypeFromNetworkedIdentifier(componentTypeIdentifier), variableProperties);
@@ -115,9 +119,11 @@ namespace CorgEng.Networking.Prototypes
                 size += sizeof(ushort);
                 objectsToWrite.Add(typeIdentifier);
                 //Write the component data
-                foreach (PropertyInfo propInfo in ComponentExtensions.propertyInfoCache[componentType])
+                foreach ((bool, PropertyInfo) propInfo in ComponentExtensions.propertyInfoCache[componentType])
                 {
-                    object valueToWrite = prototypeComponents[componentType][propInfo];
+                    if (!propInfo.Item1)
+                        continue;
+                    object valueToWrite = prototypeComponents[componentType][propInfo.Item2];
                     objectsToWrite.Add(valueToWrite);
                     size += AutoSerialiser.SerialisationLength(valueToWrite);
                 }

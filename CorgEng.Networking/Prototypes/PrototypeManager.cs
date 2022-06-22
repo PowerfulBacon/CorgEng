@@ -72,10 +72,12 @@ namespace CorgEng.Networking.Prototypes
                 uniqueComponentIdentification.componentIdentifier = component.GetNetworkedIdentifier();
                 uniqueComponentIdentification.propertyIdentifier = new List<long>();
                 componentIdentifiers.Add(uniqueComponentIdentification.componentIdentifier, uniqueComponentIdentification);
-                IEnumerable<PropertyInfo> componentTypes = ComponentExtensions.propertyInfoCache[componentType];
-                foreach (PropertyInfo property in componentTypes)
+                IEnumerable<(bool, PropertyInfo)> componentTypes = ComponentExtensions.propertyInfoCache[componentType];
+                foreach ((bool, PropertyInfo) property in componentTypes)
                 {
-                    long value = property.GetValue(component).GetHashCode();
+                    if (!property.Item1)
+                        continue;
+                    long value = property.Item2.GetValue(component).GetHashCode();
                     uniqueComponentIdentification.propertyIdentifier.Add(value);
                 }
             }

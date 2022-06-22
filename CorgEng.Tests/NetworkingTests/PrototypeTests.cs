@@ -33,6 +33,9 @@ namespace CorgEng.Tests.NetworkingTests
         [NetworkSerialized]
         public double Double { get; set; }
 
+        [NetworkSerialized(prototypeInclude = false)]
+        public double DontSerialise { get; set; } = 10;
+
         public override bool SetProperty(string name, IPropertyDef property)
         {
             return false;
@@ -80,6 +83,7 @@ namespace CorgEng.Tests.NetworkingTests
             testComponent.Integer = 59;
             testComponent.Text = "Hello World!";
             testComponent.Double = 3.14159265;
+            testComponent.DontSerialise = 100;
             entity.AddComponent(testComponent);
             //Serialize the entity's prototype
             IPrototype collectedPrototype = PrototypeManager.GetPrototype(entity);
@@ -98,6 +102,8 @@ namespace CorgEng.Tests.NetworkingTests
             Assert.AreEqual(59, deserializedComponent.Integer);
             Assert.AreEqual("Hello World!", deserializedComponent.Text);
             Assert.AreEqual(3.14159265, deserializedComponent.Double);
+            //The value of non-serialised things don't matter since they are set later by the entity communicator
+            Assert.AreNotEqual(100, deserializedComponent.DontSerialise);
         }
 
     }

@@ -21,11 +21,15 @@ namespace CorgEng.Networking.Networking.Server
 
         public void SendToClient(INetworkMessage networkMessage, IClient client)
         {
+            if (server == null)
+                return;
             server.QueueMessage(server.ClientAddressingTable.GetFlagRepresentation(client), networkMessage);
         }
 
         public void SendToClients(INetworkMessage networkMessage)
         {
+            if (server == null)
+                return;
             server.QueueMessage(server.ClientAddressingTable.GetEveryone(), networkMessage);
         }
 

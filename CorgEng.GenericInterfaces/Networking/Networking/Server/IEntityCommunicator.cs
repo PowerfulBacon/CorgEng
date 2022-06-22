@@ -21,6 +21,13 @@ namespace CorgEng.GenericInterfaces.Networking.Networking.Server
         /// <param name="target"></param>
         void CommunicateEntity(IEntity entity, IClient target);
 
+        /// <summary>
+        /// Perform serialisation of the entity
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        byte[] SerializeEntity(IEntity entity);
+
     }
 
 }
