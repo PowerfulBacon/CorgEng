@@ -34,7 +34,7 @@ namespace CorgEng.Example.Components.PlayerMovement
         {
             RegisterLocalEvent<PlayerMovementComponent, ComponentAddedEvent>(OnComponentAdded);
             RegisterLocalEvent<PlayerMovementComponent, ComponentRemovedEvent>(OnComponentRemoved);
-            RegisterGlobalEvent<KeyHeldEvent>(OnKeyHeld);
+            RegisterGlobalEvent<KeyPressEvent>(OnKeyPress);
         }
 
         public void OnComponentRemoved(IEntity entity, PlayerMovementComponent playerMovementComponent, ComponentRemovedEvent componentRemovedEvent)
@@ -51,28 +51,28 @@ namespace CorgEng.Example.Components.PlayerMovement
             playerEntities.Add(entity);
         }
 
-        public void OnKeyHeld(KeyHeldEvent keyHeldEvent)
+        public void OnKeyPress(KeyPressEvent keyPressEvent)
         {
-            switch (keyHeldEvent.Key)
+            switch (keyPressEvent.Key)
             {
                 case Keys.W:
                     playerEntities.ForEach((IEntity entity) => {
-                        new TranslateEvent(new Vector<float>(0, (float)CorgEngMain.DeltaTime)).Raise(entity);
+                        new TranslateEvent(new Vector<float>(0, 1)).Raise(entity);
                     });
                     break;
                 case Keys.S:
                     playerEntities.ForEach((IEntity entity) => {
-                        new TranslateEvent(new Vector<float>(0, -(float)CorgEngMain.DeltaTime)).Raise(entity);
+                        new TranslateEvent(new Vector<float>(0, -1)).Raise(entity);
                     });
                     break;
                 case Keys.D:
                     playerEntities.ForEach((IEntity entity) => {
-                        new TranslateEvent(new Vector<float>((float)CorgEngMain.DeltaTime, 0)).Raise(entity);
+                        new TranslateEvent(new Vector<float>(1, 0)).Raise(entity);
                     });
                     break;
                 case Keys.A:
                     playerEntities.ForEach((IEntity entity) => {
-                        new TranslateEvent(new Vector<float>(-(float)CorgEngMain.DeltaTime, 0)).Raise(entity);
+                        new TranslateEvent(new Vector<float>(-1, 0)).Raise(entity);
                     });
                     break;
                 case Keys.K:

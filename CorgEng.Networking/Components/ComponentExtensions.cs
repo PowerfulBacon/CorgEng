@@ -4,6 +4,7 @@ using CorgEng.EntityComponentSystem.Components;
 using CorgEng.GenericInterfaces.Logging;
 using CorgEng.GenericInterfaces.Networking.Attributes;
 using CorgEng.GenericInterfaces.Networking.Serialisation;
+using CorgEng.GenericInterfaces.Serialization;
 using CorgEng.UtilityTypes.Vectors;
 using System;
 using System.Collections.Generic;
@@ -23,6 +24,9 @@ namespace CorgEng.Networking.Components
 
         [UsingDependency]
         private static ILogger Logger;
+
+        [UsingDependency]
+        private static IAutoSerialiser AutoSerialiser;
 
         /// <summary>
         /// A cache of the property infos we need to serialize against their type.
@@ -92,42 +96,11 @@ namespace CorgEng.Networking.Components
             BinaryReader binaryReader = new BinaryReader(new MemoryStream(data)); 
             foreach (PropertyInfo propertyInfo in targetPropertyInfomation)
             {
-
-                if (typeof(ICustomSerialisationBehaviour).IsAssignableFrom(propertyInfo.PropertyType))
+                object deserialized = AutoSerialiser.Deserialize(propertyInfo.PropertyType, binaryReader);
+                if (deserialized != null)
                 {
-                    ICustomSerialisationBehaviour thing = (ICustomSerialisationBehaviour)FormatterServices.GetUninitializedObject(propertyInfo.PropertyType);
-                    thing.DeserialiseFrom(binaryReader);
-                    propertyInfo.SetValue(component, thing);
+                    propertyInfo.SetValue(component, deserialized);
                 }
-                else if (propertyInfo.PropertyType == typeof(string))
-                {
-                    ushort length = binaryReader.ReadUInt16();
-                    propertyInfo.SetValue(component, Encoding.ASCII.GetString(binaryReader.ReadBytes(length)));
-                }
-                else if (propertyInfo.PropertyType == typeof(byte))
-                    propertyInfo.SetValue(component, binaryReader.ReadByte());
-                else if (propertyInfo.PropertyType == typeof(char))
-                    propertyInfo.SetValue(component, binaryReader.ReadChar());
-                else if (propertyInfo.PropertyType == typeof(int))
-                    propertyInfo.SetValue(component, binaryReader.ReadInt32());
-                else if (propertyInfo.PropertyType == typeof(float))
-                    propertyInfo.SetValue(component, binaryReader.ReadSingle());
-                else if (propertyInfo.PropertyType == typeof(double))
-                    propertyInfo.SetValue(component, binaryReader.ReadDouble());
-                else if (propertyInfo.PropertyType == typeof(long))
-                    propertyInfo.SetValue(component, binaryReader.ReadInt64());
-                else if (propertyInfo.PropertyType == typeof(short))
-                    propertyInfo.SetValue(component, binaryReader.ReadInt16());
-                else if (propertyInfo.PropertyType == typeof(uint))
-                    propertyInfo.SetValue(component, binaryReader.ReadUInt32());
-                else if (propertyInfo.PropertyType == typeof(ushort))
-                    propertyInfo.SetValue(component, binaryReader.ReadUInt16());
-                else if (propertyInfo.PropertyType == typeof(ulong))
-                    propertyInfo.SetValue(component, binaryReader.ReadUInt64());
-                else if (propertyInfo.PropertyType == typeof(decimal))
-                    propertyInfo.SetValue(component, binaryReader.ReadDecimal());
-                else
-                    binaryReader.ReadBytes(Marshal.SizeOf(propertyInfo.PropertyType));
             }
         }
 
@@ -146,24 +119,7 @@ namespace CorgEng.Networking.Components
             foreach (PropertyInfo propertyInfo in targetPropertyInfomation)
             {
                 object propertyValue = propertyInfo.GetValue(component);
-                if (propertyValue is ICustomSerialisationBehaviour customSerialisationBehaviour)
-                {
-                    requiredLength += customSerialisationBehaviour.GetSerialisationLength();
-                }
-                //Custom behaviour for string: Convert to byte array
-                else if (propertyValue is string text)
-                {
-                    byte[] byteArray = Encoding.ASCII.GetBytes(text);
-                    requiredLength += byteArray.Length + 2;
-                    values.Add(byteArray);
-                    continue;
-                }
-                else if (propertyInfo.PropertyType.IsPrimitive)
-                {
-                    requiredLength += Marshal.SizeOf(propertyInfo.PropertyType);
-                }
-                else
-                    continue;
+                requiredLength += AutoSerialiser.SerialisationLength(propertyValue);
                 values.Add(propertyValue);
             }
             //Create the output array
@@ -174,37 +130,7 @@ namespace CorgEng.Networking.Components
             BinaryWriter binaryWriter = new BinaryWriter(memoryStream);
             foreach (object value in values)
             {
-                if (value is ICustomSerialisationBehaviour customSerialisationBehaviour)
-                    customSerialisationBehaviour.SerialiseInto(binaryWriter);
-                else if (value is byte[] byteArray)
-                {
-                    binaryWriter.Write((ushort)byteArray.Length);
-                    binaryWriter.Write(byteArray);
-                }
-                else if (value is byte valueByte)
-                    binaryWriter.Write(valueByte);
-                else if (value is char valueChar)
-                    binaryWriter.Write(valueChar);
-                else if (value is int valueInt)
-                    binaryWriter.Write(valueInt);
-                else if (value is float valueFloat)
-                    binaryWriter.Write(valueFloat);
-                else if (value is double valueDouble)
-                    binaryWriter.Write(valueDouble);
-                else if (value is long valueLong)
-                    binaryWriter.Write(valueLong);
-                else if (value is short valueShort)
-                    binaryWriter.Write(valueShort);
-                else if (value is uint valueUint)
-                    binaryWriter.Write(valueUint);
-                else if (value is ushort valueUshort)
-                    binaryWriter.Write(valueUshort);
-                else if (value is ulong valueUlong)
-                    binaryWriter.Write(valueUlong);
-                else if (value is decimal valueDecimal)
-                    binaryWriter.Write(valueDecimal);
-                else
-                    binaryWriter.Seek(Marshal.SizeOf(value), SeekOrigin.Current);
+                AutoSerialiser.SerializeInto(value, binaryWriter);
             }
             binaryWriter.Close();
             //Write the data
