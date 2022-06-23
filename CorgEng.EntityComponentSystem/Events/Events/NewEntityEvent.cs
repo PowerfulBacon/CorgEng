@@ -10,16 +10,16 @@ namespace CorgEng.EntityComponentSystem.Events.Events
     public class NewEntityEvent : INetworkedEvent
     {
 
-        public int Identifier { get; set; }
+        public uint Identifier { get; set; }
 
-        public NewEntityEvent(int identifier)
+        public NewEntityEvent(uint identifier)
         {
             Identifier = identifier;
         }
 
         public void Deserialize(byte[] data)
         {
-            Identifier = BitConverter.ToInt32(data, 0);
+            Identifier = BitConverter.ToUInt32(data, 0);
         }
 
         public byte[] Serialize()

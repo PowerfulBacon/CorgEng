@@ -95,7 +95,7 @@ namespace CorgEng.Tests.NetworkingTests
 
             //Deserialize the entity's prototype
             IPrototype deserialisedPrototype = PrototypeManager.GetProtoype(serialisedPrototype);
-            IEntity createdEntity = deserialisedPrototype.CreateEntityFromPrototype();
+            IEntity createdEntity = deserialisedPrototype.CreateEntityFromPrototype();     //We don't care about the identifier for this test
             //Verify the entity is correct
             Assert.AreEqual(entity.Components.Count, createdEntity.Components.Count);
             TestComponent deserializedComponent = (TestComponent)createdEntity.Components[0];

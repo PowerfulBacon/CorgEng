@@ -13,7 +13,7 @@ namespace CorgEng.GenericInterfaces.EntityComponentSystem
 
         int ContentsIndex { get; set; }
 
-        int Identifier { get; }
+        uint Identifier { get; }
 
         void AddComponent(IComponent component);
 

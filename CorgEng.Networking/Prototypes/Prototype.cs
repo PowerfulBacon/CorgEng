@@ -57,7 +57,12 @@ namespace CorgEng.Networking.Prototypes
 
         public IEntity CreateEntityFromPrototype()
         {
-            IEntity createdEntity = new Entity();
+            return CreateEntityFromPrototype(EntityManager.GetNewEntityId());
+        }
+
+        public IEntity CreateEntityFromPrototype(uint entityIdentifier)
+        {
+            IEntity createdEntity = new Entity(entityIdentifier);
             //Add components
             foreach (Type type in prototypeComponents.Keys)
             {

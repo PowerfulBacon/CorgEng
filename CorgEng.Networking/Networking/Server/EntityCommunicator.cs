@@ -1,5 +1,6 @@
 ﻿using CorgEng.Core.Dependencies;
 using CorgEng.DependencyInjection.Dependencies;
+using CorgEng.EntityComponentSystem.Entities;
 using CorgEng.GenericInterfaces.EntityComponentSystem;
 using CorgEng.GenericInterfaces.Networking.Clients;
 using CorgEng.GenericInterfaces.Networking.Networking.Server;
@@ -41,10 +42,44 @@ namespace CorgEng.Networking.Networking.Server
             throw new NotImplementedException();
         }
 
-        public IEntity DeserialiseEntity(byte[] data)
+        public async Task<IEntity> DeserialiseEntity(byte[] data)
         {
-            //TODO
-            throw new NotImplementedException();
+            using (MemoryStream memoryStream = new MemoryStream(data))
+            {
+                using (BinaryReader binaryReader = new BinaryReader(memoryStream))
+                {
+                    //Get the entity and prototype identifier
+                    uint entityIdentifier = binaryReader.ReadUInt32();
+                    uint prototypeIdentifier = binaryReader.ReadUInt32();
+                    //Create or locate the entity
+                    IEntity entity = EntityManager.GetEntity(entityIdentifier);
+                    if (entity == null)
+                    {
+                        //We need to create the entity
+                        //Create it based on the prototype we have, which we need to request from the server if we don't have it already
+                        IPrototype locatedPrototype = await PrototypeManager.GetPrototype(prototypeIdentifier);
+                        //Create the entity with a specific identifier
+                        entity = locatedPrototype.CreateEntityFromPrototype(entityIdentifier);
+                    }
+                    //Deserialise component variables
+                    foreach (IComponent component in entity.Components)
+                    {
+                        //Get the component variables
+                        IEnumerable<(bool, PropertyInfo)> componentVariables = ComponentExtensions.propertyInfoCache[component.GetType()];
+                        //Locate all the ones that aren't prototyped
+                        foreach ((bool, PropertyInfo) componentVariable in componentVariables)
+                        {
+                            //Skip prototyped variables
+                            if (componentVariable.Item1)
+                                continue;
+                            //Add to the serialisation
+                            componentVariable.Item2.SetValue(entity, AutoSerialiser.Deserialize(componentVariable.Item2.PropertyType, binaryReader));
+                        }
+                    }
+                    //Return the created entity
+                    return entity;
+                }
+            }
         }
 
         public byte[] SerializeEntity(IEntity entity)

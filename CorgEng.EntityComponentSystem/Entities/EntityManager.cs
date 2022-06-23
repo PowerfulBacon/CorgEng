@@ -27,7 +27,7 @@ namespace CorgEng.EntityComponentSystem.Entities
         /// <summary>
         /// Amount of created entities
         /// </summary>
-        internal static int CreatedEntityCount = 0;
+        private static uint CreatedEntityCount = 0;
 
         public static void RegisterEntity(IEntity entity)
         {
@@ -43,13 +43,20 @@ namespace CorgEng.EntityComponentSystem.Entities
             new NewEntityEvent(entity.Identifier).RaiseGlobally();
         }
 
+        public static uint GetNewEntityId()
+        {
+            return CreatedEntityCount++;
+        }
+
         public static void RemoveEntity(IEntity entity)
         {
             entityList[entity.Identifier] = null;
         }
 
-        public static IEntity GetEntity(int identifier)
+        public static IEntity GetEntity(uint identifier)
         {
+            if (identifier < 0 || identifier >= entityList.Length)
+                return null;
             return entityList[identifier];
         }
 

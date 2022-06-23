@@ -79,7 +79,7 @@ namespace CorgEng.Tests.Performance
             Thread thread = new Thread(() => {
                 while (running)
                 {
-                    //Perform a run
+                    //Perform a run, don't care about the identifier
                     collectedPrototype.CreateEntityFromPrototype();
                     //Run completed
                     runs++;

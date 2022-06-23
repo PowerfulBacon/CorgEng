@@ -25,10 +25,16 @@ namespace CorgEng.GenericInterfaces.Networking.PrototypeManager
         void GenerateFromEntity(IEntity entity);
 
         /// <summary>
-        /// Create an entity based on the information in this prototype
+        /// Create a new entity from a prototype, with a new and unique identifier.
+        /// </summary>
+        /// <returns></returns>
+        IEntity CreateEntityFromPrototype();
+
+        /// <summary>
+        /// Create an existing entity based on the information in this prototype
         /// </summary>
         /// <returns>An instantiated entity based on the contents of this prototype.</returns>
-        IEntity CreateEntityFromPrototype();
+        IEntity CreateEntityFromPrototype(uint entityIdentifier);
 
         /// <summary>
         /// Serializes the prototype into a byte array, allowing it to be transmitted through the networking.

@@ -19,7 +19,7 @@ namespace CorgEng.EntityComponentSystem.Entities
         /// <summary>
         /// The identifier for the entity. Used to find a specific entity.
         /// </summary>
-        public int Identifier { get; private set; }
+        public uint Identifier { get; private set; }
 
         /// <summary>
         /// List of all components attached to this entity
@@ -39,7 +39,13 @@ namespace CorgEng.EntityComponentSystem.Entities
 
         public Entity()
         {
-            Identifier = EntityManager.CreatedEntityCount;
+            Identifier = EntityManager.GetNewEntityId();
+            EntityManager.RegisterEntity(this);
+        }
+
+        public Entity(uint identifier)
+        {
+            Identifier = identifier;
             EntityManager.RegisterEntity(this);
         }
 

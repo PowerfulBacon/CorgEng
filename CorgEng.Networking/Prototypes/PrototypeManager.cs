@@ -118,5 +118,11 @@ namespace CorgEng.Networking.Prototypes
             prototype.DeserializePrototype(serializedPrototype);
             return prototype;
         }
+
+        public Task<IPrototype> GetPrototype(uint prototypeIdentifier)
+        {
+            throw new NotImplementedException();
+        }
+
     }
 }

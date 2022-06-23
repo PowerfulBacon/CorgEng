@@ -54,7 +54,31 @@ namespace CorgEng.Tests.NetworkingTests
             testEntity.AddComponent(testComponent);
             //Communicate the entity
             byte[] serialisedEntity = EntityCommunicator.SerializeEntity(testEntity);
-            Assert.Fail("Test isn't finished yet.");
+            //Deserialise the entity
+            IEntity deserialisedEntity = EntityCommunicator.DeserialiseEntity(serialisedEntity).Result;
+            //Perform tests
+            Assert.AreEqual(testEntity.Identifier, deserialisedEntity.Identifier);
+            bool hasTestComponent = false;
+
+            foreach (IComponent component in deserialisedEntity.Components)
+            {
+                if (component is TestComponent addedTestComponent)
+                {
+                    //Add a test component
+                    hasTestComponent = true;
+                    //Check component values
+                    Assert.AreEqual("test", addedTestComponent.Text);
+                    Assert.AreEqual(5.31262, addedTestComponent.DontSerialise);
+                    Assert.AreEqual(1.252345, addedTestComponent.Double);
+                    Assert.AreEqual(52, addedTestComponent.Integer);
+                }
+                else
+                {
+                    Assert.Fail("TestComponent has an invalid component.");
+                }
+            }
+            //Verify components
+            Assert.IsTrue(hasTestComponent);
         }
 
     }

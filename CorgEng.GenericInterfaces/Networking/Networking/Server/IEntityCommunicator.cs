@@ -28,6 +28,13 @@ namespace CorgEng.GenericInterfaces.Networking.Networking.Server
         /// <returns></returns>
         byte[] SerializeEntity(IEntity entity);
 
+        /// <summary>
+        /// Deserialise a byte array and create an entity based no the data in this byte array.
+        /// </summary>
+        /// <param name="data">The data to deserialise</param>
+        /// <returns>Returns the created entity</returns>
+        Task<IEntity> DeserialiseEntity(byte[] data);
+
     }
 
 }
