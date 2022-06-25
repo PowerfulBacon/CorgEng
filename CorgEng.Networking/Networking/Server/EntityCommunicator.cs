@@ -73,7 +73,8 @@ namespace CorgEng.Networking.Networking.Server
                             if (componentVariable.Item1)
                                 continue;
                             //Add to the serialisation
-                            componentVariable.Item2.SetValue(entity, AutoSerialiser.Deserialize(componentVariable.Item2.PropertyType, binaryReader));
+                            object value = AutoSerialiser.Deserialize(componentVariable.Item2.PropertyType, binaryReader);
+                            componentVariable.Item2.SetValue(component, value);
                         }
                     }
                     //Return the created entity
