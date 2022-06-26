@@ -11,9 +11,9 @@ namespace CorgEng.UserInterface.Rendering.UserinterfaceRenderer
     [Dependency]
     internal sealed class UserInterfaceRendererFactory : IUserInterfaceRendererFactory
     {
-        public IUserInterfaceRenderer CreateUserInterfaceRenderer()
+        public IUserInterfaceRenderer CreateUserInterfaceRenderer(uint networkedIdentifier)
         {
-            return new UserInterfaceRenderer();
+            return new UserInterfaceRenderer(networkedIdentifier);
         }
     }
 }

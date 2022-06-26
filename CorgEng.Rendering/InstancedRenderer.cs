@@ -36,6 +36,14 @@ namespace CorgEng.Rendering
         //The location of buffers that we are using
         protected uint[] storedBufferLocations;
 
+        //Used to identifier the networker
+        internal readonly uint networkIdentifier;
+
+        public InstancedRenderer(uint networkIdentifier)
+        {
+            this.networkIdentifier = networkIdentifier;
+        }
+
         public void Initialize()
         {
             CreateShaders();

@@ -85,6 +85,7 @@
     <Compile Include="Components\PlayerMovement\PlayerMovementComponent.cs" />
     <Compile Include="Components\PlayerMovement\PlayerMovementSystem.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RenderCores\ExampleRenderCore.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CorgEng.Core\CorgEng.Core.csproj">

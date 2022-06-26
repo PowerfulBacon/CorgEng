@@ -54,6 +54,8 @@ namespace CorgEng.Tests.NetworkingTests
             testEntity.AddComponent(testComponent);
             //Communicate the entity
             byte[] serialisedEntity = EntityCommunicator.SerializeEntity(testEntity);
+            //Clear entity manager, so it doesn't know about it
+            EntityManager.RemoveEntity(testEntity);
             //Deserialise the entity
             IEntity deserialisedEntity = EntityCommunicator.DeserialiseEntity(serialisedEntity).Result;
             //Perform tests

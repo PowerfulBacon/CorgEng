@@ -9,7 +9,7 @@ namespace CorgEng.GenericInterfaces.UserInterface.Rendering.Renderer
     public interface IUserInterfaceRendererFactory
     {
 
-        IUserInterfaceRenderer CreateUserInterfaceRenderer();
+        IUserInterfaceRenderer CreateUserInterfaceRenderer(uint networkedIdentifier);
 
     }
 }

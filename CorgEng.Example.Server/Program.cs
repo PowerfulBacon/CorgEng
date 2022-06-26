@@ -5,6 +5,7 @@ using CorgEng.EntityComponentSystem.Events;
 using CorgEng.EntityComponentSystem.Implementations.Rendering.SpriteRendering;
 using CorgEng.EntityComponentSystem.Implementations.Transform;
 using CorgEng.Example.Components.PlayerMovement;
+using CorgEng.Example.Shared.RenderCores;
 using CorgEng.GenericInterfaces.EntityComponentSystem;
 using CorgEng.GenericInterfaces.Logging;
 using CorgEng.GenericInterfaces.Networking.Networking.Server;
@@ -29,6 +30,10 @@ namespace CorgEng.Example.Server
         [UsingDependency]
         private static INetworkingServer NetworkingServer;
 
+        //Networked render core
+        //This works because the render core contains a reference to a sprite renderer
+        private static ExampleRenderCore networkedRenderCore = new ExampleRenderCore();
+
         static void Main(string[] args)
         {
             //Load the application config
@@ -48,6 +53,7 @@ namespace CorgEng.Example.Server
             //Update the entity
             new SetPositionEvent(new Vector<float>(0, 1)).Raise(testingEntity);
             new SetSpriteEvent("human.ghost").Raise(testingEntity);
+            new SetSpriteRendererEvent(networkedRenderCore.spriteRenderer).Raise(testingEntity);
 
             while (true)
             {

@@ -29,6 +29,8 @@ namespace CorgEng.Rendering.SpriteRendering
         private IShaderSet _shaderSet;
         protected override IShaderSet ShaderSet => _shaderSet;
 
+        internal SpriteRenderer(uint networkedId) : base(networkedId) { }
+
         protected override void CreateShaders()
         {
             _shaderSet = ShaderFactory.CreateShaderSet("SpriteShader");

@@ -28,6 +28,8 @@ namespace CorgEng.UserInterface.Rendering.UserinterfaceRenderer
         private IShaderSet _shaderSet;
         protected override IShaderSet ShaderSet => _shaderSet;
 
+        internal UserInterfaceRenderer(uint networkedIdentifier) : base(networkedIdentifier) { }
+
         protected override void CreateShaders()
         {
             _shaderSet = ShaderFactory.CreateShaderSet("UserInterfaceShader");

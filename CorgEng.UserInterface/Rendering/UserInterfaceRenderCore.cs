@@ -1,4 +1,5 @@
-﻿using CorgEng.Core.Dependencies;
+﻿using CorgEng.Constants;
+using CorgEng.Core.Dependencies;
 using CorgEng.Core.Rendering;
 using CorgEng.GenericInterfaces.Font.Fonts;
 using CorgEng.GenericInterfaces.Rendering.Renderers.SpriteRendering;
@@ -35,7 +36,7 @@ namespace CorgEng.UserInterface.Rendering
         public override void Initialize()
         {
             //Create the sprite renderer.
-            userInterfaceRenderer = UserInterfaceRendererFactory.CreateUserInterfaceRenderer();
+            userInterfaceRenderer = UserInterfaceRendererFactory.CreateUserInterfaceRenderer(NetworkedRenderingConstants.NETWORK_RENDERING_ID_LOCAL);
             //Initialize it
             userInterfaceRenderer?.Initialize();
 

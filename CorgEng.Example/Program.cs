@@ -10,6 +10,7 @@ using CorgEng.EntityComponentSystem.Implementations.Rendering.SpriteRendering;
 using CorgEng.EntityComponentSystem.Implementations.Transform;
 using CorgEng.Example.Common.Components.Camera;
 using CorgEng.Example.Components.PlayerMovement;
+using CorgEng.Example.Shared.RenderCores;
 using CorgEng.GenericInterfaces.Font.Fonts;
 using CorgEng.GenericInterfaces.Networking.Networking;
 using CorgEng.GenericInterfaces.Networking.Networking.Client;
@@ -38,74 +39,6 @@ namespace CorgEng.Example
 {
     class Program
     {
-        internal class ExampleRenderCore : RenderCore
-        {
-
-            private Entity renderableEntity;
-
-            [UsingDependency]
-            private static ISpriteRendererFactory SpriteRendererFactory;
-
-            internal ISpriteRenderer spriteRenderer;
-
-            [UsingDependency]
-            private static ISpriteRenderObjectFactory spriteRenderObjectFactory;
-
-            [UsingDependency]
-            private static ITextureFactory textureFactory;
-
-            //Example user interface
-            [UsingDependency]
-            private static IUserInterfaceXmlLoader UserInterfaceXmlLoader;
-
-            [UsingDependency]
-            private static IFontFactory FontFactory;
-
-            [UsingDependency]
-            private static ITextObjectFactory TextObjectFactory;
-
-            private IUserInterfaceComponent rootInterfaceComponent;
-
-            public override void Initialize()
-            {
-
-                spriteRenderer = SpriteRendererFactory.CreateSpriteRenderer();
-
-                spriteRenderer?.Initialize();
-
-                //Load a user interface (Yes, I know this shouldn't be in the render core)
-                //rootInterfaceComponent = UserInterfaceXmlLoader?.LoadUserInterface("Content/UserInterface/UserInterfaceSimple.xml");
-                //rootInterfaceComponent.SetWidth(500, 500);
-                //rootInterfaceComponent.Fullscreen = true;
-
-                //Create and setup a renderable thing
-                /* SERVER STUFF
-                for (int x = 0; x < 39; x++)
-                {
-                    for (int y = 0; y < 600; y++)
-                    {
-                        renderableEntity = new Entity();
-                        renderableEntity.AddComponent(new SpriteRenderComponent());
-                        renderableEntity.AddComponent(new TransformComponent());
-                        //renderableEntity.AddComponent(new PlayerMovementComponent());
-                        new SetPositionEvent(new Vector<float>(x, y)).Raise(renderableEntity);
-                        new SetSpriteEvent("human.ghost").Raise(renderableEntity);
-                        new SetSpriteRendererEvent(spriteRenderer).Raise(renderableEntity);
-                    }
-                }
-                */
-
-                IFont font = FontFactory.GetFont("CourierCode");
-                ITextObject textObject = TextObjectFactory.CreateTextObject(spriteRenderer, font, "CorgEng.Font");
-                textObject.StartRendering();
-            }
-
-            public override void PerformRender()
-            {
-                spriteRenderer?.Render(CorgEngMain.MainCamera);
-                //rootInterfaceComponent?.DrawToFramebuffer(FrameBufferUint);
-            }
-        }
 
         [UsingDependency]
         private static IIsometricCameraFactory isometricCameraFactory;
@@ -122,6 +55,10 @@ namespace CorgEng.Example
             //modules that are dependencies
             CorgEngMain.Initialize();
 
+            //Set the render core
+            ExampleRenderCore erc = new ExampleRenderCore();
+            CorgEngMain.SetRenderCore(erc);
+
             //Connect to our server
             NetworkingClient.AttemptConnection("127.0.0.1", 5000);
 
@@ -134,14 +71,11 @@ namespace CorgEng.Example
             mainCameraEntity.AddComponent(new PlayerMovementComponent());
             mainCameraEntity.AddComponent(new CameraComponent(camera));
             mainCameraEntity.AddComponent(new SpriteRenderComponent());
+            new SetSpriteEvent("human.ghost").Raise(mainCameraEntity);
+            new SetSpriteRendererEvent(erc.spriteRenderer).Raise(mainCameraEntity);
 
             //Set the main camera
             CorgEngMain.SetMainCamera(camera);
-            //Set the render core
-            ExampleRenderCore erc = new ExampleRenderCore();
-            CorgEngMain.SetRenderCore(erc);
-            new SetSpriteEvent("human.ghost").Raise(mainCameraEntity);
-            new SetSpriteRendererEvent(erc.spriteRenderer).Raise(mainCameraEntity);
             //Transfer control of the main thread to the CorgEng
             //rendering thread
             CorgEngMain.TransferToRenderingThread();
