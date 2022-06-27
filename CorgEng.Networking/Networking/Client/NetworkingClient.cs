@@ -1,6 +1,7 @@
 ﻿using CorgEng.Core;
 using CorgEng.Core.Dependencies;
 using CorgEng.DependencyInjection.Dependencies;
+using CorgEng.EntityComponentSystem.Entities;
 using CorgEng.EntityComponentSystem.Events;
 using CorgEng.GenericInterfaces.EntityComponentSystem;
 using CorgEng.GenericInterfaces.Logging;
@@ -8,8 +9,10 @@ using CorgEng.GenericInterfaces.Networking.Clients;
 using CorgEng.GenericInterfaces.Networking.Config;
 using CorgEng.GenericInterfaces.Networking.Networking;
 using CorgEng.GenericInterfaces.Networking.Networking.Client;
+using CorgEng.GenericInterfaces.Networking.Networking.Server;
 using CorgEng.GenericInterfaces.Networking.Packets;
 using CorgEng.GenericInterfaces.Networking.Packets.PacketQueues;
+using CorgEng.GenericInterfaces.Networking.PrototypeManager;
 using CorgEng.Networking.Networking.Server;
 using CorgEng.Networking.VersionSync;
 using System;
@@ -39,6 +42,12 @@ namespace CorgEng.Networking.Networking.Client
 
         [UsingDependency]
         private static INetworkConfig NetworkConfig;
+
+        [UsingDependency]
+        private static IEntityCommunicator EntityCommunicator;
+
+        [UsingDependency]
+        private static IPrototypeManager PrototypeManager;
 
         private IPacketQueue PacketQueue;
 
@@ -295,7 +304,7 @@ namespace CorgEng.Networking.Networking.Client
             shutdownCountdown.Signal();
         }
 
-        private void ProcessPacket(IPEndPoint sender, byte[] data)
+        private async Task ProcessPacket(IPEndPoint sender, byte[] data)
         {
             try
             {
@@ -319,8 +328,7 @@ namespace CorgEng.Networking.Networking.Client
                     //Read the packet header
                     PacketHeaders packetHeader = (PacketHeaders)BitConverter.ToInt32(data, originalPoint + 0x02);
                     //Get the data and pass it on
-                    HandleMessage(sender, packetHeader, data, originalPoint + 0x06, packetSize);
-                    
+                    await HandleMessage(sender, packetHeader, data, originalPoint + 0x06, packetSize);
                 }
             }
             catch (Exception e)
@@ -332,7 +340,7 @@ namespace CorgEng.Networking.Networking.Client
         /// <summary>
         /// Handle an incoming message
         /// </summary>
-        private void HandleMessage(IPEndPoint sender, PacketHeaders header, byte[] data, int start, int length)
+        private async Task HandleMessage(IPEndPoint sender, PacketHeaders header, byte[] data, int start, int length)
         {
             //Process messages
             if (!connected)
@@ -395,8 +403,13 @@ namespace CorgEng.Networking.Networking.Client
                         raisedEvent.RaiseGlobally(false);
                         return;
                     case PacketHeaders.PROTOTYPE_INFO:
-                        //Recieved information about a prototype.
-                        throw new NotImplementedException("This hasn't been implemented yet");
+                        PrototypeManager.GetProtoype(data.Skip(start).Take(length).ToArray());
+                        return;
+                    case PacketHeaders.ENTITY_DATA:
+                        IEntity createdEntity = await EntityCommunicator.DeserialiseEntity(data.Skip(start).Take(length).ToArray());
+                        EntityManager.RegisterEntity(createdEntity);
+                        Logger.WriteLine($"Created entity with ID {createdEntity.Identifier} and components {string.Join(",", createdEntity.Components)}", LogType.TEMP);
+                        return;
 #if DEBUG
                     default:
                         Logger?.WriteLine($"Unknown packet header: {header}. This packet may be a bug or from a malicious attack (Debug build is on, so this message is shown which may slow the server down).", LogType.WARNING);

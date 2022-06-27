@@ -25,12 +25,12 @@ namespace CorgEng.GenericInterfaces.Networking.Clients
         /// <summary>
         /// The width of the client view
         /// </summary>
-        public double ViewWidth { get; set; }
+        public double ViewWidth { get; set; } = 10;
 
         /// <summary>
         /// The height of this client view
         /// </summary>
-        public double ViewHeight { get; set; }
+        public double ViewHeight { get; set; } = 10;
 
     }
 }

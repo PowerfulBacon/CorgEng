@@ -54,8 +54,8 @@ namespace CorgEng.Networking.EntitySystems
             //Calculate the new bounds
             int left = (int)Math.Floor(clientComponent.AttachedClient.View.ViewOffsetX - clientComponent.AttachedClient.View.ViewWidth);
             int right = (int)Math.Floor(clientComponent.AttachedClient.View.ViewOffsetX + clientComponent.AttachedClient.View.ViewWidth);
-            int top = (int)Math.Floor(clientComponent.AttachedClient.View.ViewOffsetY - clientComponent.AttachedClient.View.ViewHeight);
-            int bottom = (int)Math.Floor(clientComponent.AttachedClient.View.ViewOffsetY + clientComponent.AttachedClient.View.ViewHeight);
+            int top = (int)Math.Floor(clientComponent.AttachedClient.View.ViewOffsetY + clientComponent.AttachedClient.View.ViewHeight);
+            int bottom = (int)Math.Floor(clientComponent.AttachedClient.View.ViewOffsetY - clientComponent.AttachedClient.View.ViewHeight);
 
             for (int x = left; x <= right; x++)
             {

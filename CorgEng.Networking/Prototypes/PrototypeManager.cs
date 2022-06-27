@@ -44,6 +44,8 @@ namespace CorgEng.Networking.Prototypes
         //We use a tree structure for the prototype fetching (Component IDs need to be in order)
         private TreeNode<long, IPrototype> PrototypeTree = new TreeNode<long, IPrototype>();
 
+        internal static IDictionary<uint, IPrototype> PrototypeLookup = new Dictionary<uint, IPrototype>();
+
         /// <summary>
         /// Gets the prototype related to an entity.
         /// This code is pretty long, this probably needs caching or it might be worse
@@ -77,7 +79,7 @@ namespace CorgEng.Networking.Prototypes
                 {
                     if (!property.Item1)
                         continue;
-                    long value = property.Item2.GetValue(component).GetHashCode();
+                    long value = property.Item2.GetValue(component)?.GetHashCode() ?? -1;
                     uniqueComponentIdentification.propertyIdentifier.Add(value);
                 }
             }
@@ -103,6 +105,8 @@ namespace CorgEng.Networking.Prototypes
             //Create the prototype and tell all clients about the new prototype
             IPrototype createdPrototype = new Prototype();
             createdPrototype.GenerateFromEntity(entity);
+            //Add the prototype to the prototype lookup table
+            PrototypeLookup.Add(createdPrototype.Identifier, createdPrototype);
             INetworkMessage message = NetworkMessageFactory.CreateMessage(
                 PacketHeaders.PROTOTYPE_INFO,
                 createdPrototype.SerializePrototype()
@@ -119,8 +123,13 @@ namespace CorgEng.Networking.Prototypes
             return prototype;
         }
 
-        public Task<IPrototype> GetPrototype(uint prototypeIdentifier)
+        public async Task<IPrototype> GetPrototype(uint prototypeIdentifier)
         {
+            //TODO
+            if (PrototypeLookup.ContainsKey(prototypeIdentifier))
+            {
+                return PrototypeLookup[prototypeIdentifier];
+            }
             throw new NotImplementedException();
         }
 

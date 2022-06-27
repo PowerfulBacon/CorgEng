@@ -5,8 +5,10 @@ using CorgEng.EntityComponentSystem.Implementations.Transform;
 using CorgEng.EntityComponentSystem.Systems;
 using CorgEng.GenericInterfaces.EntityComponentSystem;
 using CorgEng.GenericInterfaces.Logging;
+using CorgEng.GenericInterfaces.Rendering.Renderers.SpriteRendering;
 using CorgEng.GenericInterfaces.Rendering.RenderObjects.SpriteRendering;
 using CorgEng.GenericInterfaces.Rendering.Textures;
+using CorgEng.Rendering;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -43,7 +45,7 @@ namespace CorgEng.EntityComponentSystem.Implementations.Rendering.SpriteRenderin
             //Stop rendering
             if (spriteRenderComponent.SpriteRenderer != null && spriteRenderComponent.SpriteRenderObject != null)
                 spriteRenderComponent.SpriteRenderer.StopRendering(spriteRenderComponent.SpriteRenderObject);
-            spriteRenderComponent.SpriteRenderer = null;
+            spriteRenderComponent.SpriteRendererIdentifier = 0;
             spriteRenderComponent.SpriteRenderObject = null;
         }
 
@@ -69,7 +71,7 @@ namespace CorgEng.EntityComponentSystem.Implementations.Rendering.SpriteRenderin
             if (spriteRenderComponent.SpriteRenderer != null && spriteRenderComponent.SpriteRenderObject != null)
                 spriteRenderComponent.SpriteRenderer.StopRendering(spriteRenderComponent.SpriteRenderObject);
             //Set the sprite renderer
-            spriteRenderComponent.SpriteRenderer = setSpriteRenderer.Target;
+            spriteRenderComponent.SpriteRendererIdentifier = setSpriteRenderer.Target;
             //Start rendering again
             if (spriteRenderComponent.SpriteRenderer != null && spriteRenderComponent.SpriteRenderObject != null)
                 spriteRenderComponent.SpriteRenderer.StartRendering(spriteRenderComponent.SpriteRenderObject);

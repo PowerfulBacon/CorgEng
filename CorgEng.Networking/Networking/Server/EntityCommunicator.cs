@@ -3,7 +3,9 @@ using CorgEng.DependencyInjection.Dependencies;
 using CorgEng.EntityComponentSystem.Entities;
 using CorgEng.GenericInterfaces.EntityComponentSystem;
 using CorgEng.GenericInterfaces.Networking.Clients;
+using CorgEng.GenericInterfaces.Networking.Networking;
 using CorgEng.GenericInterfaces.Networking.Networking.Server;
+using CorgEng.GenericInterfaces.Networking.Packets;
 using CorgEng.GenericInterfaces.Networking.PrototypeManager;
 using CorgEng.GenericInterfaces.Serialization;
 using CorgEng.Networking.Components;
@@ -28,6 +30,12 @@ namespace CorgEng.Networking.Networking.Server
         [UsingDependency]
         private static IAutoSerialiser AutoSerialiser;
 
+        [UsingDependency]
+        private static IServerCommunicator ServerCommunicator;
+
+        [UsingDependency]
+        private static INetworkMessageFactory NetworkMessageFactory;
+
         /// <summary>
         /// Communicate information about an entity to a client.
         /// We need to include:
@@ -39,7 +47,10 @@ namespace CorgEng.Networking.Networking.Server
         /// <exception cref="NotImplementedException"></exception>
         public void CommunicateEntity(IEntity entity, IClient target)
         {
-            throw new NotImplementedException();
+            ServerCommunicator.SendToClient(
+                NetworkMessageFactory.CreateMessage(PacketHeaders.ENTITY_DATA, SerializeEntity(entity)),
+                target
+                );
         }
 
         public async Task<IEntity> DeserialiseEntity(byte[] data)
@@ -89,8 +100,11 @@ namespace CorgEng.Networking.Networking.Server
             int sizeRequired = sizeof(uint) + sizeof(uint);
             //Things we need to serialise
             IList<object> thingsToSerialise = new List<object>();
+            IList<Type> typesToSerialise = new List<Type>();    //Required for null handling
             thingsToSerialise.Add(entity.Identifier);
+            typesToSerialise.Add(typeof(uint));
             thingsToSerialise.Add(PrototypeManager.GetPrototype(entity).Identifier);
+            typesToSerialise.Add(typeof(uint));
             //Add all variables that require serialisation
             foreach (IComponent component in entity.Components)
             {
@@ -103,8 +117,9 @@ namespace CorgEng.Networking.Networking.Server
                     if (componentVariable.Item1)
                         continue;
                     //Add to the serialisation
-                    sizeRequired += AutoSerialiser.SerialisationLength(componentVariable.Item2.GetValue(component));
+                    sizeRequired += AutoSerialiser.SerialisationLength(componentVariable.Item2.PropertyType, componentVariable.Item2.GetValue(component));
                     thingsToSerialise.Add(componentVariable.Item2.GetValue(component));
+                    typesToSerialise.Add(componentVariable.Item2.PropertyType);
                 }
             }
             //Add all the things
@@ -113,9 +128,9 @@ namespace CorgEng.Networking.Networking.Server
             {
                 using (BinaryWriter binaryWriter = new BinaryWriter(memStream))
                 {
-                    foreach (object thing in thingsToSerialise)
+                    for (int i = 0; i < thingsToSerialise.Count; i++)
                     {
-                        AutoSerialiser.SerializeInto(thing, binaryWriter);
+                        AutoSerialiser.SerializeInto(typesToSerialise[i], thingsToSerialise[i], binaryWriter);
                     }
                 }
             }

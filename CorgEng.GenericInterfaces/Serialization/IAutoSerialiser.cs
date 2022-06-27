@@ -19,7 +19,7 @@ namespace CorgEng.GenericInterfaces.Serialization
         /// The index of the byte array that references where to start serializing into.
         /// Will be the value of the next free cell once serialization is completed.
         /// </param>
-        void SerializeInto(object value, BinaryWriter binaryWriter);
+        void SerializeInto(Type type, object value, BinaryWriter binaryWriter);
 
         /// <summary>
         /// Automatically deserialize a byte array
@@ -34,7 +34,7 @@ namespace CorgEng.GenericInterfaces.Serialization
         /// </summary>
         /// <param name="value">The value to determine the length of</param>
         /// <returns></returns>
-        int SerialisationLength(object value);
+        int SerialisationLength(Type type, object value);
 
     }
 }

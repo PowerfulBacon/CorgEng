@@ -25,5 +25,7 @@ namespace CorgEng.GenericInterfaces.Networking.Packets
         PROTOTYPE_INFO,
         //Client requests information about a prototype
         REQUEST_PROTOTYPE,
+        //Information about an entity
+        ENTITY_DATA,
     }
 }

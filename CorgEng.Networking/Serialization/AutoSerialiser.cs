@@ -27,6 +27,8 @@ namespace CorgEng.Networking.Serialization
             else if (deserialisationType == typeof(string))
             {
                 ushort stringLength = binaryReader.ReadUInt16();
+                if (stringLength == 0)
+                    return null;
                 byte[] byteArray = binaryReader.ReadBytes(stringLength);
                 return Encoding.ASCII.GetString(byteArray);
             }
@@ -56,61 +58,76 @@ namespace CorgEng.Networking.Serialization
                 throw new Exception($"Failed to deserialise object with type {deserialisationType}");
         }
 
-        public int SerialisationLength(object value)
+        public int SerialisationLength(Type type, object value)
         {
-            if (value is string)
+            if (type == typeof(string))
             {
+                if (value == null)
+                {
+                    return sizeof(ushort);
+                }
                 return sizeof(byte) * ((string)value).Length + sizeof(ushort);
             }
-            else if (value is ICustomSerialisationBehaviour serialisationBehaviour)
+            if (value is ICustomSerialisationBehaviour serialisationBehaviour)
             {
                 return serialisationBehaviour.GetSerialisationLength();
             }
-            else if (value.GetType().IsPrimitive)
+            if (type.IsPrimitive)
             {
                 return Marshal.SizeOf(value);
             }
-            else
-            {
-                return 0;
-            }
+            return 0;
         }
 
-        public void SerializeInto(object value, BinaryWriter binaryWriter)
+        public void SerializeInto(Type type, object value, BinaryWriter binaryWriter)
         {
-            Type objectType = value.GetType();
-            if (typeof(ICustomSerialisationBehaviour).IsAssignableFrom(objectType))
-                ((ICustomSerialisationBehaviour)value).SerialiseInto(binaryWriter);
-            else if (objectType == typeof(string))
+            try
             {
-                byte[] byteArray = Encoding.ASCII.GetBytes(value.ToString());
-                binaryWriter.Write((ushort)byteArray.Length);
-                binaryWriter.Write(byteArray);
+                Type objectType = type;
+                if (typeof(ICustomSerialisationBehaviour).IsAssignableFrom(objectType))
+                {
+                    ((ICustomSerialisationBehaviour)value).SerialiseInto(binaryWriter);
+                }
+                else if (objectType == typeof(string))
+                {
+                    if (string.IsNullOrEmpty(value as string))
+                    {
+                        binaryWriter.Write((ushort)0);
+                        return;
+                    }
+                    byte[] byteArray = Encoding.ASCII.GetBytes(value.ToString());
+                    binaryWriter.Write((ushort)byteArray.Length);
+                    binaryWriter.Write(byteArray);
+                }
+                else if (objectType == typeof(byte))
+                    binaryWriter.Write((byte)value);
+                else if (objectType == typeof(char))
+                    binaryWriter.Write((char)value);
+                else if (objectType == typeof(int))
+                    binaryWriter.Write((int)value);
+                else if (objectType == typeof(float))
+                    binaryWriter.Write((float)value);
+                else if (objectType == typeof(double))
+                    binaryWriter.Write((double)value);
+                else if (objectType == typeof(long))
+                    binaryWriter.Write((long)value);
+                else if (objectType == typeof(short))
+                    binaryWriter.Write((short)value);
+                else if (objectType == typeof(uint))
+                    binaryWriter.Write((uint)value);
+                else if (objectType == typeof(ushort))
+                    binaryWriter.Write((ushort)value);
+                else if (objectType == typeof(ulong))
+                    binaryWriter.Write((ulong)value);
+                else if (objectType == typeof(decimal))
+                    binaryWriter.Write((decimal)value);
+                else
+                    throw new Exception($"Failed to serialise object of type {value.GetType()} with value {value}");
             }
-            else if (objectType == typeof(byte))
-                binaryWriter.Write((byte)value);
-            else if (objectType == typeof(char))
-                binaryWriter.Write((char)value);
-            else if (objectType == typeof(int))
-                binaryWriter.Write((int)value);
-            else if (objectType == typeof(float))
-                binaryWriter.Write((float)value);
-            else if (objectType == typeof(double))
-                binaryWriter.Write((double)value);
-            else if (objectType == typeof(long))
-                binaryWriter.Write((long)value);
-            else if (objectType == typeof(short))
-                binaryWriter.Write((short)value);
-            else if (objectType == typeof(uint))
-                binaryWriter.Write((uint)value);
-            else if (objectType == typeof(ushort))
-                binaryWriter.Write((ushort)value);
-            else if (objectType == typeof(ulong))
-                binaryWriter.Write((ulong)value);
-            else if (objectType == typeof(decimal))
-                binaryWriter.Write((decimal)value);
-            else
-                throw new Exception($"Failed to serialise object of type {value.GetType()} with value {value}");
+            catch (NotSupportedException e)
+            {
+                throw;
+            }
         }
 
     }

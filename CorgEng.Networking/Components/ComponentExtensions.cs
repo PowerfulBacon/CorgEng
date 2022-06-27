@@ -118,6 +118,7 @@ namespace CorgEng.Networking.Components
         {
             IEnumerable<(bool, PropertyInfo)> targetPropertyInfomation = propertyInfoCache[component.GetType()];
             List<object> values = new List<object>();
+            List<Type> types = new List<Type>();
             //Determine the length of what we are serializing
             int requiredLength = 0;
             foreach ((bool, PropertyInfo) propertyInfo in targetPropertyInfomation)
@@ -125,8 +126,9 @@ namespace CorgEng.Networking.Components
                 if (propertyInfo.Item1 != isPrototype)
                     continue;
                 object propertyValue = propertyInfo.Item2.GetValue(component);
-                requiredLength += AutoSerialiser.SerialisationLength(propertyValue);
+                requiredLength += AutoSerialiser.SerialisationLength(propertyInfo.Item2.PropertyType, propertyValue);
                 values.Add(propertyValue);
+                types.Add(propertyInfo.Item2.PropertyType);
             }
             //Create the output array
             byte[] serializedComponent = new byte[requiredLength];
@@ -134,9 +136,9 @@ namespace CorgEng.Networking.Components
             MemoryStream memoryStream = new MemoryStream(serializedComponent);
             //Create a binary writer, to write into the array
             BinaryWriter binaryWriter = new BinaryWriter(memoryStream);
-            foreach (object value in values)
+            for (int i = 0; i < values.Count; i++)
             {
-                AutoSerialiser.SerializeInto(value, binaryWriter);
+                AutoSerialiser.SerializeInto(types[i], values[i], binaryWriter);
             }
             binaryWriter.Close();
             //Write the data

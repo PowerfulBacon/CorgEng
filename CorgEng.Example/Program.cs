@@ -56,8 +56,6 @@ namespace CorgEng.Example
             CorgEngMain.Initialize();
 
             //Set the render core
-            ExampleRenderCore erc = new ExampleRenderCore();
-            CorgEngMain.SetRenderCore(erc);
 
             //Connect to our server
             NetworkingClient.AttemptConnection("127.0.0.1", 5000);
@@ -71,6 +69,10 @@ namespace CorgEng.Example
             mainCameraEntity.AddComponent(new PlayerMovementComponent());
             mainCameraEntity.AddComponent(new CameraComponent(camera));
             mainCameraEntity.AddComponent(new SpriteRenderComponent());
+
+            ExampleRenderCore erc = new ExampleRenderCore();
+            CorgEngMain.SetRenderCore(erc);
+
             new SetSpriteEvent("human.ghost").Raise(mainCameraEntity);
             new SetSpriteRendererEvent(erc.spriteRenderer).Raise(mainCameraEntity);
 

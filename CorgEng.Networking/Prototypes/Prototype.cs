@@ -102,9 +102,19 @@ namespace CorgEng.Networking.Prototypes
                                 continue;
                             variableProperties.Add(propInfo.Item2, AutoSerialiser.Deserialize(propInfo.Item2.PropertyType, binaryReader));
                         }
+                        Type type = VersionGenerator.GetTypeFromNetworkedIdentifier(componentTypeIdentifier);
+                        if (prototypeComponents.ContainsKey(type))
+                        {
+                            ;
+                        }
                         //Add the component to the property
-                        prototypeComponents.Add(VersionGenerator.GetTypeFromNetworkedIdentifier(componentTypeIdentifier), variableProperties);
+                        prototypeComponents.Add(type, variableProperties);
                     }
+                    //Add to the lookup table
+                    if (!PrototypeManager.PrototypeLookup.ContainsKey(Identifier))
+                        PrototypeManager.PrototypeLookup.Add(Identifier, this);
+                    else
+                        PrototypeManager.PrototypeLookup[Identifier] = this;
                 }
             }
         }
@@ -112,9 +122,11 @@ namespace CorgEng.Networking.Prototypes
         public byte[] SerializePrototype()
         {
             List<object> objectsToWrite = new List<object>();
+            List<Type> typesToWrite = new List<Type>(); //Required for null handling
             //Write the prototype identifier
             int size = 0;
             objectsToWrite.Add(Identifier);
+            typesToWrite.Add(typeof(uint));
             size += sizeof(uint);
             //Go through each component and serialize it
             foreach (Type componentType in prototypeComponents.Keys)
@@ -123,6 +135,7 @@ namespace CorgEng.Networking.Prototypes
                 ushort typeIdentifier = componentType.GetNetworkedIdentifier();
                 size += sizeof(ushort);
                 objectsToWrite.Add(typeIdentifier);
+                typesToWrite.Add(typeof(ushort));
                 //Write the component data
                 foreach ((bool, PropertyInfo) propInfo in ComponentExtensions.propertyInfoCache[componentType])
                 {
@@ -130,7 +143,8 @@ namespace CorgEng.Networking.Prototypes
                         continue;
                     object valueToWrite = prototypeComponents[componentType][propInfo.Item2];
                     objectsToWrite.Add(valueToWrite);
-                    size += AutoSerialiser.SerialisationLength(valueToWrite);
+                    typesToWrite.Add(propInfo.Item2.PropertyType);
+                    size += AutoSerialiser.SerialisationLength(propInfo.Item2.PropertyType, valueToWrite);
                 }
             }
             //Begin the writing process
@@ -139,9 +153,9 @@ namespace CorgEng.Networking.Prototypes
             {
                 using (BinaryWriter binaryWriter = new BinaryWriter(memStream))
                 {
-                    foreach (object objectToWrite in objectsToWrite)
+                    for (int i = 0; i < objectsToWrite.Count; i++)
                     {
-                        AutoSerialiser.SerializeInto(objectToWrite, binaryWriter);
+                        AutoSerialiser.SerializeInto(typesToWrite[i], objectsToWrite[i], binaryWriter);
                     }
                 }
             }
