@@ -40,7 +40,7 @@ namespace CorgEng.EntityComponentSystem.Systems
         /// Network config, null if the application doesn't have networking capabilities.
         /// </summary>
         [UsingDependency]
-        private static INetworkConfig NetworkConfig;
+        protected static INetworkConfig NetworkConfig;
 
         internal delegate void SystemEventHandlerDelegate(IEntity entity, IComponent component, IEvent signal);
 
