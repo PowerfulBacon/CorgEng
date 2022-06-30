@@ -1,6 +1,7 @@
 ﻿using CorgEng.Core.Dependencies;
 using CorgEng.EntityComponentSystem.Components;
 using CorgEng.EntityComponentSystem.Events;
+using CorgEng.EntityComponentSystem.Events.Events;
 using CorgEng.GenericInterfaces.EntityComponentSystem;
 using CorgEng.GenericInterfaces.Logging;
 using System;
@@ -98,6 +99,19 @@ namespace CorgEng.EntityComponentSystem.Entities
             {
                 internalSignalHandler.Invoke(this, signal);
             }
+        }
+
+        public T GetComponent<T>()
+        {
+            lock (Components)
+            {
+                foreach (IComponent component in Components)
+                {
+                    if (component.GetType() == typeof(T))
+                        return (T)component;
+                }
+            }
+            throw new Exception($"Component of type {typeof(T)} was not found on Entity {this}");
         }
 
     }

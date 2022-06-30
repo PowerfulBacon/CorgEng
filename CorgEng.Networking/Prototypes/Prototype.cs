@@ -29,6 +29,9 @@ namespace CorgEng.Networking.Prototypes
         [UsingDependency]
         private static IAutoSerialiser AutoSerialiser;
 
+        [UsingDependency]
+        private static IPrototypeManager PrototypeManager;
+
         private static uint PrototypeIdentifierHighest = 0;
 
         public uint Identifier { get; set; } = PrototypeIdentifierHighest++;
@@ -111,10 +114,7 @@ namespace CorgEng.Networking.Prototypes
                         prototypeComponents.Add(type, variableProperties);
                     }
                     //Add to the lookup table
-                    if (!PrototypeManager.PrototypeLookup.ContainsKey(Identifier))
-                        PrototypeManager.PrototypeLookup.Add(Identifier, this);
-                    else
-                        PrototypeManager.PrototypeLookup[Identifier] = this;
+                    PrototypeManager.AddPrototype(this);
                 }
             }
         }

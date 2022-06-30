@@ -3,6 +3,7 @@ using CorgEng.DependencyInjection.Dependencies;
 using CorgEng.GenericInterfaces.EntityComponentSystem;
 using CorgEng.GenericInterfaces.Logging;
 using CorgEng.GenericInterfaces.Networking.Networking;
+using CorgEng.GenericInterfaces.Networking.Networking.Client;
 using CorgEng.GenericInterfaces.Networking.Packets;
 using CorgEng.GenericInterfaces.Networking.PrototypeManager;
 using CorgEng.GenericInterfaces.UtilityTypes.BinaryLists;
@@ -10,10 +11,12 @@ using CorgEng.Networking.Components;
 using CorgEng.Networking.VersionSync;
 using CorgEng.UtilityTypes.Trees;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace CorgEng.Networking.Prototypes
@@ -37,6 +40,9 @@ namespace CorgEng.Networking.Prototypes
 
         [UsingDependency]
         private static IServerCommunicator ServerCommunicator;
+
+        [UsingDependency]
+        private static IClientCommunicator ClientCommunicator;
 
         [UsingDependency]
         private static INetworkMessageFactory NetworkMessageFactory;
@@ -123,14 +129,70 @@ namespace CorgEng.Networking.Prototypes
             return prototype;
         }
 
+        /// <summary>
+        /// Anything that needs to be called when we recieve a new prototype.
+        /// </summary>
+        private ConcurrentDictionary<Action<IPrototype>, bool> prototypeAddCallbacks = new ConcurrentDictionary<Action<IPrototype>, bool>();
+
+        public void AddPrototype(IPrototype prototype)
+        {
+            if (!PrototypeLookup.ContainsKey(prototype.Identifier))
+                PrototypeLookup.Add(prototype.Identifier, prototype);
+            else
+                PrototypeLookup[prototype.Identifier] = prototype;
+            //Call the prototype added trigger
+            foreach (KeyValuePair<Action<IPrototype>, bool> prototypeAddCallback in prototypeAddCallbacks)
+            {
+                prototypeAddCallback.Key(prototype);
+            }
+        }
+
         public async Task<IPrototype> GetPrototype(uint prototypeIdentifier)
         {
-            //TODO
             if (PrototypeLookup.ContainsKey(prototypeIdentifier))
             {
                 return PrototypeLookup[prototypeIdentifier];
             }
-            throw new NotImplementedException();
+            IPrototype located = null;
+            bool successStateAchieved = false;
+            AutoResetEvent waitEvent = new AutoResetEvent(false);
+            //Add our callback for success
+            Action<IPrototype> createdCallback = null;
+            createdCallback = prototype => {
+                if (prototype.Identifier != prototypeIdentifier)
+                    return;
+                //Remove ourself from the dictionary.
+                successStateAchieved = true;
+                prototypeAddCallbacks.TryRemove(createdCallback, out _);
+                located = prototype;
+                waitEvent.Set();
+            };
+            prototypeAddCallbacks.TryAdd(createdCallback, true);
+            //Ask the server for the prototype we want
+            ClientCommunicator?.SendToServer(NetworkMessageFactory.CreateMessage(
+                PacketHeaders.REQUEST_PROTOTYPE,
+                BitConverter.GetBytes(prototypeIdentifier)
+                ));
+            Logger.WriteLine($"Requesting prototype {prototypeIdentifier} from server...", LogType.DEBUG);
+            //Wait until we recieve the requested prototype. Send the request every 100ms until we get a result
+            //TODO: After 2 seconds, timeout and disconnect from the server
+            int attemptsRemaining = 20;
+            while (await Task.Run(() => waitEvent.WaitOne(100)) && attemptsRemaining-- > 0)
+            {
+                //We were successful
+                if (successStateAchieved)
+                {
+                    return located;
+                }
+                //Re-request
+                Logger.WriteLine($"Requesting prototype {prototypeIdentifier} from server...", LogType.DEBUG);
+                ClientCommunicator?.SendToServer(NetworkMessageFactory.CreateMessage(
+                    PacketHeaders.REQUEST_PROTOTYPE,
+                    BitConverter.GetBytes(prototypeIdentifier)
+                    ));
+            }
+            Logger.WriteLine("Failed to fetch prototype from server after 2 seconds.", LogType.WARNING);
+            throw new Exception("Failed to fetch prototype from server, server is not responding.");
         }
 
     }

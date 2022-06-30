@@ -37,10 +37,18 @@ namespace CorgEng.EntityComponentSystem.Implementations.Rendering.SpriteRenderin
             RegisterLocalEvent<SpriteRenderComponent, SetSpriteEvent>(OnSetSprite);
             RegisterLocalEvent<SpriteRenderComponent, SetSpriteRendererEvent>(OnSetRenderer);
             RegisterLocalEvent<SpriteRenderComponent, DeleteEntityEvent>(OnEntityDestroyed);
-            if (NetworkConfig.ProcessClientSystems)
-            {
-                RegisterLocalEvent<SpriteRenderComponent, MoveEvent>(OnEntityMoved);
-            }
+            RegisterLocalEvent<SpriteRenderComponent, MoveEvent>(OnEntityMoved);
+            RegisterLocalEvent<SpriteRenderComponent, InitialiseNetworkedEntityEvent>(OnInitialise);
+        }
+
+        private void OnInitialise(IEntity entity, SpriteRenderComponent spriteRenderComponent, InitialiseNetworkedEntityEvent componentAddedEvent)
+        {
+            if (!NetworkConfig.ProcessClientSystems)
+                return;
+            //Take the position
+            spriteRenderComponent.CachedPosition = entity.GetComponent<TransformComponent>().Position.Copy();
+            //Update the sprite
+            UpdateSprite(spriteRenderComponent);
         }
 
         private void OnEntityDestroyed(IEntity entity, SpriteRenderComponent spriteRenderComponent, DeleteEntityEvent entityDeletedEvent)
@@ -57,6 +65,8 @@ namespace CorgEng.EntityComponentSystem.Implementations.Rendering.SpriteRenderin
         /// </summary>
         private void OnEntityMoved(IEntity entity, SpriteRenderComponent spriteRenderComponent, MoveEvent moveEvent)
         {
+            if (!NetworkConfig.ProcessClientSystems)
+                return;
             if (spriteRenderComponent.SpriteRenderObject == null)
             {
                 spriteRenderComponent.CachedPosition = moveEvent.NewPosition.Copy();
@@ -87,6 +97,11 @@ namespace CorgEng.EntityComponentSystem.Implementations.Rendering.SpriteRenderin
             //If the client isn't running, abort
             if (!NetworkConfig.ProcessClientSystems)
                 return;
+            UpdateSprite(spriteRenderComponent);
+        }
+
+        private void UpdateSprite(SpriteRenderComponent spriteRenderComponent)
+        {
             //Update the sprite data
             ITextureState newTexture = TextureFactory.GetTextureFromIconState(spriteRenderComponent.Sprite);
             if (spriteRenderComponent.SpriteRenderObject != null)

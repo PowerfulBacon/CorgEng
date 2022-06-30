@@ -37,19 +37,24 @@ namespace CorgEng.Example.Server
             //Initialize CorgEng in headless mode
             CorgEngMain.Initialize(true);
 
+            //Create a testing entity
+            for (int x = 1; x <= 1; x++)
+            {
+                for (int y = 1; y <= 1; y++)
+                {
+                    IEntity testingEntity = new Entity();
+                    //Add components
+                    testingEntity.AddComponent(new TransformComponent());
+                    testingEntity.AddComponent(new PlayerMovementComponent());
+                    testingEntity.AddComponent(new SpriteRenderComponent());
+                    //Update the entity
+                    new SetPositionEvent(new Vector<float>(x, y)).Raise(testingEntity);
+                    new SetSpriteEvent("human.ghost").Raise(testingEntity);
+                    new SetSpriteRendererEvent(1).Raise(testingEntity);
+                }
+            }
             //Start networking server
             NetworkingServer.StartHosting(5000);
-
-            //Create a testing entity
-            IEntity testingEntity = new Entity();
-            //Add components
-            testingEntity.AddComponent(new TransformComponent());
-            testingEntity.AddComponent(new PlayerMovementComponent());
-            testingEntity.AddComponent(new SpriteRenderComponent());
-            //Update the entity
-            new SetPositionEvent(new Vector<float>(0, 1)).Raise(testingEntity);
-            new SetSpriteEvent("human.ghost").Raise(testingEntity);
-            new SetSpriteRendererEvent(1).Raise(testingEntity);
 
             while (true)
             {

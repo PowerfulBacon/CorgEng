@@ -39,6 +39,7 @@ namespace CorgEng.EntityComponentSystem.Implementations.Rendering.SpriteRenderin
                 if (_spriteRenderer == null || cachedSpriteRendererIdentifier != SpriteRendererIdentifier)
                 {
                     _spriteRenderer = RendererLookup.GetRendererByIdentifier<ISpriteRenderer>(SpriteRendererIdentifier);
+                    cachedSpriteRendererIdentifier = SpriteRendererIdentifier;
                 }
                 return _spriteRenderer;
             }

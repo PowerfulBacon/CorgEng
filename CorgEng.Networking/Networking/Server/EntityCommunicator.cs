@@ -1,7 +1,11 @@
 ﻿using CorgEng.Core.Dependencies;
 using CorgEng.DependencyInjection.Dependencies;
 using CorgEng.EntityComponentSystem.Entities;
+using CorgEng.EntityComponentSystem.Events;
+using CorgEng.EntityComponentSystem.Events.Events;
+using CorgEng.EntityComponentSystem.Implementations.Transform;
 using CorgEng.GenericInterfaces.EntityComponentSystem;
+using CorgEng.GenericInterfaces.Logging;
 using CorgEng.GenericInterfaces.Networking.Clients;
 using CorgEng.GenericInterfaces.Networking.Networking;
 using CorgEng.GenericInterfaces.Networking.Networking.Server;
@@ -10,6 +14,7 @@ using CorgEng.GenericInterfaces.Networking.PrototypeManager;
 using CorgEng.GenericInterfaces.Serialization;
 using CorgEng.Networking.Components;
 using CorgEng.Networking.VersionSync;
+using CorgEng.UtilityTypes.Vectors;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -23,6 +28,9 @@ namespace CorgEng.Networking.Networking.Server
     [Dependency]
     internal class EntityCommunicator : IEntityCommunicator
     {
+
+        [UsingDependency]
+        private static ILogger Logger;
 
         [UsingDependency]
         private static IPrototypeManager PrototypeManager;
@@ -72,6 +80,10 @@ namespace CorgEng.Networking.Networking.Server
                         //Create the entity with a specific identifier
                         entity = locatedPrototype.CreateEntityFromPrototype(entityIdentifier);
                     }
+                    else
+                    {
+                        Logger?.WriteLine($"Entity with a duplicate ID ({entity.Identifier}) created", LogType.WARNING);
+                    }
                     //Deserialise component variables
                     foreach (IComponent component in entity.Components)
                     {
@@ -88,6 +100,10 @@ namespace CorgEng.Networking.Networking.Server
                             componentVariable.Item2.SetValue(component, value);
                         }
                     }
+                    //Trigger a move to set it to the current position
+                    new TranslateEvent(new Vector<float>(0, 0)).Raise(entity);
+                    //Initialise the entity
+                    new InitialiseNetworkedEntityEvent().Raise(entity);
                     //Return the created entity
                     return entity;
                 }

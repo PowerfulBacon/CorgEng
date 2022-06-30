@@ -263,7 +263,7 @@ namespace CorgEng.Networking.Networking.Server
                             break;
 #if DEBUG
                         default:
-                            Logger?.WriteLine($"Unhandled header: {header}");
+                            Logger?.WriteLine($"Unhandled header: {header}", LogType.WARNING);
                             break;
 #endif
                     }

@@ -32,6 +32,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using static OpenGL.Gl;
 
@@ -57,6 +58,8 @@ namespace CorgEng.Example
 
             //Set the render core
 
+            Thread.Sleep(500);
+
             //Connect to our server
             NetworkingClient.AttemptConnection("127.0.0.1", 5000);
 
@@ -64,18 +67,18 @@ namespace CorgEng.Example
             IIsometricCamera camera = isometricCameraFactory.CreateCamera();
 
             //Create the entity to hold and move the camera
-            Entity mainCameraEntity = new Entity();
+            /*Entity mainCameraEntity = new Entity();
             mainCameraEntity.AddComponent(new TransformComponent());
             mainCameraEntity.AddComponent(new PlayerMovementComponent());
             mainCameraEntity.AddComponent(new CameraComponent(camera));
-            mainCameraEntity.AddComponent(new SpriteRenderComponent());
+            mainCameraEntity.AddComponent(new SpriteRenderComponent());*/
 
             ExampleRenderCore erc = new ExampleRenderCore();
             CorgEngMain.SetRenderCore(erc);
-
+            /*
             new SetSpriteEvent("human.ghost").Raise(mainCameraEntity);
             new SetSpriteRendererEvent(erc.spriteRenderer).Raise(mainCameraEntity);
-
+            */
             //Set the main camera
             CorgEngMain.SetMainCamera(camera);
             //Transfer control of the main thread to the CorgEng

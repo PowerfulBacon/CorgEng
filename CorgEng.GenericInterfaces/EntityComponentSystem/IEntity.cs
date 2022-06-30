@@ -21,5 +21,12 @@ namespace CorgEng.GenericInterfaces.EntityComponentSystem
 
         void HandleSignal(IEvent signal);
 
+        /// <summary>
+        /// Gets a component of type. This is slow, avoid using it extensively.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        T GetComponent<T>();
+
     }
 }
