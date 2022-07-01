@@ -149,7 +149,7 @@ namespace CorgEng.Tests.NetworkingTests
         private class NetworkedTestEvent : INetworkedEvent
         {
 
-            public bool CanBeRaisedByClient => false;
+            public bool CanBeRaisedByClient => true;
 
             public int testNumber { get; set; }
 
