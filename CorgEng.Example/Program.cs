@@ -60,11 +60,14 @@ namespace CorgEng.Example
 
             Thread.Sleep(500);
 
-            //Connect to our server
-            NetworkingClient.AttemptConnection("127.0.0.1", 5000);
-
             //Camera an isometric camera
             IIsometricCamera camera = isometricCameraFactory.CreateCamera();
+
+            ExampleRenderCore erc = new ExampleRenderCore();
+            CorgEngMain.SetRenderCore(erc);
+
+            //Connect to our server
+            NetworkingClient.AttemptConnection("127.0.0.1", 5000);
 
             //Create the entity to hold and move the camera
             /*Entity mainCameraEntity = new Entity();
@@ -72,9 +75,6 @@ namespace CorgEng.Example
             mainCameraEntity.AddComponent(new PlayerMovementComponent());
             mainCameraEntity.AddComponent(new CameraComponent(camera));
             mainCameraEntity.AddComponent(new SpriteRenderComponent());*/
-
-            ExampleRenderCore erc = new ExampleRenderCore();
-            CorgEngMain.SetRenderCore(erc);
             /*
             new SetSpriteEvent("human.ghost").Raise(mainCameraEntity);
             new SetSpriteRendererEvent(erc.spriteRenderer).Raise(mainCameraEntity);

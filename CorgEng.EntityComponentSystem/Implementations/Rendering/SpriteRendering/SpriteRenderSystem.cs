@@ -1,4 +1,5 @@
-﻿using CorgEng.Core.Dependencies;
+﻿using CorgEng.Core;
+using CorgEng.Core.Dependencies;
 using CorgEng.EntityComponentSystem.Entities;
 using CorgEng.EntityComponentSystem.Events.Events;
 using CorgEng.EntityComponentSystem.Implementations.Transform;
@@ -43,7 +44,7 @@ namespace CorgEng.EntityComponentSystem.Implementations.Rendering.SpriteRenderin
 
         private void OnInitialise(IEntity entity, SpriteRenderComponent spriteRenderComponent, InitialiseNetworkedEntityEvent componentAddedEvent)
         {
-            if (!NetworkConfig.ProcessClientSystems)
+            if (!CorgEngMain.IsRendering)
                 return;
             //Take the position
             spriteRenderComponent.CachedPosition = entity.GetComponent<TransformComponent>().Position.Copy();
@@ -54,7 +55,7 @@ namespace CorgEng.EntityComponentSystem.Implementations.Rendering.SpriteRenderin
         private void OnEntityDestroyed(IEntity entity, SpriteRenderComponent spriteRenderComponent, DeleteEntityEvent entityDeletedEvent)
         {
             //Stop rendering
-            if (NetworkConfig.ProcessClientSystems && spriteRenderComponent.SpriteRenderer != null && spriteRenderComponent.SpriteRenderObject != null)
+            if (CorgEngMain.IsRendering && spriteRenderComponent.SpriteRenderer != null && spriteRenderComponent.SpriteRenderObject != null)
                 spriteRenderComponent.SpriteRenderer.StopRendering(spriteRenderComponent.SpriteRenderObject);
             spriteRenderComponent.SpriteRendererIdentifier = 0;
             spriteRenderComponent.SpriteRenderObject = null;
@@ -65,7 +66,7 @@ namespace CorgEng.EntityComponentSystem.Implementations.Rendering.SpriteRenderin
         /// </summary>
         private void OnEntityMoved(IEntity entity, SpriteRenderComponent spriteRenderComponent, MoveEvent moveEvent)
         {
-            if (!NetworkConfig.ProcessClientSystems)
+            if (!CorgEngMain.IsRendering)
                 return;
             if (spriteRenderComponent.SpriteRenderObject == null)
             {
@@ -81,12 +82,12 @@ namespace CorgEng.EntityComponentSystem.Implementations.Rendering.SpriteRenderin
         private void OnSetRenderer(IEntity entity, SpriteRenderComponent spriteRenderComponent, SetSpriteRendererEvent setSpriteRenderer)
         {
             //If we are being rendered, stop being rendered
-            if (NetworkConfig.ProcessClientSystems && spriteRenderComponent.SpriteRenderer != null && spriteRenderComponent.SpriteRenderObject != null)
+            if (CorgEngMain.IsRendering && spriteRenderComponent.SpriteRenderer != null && spriteRenderComponent.SpriteRenderObject != null)
                 spriteRenderComponent.SpriteRenderer.StopRendering(spriteRenderComponent.SpriteRenderObject);
             //Set the sprite renderer
             spriteRenderComponent.SpriteRendererIdentifier = setSpriteRenderer.Target;
             //Start rendering again
-            if (NetworkConfig.ProcessClientSystems && spriteRenderComponent.SpriteRenderer != null && spriteRenderComponent.SpriteRenderObject != null)
+            if (CorgEngMain.IsRendering && spriteRenderComponent.SpriteRenderer != null && spriteRenderComponent.SpriteRenderObject != null)
                 spriteRenderComponent.SpriteRenderer.StartRendering(spriteRenderComponent.SpriteRenderObject);
         }
 
@@ -95,7 +96,7 @@ namespace CorgEng.EntityComponentSystem.Implementations.Rendering.SpriteRenderin
             //Store the sprite being used
             spriteRenderComponent.Sprite = setSpriteEvent.TextureFile;
             //If the client isn't running, abort
-            if (!NetworkConfig.ProcessClientSystems)
+            if (!CorgEngMain.IsRendering)
                 return;
             UpdateSprite(spriteRenderComponent);
         }

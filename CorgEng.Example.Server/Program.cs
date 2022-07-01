@@ -1,4 +1,6 @@
-﻿using CorgEng.Core;
+﻿#define DEBUG_RENDERING
+
+using CorgEng.Core;
 using CorgEng.Core.Dependencies;
 using CorgEng.EntityComponentSystem.Entities;
 using CorgEng.EntityComponentSystem.Events;
@@ -9,7 +11,9 @@ using CorgEng.Example.Shared.RenderCores;
 using CorgEng.GenericInterfaces.EntityComponentSystem;
 using CorgEng.GenericInterfaces.Logging;
 using CorgEng.GenericInterfaces.Networking.Networking.Server;
+using CorgEng.GenericInterfaces.Rendering.Cameras.Isometric;
 using CorgEng.InputHandling.Events;
+using CorgEng.Networking.Components;
 using CorgEng.UtilityTypes.Vectors;
 using GLFW;
 using System;
@@ -30,12 +34,27 @@ namespace CorgEng.Example.Server
         [UsingDependency]
         private static INetworkingServer NetworkingServer;
 
+#if DEBUG_RENDERING
+        [UsingDependency]
+        private static IIsometricCameraFactory IsometricCameraFactory;
+#endif
+
         static void Main(string[] args)
         {
             //Load the application config
             CorgEngMain.LoadConfig("CorgEngConfig.xml");
+            CorgEngMain.WindowName = "CorgEngApplication Server";
             //Initialize CorgEng in headless mode
+#if !DEBUG_RENDERING
             CorgEngMain.Initialize(true);
+#else
+            CorgEngMain.Initialize();
+
+            ExampleRenderCore erc = new ExampleRenderCore();
+            CorgEngMain.SetRenderCore(erc);
+            IIsometricCamera camera = IsometricCameraFactory.CreateCamera();
+            CorgEngMain.SetMainCamera(camera);
+#endif
 
             //Create a testing entity
             for (int x = -1; x <= 1; x++)
@@ -44,7 +63,7 @@ namespace CorgEng.Example.Server
                 {
                     IEntity testingEntity = new Entity();
                     //Add components
-                    testingEntity.AddComponent(new TransformComponent());
+                    testingEntity.AddComponent(new NetworkTransformComponent());
                     testingEntity.AddComponent(new PlayerMovementComponent());
                     testingEntity.AddComponent(new SpriteRenderComponent());
                     //Update the entity
@@ -56,10 +75,19 @@ namespace CorgEng.Example.Server
             //Start networking server
             NetworkingServer.StartHosting(5000);
 
+#if DEBUG_RENDERING
+            //Transfer control of the main thread to the CorgEng
+            //rendering thread
+            CorgEngMain.TransferToRenderingThread();
+            //Shut down the program once it has been closed
+            //and clean everything up.
+            CorgEngMain.Shutdown();
+#else
             while (true)
             {
                 Thread.Sleep(100);
             }
+#endif
         }
     }
 }

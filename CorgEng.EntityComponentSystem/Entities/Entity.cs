@@ -103,11 +103,12 @@ namespace CorgEng.EntityComponentSystem.Entities
 
         public T GetComponent<T>()
         {
+            //Get derived types too
             lock (Components)
             {
                 foreach (IComponent component in Components)
                 {
-                    if (component.GetType() == typeof(T))
+                    if (typeof(T).IsAssignableFrom(component.GetType()))
                         return (T)component;
                 }
             }

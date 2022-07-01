@@ -186,6 +186,8 @@ namespace CorgEng.EntityComponentSystem.Systems
             }
         }
 
+        private static IEnumerable<Type> TypeCache;
+
         /// <summary>
         /// Register to a local event
         /// </summary>
@@ -193,35 +195,46 @@ namespace CorgEng.EntityComponentSystem.Systems
             where GComponent : Component
             where GEvent : IEvent
         {
-            //Register the component to recieve the target event on the event manager
-            lock (EventManager.RegisteredEvents)
+            //Handle assembly cache
+            if (TypeCache == null)
             {
-                if (!EventManager.RegisteredEvents.ContainsKey(typeof(GComponent)))
-                    EventManager.RegisteredEvents.Add(typeof(GComponent), new List<Type>());
-                if (!EventManager.RegisteredEvents[typeof(GComponent)].Contains(typeof(GEvent)))
-                    EventManager.RegisteredEvents[typeof(GComponent)].Add(typeof(GEvent));
+                TypeCache = AppDomain.CurrentDomain.GetAssemblies()
+                    .SelectMany(assembly => assembly.GetTypes());
             }
-            //Register the system to receieve the event
-            EventComponentPair eventComponentPair = new EventComponentPair(typeof(GEvent), typeof(GComponent));
-            lock (RegisteredSystemSignalHandlers)
+            IEnumerable<Type> typesToRegister = TypeCache.Where(type => typeof(GComponent).IsAssignableFrom(type));
+            //Determine all types that need to be registered
+            foreach (Type typeToRegister in typesToRegister)
             {
-                if (!RegisteredSystemSignalHandlers.ContainsKey(eventComponentPair))
-                    RegisteredSystemSignalHandlers.Add(eventComponentPair, new List<SystemEventHandlerDelegate>());
-                RegisteredSystemSignalHandlers[eventComponentPair].Add((IEntity entity, IComponent component, IEvent signal) =>
+                //Register the component to recieve the target event on the event manager
+                lock (EventManager.RegisteredEvents)
                 {
+                    if (!EventManager.RegisteredEvents.ContainsKey(typeToRegister))
+                        EventManager.RegisteredEvents.Add(typeToRegister, new List<Type>());
+                    if (!EventManager.RegisteredEvents[typeToRegister].Contains(typeof(GEvent)))
+                        EventManager.RegisteredEvents[typeToRegister].Add(typeof(GEvent));
+                }
+                //Register the system to receieve the event
+                EventComponentPair eventComponentPair = new EventComponentPair(typeof(GEvent), typeToRegister);
+                lock (RegisteredSystemSignalHandlers)
+                {
+                    if (!RegisteredSystemSignalHandlers.ContainsKey(eventComponentPair))
+                        RegisteredSystemSignalHandlers.Add(eventComponentPair, new List<SystemEventHandlerDelegate>());
+                    RegisteredSystemSignalHandlers[eventComponentPair].Add((IEntity entity, IComponent component, IEvent signal) =>
+                    {
                     //Check if we don't process
                     if (NetworkConfig != null
-                        && NetworkConfig.NetworkingActive
-                        && ((SystemFlags & EntitySystemFlags.HOST_SYSTEM) == 0 || !NetworkConfig.ProcessServerSystems)
-                        && ((SystemFlags & EntitySystemFlags.CLIENT_SYSTEM) == 0 || !NetworkConfig.ProcessClientSystems))
-                        return;
-                    invokationQueue.Enqueue(() =>
-                    {
-                        eventHandler(entity, (GComponent)component, (GEvent)signal);
+                            && NetworkConfig.NetworkingActive
+                            && ((SystemFlags & EntitySystemFlags.HOST_SYSTEM) == 0 || !NetworkConfig.ProcessServerSystems)
+                            && ((SystemFlags & EntitySystemFlags.CLIENT_SYSTEM) == 0 || !NetworkConfig.ProcessClientSystems))
+                            return;
+                        invokationQueue.Enqueue(() =>
+                        {
+                            eventHandler(entity, (GComponent)component, (GEvent)signal);
+                        });
+                        if (isWaiting)
+                            waitHandle.Set();
                     });
-                    if(isWaiting)
-                        waitHandle.Set();
-                });
+                }
             }
         }
 

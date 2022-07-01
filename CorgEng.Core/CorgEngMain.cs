@@ -42,6 +42,11 @@ namespace CorgEng.Core
         public static ICamera MainCamera { get; private set; }
 
         /// <summary>
+        /// The name of the window
+        /// </summary>
+        public static string WindowName { get; set; } = "CorgEngApplication";
+
+        /// <summary>
         /// Create a logger
         /// </summary>
         [UsingDependency]
@@ -62,6 +67,8 @@ namespace CorgEng.Core
 
         public static bool Terminated { get; private set; }
 
+        public static bool IsRendering { get; private set; } = false;
+
         /// <summary>
         /// Initializes the CorgEng game engine.
         /// Will call initialization on all CorgEng modules.
@@ -77,6 +84,8 @@ namespace CorgEng.Core
                 ModuleInit();
                 return;
             }
+            //Enable rendering functionality
+            IsRendering = true;
             //Create a new window
             GameWindow = new CorgEngWindow();
             GameWindow.Open();

@@ -389,7 +389,7 @@ namespace CorgEng.Networking.Networking.Client
                 //Handle the event
                 switch (header)
                 {
-                   case PacketHeaders.GLOBAL_EVENT_RAISED:
+                    case PacketHeaders.GLOBAL_EVENT_RAISED:
                         //First we need to figure out what event is being raised
                         //Now we need to deserialize the byte data into the actual packet data
                         //Since implementation of this is specific to the classes, we need to create
