@@ -2,6 +2,7 @@
 using CorgEng.EntityComponentSystem.Entities;
 using CorgEng.EntityComponentSystem.Events.Events;
 using CorgEng.GenericInterfaces.EntityComponentSystem;
+using CorgEng.GenericInterfaces.Networking.Config;
 using CorgEng.GenericInterfaces.Networking.Networking;
 using CorgEng.GenericInterfaces.Networking.Packets;
 using CorgEng.GenericInterfaces.Networking.VersionSync;
@@ -15,6 +16,9 @@ namespace CorgEng.EntityComponentSystem.Events
 
     public static class EventExtensions
     {
+
+        [UsingDependency]
+        private static INetworkConfig NetworkConfig;
 
         /// <summary>
         /// Raise this event against a specified target
@@ -75,6 +79,9 @@ namespace CorgEng.EntityComponentSystem.Events
             }
             //Don't relay messages coming from other clients already
             if (!sourcedLocally)
+                return;
+            //Don't relay client message
+            if (!signal.CanBeRaisedByClient && NetworkConfig.ProcessClientSystems)
                 return;
             //Inform globally that a networked event was raised
             //Skip directly to signal handling

@@ -11,6 +11,8 @@ namespace CorgEng.EntityComponentSystem.Implementations.Rendering.SpriteRenderin
     public class SetSpriteEvent : INetworkedEvent
     {
 
+        public bool CanBeRaisedByClient => false;
+
         public string TextureFile { get; set; }
 
         public SetSpriteEvent(string textureFile)

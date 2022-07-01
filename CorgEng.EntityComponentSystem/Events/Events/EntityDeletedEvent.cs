@@ -9,6 +9,7 @@ namespace CorgEng.EntityComponentSystem.Events.Events
 {
     public class DeleteEntityEvent : INetworkedEvent
     {
+        public bool CanBeRaisedByClient => false;
 
         public byte[] Serialize()
         {

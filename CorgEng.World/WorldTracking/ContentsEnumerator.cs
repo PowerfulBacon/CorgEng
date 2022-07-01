@@ -34,9 +34,13 @@ namespace CorgEng.World.WorldTracking
 
         public bool MoveNext()
         {
-            head++;
-            if (head == reference.nextInsertionPointer)
-                return false;
+            do
+            {
+                head++;
+                if (head == reference.nextInsertionPointer)
+                    return false;
+            }
+            while (Current == null);
             return true;
         }
 

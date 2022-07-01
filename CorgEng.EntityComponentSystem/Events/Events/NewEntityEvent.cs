@@ -10,6 +10,8 @@ namespace CorgEng.EntityComponentSystem.Events.Events
     public class NewEntityEvent : INetworkedEvent
     {
 
+        public bool CanBeRaisedByClient => false;
+
         public uint Identifier { get; set; }
 
         public NewEntityEvent(uint identifier)

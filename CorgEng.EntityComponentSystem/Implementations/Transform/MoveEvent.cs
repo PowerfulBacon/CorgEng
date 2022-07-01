@@ -12,6 +12,8 @@ namespace CorgEng.EntityComponentSystem.Implementations.Transform
     public class MoveEvent : INetworkedEvent
     {
 
+        public bool CanBeRaisedByClient => false;
+
         public Vector<float> OldPosition { get; set; }
 
         public Vector<float> NewPosition { get; set; }

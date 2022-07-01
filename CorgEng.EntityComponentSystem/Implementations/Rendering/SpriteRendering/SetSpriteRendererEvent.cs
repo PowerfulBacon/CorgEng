@@ -16,6 +16,8 @@ namespace CorgEng.EntityComponentSystem.Implementations.Rendering.SpriteRenderin
     public class SetSpriteRendererEvent : INetworkedEvent
     {
 
+        public bool CanBeRaisedByClient => false;
+
         [UsingDependency]
         private static IAutoSerialiser AutoSerialiser;
 

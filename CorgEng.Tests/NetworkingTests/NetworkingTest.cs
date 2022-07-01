@@ -149,6 +149,8 @@ namespace CorgEng.Tests.NetworkingTests
         private class NetworkedTestEvent : INetworkedEvent
         {
 
+            public bool CanBeRaisedByClient => false;
+
             public int testNumber { get; set; }
 
             public void Deserialize(byte[] data)

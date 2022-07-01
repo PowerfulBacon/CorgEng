@@ -12,6 +12,8 @@ namespace CorgEng.InputHandling.Events
     public class KeyReleaseEvent : INetworkedEvent
     {
 
+        public bool CanBeRaisedByClient => true;
+
         public Keys Key { get; set; }
 
         public ModifierKeys ModifierKeys { get; set; }

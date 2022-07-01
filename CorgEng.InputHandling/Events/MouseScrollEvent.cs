@@ -11,6 +11,8 @@ namespace CorgEng.InputHandling.Events
     public class MouseScrollEvent : INetworkedEvent
     {
 
+        public bool CanBeRaisedByClient => true;
+
         public double ScrollDelta { get; set; }
 
         public MouseScrollEvent(double scrollDelta)

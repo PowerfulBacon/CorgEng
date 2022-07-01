@@ -10,6 +10,8 @@ namespace CorgEng.GenericInterfaces.EntityComponentSystem
     public interface INetworkedEvent : IEvent, IVersionSynced
     {
 
+        bool CanBeRaisedByClient { get; }
+
         void Deserialize(byte[] data);
 
         byte[] Serialize();

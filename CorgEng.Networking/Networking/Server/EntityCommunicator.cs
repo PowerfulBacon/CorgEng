@@ -100,8 +100,6 @@ namespace CorgEng.Networking.Networking.Server
                             componentVariable.Item2.SetValue(component, value);
                         }
                     }
-                    //Trigger a move to set it to the current position
-                    new TranslateEvent(new Vector<float>(0, 0)).Raise(entity);
                     //Initialise the entity
                     new InitialiseNetworkedEntityEvent().Raise(entity);
                     //Return the created entity

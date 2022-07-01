@@ -38,9 +38,9 @@ namespace CorgEng.Example.Server
             CorgEngMain.Initialize(true);
 
             //Create a testing entity
-            for (int x = 1; x <= 1; x++)
+            for (int x = -1; x <= 1; x++)
             {
-                for (int y = 1; y <= 1; y++)
+                for (int y = -1; y <= 1; y++)
                 {
                     IEntity testingEntity = new Entity();
                     //Add components
