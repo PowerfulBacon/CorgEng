@@ -1,4 +1,5 @@
-﻿using CorgEng.DependencyInjection.Dependencies;
+﻿using CorgEng.Core.Modules;
+using CorgEng.DependencyInjection.Dependencies;
 using CorgEng.GenericInterfaces.Logging;
 using System;
 using System.Threading;
@@ -41,6 +42,9 @@ namespace CorgEng.Logging
         {
             switch (logType)
             {
+                case LogType.DEBUG_EVERYTHING:
+                    Console.ForegroundColor = ConsoleColor.Gray;
+                    return;
                 case LogType.DEBUG:
                     Console.ForegroundColor = ConsoleColor.Magenta;
                     return;

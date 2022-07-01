@@ -2,6 +2,7 @@
 using CorgEng.EntityComponentSystem.Entities;
 using CorgEng.EntityComponentSystem.Events.Events;
 using CorgEng.GenericInterfaces.EntityComponentSystem;
+using CorgEng.GenericInterfaces.Logging;
 using CorgEng.GenericInterfaces.Networking.Config;
 using CorgEng.GenericInterfaces.Networking.Networking;
 using CorgEng.GenericInterfaces.Networking.Packets;
@@ -20,11 +21,15 @@ namespace CorgEng.EntityComponentSystem.Events
         [UsingDependency]
         private static INetworkConfig NetworkConfig;
 
+        [UsingDependency]
+        private static ILogger Logger;
+
         /// <summary>
         /// Raise this event against a specified target
         /// </summary>
         public static void Raise(this IEvent signal, IEntity target)
         {
+            Logger.WriteLine($"Event raised {signal}", LogType.DEBUG_EVERYTHING);
             //Handle the signal
             target.HandleSignal(signal);
         }
@@ -34,6 +39,7 @@ namespace CorgEng.EntityComponentSystem.Events
         /// </summary>
         public static void Raise(this INetworkedEvent signal, IEntity target)
         {
+            Logger.WriteLine($"Event raised {signal}", LogType.DEBUG_EVERYTHING);
             //Handle the signal
             target.HandleSignal(signal);
             //Inform the entity that networked event was raised
@@ -46,6 +52,7 @@ namespace CorgEng.EntityComponentSystem.Events
         /// </summary>
         public static void RaiseGlobally(this IEvent signal)
         {
+            Logger.WriteLine($"Event raised {signal}", LogType.DEBUG_EVERYTHING);
             //Check if we have any registered signals
             if (!EventManager.RegisteredEvents.ContainsKey(typeof(GlobalEventComponent)))
                 return;
@@ -65,6 +72,7 @@ namespace CorgEng.EntityComponentSystem.Events
         /// </summary>
         public static void RaiseGlobally(this INetworkedEvent signal, bool sourcedLocally = true)
         {
+            Logger.WriteLine($"Event raised {signal}", LogType.DEBUG_EVERYTHING);
             //Check if we have any registered signals
             if (!EventManager.RegisteredEvents.ContainsKey(typeof(GlobalEventComponent)))
                 return;
