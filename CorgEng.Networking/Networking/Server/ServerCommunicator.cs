@@ -1,4 +1,5 @@
-﻿using CorgEng.DependencyInjection.Dependencies;
+﻿using CorgEng.Core.Dependencies;
+using CorgEng.DependencyInjection.Dependencies;
 using CorgEng.GenericInterfaces.Networking.Clients;
 using CorgEng.GenericInterfaces.Networking.Networking;
 using CorgEng.GenericInterfaces.Networking.Packets;
@@ -14,6 +15,9 @@ namespace CorgEng.Networking.Networking.Server
     [Dependency]
     internal class ServerCommunicator : IServerCommunicator
     {
+
+        [UsingDependency]
+        private static IClientAddressFactory ClientAddressFactory;
 
         public static NetworkingServer server;
 
@@ -35,7 +39,19 @@ namespace CorgEng.Networking.Networking.Server
 
         public void SendToReleventClients(INetworkMessage networkMessage, IVector<float> position, IVector<float> scale)
         {
-            throw new NotImplementedException();
+            if (server == null)
+                return;
+            //Go thruogh each client and check if its in view
+            //This is quicker than checking every tile in view and seeing if a client can see it
+            IEnumerable<IClient> clientList = server.ClientAddressingTable.GetEveryone().GetClients();
+            IClientAddress addressToSendTo = ClientAddressFactory.CreateEmptyAddress();
+            foreach (IClient client in clientList)
+            {
+                //TODO: Client position
+                addressToSendTo.EnableFlag(server.ClientAddressingTable.GetFlagRepresentation(client));
+            }
+            //Create the message
+            server.QueueMessage(addressToSendTo, networkMessage);
         }
 
     }

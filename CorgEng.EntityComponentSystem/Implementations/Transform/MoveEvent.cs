@@ -31,15 +31,11 @@ namespace CorgEng.EntityComponentSystem.Implementations.Transform
             float* oldPositionXPointer = &oldPositionX;
             float oldPositionY = OldPosition.Y;
             float* oldPositionYPointer = &oldPositionY;
-            float oldPositionZ = OldPosition.Z;
-            float* oldPositionZPointer = &oldPositionZ;
             //Get the new position pointers
             float newPositionX = NewPosition.X;
             float* newPositionXPointer = &newPositionX;
             float newPositionY = NewPosition.Y;
             float* newPositionYPointer = &newPositionY;
-            float newPositionZ = NewPosition.Z;
-            float* newPositionZPointer = &newPositionZ;
             //Convert pointers to byte array
             return new byte[] {
                 *(byte*)oldPositionXPointer,
@@ -50,10 +46,6 @@ namespace CorgEng.EntityComponentSystem.Implementations.Transform
                 *(((byte*)oldPositionYPointer)+1),
                 *(((byte*)oldPositionYPointer)+2),
                 *(((byte*)oldPositionYPointer)+3),
-                *(byte*)oldPositionZPointer,
-                *(((byte*)oldPositionZPointer)+1),
-                *(((byte*)oldPositionZPointer)+2),
-                *(((byte*)oldPositionZPointer)+3),
                 *(byte*)newPositionXPointer,
                 *(((byte*)newPositionXPointer)+1),
                 *(((byte*)newPositionXPointer)+2),
@@ -62,10 +54,6 @@ namespace CorgEng.EntityComponentSystem.Implementations.Transform
                 *(((byte*)newPositionYPointer)+1),
                 *(((byte*)newPositionYPointer)+2),
                 *(((byte*)newPositionYPointer)+3),
-                *(byte*)newPositionZPointer,
-                *(((byte*)newPositionZPointer)+1),
-                *(((byte*)newPositionZPointer)+2),
-                *(((byte*)newPositionZPointer)+3)
             };
         }
 
@@ -77,13 +65,11 @@ namespace CorgEng.EntityComponentSystem.Implementations.Transform
                 //Deserialise the data
                 OldPosition = new Vector<float>(
                     *floatArray,
-                    *(floatArray + 1),
-                    *(floatArray + 2)
+                    *(floatArray + 1)
                     );
                 NewPosition = new Vector<float>(
-                    *(floatArray + 3),
-                    *(floatArray + 4),
-                    *(floatArray + 5)
+                    *(floatArray + 2),
+                    *(floatArray + 3)
                     );
             }
         }

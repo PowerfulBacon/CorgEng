@@ -4,6 +4,7 @@ using CorgEng.Core.Rendering;
 using CorgEng.Core.Rendering.Exceptions;
 using CorgEng.GenericInterfaces.InputHandler;
 using CorgEng.GenericInterfaces.Logging;
+using CorgEng.GenericInterfaces.Networking.Config;
 using CorgEng.GenericInterfaces.Rendering;
 using GLFW;
 using System;

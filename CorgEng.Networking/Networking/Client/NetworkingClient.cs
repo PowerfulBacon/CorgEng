@@ -389,19 +389,44 @@ namespace CorgEng.Networking.Networking.Client
                 //Handle the event
                 switch (header)
                 {
+                    case PacketHeaders.LOCAL_EVENT_RAISED:
+                        {
+                            //Locate the target entity
+                            uint entityIdentifier = BitConverter.ToUInt32(data, start + 0x02);
+                            IEntity entityTarget = EntityManager.GetEntity(entityIdentifier);
+                            if (entityTarget == null)
+                            {
+                                Logger?.WriteLine($"Unable to locate entity with ID {entityIdentifier} to raise local event on.", LogType.DEBUG);
+                                return;
+                            }
+                            //First we need to figure out what event is being raised
+                            //Now we need to deserialize the byte data into the actual packet data
+                            //Since implementation of this is specific to the classes, we need to create
+                            //the correct class.
+                            ushort eventID = BitConverter.ToUInt16(data, start);
+                            //Get the event that was raised
+                            INetworkedEvent raisedEvent = VersionGenerator.CreateTypeFromIdentifier<INetworkedEvent>(eventID);
+                            Logger.WriteLine($"global event raised of type {raisedEvent.GetType()}");
+                            //Deserialize the event
+                            raisedEvent.Deserialize(data.Skip(start + 0x06).Take(length).ToArray());
+                            raisedEvent.Raise(entityTarget);
+                            return;
+                        }
                     case PacketHeaders.GLOBAL_EVENT_RAISED:
-                        //First we need to figure out what event is being raised
-                        //Now we need to deserialize the byte data into the actual packet data
-                        //Since implementation of this is specific to the classes, we need to create
-                        //the correct class.
-                        ushort eventID = BitConverter.ToUInt16(data, start);
-                        //Get the event that was raised
-                        INetworkedEvent raisedEvent = VersionGenerator.CreateTypeFromIdentifier<INetworkedEvent>(eventID);
-                        Logger.WriteLine($"global event raised of type {raisedEvent.GetType()}");
-                        //Deserialize the event
-                        raisedEvent.Deserialize(data.Skip(start + 0x02).Take(length).ToArray());
-                        raisedEvent.RaiseGlobally(false);
-                        return;
+                        {
+                            //First we need to figure out what event is being raised
+                            //Now we need to deserialize the byte data into the actual packet data
+                            //Since implementation of this is specific to the classes, we need to create
+                            //the correct class.
+                            ushort eventID = BitConverter.ToUInt16(data, start);
+                            //Get the event that was raised
+                            INetworkedEvent raisedEvent = VersionGenerator.CreateTypeFromIdentifier<INetworkedEvent>(eventID);
+                            Logger.WriteLine($"global event raised of type {raisedEvent.GetType()}");
+                            //Deserialize the event
+                            raisedEvent.Deserialize(data.Skip(start + 0x02).Take(length).ToArray());
+                            raisedEvent.RaiseGlobally(false);
+                            return;
+                        }
                     case PacketHeaders.PROTOTYPE_INFO:
                         PrototypeManager.GetProtoype(data.Skip(start).Take(length).ToArray());
                         return;

@@ -43,7 +43,7 @@ namespace CorgEng.Logging
             switch (logType)
             {
                 case LogType.DEBUG_EVERYTHING:
-                    Console.ForegroundColor = ConsoleColor.Gray;
+                    Console.ForegroundColor = ConsoleColor.Blue;
                     return;
                 case LogType.DEBUG:
                     Console.ForegroundColor = ConsoleColor.Magenta;

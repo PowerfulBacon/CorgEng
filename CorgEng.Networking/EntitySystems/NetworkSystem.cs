@@ -62,14 +62,14 @@ namespace CorgEng.Networking.EntitySystems
             {
                 //Send the message to clients
                 ServerCommunicator?.SendToClients(
-                    NetworkMessageFactory.CreateMessage(PacketHeaders.GLOBAL_EVENT_RAISED, InjectEventCode(networkedEventRaisedEvent.RaisedEvent))
+                    NetworkMessageFactory.CreateMessage(PacketHeaders.GLOBAL_EVENT_RAISED, InjectEventCode(networkedEventRaisedEvent.RaisedEvent, null))
                     );
             }
             else if (NetworkConfig.ProcessClientSystems)
             {
                 //Send the message to the server
                 ClientCommunicator?.SendToServer(
-                    NetworkMessageFactory.CreateMessage(PacketHeaders.GLOBAL_EVENT_RAISED, InjectEventCode(networkedEventRaisedEvent.RaisedEvent))
+                    NetworkMessageFactory.CreateMessage(PacketHeaders.GLOBAL_EVENT_RAISED, InjectEventCode(networkedEventRaisedEvent.RaisedEvent, null))
                     );
             }
             
@@ -85,7 +85,7 @@ namespace CorgEng.Networking.EntitySystems
             if (NetworkConfig.ProcessServerSystems)
             {
                 ServerCommunicator?.SendToReleventClients(
-                    NetworkMessageFactory.CreateMessage(PacketHeaders.LOCAL_EVENT_RAISED, InjectEventCode(networkedEventRaisedEvent.RaisedEvent)),
+                    NetworkMessageFactory.CreateMessage(PacketHeaders.LOCAL_EVENT_RAISED, InjectEventCode(networkedEventRaisedEvent.RaisedEvent, entity)),
                     transformComponent.Position,
                     new Vector<float>(1, 1, 1)
                     );
@@ -93,13 +93,15 @@ namespace CorgEng.Networking.EntitySystems
         }
 
         //Kind of slow due to a lot of memory allocation :(
-        //TODO: Improve the speed of this
-        private byte[] InjectEventCode(INetworkedEvent e)
+        //TODO: Improve the speed of this by using MemoryStream and BinaryWriter rather than array copies.
+        private byte[] InjectEventCode(INetworkedEvent e, IEntity entityTarget)
         {
             byte[] data = e.Serialize();
-            byte[] output = new byte[data.Length + 2];
+            byte[] output = new byte[data.Length + 2 + (entityTarget != null ? sizeof(uint) : 0)];
             BitConverter.GetBytes(e.GetNetworkedIdentifier()).CopyTo(output, 0);
-            data.CopyTo(output, 2);
+            if (entityTarget != null)
+                BitConverter.GetBytes(entityTarget.Identifier).CopyTo(output, 2);
+            data.CopyTo(output, 2 + (entityTarget != null ? sizeof(uint) : 0));
             return output;
         }
 
