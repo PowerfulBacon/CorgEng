@@ -273,7 +273,7 @@ namespace CorgEng.Networking.Networking.Client
                     Logger?.WriteLine(e, LogType.ERROR);
                 }
             }
-            Logger?.WriteLine($"Client sender thread terminated", LogType.ERROR);
+            Logger?.WriteLine($"Client sender thread terminated", LogType.WARNING);
             shutdownCountdown.Signal();
         }
 
@@ -300,7 +300,7 @@ namespace CorgEng.Networking.Networking.Client
                 }
             }
             //Disconnected
-            Logger?.WriteLine("Disconnected from remote server.", LogType.MESSAGE);
+            Logger?.WriteLine("Disconnected from remote server.", LogType.WARNING);
             shutdownCountdown.Signal();
         }
 
