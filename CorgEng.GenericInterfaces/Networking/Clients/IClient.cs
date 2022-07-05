@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CorgEng.GenericInterfaces.EntityComponentSystem;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -20,6 +21,11 @@ namespace CorgEng.GenericInterfaces.Networking.Clients
         /// The view details of the client
         /// </summary>
         ClientView View { get; }
+
+        /// <summary>
+        /// The entity that we are attached to
+        /// </summary>
+        IEntity AttachedEntity { get; set; }
 
         /// <summary>
         /// The username attached to this client

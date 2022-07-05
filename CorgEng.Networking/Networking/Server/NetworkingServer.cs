@@ -340,8 +340,9 @@ namespace CorgEng.Networking.Networking.Server
                 NetworkMessageFactory.CreateMessage(PacketHeaders.CONNECTION_ACCEPT, new byte[0]));
             //Create a new client entity and add what we need
             IEntity createdEntity = new Entity();
-            createdEntity.AddComponent(new TransformComponent());
-            createdEntity.AddComponent(new ClientComponent() { AttachedClient = createdClient });
+            createdEntity.AddComponent(new NetworkTransformComponent());
+            createdEntity.AddComponent(new ClientComponent());
+            new AttachClientEvent(createdClient).Raise(createdEntity);
             //Send a connection event
             new ClientConnectedEvent(createdClient).Raise(createdEntity);
         }

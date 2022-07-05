@@ -1,5 +1,6 @@
 ﻿using CorgEng.GenericInterfaces.Networking.Clients;
 using CorgEng.GenericInterfaces.Networking.Packets;
+using CorgEng.GenericInterfaces.Networking.PrototypeManager;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -41,6 +42,12 @@ namespace CorgEng.GenericInterfaces.Networking.Networking.Server
         /// Terminate the networking and cleanup the server
         /// </summary>
         void Cleanup();
+
+        /// <summary>
+        /// Set the prototype that gets created when somebody joins
+        /// </summary>
+        /// <param name="prototype"></param>
+        void SetClientPrototype(IPrototype prototype);
 
     }
 }

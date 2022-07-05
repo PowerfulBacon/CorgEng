@@ -10,6 +10,7 @@ using CorgEng.EntityComponentSystem.Implementations.Rendering.SpriteRendering;
 using CorgEng.EntityComponentSystem.Implementations.Transform;
 using CorgEng.Example.Common.Components.Camera;
 using CorgEng.Example.Components.PlayerMovement;
+using CorgEng.Example.Modules.CameraScroll;
 using CorgEng.Example.Shared.RenderCores;
 using CorgEng.GenericInterfaces.Font.Fonts;
 using CorgEng.GenericInterfaces.Networking.Networking;
@@ -62,6 +63,7 @@ namespace CorgEng.Example
 
             //Camera an isometric camera
             IIsometricCamera camera = isometricCameraFactory.CreateCamera();
+            CameraScrollSystem.IsometricCamera = camera;
 
             ExampleRenderCore erc = new ExampleRenderCore();
             CorgEngMain.SetRenderCore(erc);

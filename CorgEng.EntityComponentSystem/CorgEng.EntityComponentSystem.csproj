@@ -92,7 +92,7 @@
     <Compile Include="Entities\EntityManager.cs" />
     <Compile Include="Events\Events\ComponentAddedEvent.cs" />
     <Compile Include="Events\Events\ComponentRemovedEvent.cs" />
-    <Compile Include="Events\Events\EntityDeletedEvent.cs" />
+    <Compile Include="Events\Events\DeleteEntityEvent.cs" />
     <Compile Include="Events\Events\GameClosedEvent.cs" />
     <Compile Include="Events\Events\InitialiseNetworkedEntityEvent.cs" />
     <Compile Include="Events\Events\NetworkedEventRaisedEvent.cs" />

@@ -1,4 +1,5 @@
 ﻿using CorgEng.Core.Dependencies;
+using CorgEng.EntityComponentSystem.Events.Events;
 using CorgEng.EntityComponentSystem.Implementations.Transform;
 using CorgEng.EntityComponentSystem.Systems;
 using CorgEng.GenericInterfaces.EntityComponentSystem;
@@ -37,6 +38,30 @@ namespace CorgEng.Networking.EntitySystems
         {
             RegisterLocalEvent<ClientComponent, ClientConnectedEvent>(OnClientConnected);
             RegisterLocalEvent<ClientComponent, MoveEvent>(OnClientMoved);
+            RegisterLocalEvent<ClientComponent, AttachClientEvent>(OnAttachClient);
+            RegisterLocalEvent<ClientComponent, DeleteEntityEvent>(OnEntityDeleted);
+        }
+
+        /// <summary>
+        /// When the entity is deleted, detach the client from it to ensure proper deletion
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <param name="clientComponent"></param>
+        /// <param name="entityDeletedEvent"></param>
+        private void OnEntityDeleted(IEntity entity, ClientComponent clientComponent, DeleteEntityEvent entityDeletedEvent)
+        {
+            if (clientComponent.AttachedClient != null)
+            {
+                clientComponent.AttachedClient.AttachedEntity = null;
+                clientComponent.AttachedClient = null;
+            }
+        }
+
+        private void OnAttachClient(IEntity entity, ClientComponent clientComponent, AttachClientEvent attachClientEvent)
+        {
+            //Attach the client
+            clientComponent.AttachedClient = attachClientEvent.Client;
+            clientComponent.AttachedClient.AttachedEntity = entity;
         }
 
         /// <summary>

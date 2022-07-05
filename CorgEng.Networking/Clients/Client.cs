@@ -1,4 +1,5 @@
-﻿using CorgEng.GenericInterfaces.Networking.Clients;
+﻿using CorgEng.GenericInterfaces.EntityComponentSystem;
+using CorgEng.GenericInterfaces.Networking.Clients;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,6 +18,8 @@ namespace CorgEng.Networking.Clients
         public string Username { get; }
 
         public ClientView View { get; } = new ClientView();
+
+        public IEntity AttachedEntity { get; set; }
 
         public Client(string username, IPEndPoint clientEndPoint)
         {

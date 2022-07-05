@@ -27,5 +27,7 @@ namespace CorgEng.GenericInterfaces.Networking.Packets
         REQUEST_PROTOTYPE,
         //Information about an entity
         ENTITY_DATA,
+        //Tells a client to update their view and move it to a new location
+        UPDATE_CLIENT_VIEW,
     }
 }
