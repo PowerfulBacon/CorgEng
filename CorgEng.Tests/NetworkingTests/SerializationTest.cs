@@ -206,7 +206,7 @@ namespace CorgEng.Tests.NetworkingTests
                         }
                         else if (eventProperty.PropertyType == typeof(Vector<float>))
                         {
-                            appliedValue = new Vector<float>((float)random.NextDouble(), (float)random.NextDouble(), (float)random.NextDouble());
+                            appliedValue = new Vector<float>((float)random.NextDouble(), (float)random.NextDouble());
                         }
                         else
                         {
