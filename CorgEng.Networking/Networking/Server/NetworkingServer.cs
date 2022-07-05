@@ -11,6 +11,7 @@ using CorgEng.GenericInterfaces.Networking.Networking;
 using CorgEng.GenericInterfaces.Networking.Networking.Server;
 using CorgEng.GenericInterfaces.Networking.Packets;
 using CorgEng.GenericInterfaces.Networking.Packets.PacketQueues;
+using CorgEng.GenericInterfaces.Networking.PrototypeManager;
 using CorgEng.Networking.Components;
 using CorgEng.Networking.Events;
 using CorgEng.Networking.VersionSync;
@@ -49,6 +50,9 @@ namespace CorgEng.Networking.Networking.Server
 
         [UsingDependency]
         private static INetworkConfig NetworkConfig;
+
+        [UsingDependency]
+        private static IPrototypeManager PrototypeManager;
 
         private IPacketQueue PacketQueue;
 
@@ -246,8 +250,25 @@ namespace CorgEng.Networking.Networking.Server
                 //Process messages
                 if (connectedClients.ContainsKey(sender.Address))
                 {
+                    //The client this message is coming from
+                    IClient client = connectedClients[sender.Address];
                     switch (header)
                     {
+                        case PacketHeaders.REQUEST_PROTOTYPE:
+                            //Get the prototype identifier
+                            uint prototypeIdentifier = BitConverter.ToUInt32(data, start);
+                            //Locate the prototype that is being requested
+                            IPrototype prototypeRequested = PrototypeManager.GetLocalProtoype(prototypeIdentifier);
+                            //We don't have that, ignore the request
+                            if (prototypeRequested == null)
+                                return;
+                            //Send the prototype to the client
+                            INetworkMessage message = NetworkMessageFactory.CreateMessage(
+                                PacketHeaders.PROTOTYPE_INFO,
+                                prototypeRequested.SerializePrototype()
+                            );
+                            QueueMessage(ClientAddressingTable.GetFlagRepresentation(client), message);
+                            return;
                         case PacketHeaders.GLOBAL_EVENT_RAISED:
                             //First we need to figure out what event is being raised
                             //Now we need to deserialize the byte data into the actual packet data

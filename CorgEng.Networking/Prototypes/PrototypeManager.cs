@@ -50,7 +50,7 @@ namespace CorgEng.Networking.Prototypes
         //We use a tree structure for the prototype fetching (Component IDs need to be in order)
         private TreeNode<long, IPrototype> PrototypeTree = new TreeNode<long, IPrototype>();
 
-        internal static IDictionary<uint, IPrototype> PrototypeLookup = new Dictionary<uint, IPrototype>();
+        internal static ConcurrentDictionary<uint, IPrototype> PrototypeLookup = new ConcurrentDictionary<uint, IPrototype>();
 
         /// <summary>
         /// Gets the prototype related to an entity.
@@ -112,7 +112,7 @@ namespace CorgEng.Networking.Prototypes
             IPrototype createdPrototype = new Prototype();
             createdPrototype.GenerateFromEntity(entity);
             //Add the prototype to the prototype lookup table
-            PrototypeLookup.Add(createdPrototype.Identifier, createdPrototype);
+            PrototypeLookup.TryAdd(createdPrototype.Identifier, createdPrototype);
             INetworkMessage message = NetworkMessageFactory.CreateMessage(
                 PacketHeaders.PROTOTYPE_INFO,
                 createdPrototype.SerializePrototype()
@@ -136,10 +136,7 @@ namespace CorgEng.Networking.Prototypes
 
         public void AddPrototype(IPrototype prototype)
         {
-            if (!PrototypeLookup.ContainsKey(prototype.Identifier))
-                PrototypeLookup.Add(prototype.Identifier, prototype);
-            else
-                PrototypeLookup[prototype.Identifier] = prototype;
+            PrototypeLookup.AddOrUpdate(prototype.Identifier, prototype, (key, value) => prototype);
             //Call the prototype added trigger
             foreach (KeyValuePair<Action<IPrototype>, bool> prototypeAddCallback in prototypeAddCallbacks)
             {
@@ -182,6 +179,7 @@ namespace CorgEng.Networking.Prototypes
                 //We were successful
                 if (successStateAchieved)
                 {
+                    Logger.WriteLine($"Prototype {prototypeIdentifier} successfully retrieved from server!", LogType.DEBUG);
                     return located;
                 }
                 //Re-request
@@ -193,6 +191,21 @@ namespace CorgEng.Networking.Prototypes
             }
             Logger.WriteLine("Failed to fetch prototype from server after 2 seconds.", LogType.WARNING);
             throw new Exception("Failed to fetch prototype from server, server is not responding.");
+        }
+
+        /// <summary>
+        /// Get a prototype that is currently saved.
+        /// Intended for the server.
+        /// </summary>
+        /// <param name="prototypeIdentifier"></param>
+        /// <returns></returns>
+        public IPrototype GetLocalProtoype(uint prototypeIdentifier)
+        {
+            if (PrototypeLookup.ContainsKey(prototypeIdentifier))
+            {
+                return PrototypeLookup[prototypeIdentifier];
+            }
+            return null;
         }
 
     }

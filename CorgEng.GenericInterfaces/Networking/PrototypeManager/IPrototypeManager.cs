@@ -25,6 +25,13 @@ namespace CorgEng.GenericInterfaces.Networking.PrototypeManager
         IPrototype GetProtoype(byte[] serializedPrototype);
 
         /// <summary>
+        /// Get a prototype by its identifier
+        /// </summary>
+        /// <param name="prototypeIdentifier"></param>
+        /// <returns></returns>
+        IPrototype GetLocalProtoype(uint prototypeIdentifier);
+
+        /// <summary>
         /// Add the prototype to the prototype manager
         /// </summary>
         /// <param name="prototype"></param>

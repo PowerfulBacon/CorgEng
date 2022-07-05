@@ -64,7 +64,6 @@ namespace CorgEng.Example.Server
                     IEntity testingEntity = new Entity();
                     //Add components
                     testingEntity.AddComponent(new NetworkTransformComponent());
-                    testingEntity.AddComponent(new PlayerMovementComponent());
                     testingEntity.AddComponent(new SpriteRenderComponent());
                     //Update the entity
                     new SetPositionEvent(new Vector<float>(x, y)).Raise(testingEntity);
