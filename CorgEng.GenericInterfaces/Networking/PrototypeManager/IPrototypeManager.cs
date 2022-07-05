@@ -22,7 +22,7 @@ namespace CorgEng.GenericInterfaces.Networking.PrototypeManager
         /// </summary>
         /// <param name="serializedPrototype"></param>
         /// <returns></returns>
-        IPrototype GetProtoype(byte[] serializedPrototype);
+        IPrototype GetPrototype(byte[] serializedPrototype);
 
         /// <summary>
         /// Get a prototype by its identifier

@@ -428,7 +428,7 @@ namespace CorgEng.Networking.Networking.Client
                             return;
                         }
                     case PacketHeaders.PROTOTYPE_INFO:
-                        PrototypeManager.GetProtoype(data.Skip(start).Take(length).ToArray());
+                        PrototypeManager.GetPrototype(data.Skip(start).Take(length).ToArray());
                         return;
                     case PacketHeaders.ENTITY_DATA:
                         IEntity createdEntity = await EntityCommunicator.DeserialiseEntity(data.Skip(start).Take(length).ToArray());

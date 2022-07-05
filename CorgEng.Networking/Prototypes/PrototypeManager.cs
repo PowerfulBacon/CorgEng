@@ -122,7 +122,7 @@ namespace CorgEng.Networking.Prototypes
             return createdPrototype;
         }
 
-        public IPrototype GetProtoype(byte[] serializedPrototype)
+        public IPrototype GetPrototype(byte[] serializedPrototype)
         {
             IPrototype prototype = new Prototype();
             prototype.DeserializePrototype(serializedPrototype);

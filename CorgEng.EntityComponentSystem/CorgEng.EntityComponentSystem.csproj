@@ -107,7 +107,7 @@
     <Compile Include="Implementations\Transform\SetPositionEvent.cs" />
     <Compile Include="Implementations\Transform\TransformComponent.cs" />
     <Compile Include="Entities\Entity.cs" />
-    <Compile Include="Events\Event.cs" />
+    <Compile Include="Events\EventExtensions.cs" />
     <Compile Include="Events\EventComponentPair.cs" />
     <Compile Include="Events\EventManager.cs" />
     <Compile Include="Implementations\Transform\TransformSystem.cs" />

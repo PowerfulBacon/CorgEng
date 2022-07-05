@@ -20,12 +20,12 @@ namespace CorgEng.EntityComponentSystem.Implementations.Rendering.SpriteRenderin
         public IVector<float> CachedPosition { get; set; } = null;
 
         [NetworkSerialized]
-        public string Sprite { get; internal set; }
+        public string Sprite { get; set; }
 
         public ISpriteRenderObject SpriteRenderObject { get; internal set; }
 
         [NetworkSerialized]
-        public uint SpriteRendererIdentifier { get; internal set; }
+        public uint SpriteRendererIdentifier { get; set; }
 
         private uint cachedSpriteRendererIdentifier = 0;
         private ISpriteRenderer _spriteRenderer;

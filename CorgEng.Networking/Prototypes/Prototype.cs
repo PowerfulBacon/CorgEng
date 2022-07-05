@@ -70,7 +70,7 @@ namespace CorgEng.Networking.Prototypes
             foreach (Type type in prototypeComponents.Keys)
             {
                 //Create the uninitialized component
-                IComponent createdComponent = (IComponent)FormatterServices.GetUninitializedObject(type);
+                IComponent createdComponent = (IComponent)Activator.CreateInstance(type);
                 //Inject variables
                 foreach (PropertyInfo propertyInfo in prototypeComponents[type].Keys)
                 {

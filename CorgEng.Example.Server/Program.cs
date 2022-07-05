@@ -4,6 +4,7 @@ using CorgEng.Core;
 using CorgEng.Core.Dependencies;
 using CorgEng.EntityComponentSystem.Entities;
 using CorgEng.EntityComponentSystem.Events;
+using CorgEng.EntityComponentSystem.Events.Events;
 using CorgEng.EntityComponentSystem.Implementations.Rendering.SpriteRendering;
 using CorgEng.EntityComponentSystem.Implementations.Transform;
 using CorgEng.Example.Components.PlayerMovement;
@@ -11,6 +12,7 @@ using CorgEng.Example.Shared.RenderCores;
 using CorgEng.GenericInterfaces.EntityComponentSystem;
 using CorgEng.GenericInterfaces.Logging;
 using CorgEng.GenericInterfaces.Networking.Networking.Server;
+using CorgEng.GenericInterfaces.Networking.PrototypeManager;
 using CorgEng.GenericInterfaces.Rendering.Cameras.Isometric;
 using CorgEng.InputHandling.Events;
 using CorgEng.Networking.Components;
@@ -33,6 +35,9 @@ namespace CorgEng.Example.Server
 
         [UsingDependency]
         private static INetworkingServer NetworkingServer;
+
+        [UsingDependency]
+        private static IPrototypeManager PrototypeManager;
 
 #if DEBUG_RENDERING
         [UsingDependency]
@@ -71,6 +76,8 @@ namespace CorgEng.Example.Server
                     new SetSpriteRendererEvent(1).Raise(testingEntity);
                 }
             }
+            //Set the default player prototype
+            SetPlayerPrototype();
             //Start networking server
             NetworkingServer.StartHosting(5000);
 
@@ -88,5 +95,18 @@ namespace CorgEng.Example.Server
             }
 #endif
         }
+
+        private static void SetPlayerPrototype()
+        {
+            IEntity playerPrototype = new Entity();
+            playerPrototype.AddComponent(new ClientComponent());
+            playerPrototype.AddComponent(new NetworkTransformComponent());
+            playerPrototype.AddComponent(new SpriteRenderComponent() { Sprite = "human.ghost", SpriteRendererIdentifier = 1 });
+            playerPrototype.AddComponent(new PlayerMovementComponent());
+            IPrototype prototype = PrototypeManager.GetPrototype(playerPrototype);
+            NetworkingServer.SetClientPrototype(prototype);
+            new DeleteEntityEvent().Raise(playerPrototype);
+        }
+
     }
 }

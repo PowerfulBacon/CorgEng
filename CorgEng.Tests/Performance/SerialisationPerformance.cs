@@ -117,7 +117,7 @@ namespace CorgEng.Tests.Performance
                 while (running)
                 {
                     //Perform a run
-                    PrototypeManager.GetProtoype(byteStream);
+                    PrototypeManager.GetPrototype(byteStream);
                     //Run completed
                     runs++;
                 }

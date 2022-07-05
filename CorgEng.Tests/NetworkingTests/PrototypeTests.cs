@@ -94,7 +94,7 @@ namespace CorgEng.Tests.NetworkingTests
             Logger.WriteLine(logMessage, LogType.DEBUG);
 
             //Deserialize the entity's prototype
-            IPrototype deserialisedPrototype = PrototypeManager.GetProtoype(serialisedPrototype);
+            IPrototype deserialisedPrototype = PrototypeManager.GetPrototype(serialisedPrototype);
             IEntity createdEntity = deserialisedPrototype.CreateEntityFromPrototype();     //We don't care about the identifier for this test
             //Verify the entity is correct
             Assert.AreEqual(entity.Components.Count, createdEntity.Components.Count);

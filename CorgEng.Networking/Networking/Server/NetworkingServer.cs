@@ -1,7 +1,9 @@
 ﻿using CorgEng.Core.Dependencies;
+using CorgEng.Core.Modules;
 using CorgEng.DependencyInjection.Dependencies;
 using CorgEng.EntityComponentSystem.Entities;
 using CorgEng.EntityComponentSystem.Events;
+using CorgEng.EntityComponentSystem.Events.Events;
 using CorgEng.EntityComponentSystem.Implementations.Transform;
 using CorgEng.GenericInterfaces.EntityComponentSystem;
 using CorgEng.GenericInterfaces.Logging;
@@ -54,6 +56,8 @@ namespace CorgEng.Networking.Networking.Server
         [UsingDependency]
         private static IPrototypeManager PrototypeManager;
 
+        private static IPrototype DefaultEntityPrototype;
+
         private IPacketQueue PacketQueue;
 
         /// <summary>
@@ -97,6 +101,19 @@ namespace CorgEng.Networking.Networking.Server
         /// Set the server transmission tick rate
         /// </summary>
         public int TickRate { get; set; } = 32;
+
+        [ModuleLoad]
+        public void LoadDefaultPrototype()
+        {
+            //Set the default prototype
+            IEntity sampleEntity = new Entity();
+            sampleEntity.AddComponent(new NetworkTransformComponent());
+            sampleEntity.AddComponent(new ClientComponent());
+            //Get the prototype
+            DefaultEntityPrototype = PrototypeManager.GetPrototype(sampleEntity, false);
+            //Delete the entity
+            new DeleteEntityEvent().Raise(sampleEntity);
+        }
 
         public void StartHosting(int port)
         {
@@ -339,9 +356,7 @@ namespace CorgEng.Networking.Networking.Server
                 ClientAddressingTable.AddClient(createdClient),
                 NetworkMessageFactory.CreateMessage(PacketHeaders.CONNECTION_ACCEPT, new byte[0]));
             //Create a new client entity and add what we need
-            IEntity createdEntity = new Entity();
-            createdEntity.AddComponent(new NetworkTransformComponent());
-            createdEntity.AddComponent(new ClientComponent());
+            IEntity createdEntity = DefaultEntityPrototype.CreateEntityFromPrototype();
             new AttachClientEvent(createdClient).Raise(createdEntity);
             //Send a connection event
             new ClientConnectedEvent(createdClient).Raise(createdEntity);
@@ -378,5 +393,11 @@ namespace CorgEng.Networking.Networking.Server
             started = false;
             Logger?.WriteLine("Server cleanup completed!", LogType.LOG);
         }
+
+        public void SetClientPrototype(IPrototype prototype)
+        {
+            DefaultEntityPrototype = prototype ?? throw new ArgumentNullException(nameof(prototype));
+        }
+
     }
 }

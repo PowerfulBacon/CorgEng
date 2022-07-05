@@ -59,7 +59,7 @@ namespace CorgEng.Example
 
             //Set the render core
 
-            Thread.Sleep(500);
+            Thread.Sleep(2000);
 
             //Camera an isometric camera
             IIsometricCamera camera = isometricCameraFactory.CreateCamera();
