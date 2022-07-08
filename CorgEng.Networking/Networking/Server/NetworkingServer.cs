@@ -4,6 +4,7 @@ using CorgEng.DependencyInjection.Dependencies;
 using CorgEng.EntityComponentSystem.Entities;
 using CorgEng.EntityComponentSystem.Events;
 using CorgEng.EntityComponentSystem.Events.Events;
+using CorgEng.EntityComponentSystem.Implementations.Deletion;
 using CorgEng.EntityComponentSystem.Implementations.Transform;
 using CorgEng.GenericInterfaces.EntityComponentSystem;
 using CorgEng.GenericInterfaces.Logging;
@@ -109,6 +110,7 @@ namespace CorgEng.Networking.Networking.Server
             IEntity sampleEntity = new Entity();
             sampleEntity.AddComponent(new NetworkTransformComponent());
             sampleEntity.AddComponent(new ClientComponent());
+            sampleEntity.AddComponent(new DeleteableComponent());
             //Get the prototype
             DefaultEntityPrototype = PrototypeManager.GetPrototype(sampleEntity, false);
             //Delete the entity
@@ -357,7 +359,6 @@ namespace CorgEng.Networking.Networking.Server
                 NetworkMessageFactory.CreateMessage(PacketHeaders.CONNECTION_ACCEPT, new byte[0]));
             //Create a new client entity and add what we need
             IEntity createdEntity = DefaultEntityPrototype.CreateEntityFromPrototype();
-            new AttachClientEvent(createdClient).Raise(createdEntity);
             //Send a connection event
             new ClientConnectedEvent(createdClient).Raise(createdEntity);
         }

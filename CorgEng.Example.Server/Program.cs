@@ -5,6 +5,7 @@ using CorgEng.Core.Dependencies;
 using CorgEng.EntityComponentSystem.Entities;
 using CorgEng.EntityComponentSystem.Events;
 using CorgEng.EntityComponentSystem.Events.Events;
+using CorgEng.EntityComponentSystem.Implementations.Deletion;
 using CorgEng.EntityComponentSystem.Implementations.Rendering.SpriteRendering;
 using CorgEng.EntityComponentSystem.Implementations.Transform;
 using CorgEng.Example.Components.PlayerMovement;
@@ -103,6 +104,7 @@ namespace CorgEng.Example.Server
             playerPrototype.AddComponent(new NetworkTransformComponent());
             playerPrototype.AddComponent(new SpriteRenderComponent() { Sprite = "human.ghost", SpriteRendererIdentifier = 1 });
             playerPrototype.AddComponent(new PlayerMovementComponent());
+            playerPrototype.AddComponent(new DeleteableComponent());
             IPrototype prototype = PrototypeManager.GetPrototype(playerPrototype);
             NetworkingServer.SetClientPrototype(prototype);
             new DeleteEntityEvent().Raise(playerPrototype);

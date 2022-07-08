@@ -38,7 +38,6 @@ namespace CorgEng.Networking.EntitySystems
         {
             RegisterLocalEvent<ClientComponent, ClientConnectedEvent>(OnClientConnected);
             RegisterLocalEvent<ClientComponent, MoveEvent>(OnClientMoved);
-            RegisterLocalEvent<ClientComponent, AttachClientEvent>(OnAttachClient);
             RegisterLocalEvent<ClientComponent, DeleteEntityEvent>(OnEntityDeleted);
         }
 
@@ -57,13 +56,6 @@ namespace CorgEng.Networking.EntitySystems
             }
         }
 
-        private void OnAttachClient(IEntity entity, ClientComponent clientComponent, AttachClientEvent attachClientEvent)
-        {
-            //Attach the client
-            clientComponent.AttachedClient = attachClientEvent.Client;
-            clientComponent.AttachedClient.AttachedEntity = entity;
-        }
-
         /// <summary>
         /// Called when a client connects to the server.
         /// Transmits information about objects near them.
@@ -74,6 +66,10 @@ namespace CorgEng.Networking.EntitySystems
         /// <param name="clientConnectedEvent"></param>
         private void OnClientConnected(IEntity entity, ClientComponent clientComponent, ClientConnectedEvent clientConnectedEvent)
         {
+            //Attach the client
+            clientComponent.AttachedClient = clientConnectedEvent.Client;
+            clientComponent.AttachedClient.AttachedEntity = entity;
+
             //Transmit the information about the entities nearby
 
             //Calculate the new bounds
@@ -184,6 +180,8 @@ namespace CorgEng.Networking.EntitySystems
                     //Get information about the world tile we want to transmit
                     //TODO: Z-Levels
                     IContentsHolder contentsHolder = WorldAccess.GetContentsAt(x, y, 0);
+                    if (contentsHolder == null)
+                        continue;
                     //Get a list of all entities that need to be sent
                     //Painfully expensive
                     foreach (IEntity entityToTransmit in contentsHolder.GetContents())

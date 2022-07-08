@@ -17,6 +17,9 @@ namespace CorgEng.EntityComponentSystem.Entities
 
         internal delegate void InternalSignalHandleDelegate(IEntity entity, IEvent signal);
 
+        [UsingDependency]
+        private static ILogger Logger;
+
         /// <summary>
         /// The identifier for the entity. Used to find a specific entity.
         /// </summary>
@@ -53,6 +56,8 @@ namespace CorgEng.EntityComponentSystem.Entities
         ~Entity()
         {
             Interlocked.Increment(ref EntityManager.GarbageCollectionCount);
+            //Debug
+            Logger.WriteLine($"Entity GC'd. {EntityManager.GarbageCollectionCount}/{EntityManager.DeletionCount}", LogType.TEMP);
         }
 
         /// <summary>

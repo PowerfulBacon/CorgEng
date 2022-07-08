@@ -73,12 +73,13 @@ namespace CorgEng.EntityComponentSystem.Entities
         internal static void Delete(this IEntity entity)
         {
             Interlocked.Increment(ref DeletionCount);
-            EntityManager.RemoveEntity(entity);
+            RemoveEntity(entity);
             //Remove all components
-            for (int i = entity.Components.Count; i >= 0; i--)
+            for (int i = entity.Components.Count - 1; i >= 0; i--)
             {
                 entity.RemoveComponent(entity.Components[i], false);
             }
+            Logger.WriteLine($"Entity deletion triggered. {GarbageCollectionCount}/{DeletionCount}", LogType.TEMP);
         }
 
     }
