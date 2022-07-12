@@ -361,6 +361,8 @@ namespace CorgEng.Networking.Networking.Server
             IEntity createdEntity = DefaultEntityPrototype.CreateEntityFromPrototype();
             //Send a connection event
             new ClientConnectedEvent(createdClient).Raise(createdEntity);
+            //Initialise the entity
+            new InitialiseNetworkedEntityEvent().Raise(createdEntity);
         }
 
         public void QueueMessage(IClientAddress targets, INetworkMessage message)

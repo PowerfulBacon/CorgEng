@@ -95,6 +95,7 @@
     <Compile Include="Events\Events\DeleteEntityEvent.cs" />
     <Compile Include="Events\Events\GameClosedEvent.cs" />
     <Compile Include="Events\Events\InitialiseNetworkedEntityEvent.cs" />
+    <Compile Include="Events\Events\ModifyIsometricView.cs" />
     <Compile Include="Events\Events\NetworkedEventRaisedEvent.cs" />
     <Compile Include="Events\Events\NewEntityEvent.cs" />
     <Compile Include="Implementations\Deletion\DeleteableComponent.cs" />

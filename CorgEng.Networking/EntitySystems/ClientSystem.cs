@@ -4,12 +4,16 @@ using CorgEng.EntityComponentSystem.Implementations.Transform;
 using CorgEng.EntityComponentSystem.Systems;
 using CorgEng.GenericInterfaces.EntityComponentSystem;
 using CorgEng.GenericInterfaces.Logging;
+using CorgEng.GenericInterfaces.Networking.Networking;
+using CorgEng.GenericInterfaces.Networking.Networking.Client;
 using CorgEng.GenericInterfaces.Networking.Networking.Server;
+using CorgEng.GenericInterfaces.Networking.Packets;
 using CorgEng.GenericInterfaces.World;
 using CorgEng.Networking.Components;
 using CorgEng.Networking.Events;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -28,6 +32,12 @@ namespace CorgEng.Networking.EntitySystems
 
         [UsingDependency]
         private static IEntityCommunicator EntityCommunicator;
+
+        [UsingDependency]
+        private static IServerCommunicator ServerCommunicator;
+
+        [UsingDependency]
+        private static INetworkMessageFactory NetworkMessageFactory;
 
         [UsingDependency]
         private static IWorld WorldAccess;
@@ -190,6 +200,28 @@ namespace CorgEng.Networking.EntitySystems
                     }
                 }
             }
+
+            //Pack the data we need to send to the client into some bytes
+            byte[] clientInformation = new byte[sizeof(float) * 3 + sizeof(double) * 4];
+            using (MemoryStream memoryStream = new MemoryStream(clientInformation))
+            {
+                using (BinaryWriter writer = new BinaryWriter(memoryStream))
+                {
+                    //Write important information
+                    writer.Write(moveEvent.NewPosition.X);
+                    writer.Write(moveEvent.NewPosition.Y);
+                    writer.Write(0f);
+                    writer.Write(clientComponent.AttachedClient.View.ViewOffsetX);
+                    writer.Write(clientComponent.AttachedClient.View.ViewOffsetY);
+                    writer.Write(clientComponent.AttachedClient.View.ViewWidth);
+                    writer.Write(clientComponent.AttachedClient.View.ViewHeight);
+                }
+            }
+            //Tell the client to move it's eye
+            ServerCommunicator.SendToClient(
+                NetworkMessageFactory?.CreateMessage(PacketHeaders.UPDATE_CLIENT_VIEW, clientInformation),
+                clientComponent.AttachedClient
+                );
 
         }
 

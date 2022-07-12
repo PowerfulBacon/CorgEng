@@ -3,6 +3,7 @@ using CorgEng.Core.Dependencies;
 using CorgEng.DependencyInjection.Dependencies;
 using CorgEng.EntityComponentSystem.Entities;
 using CorgEng.EntityComponentSystem.Events;
+using CorgEng.EntityComponentSystem.Events.Events;
 using CorgEng.GenericInterfaces.EntityComponentSystem;
 using CorgEng.GenericInterfaces.Logging;
 using CorgEng.GenericInterfaces.Networking.Clients;
@@ -13,11 +14,13 @@ using CorgEng.GenericInterfaces.Networking.Networking.Server;
 using CorgEng.GenericInterfaces.Networking.Packets;
 using CorgEng.GenericInterfaces.Networking.Packets.PacketQueues;
 using CorgEng.GenericInterfaces.Networking.PrototypeManager;
+using CorgEng.GenericInterfaces.Rendering;
 using CorgEng.Networking.Networking.Server;
 using CorgEng.Networking.VersionSync;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
@@ -434,6 +437,26 @@ namespace CorgEng.Networking.Networking.Client
                         IEntity createdEntity = await EntityCommunicator.DeserialiseEntity(data.Skip(start).Take(length).ToArray());
                         EntityManager.RegisterEntity(createdEntity);
                         Logger.WriteLine($"Created entity with ID {createdEntity.Identifier} and components {string.Join(",", createdEntity.Components)}", LogType.TEMP);
+                        return;
+                    case PacketHeaders.UPDATE_CLIENT_VIEW:
+                        using (MemoryStream memoryStream = new MemoryStream(data))
+                        {
+                            //Seek to the correct location
+                            memoryStream.Seek(start, SeekOrigin.Begin);
+                            using (BinaryReader reader = new BinaryReader(memoryStream))
+                            {
+                                float viewX = reader.ReadSingle();
+                                float viewY = reader.ReadSingle();
+                                float viewZ = reader.ReadSingle();
+                                double viewOffsetX = reader.ReadDouble();
+                                double viewOffsetY = reader.ReadDouble();
+                                double viewOffsetWidth = reader.ReadDouble();
+                                double viewOffsetHeight = reader.ReadDouble();
+                                //Update our view
+                                //Send a signal
+                                new ModifyIsometricView(viewX + viewOffsetX, viewY + viewOffsetY, viewZ, viewOffsetWidth, viewOffsetHeight).RaiseGlobally();
+                            }
+                        }
                         return;
 #if DEBUG
                     default:
