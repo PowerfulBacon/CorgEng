@@ -66,6 +66,7 @@ namespace CorgEng.InputHandling
                 case InputState.Press:
                     MousePressEvent mousePressEvent = new MousePressEvent(x / width, y / height, button, modifiers);
                     mousePressEvent.RaiseGlobally();
+                    Logger.WriteLine("MOUSE PRESSED", LogType.TEMP);
                     return;
                 case InputState.Release:
                     MouseReleaseEvent mouseReleaseEvent = new MouseReleaseEvent(x / width, y / height, button, modifiers);

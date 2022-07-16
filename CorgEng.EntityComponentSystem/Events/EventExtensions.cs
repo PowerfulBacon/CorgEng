@@ -40,7 +40,7 @@ namespace CorgEng.EntityComponentSystem.Events
         /// </summary>
         public static void Raise(this INetworkedEvent signal, IEntity target)
         {
-            Logger.WriteLine($"Event raised {signal}", LogType.DEBUG_EVERYTHING);
+            Logger.WriteLine($"Networked event raised {signal}", LogType.DEBUG_EVERYTHING);
             //Handle the signal
             target.HandleSignal(signal);
             //Inform the entity that networked event was raised
@@ -73,7 +73,7 @@ namespace CorgEng.EntityComponentSystem.Events
         /// </summary>
         public static void RaiseGlobally(this INetworkedEvent signal, bool sourcedLocally = true)
         {
-            Logger.WriteLine($"Event raised {signal}", LogType.DEBUG_EVERYTHING);
+            Logger.WriteLine($"Network event raised {signal}", LogType.DEBUG_EVERYTHING);
             //Check if we have any registered signals
             if (!EventManager.RegisteredEvents.ContainsKey(typeof(GlobalEventComponent)))
                 return;

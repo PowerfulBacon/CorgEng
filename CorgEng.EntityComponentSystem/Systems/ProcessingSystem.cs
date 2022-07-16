@@ -139,6 +139,7 @@ namespace CorgEng.EntityComponentSystem.Systems
             processingQueue.TryAdd(target, (deltaTime) => {
                 onProcessTask(target, targetComponent, deltaTime);
             });
+            Logger.WriteLine($"Started processing entity {target.Identifier}", LogType.TEMP);
         }
 
         /// <summary>
@@ -148,6 +149,7 @@ namespace CorgEng.EntityComponentSystem.Systems
         public void StopProcesing(IEntity target)
         {
             processingQueue.TryRemove(target, out _);
+            Logger.WriteLine($"Stopped processing entity {target.Identifier}", LogType.TEMP);
         }
 
     }

@@ -25,7 +25,7 @@ namespace CorgEng.World.EntitySystems
         {
             RegisterLocalEvent<TransformComponent, ComponentAddedEvent>(OnEntityCreated);
             RegisterLocalEvent<TransformComponent, MoveEvent>(OnEntityMoved);
-            RegisterLocalEvent<TransformComponent, DeleteEntityEvent>(OnEntityDeleted);
+            RegisterLocalEvent<TransformComponent, ComponentRemovedEvent>(OnComponentRemoved);
         }
 
         /// <summary>
@@ -53,7 +53,7 @@ namespace CorgEng.World.EntitySystems
             WorldAccess.AddEntity(entity, moveEvent.NewPosition.X, moveEvent.NewPosition.Y, 0);
         }
 
-        private void OnEntityDeleted(IEntity entity, TransformComponent transformComponent, DeleteEntityEvent OnEntityDeleted)
+        private void OnComponentRemoved(IEntity entity, TransformComponent transformComponent, ComponentRemovedEvent componentRemovedEvent)
         {
             WorldAccess.RemoveEntity(entity, transformComponent.Position.X, transformComponent.Position.Y, 0);
         }
