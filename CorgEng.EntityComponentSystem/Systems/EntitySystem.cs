@@ -44,18 +44,36 @@ namespace CorgEng.EntityComponentSystem.Systems
         /// <summary>
         /// Wait handler. This will cause the thread to pause until an event that needs handling is raised.
         /// </summary>
-        private readonly AutoResetEvent waitHandle = new AutoResetEvent(false);
+        protected readonly AutoResetEvent waitHandle = new AutoResetEvent(false);
 
+<<<<<<< Updated upstream
+=======
+        protected volatile bool isWaiting = false;
+
+>>>>>>> Stashed changes
         /// <summary>
         /// The invokation queue. A queue of actions that need to be triggered (Raised events)
         /// </summary>
-        private readonly ConcurrentQueue<Action> invokationQueue = new ConcurrentQueue<Action>();
+        protected readonly ConcurrentQueue<Action> invokationQueue = new ConcurrentQueue<Action>();
 
         /// <summary>
         /// A static list of all entity systems in use
         /// </summary>
         private static List<EntitySystem> EntitySystems = new List<EntitySystem>();
 
+<<<<<<< Updated upstream
+=======
+        /// <summary>
+        /// The flags of this system
+        /// </summary>
+        public abstract EntitySystemFlags SystemFlags { get; }
+
+        /// <summary>
+        /// If we have been targeted for a kill
+        /// </summary>
+        protected bool assassinated = false;
+
+>>>>>>> Stashed changes
         public EntitySystem()
         {
             Thread thread = new Thread(SystemThread);
@@ -99,9 +117,9 @@ namespace CorgEng.EntityComponentSystem.Systems
         /// The system thread. Waits until an invokation is required and then triggers it
         /// on the system's thread.
         /// </summary>
-        private void SystemThread()
+        protected virtual void SystemThread()
         {
-            while (!CorgEngMain.Terminated)
+            while (!CorgEngMain.Terminated && !assassinated)
             {
                 //Wait until we are awoken again
                 if (invokationQueue.Count == 0)
@@ -124,6 +142,18 @@ namespace CorgEng.EntityComponentSystem.Systems
             }
             //Terminated
             Logger?.WriteLine($"Terminated EntitySystem thread: {this}", LogType.LOG);
+        }
+
+        /// <summary>
+        /// Kills this and only this system
+        /// </summary>
+        public void Kill()
+        {
+            //Effective
+            assassinated = true;
+            //Tell the system to process its death
+            if (isWaiting)
+                waitHandle.Set();
         }
 
         /// <summary>
@@ -162,9 +192,15 @@ namespace CorgEng.EntityComponentSystem.Systems
         /// <summary>
         /// Register to a local event
         /// </summary>
+<<<<<<< Updated upstream
         public void RegisterLocalEvent<GComponent, GEvent>(Action<Entity, GComponent, GEvent> eventHandler)
             where GComponent : Component
             where GEvent : Event
+=======
+        public void RegisterLocalEvent<GComponent, GEvent>(Action<IEntity, GComponent, GEvent> eventHandler)
+            where GComponent : IComponent
+            where GEvent : IEvent
+>>>>>>> Stashed changes
         {
             //Register the component to recieve the target event on the event manager
             lock (EventManager.RegisteredEvents)

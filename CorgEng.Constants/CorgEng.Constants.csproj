@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{19DB3C95-8E41-43A6-ACFE-78B3873E6F89}</ProjectGuid>
+    <ProjectGuid>{D287FB50-6DFA-4EFA-9169-5A6F31B44CA9}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CorgEng.InputHandling</RootNamespace>
-    <AssemblyName>CorgEng.InputHandling</AssemblyName>
+    <RootNamespace>CorgEng.Constants</RootNamespace>
+    <AssemblyName>CorgEng.Constants</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -36,8 +36,8 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DebugType>full</DebugType>
     <PlatformTarget>x64</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
     <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <OutputPath>bin\x64\Release\</OutputPath>
@@ -45,8 +45,8 @@
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>x64</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
     <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <DebugSymbols>true</DebugSymbols>
@@ -54,8 +54,8 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DebugType>full</DebugType>
     <PlatformTarget>x86</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
     <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
     <OutputPath>bin\x86\Release\</OutputPath>
@@ -63,13 +63,10 @@
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>x86</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
     <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="GLFW.NET, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\CorgEng.Core\packages\glfw-net.3.3.1\lib\netstandard2.0\GLFW.NET.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -80,37 +77,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Events\KeyHeldEvent.cs" />
-    <Compile Include="Events\KeyPressEvent.cs" />
-    <Compile Include="Events\KeyReleaseEvent.cs" />
-    <Compile Include="Events\MouseMoveEvent.cs" />
-    <Compile Include="Events\MousePressEvent.cs" />
-    <Compile Include="Events\MouseReleaseEvent.cs" />
-    <Compile Include="Events\MouseScrollEvent.cs" />
-    <Compile Include="InputHandler.cs" />
+    <Compile Include="NetworkedRenderingConstants.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\CorgEng.Core\CorgEng.Core.csproj">
-      <Project>{9CCC4A6B-2D13-425D-8C72-B034151EC11C}</Project>
-      <Name>CorgEng.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\CorgEng.DependencyInjection\CorgEng.DependencyInjection.csproj">
-      <Project>{913A2BE9-E596-4202-8DA1-ADF02AE63618}</Project>
-      <Name>CorgEng.DependencyInjection</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\CorgEng.EntityComponentSystem\CorgEng.EntityComponentSystem.csproj">
-      <Project>{4BB408B5-9AFA-42E6-973D-547A84A293A5}</Project>
-      <Name>CorgEng.EntityComponentSystem</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\CorgEng.GenericInterfaces\CorgEng.GenericInterfaces.csproj">
-      <Project>{E87F196E-5BF2-4AAF-8209-9F66A4F4B0EB}</Project>
-      <Name>CorgEng.GenericInterfaces</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

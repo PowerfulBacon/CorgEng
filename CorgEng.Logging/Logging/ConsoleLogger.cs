@@ -12,7 +12,7 @@ namespace CorgEng.Logging
 
         private static object consoleLock = new object();
 
-        private static LogType LogFlags = LogType.LOG_ALL;
+        private static LogType LogFlags = LogType.LOG_ALL & ~LogType.DEBUG_EVERYTHING;
 
         public static int ExceptionCount = 0;
 

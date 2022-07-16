@@ -34,7 +34,7 @@ namespace CorgEng.Core
         /// <summary>
         /// The window associated with the CorgEng application
         /// </summary>
-        private static CorgEngWindow GameWindow { get; set; }
+        public static CorgEngWindow GameWindow { get; set; }
 
         /// <summary>
         /// The main camera for the game
@@ -51,6 +51,11 @@ namespace CorgEng.Core
         /// Time of the last frame
         /// </summary>
         private static double lastFrameTime;
+
+        /// <summary>
+        /// Get the current applicatino time
+        /// </summary>
+        public static double Time => Glfw.Time;
 
         /// <summary>
         /// The time delta between the last frame and the current frame.
