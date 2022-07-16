@@ -46,11 +46,8 @@ namespace CorgEng.EntityComponentSystem.Systems
         /// </summary>
         protected readonly AutoResetEvent waitHandle = new AutoResetEvent(false);
 
-<<<<<<< Updated upstream
-=======
         protected volatile bool isWaiting = false;
 
->>>>>>> Stashed changes
         /// <summary>
         /// The invokation queue. A queue of actions that need to be triggered (Raised events)
         /// </summary>
