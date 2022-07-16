@@ -64,13 +64,9 @@ namespace CorgEng.Core.Rendering
             int width = Glfw.PrimaryMonitor.WorkArea.Width;
             int height = Glfw.PrimaryMonitor.WorkArea.Height;
             //Create the window instance
-<<<<<<< Updated upstream
-            glWindowInstance = Glfw.CreateWindow(Math.Min(width, 1920), Math.Min(height, 1080), "CorgEngApplication", Monitor.None, Window.None);
-=======
             Height = Math.Min(height, 1080);
             Width = Math.Min(width, 1920);
             glWindowInstance = Glfw.CreateWindow(Width, Height, CorgEngMain.WindowName, Monitor.None, Window.None);
->>>>>>> Stashed changes
             //Set the current context to the window
             Glfw.MakeContextCurrent(glWindowInstance);
             //I don't actually know what this does
