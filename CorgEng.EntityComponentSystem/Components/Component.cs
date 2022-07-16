@@ -21,11 +21,7 @@ namespace CorgEng.EntityComponentSystem.Components
         /// <summary>
         /// The parent of this component
         /// </summary>
-<<<<<<< Updated upstream
-        public Entity Parent { get; internal set; }
-=======
         public IEntity Parent { get; set; }
->>>>>>> Stashed changes
 
         public IEntityDef TypeDef { get; set; }
 
