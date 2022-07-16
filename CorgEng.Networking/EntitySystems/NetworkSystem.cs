@@ -98,7 +98,7 @@ namespace CorgEng.Networking.EntitySystems
         private byte[] InjectEventCode(INetworkedEvent e, IEntity entityTarget)
         {
             //Calculate the serilised length
-            int serialisationLength = e.SerialisedLength() + sizeof(ushort) + (entityTarget != null ? sizeof(uint) : 0);
+            int serialisationLength = e.SerialisedLength() + sizeof(int) + sizeof(ushort) + (entityTarget != null ? sizeof(uint) : 0);
             //Create the output byte array
             byte[] outputMemory = new byte[serialisationLength];
             //Begin writing
@@ -106,6 +106,7 @@ namespace CorgEng.Networking.EntitySystems
             {
                 using (BinaryWriter binaryWriter = new BinaryWriter(memoryStream))
                 {
+                    binaryWriter.Write(serialisationLength);
                     binaryWriter.Write(e.GetNetworkedIdentifier());
                     if (entityTarget != null)
                     {

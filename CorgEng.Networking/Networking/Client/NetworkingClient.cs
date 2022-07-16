@@ -394,14 +394,27 @@ namespace CorgEng.Networking.Networking.Client
                 {
                     case PacketHeaders.LOCAL_EVENT_RAISED:
                         {
-                            //Locate the target entity
-                            uint entityIdentifier = BitConverter.ToUInt32(data, start + 0x02);
-                            IEntity entityTarget = EntityManager.GetEntity(entityIdentifier);
-                            if (entityTarget == null)
+                            using (MemoryStream stream = new MemoryStream(data))
                             {
-                                Logger?.WriteLine($"Unable to locate entity with ID {entityIdentifier} to raise local event on.", LogType.DEBUG);
-                                return;
+                                stream.Seek(start, SeekOrigin.Begin);
+                                using (BinaryReader reader = new BinaryReader(stream))
+                                {
+                                    //Serialisatino length
+                                    int serialisationLength = reader.ReadInt32();
+                                    //Networked identifier
+                                    ushort networkedIdentifier = reader.ReadUInt16();
+                                    //Read the target entity
+                                    uint entityIdentifier = reader.ReadUInt32();
+                                    IEntity entityTarget = EntityManager.GetEntity(entityIdentifier);
+                                    if (entityTarget == null)
+                                    {
+                                        Logger?.WriteLine($"Unable to locate entity with ID {entityIdentifier} to raise local event on.", LogType.DEBUG);
+                                        return;
+                                    }
+                                }
                             }
+
+                            
                             //First we need to figure out what event is being raised
                             //Now we need to deserialize the byte data into the actual packet data
                             //Since implementation of this is specific to the classes, we need to create
