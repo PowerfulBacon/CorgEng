@@ -61,8 +61,6 @@ namespace CorgEng.EntityComponentSystem.Systems
         /// </summary>
         private static List<EntitySystem> EntitySystems = new List<EntitySystem>();
 
-<<<<<<< Updated upstream
-=======
         /// <summary>
         /// The flags of this system
         /// </summary>
@@ -73,7 +71,6 @@ namespace CorgEng.EntityComponentSystem.Systems
         /// </summary>
         protected bool assassinated = false;
 
->>>>>>> Stashed changes
         public EntitySystem()
         {
             Thread thread = new Thread(SystemThread);
