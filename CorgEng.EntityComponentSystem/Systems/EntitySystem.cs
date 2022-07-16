@@ -189,15 +189,9 @@ namespace CorgEng.EntityComponentSystem.Systems
         /// <summary>
         /// Register to a local event
         /// </summary>
-<<<<<<< Updated upstream
-        public void RegisterLocalEvent<GComponent, GEvent>(Action<Entity, GComponent, GEvent> eventHandler)
-            where GComponent : Component
-            where GEvent : Event
-=======
         public void RegisterLocalEvent<GComponent, GEvent>(Action<IEntity, GComponent, GEvent> eventHandler)
             where GComponent : IComponent
             where GEvent : IEvent
->>>>>>> Stashed changes
         {
             //Register the component to recieve the target event on the event manager
             lock (EventManager.RegisteredEvents)
