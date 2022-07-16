@@ -50,7 +50,7 @@ namespace CorgEng.World.EntitySystems
         private void OnEntityMoved(IEntity entity, TransformComponent transformComponent, MoveEvent moveEvent)
         {
             WorldAccess.RemoveEntity(entity, moveEvent.OldPosition.X, moveEvent.OldPosition.Y, 0);
-            WorldAccess.AddEntity(entity, transformComponent.Position.X, transformComponent.Position.Y, 0);
+            WorldAccess.AddEntity(entity, moveEvent.NewPosition.X, moveEvent.NewPosition.Y, 0);
         }
 
         private void OnEntityDeleted(IEntity entity, TransformComponent transformComponent, DeleteEntityEvent OnEntityDeleted)

@@ -13,7 +13,7 @@ namespace CorgEng.GenericInterfaces.EntityComponentSystem
 
         bool IsSynced { get; }
 
-        IEntity Parent { get; }
+        IEntity Parent { get; set; }
 
     }
 

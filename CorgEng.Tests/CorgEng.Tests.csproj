@@ -92,6 +92,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DependencyInjection\DependencyTests.cs" />
+    <Compile Include="EntityComponentSystem\ProcessingSystemTest.cs" />
     <Compile Include="EntityComponentSystem\SignalTests.cs" />
     <Compile Include="FontTests\FontTests.cs" />
     <Compile Include="NetworkingTests\ClientAddressTests.cs" />

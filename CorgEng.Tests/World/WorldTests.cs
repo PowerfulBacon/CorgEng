@@ -31,10 +31,12 @@ namespace CorgEng.Tests.World
             //Do some adding and removing
             WorldAccess.AddEntity(entityA, 1, 1, 0);
             WorldAccess.AddEntity(entityB, 1, 1, 0);
-            WorldAccess.AddEntity(entityC, -1, 0, 0);
+            WorldAccess.AddEntity(entityC, -1.3, 0, 0);
             WorldAccess.AddEntity(entityE, -1, 0, 0);
             WorldAccess.AddEntity(entityD, 0, 0, 6);
-            WorldAccess.RemoveEntity(entityC, -1, 0, 0);
+            WorldAccess.RemoveEntity(entityC, -1.3, 0, 0);
+            WorldAccess.AddEntity(entityC, -1.3, 0, 0);
+            WorldAccess.RemoveEntity(entityC, -1.3, 0, 0);
             //Test what we expect
             //(1, 1, 0)
             bool foundA = false;

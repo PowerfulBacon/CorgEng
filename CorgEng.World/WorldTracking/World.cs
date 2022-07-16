@@ -36,6 +36,8 @@ namespace CorgEng.World.WorldTracking
 
         public void AddEntity(IEntity entity, double x, double y, int mapLevel)
         {
+            if (entity.ContentsIndex != -1)
+                throw new Exception($"Attempting to insert an entity while it is already in another location");
             IPositionBasedBinaryList<ContentsHolder> targetLevel = WorldTiles.ElementWithKey(mapLevel);
             //Get the z-level to affect
             if (targetLevel == null)
@@ -63,6 +65,8 @@ namespace CorgEng.World.WorldTracking
 
         public void RemoveEntity(IEntity entity, double x, double y, int mapLevel)
         {
+            if (entity.ContentsIndex == -1)
+                throw new Exception($"Attempting to remove an entity from an invalid location ({x}, {y})");
             IPositionBasedBinaryList<ContentsHolder> targetLevel = WorldTiles.ElementWithKey(mapLevel);
             //Target doesn't exist
             if (targetLevel == null)

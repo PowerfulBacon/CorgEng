@@ -28,6 +28,7 @@ namespace CorgEng.EntityComponentSystem.Components
         /// </summary>
         internal static void OnComponentAdded(this IComponent component, Entity parent)
         {
+            component.Parent = parent;
             //Check if we have any registered signals
             if (!EventManager.RegisteredEvents.ContainsKey(component.GetType()))
             {
@@ -79,6 +80,7 @@ namespace CorgEng.EntityComponentSystem.Components
         /// </summary>
         internal static void OnComponentRemoved(this IComponent component, Entity parent)
         {
+            component.Parent = null;
             //Raise component removed event.
             new ComponentRemovedEvent(component).Raise(parent);
             //Check if we have any registered signals

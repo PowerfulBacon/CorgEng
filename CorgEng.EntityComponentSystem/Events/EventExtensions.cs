@@ -90,7 +90,7 @@ namespace CorgEng.EntityComponentSystem.Events
             if (!sourcedLocally)
                 return;
             //Don't relay client message
-            if (!signal.CanBeRaisedByClient && NetworkConfig.ProcessClientSystems)
+            if (!signal.CanBeRaisedByClient && (NetworkConfig?.ProcessClientSystems ?? true))
                 return;
             //Inform globally that a networked event was raised
             //Skip directly to signal handling
