@@ -3,7 +3,9 @@ using CorgEng.EntityComponentSystem.Entities;
 using CorgEng.EntityComponentSystem.Events;
 using CorgEng.EntityComponentSystem.Events.Events;
 using CorgEng.GenericInterfaces.ContentLoading;
+using CorgEng.GenericInterfaces.EntityComponentSystem;
 using CorgEng.GenericInterfaces.Logging;
+using CorgEng.GenericInterfaces.Networking.VersionSync;
 using CorgEng.GenericInterfaces.UtilityTypes;
 using System;
 using System.Collections.Generic;
@@ -12,7 +14,7 @@ using static CorgEng.EntityComponentSystem.Systems.EntitySystem;
 
 namespace CorgEng.EntityComponentSystem.Components
 {
-    public abstract class Component : IInstantiatable
+    public abstract class Component : IInstantiatable, IVersionSynced, IComponent
     {
 
         [UsingDependency]
@@ -24,6 +26,8 @@ namespace CorgEng.EntityComponentSystem.Components
         public IEntity Parent { get; set; }
 
         public IEntityDef TypeDef { get; set; }
+
+        public virtual bool IsSynced { get; } = true;
 
         public void Initialize(IVector<float> initializePosition)
         { }
@@ -59,7 +63,7 @@ namespace CorgEng.EntityComponentSystem.Components
                 }
                 List<SystemEventHandlerDelegate> systemEventHandlers = RegisteredSystemSignalHandlers[key];
                 //Create a lambda function that injects this component and relays it to the system
-                InternalSignalHandleDelegate componentInjectionLambda = (Entity entity, Event signal) => {
+                InternalSignalHandleDelegate componentInjectionLambda = (IEntity entity, IEvent signal) => {
                     foreach(SystemEventHandlerDelegate systemEventHandler in systemEventHandlers)
                         systemEventHandler.Invoke(entity, this, signal);
                 };
