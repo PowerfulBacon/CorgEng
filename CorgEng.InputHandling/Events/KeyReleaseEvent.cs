@@ -3,6 +3,7 @@ using CorgEng.GenericInterfaces.EntityComponentSystem;
 using GLFW;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -24,25 +25,22 @@ namespace CorgEng.InputHandling.Events
             ModifierKeys = modifierKeys;
         }
 
-        public unsafe byte[] Serialize()
+        public void Deserialise(BinaryReader reader)
         {
-            //Get the key as a ushort pointer
-            Keys tempKeys = Key;
-            byte* keyPointer = (byte*)&tempKeys;
-            return new byte[] {
-                *keyPointer,
-                *(keyPointer + 1),
-                (byte)ModifierKeys
-            };
+            Key = (Keys)reader.ReadUInt16();
+            ModifierKeys = (ModifierKeys)reader.ReadUInt16();
         }
 
-        public unsafe void Deserialize(byte[] data)
+        public void Serialise(BinaryWriter writer)
         {
-            fixed (byte* dataPointer = data)
-            {
-                Key = (Keys)(*(ushort*)dataPointer);
-                ModifierKeys = (ModifierKeys)(*(dataPointer + 2));
-            }
+            writer.Write((ushort)Key);
+            writer.Write((ushort)ModifierKeys);
         }
+
+        public int SerialisedLength()
+        {
+            return sizeof(ushort) * 2;
+        }
+
     }
 }

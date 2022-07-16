@@ -21,7 +21,6 @@ namespace CorgEng.EntityComponentSystem.Implementations.Rendering.SpriteRenderin
         [UsingDependency]
         private static IAutoSerialiser AutoSerialiser;
 
-        [NetworkSerialized]
         public uint Target { get; set; }
 
         public SetSpriteRendererEvent(uint target)
@@ -34,28 +33,19 @@ namespace CorgEng.EntityComponentSystem.Implementations.Rendering.SpriteRenderin
             Target = target.NetworkIdentifier;
         }
 
-        public void Deserialize(byte[] data)
+        public void Deserialise(BinaryReader reader)
         {
-            using (MemoryStream memoryStream = new MemoryStream(data))
-            {
-                using (BinaryReader binaryReader = new BinaryReader(memoryStream))
-                {
-                    Target = (uint)AutoSerialiser.Deserialize(typeof(uint), binaryReader);
-                }
-            }
+            Target = reader.ReadUInt32();
         }
 
-        public byte[] Serialize()
+        public void Serialise(BinaryWriter writer)
         {
-            byte[] serializedRendererEvent = new byte[sizeof(uint)];
-            using (MemoryStream memoryStream = new MemoryStream(serializedRendererEvent))
-            {
-                using (BinaryWriter binaryWriter = new BinaryWriter(memoryStream))
-                {
-                    AutoSerialiser.SerializeInto(typeof(uint), Target, binaryWriter);
-                }
-            }
-            return serializedRendererEvent;
+            writer.Write(Target);
+        }
+
+        public int SerialisedLength()
+        {
+            return sizeof(uint);
         }
     }
 }

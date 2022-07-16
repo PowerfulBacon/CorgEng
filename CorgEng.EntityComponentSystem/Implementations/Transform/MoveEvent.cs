@@ -3,6 +3,7 @@ using CorgEng.GenericInterfaces.EntityComponentSystem;
 using CorgEng.UtilityTypes.Vectors;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -24,54 +25,25 @@ namespace CorgEng.EntityComponentSystem.Implementations.Transform
             NewPosition = newPosition;
         }
 
-        public unsafe byte[] Serialize()
+        public void Deserialise(BinaryReader reader)
         {
-            //Get the old position pointers
-            float oldPositionX = OldPosition.X;
-            float* oldPositionXPointer = &oldPositionX;
-            float oldPositionY = OldPosition.Y;
-            float* oldPositionYPointer = &oldPositionY;
-            //Get the new position pointers
-            float newPositionX = NewPosition.X;
-            float* newPositionXPointer = &newPositionX;
-            float newPositionY = NewPosition.Y;
-            float* newPositionYPointer = &newPositionY;
-            //Convert pointers to byte array
-            return new byte[] {
-                *(byte*)oldPositionXPointer,
-                *(((byte*)oldPositionXPointer)+1),
-                *(((byte*)oldPositionXPointer)+2),
-                *(((byte*)oldPositionXPointer)+3),
-                *(byte*)oldPositionYPointer,
-                *(((byte*)oldPositionYPointer)+1),
-                *(((byte*)oldPositionYPointer)+2),
-                *(((byte*)oldPositionYPointer)+3),
-                *(byte*)newPositionXPointer,
-                *(((byte*)newPositionXPointer)+1),
-                *(((byte*)newPositionXPointer)+2),
-                *(((byte*)newPositionXPointer)+3),
-                *(byte*)newPositionYPointer,
-                *(((byte*)newPositionYPointer)+1),
-                *(((byte*)newPositionYPointer)+2),
-                *(((byte*)newPositionYPointer)+3),
-            };
+            OldPosition = new Vector<float>(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
+            NewPosition = new Vector<float>(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
         }
 
-        public unsafe void Deserialize(byte[] data)
+        public void Serialise(BinaryWriter writer)
         {
-            fixed (byte* arrayStart = data)
-            {
-                float* floatArray = (float*)arrayStart;
-                //Deserialise the data
-                OldPosition = new Vector<float>(
-                    *floatArray,
-                    *(floatArray + 1)
-                    );
-                NewPosition = new Vector<float>(
-                    *(floatArray + 2),
-                    *(floatArray + 3)
-                    );
-            }
+            writer.Write(OldPosition.X);
+            writer.Write(OldPosition.Y);
+            writer.Write(OldPosition.Dimensions > 2 ? OldPosition.Z : 0f);
+            writer.Write(NewPosition.X);
+            writer.Write(NewPosition.Y);
+            writer.Write(NewPosition.Dimensions > 2 ? NewPosition.Z : 0f);
+        }
+
+        public int SerialisedLength()
+        {
+            return sizeof(float) * 6;
         }
     }
 }

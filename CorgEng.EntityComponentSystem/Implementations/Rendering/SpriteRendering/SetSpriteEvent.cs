@@ -2,6 +2,7 @@
 using CorgEng.GenericInterfaces.EntityComponentSystem;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,14 +21,21 @@ namespace CorgEng.EntityComponentSystem.Implementations.Rendering.SpriteRenderin
             TextureFile = textureFile;
         }
 
-        public byte[] Serialize()
+        public void Deserialise(BinaryReader reader)
         {
-            return Encoding.UTF8.GetBytes(TextureFile);
+            ushort length = reader.ReadUInt16();
+            TextureFile = Encoding.ASCII.GetString(reader.ReadBytes(length));
         }
 
-        public void Deserialize(byte[] data)
+        public void Serialise(BinaryWriter writer)
         {
-            TextureFile = Encoding.UTF8.GetString(data);
+            writer.Write((ushort)TextureFile.Length);
+            writer.Write(Encoding.ASCII.GetBytes(TextureFile));
+        }
+
+        public int SerialisedLength()
+        {
+            return Encoding.ASCII.GetByteCount(TextureFile) + sizeof(ushort);
         }
     }
 }

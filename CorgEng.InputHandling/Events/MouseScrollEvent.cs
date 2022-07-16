@@ -2,6 +2,7 @@
 using CorgEng.GenericInterfaces.EntityComponentSystem;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,28 +21,19 @@ namespace CorgEng.InputHandling.Events
             ScrollDelta = scrollDelta;
         }
 
-        public unsafe byte[] Serialize()
+        public void Deserialise(BinaryReader reader)
         {
-            double value = ScrollDelta;
-            byte* bytePointer = (byte*)&value;
-            return new byte[] {
-                *bytePointer,
-                *(bytePointer + 1),
-                *(bytePointer + 2),
-                *(bytePointer + 3),
-                *(bytePointer + 4),
-                *(bytePointer + 5),
-                *(bytePointer + 6),
-                *(bytePointer + 7)
-            };
+            ScrollDelta = reader.ReadDouble();
         }
 
-        public unsafe void Deserialize(byte[] data)
+        public void Serialise(BinaryWriter writer)
         {
-            fixed (byte* dataPointer = data)
-            {
-                ScrollDelta = *(double*)dataPointer;
-            }
+            writer.Write(ScrollDelta);
+        }
+
+        public int SerialisedLength()
+        {
+            return sizeof(double);
         }
     }
 }

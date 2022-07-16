@@ -1,6 +1,7 @@
 ﻿using CorgEng.GenericInterfaces.EntityComponentSystem;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,14 +20,19 @@ namespace CorgEng.EntityComponentSystem.Events.Events
             Identifier = identifier;
         }
 
-        public void Deserialize(byte[] data)
+        public void Deserialise(BinaryReader reader)
         {
-            Identifier = BitConverter.ToUInt32(data, 0);
+            Identifier = reader.ReadUInt32();
         }
 
-        public byte[] Serialize()
+        public void Serialise(BinaryWriter writer)
         {
-            return BitConverter.GetBytes(Identifier);
+            writer.Write(Identifier);
+        }
+
+        public int SerialisedLength()
+        {
+            return sizeof(uint);
         }
     }
 }

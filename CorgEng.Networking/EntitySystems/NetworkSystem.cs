@@ -14,6 +14,7 @@ using CorgEng.Networking.VersionSync;
 using CorgEng.UtilityTypes.Vectors;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -96,13 +97,24 @@ namespace CorgEng.Networking.EntitySystems
         //TODO: Improve the speed of this by using MemoryStream and BinaryWriter rather than array copies.
         private byte[] InjectEventCode(INetworkedEvent e, IEntity entityTarget)
         {
-            byte[] data = e.Serialize();
-            byte[] output = new byte[data.Length + 2 + (entityTarget != null ? sizeof(uint) : 0)];
-            BitConverter.GetBytes(e.GetNetworkedIdentifier()).CopyTo(output, 0);
-            if (entityTarget != null)
-                BitConverter.GetBytes(entityTarget.Identifier).CopyTo(output, 2);
-            data.CopyTo(output, 2 + (entityTarget != null ? sizeof(uint) : 0));
-            return output;
+            //Calculate the serilised length
+            int serialisationLength = e.SerialisedLength() + sizeof(ushort) + (entityTarget != null ? sizeof(uint) : 0);
+            //Create the output byte array
+            byte[] outputMemory = new byte[serialisationLength];
+            //Begin writing
+            using (MemoryStream memoryStream = new MemoryStream(outputMemory))
+            {
+                using (BinaryWriter binaryWriter = new BinaryWriter(memoryStream))
+                {
+                    binaryWriter.Write(e.GetNetworkedIdentifier());
+                    if (entityTarget != null)
+                    {
+                        binaryWriter.Write(entityTarget.Identifier);
+                    }
+                    e.Serialise(binaryWriter);
+                }
+            }
+            return outputMemory;
         }
 
     }
