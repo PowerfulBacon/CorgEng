@@ -53,6 +53,13 @@ namespace CorgEng.Core.Rendering
 
         public int Height { get; internal set; } = 1080;
 
+        private static int CurrentBlendSource = GL_SRC_ALPHA;
+        private static int CurrentBlendDestination = GL_ONE_MINUS_SRC_ALPHA;
+
+        public virtual int BlendSource { get; } = GL_SRC_ALPHA;
+
+        public virtual int BlendDestination { get; } = GL_ONE_MINUS_SRC_ALPHA;
+
         public unsafe RenderCore()
         {
             //Generate a frame buffer
@@ -166,6 +173,14 @@ namespace CorgEng.Core.Rendering
             glBindFramebuffer(GL_FRAMEBUFFER, buffer);
             //Draw to full screen
             glViewport(drawX, drawY, bufferWidth, bufferHeight);
+
+            //Setup blending
+            if (CurrentBlendDestination != BlendDestination || CurrentBlendSource != BlendSource)
+            {
+                glBlendFunc(BlendSource, BlendDestination);
+                CurrentBlendDestination = BlendDestination;
+                CurrentBlendSource = BlendSource;
+            }
 
             //Set the using program to our program uint
             glUseProgram(programUint);
