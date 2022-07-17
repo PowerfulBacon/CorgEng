@@ -1,163 +1,52 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{14E8A473-E0B8-4CB2-BA76-B322FA0EDADF}</ProjectGuid>
+    <TargetFramework>net6.0</TargetFramework>
     <OutputType>Exe</OutputType>
-    <RootNamespace>CorgEng.Example</RootNamespace>
-    <AssemblyName>CorgEng.Example</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <Deterministic>true</Deterministic>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <Platforms>AnyCPU;ARM32;ARM64</Platforms>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
-    <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\x64\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
-    <LangVersion>7.3</LangVersion>
-    <ErrorReport>prompt</ErrorReport>
-    <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <OutputPath>bin\x64\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
-    <LangVersion>7.3</LangVersion>
-    <ErrorReport>prompt</ErrorReport>
-    <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
-    <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\x86\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
     <OutputPath>bin\x86\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="GLFW.NET, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\CorgEng.Core\packages\glfw-net.3.3.1\lib\netstandard2.0\GLFW.NET.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\CorgEng.Core\packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Modules\CameraScroll\CameraScrollSystem.cs" />
-    <Compile Include="Program.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="App.config" />
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\CorgEng.ContentLoading\CorgEng.ContentLoading.csproj">
-      <Project>{46ed6820-5de9-4b9c-ac58-728503212732}</Project>
-      <Name>CorgEng.ContentLoading</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\CorgEng.Core\CorgEng.Core.csproj">
-      <Project>{9CCC4A6B-2D13-425D-8C72-B034151EC11C}</Project>
-      <Name>CorgEng.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\CorgEng.DependencyInjection\CorgEng.DependencyInjection.csproj">
-      <Project>{913a2be9-e596-4202-8da1-adf02ae63618}</Project>
-      <Name>CorgEng.DependencyInjection</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\CorgEng.EntityComponentSystem\CorgEng.EntityComponentSystem.csproj">
-      <Project>{4bb408b5-9afa-42e6-973d-547a84a293a5}</Project>
-      <Name>CorgEng.EntityComponentSystem</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\CorgEng.Example.Shared\CorgEng.Example.Shared.csproj">
-      <Project>{24be2b70-cd23-4052-899e-445393ffa2b4}</Project>
-      <Name>CorgEng.Example.Shared</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\CorgEng.Font\CorgEng.Font.csproj">
-      <Project>{a18b4113-8cbf-44b3-bc4a-c27920d2f6be}</Project>
-      <Name>CorgEng.Font</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\CorgEng.GenericInterfaces\CorgEng.GenericInterfaces.csproj">
-      <Project>{E87F196E-5BF2-4AAF-8209-9F66A4F4B0EB}</Project>
-      <Name>CorgEng.GenericInterfaces</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\CorgEng.InputHandling\CorgEng.InputHandling.csproj">
-      <Project>{19DB3C95-8E41-43A6-ACFE-78B3873E6F89}</Project>
-      <Name>CorgEng.InputHandling</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\CorgEng.Logging\CorgEng.Logging.csproj">
-      <Project>{58dc11a7-998a-40a3-a73a-80bdb521fed4}</Project>
-      <Name>CorgEng.Logging</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\CorgEng.Networking\CorgEng.Networking.csproj">
-      <Project>{1d5738b7-bc6f-46ef-8c49-47622af0d74a}</Project>
-      <Name>CorgEng.Networking</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\CorgEng.Rendering\CorgEng.Rendering.csproj">
-      <Project>{bfc5583f-3a05-43e4-9d07-81d80b1ec685}</Project>
-      <Name>CorgEng.Rendering</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\CorgEng.UserInterface\CorgEng.UserInterface.csproj">
-      <Project>{19e048d9-1587-40cc-bee3-e1883a21fec8}</Project>
-      <Name>CorgEng.UserInterface</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\CorgEng.UtilityTypes\CorgEng.UtilityTypes.csproj">
-      <Project>{f9ccd4d7-9af2-4167-9f31-a2879d82f854}</Project>
-      <Name>CorgEng.UtilityTypes</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\CorgEng.World\CorgEng.World.csproj">
-      <Project>{808305d8-c662-4c9a-a26f-d9a3e07e1271}</Project>
-      <Name>CorgEng.World</Name>
-    </ProjectReference>
+    <ProjectReference Include="..\CorgEng.ContentLoading\CorgEng.ContentLoading.csproj" />
+    <ProjectReference Include="..\CorgEng.Core\CorgEng.Core.csproj" />
+    <ProjectReference Include="..\CorgEng.DependencyInjection\CorgEng.DependencyInjection.csproj" />
+    <ProjectReference Include="..\CorgEng.EntityComponentSystem\CorgEng.EntityComponentSystem.csproj" />
+    <ProjectReference Include="..\CorgEng.Example.Shared\CorgEng.Example.Shared.csproj" />
+    <ProjectReference Include="..\CorgEng.Font\CorgEng.Font.csproj" />
+    <ProjectReference Include="..\CorgEng.GenericInterfaces\CorgEng.GenericInterfaces.csproj" />
+    <ProjectReference Include="..\CorgEng.InputHandling\CorgEng.InputHandling.csproj" />
+    <ProjectReference Include="..\CorgEng.Logging\CorgEng.Logging.csproj" />
+    <ProjectReference Include="..\CorgEng.Networking\CorgEng.Networking.csproj" />
+    <ProjectReference Include="..\CorgEng.Rendering\CorgEng.Rendering.csproj" />
+    <ProjectReference Include="..\CorgEng.UserInterface\CorgEng.UserInterface.csproj" />
+    <ProjectReference Include="..\CorgEng.UtilityTypes\CorgEng.UtilityTypes.csproj" />
+    <ProjectReference Include="..\CorgEng.World\CorgEng.World.csproj" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="CorgEngConfig.xml" />
   </ItemGroup>
-  <ItemGroup />
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+    <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
+    <PackageReference Include="Microsoft.DotNet.UpgradeAssistant.Extensions.Default.Analyzers" Version="0.3.330701">
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="glfw-net" Version="3.3.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+  </ItemGroup>
 </Project>
