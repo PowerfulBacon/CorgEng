@@ -2,6 +2,9 @@
 using CorgEng.DependencyInjection.Injection;
 using CorgEng.GenericInterfaces.Rendering.Textures;
 using CorgEng.GenericInterfaces.UserInterface.Rendering;
+using CorgEng.Networking.Components;
+using CorgEng.Networking.EntitySystems;
+using CorgEng.Networking.VersionSync;
 using CorgEng.Tests.Stubs;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
@@ -28,6 +31,10 @@ namespace CorgEng.Tests
             //Replace any openGL dependant dependencies
             DependencyInjector.OverrideDependency<IUserInterfaceRenderCoreFactory>(new IRenderCoreStubFactory());
             DependencyInjector.OverrideDependency<ITextureFactory>(new TextureFactoryStub());
+            //Initialize networked IDs
+            VersionGenerator.CreateNetworkedIDs();
+            //Load any module loads that we HAVE to load
+            ComponentExtensions.LoadPropertyInfoCache();
         }
 
     }

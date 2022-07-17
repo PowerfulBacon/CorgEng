@@ -4,6 +4,7 @@ using CorgEng.Core.Rendering;
 using CorgEng.Core.Rendering.Exceptions;
 using CorgEng.GenericInterfaces.InputHandler;
 using CorgEng.GenericInterfaces.Logging;
+using CorgEng.GenericInterfaces.Networking.Config;
 using CorgEng.GenericInterfaces.Rendering;
 using GLFW;
 using System;
@@ -34,12 +35,17 @@ namespace CorgEng.Core
         /// <summary>
         /// The window associated with the CorgEng application
         /// </summary>
-        private static CorgEngWindow GameWindow { get; set; }
+        public static CorgEngWindow GameWindow { get; set; }
 
         /// <summary>
         /// The main camera for the game
         /// </summary>
         public static ICamera MainCamera { get; private set; }
+
+        /// <summary>
+        /// The name of the window
+        /// </summary>
+        public static string WindowName { get; set; } = "CorgEngApplication";
 
         /// <summary>
         /// Create a logger
@@ -53,6 +59,11 @@ namespace CorgEng.Core
         private static double lastFrameTime;
 
         /// <summary>
+        /// Get the current applicatino time
+        /// </summary>
+        public static double Time => (IsRendering ? Glfw.Time : (DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalSeconds);
+
+        /// <summary>
         /// The time delta between the last frame and the current frame.
         /// Time taken for rendering to occur.
         /// Milliseconds.
@@ -61,6 +72,8 @@ namespace CorgEng.Core
         public static double DeltaTime { get; private set; }
 
         public static bool Terminated { get; private set; }
+
+        public static bool IsRendering { get; private set; } = false;
 
         /// <summary>
         /// Initializes the CorgEng game engine.
@@ -77,6 +90,8 @@ namespace CorgEng.Core
                 ModuleInit();
                 return;
             }
+            //Enable rendering functionality
+            IsRendering = true;
             //Create a new window
             GameWindow = new CorgEngWindow();
             GameWindow.Open();
@@ -97,9 +112,6 @@ namespace CorgEng.Core
         /// </summary>
         public static void TransferToRenderingThread()
         {
-            double timeLeft = 1;
-            double totalDeltaTime = 0;
-            int counts = 0;
             //While the window shouldn't close
             while (!GameWindow.ShouldClose())
             {
@@ -118,14 +130,6 @@ namespace CorgEng.Core
                 //Pass the output image from the render core to the internal renderer
                 InternalRenderMaster.RenderImageToScreen(MainRenderCore);
                 DeltaTime = Glfw.Time - lastFrameTime;
-                totalDeltaTime += DeltaTime;
-                counts++;
-                timeLeft -= DeltaTime;
-                if (timeLeft < 0)
-                {
-                    Logger.WriteLine($"Average Frame Delta: {totalDeltaTime/counts}. Average FPS: {1/(totalDeltaTime/counts)}.Frame Delta Time: {DeltaTime}s. Frame rate: {1/DeltaTime}", LogType.TEMP);
-                    timeLeft = 1;
-                }
             }
         }
 

@@ -9,6 +9,7 @@ using CorgEng.InputHandling.Events;
 using CorgEng.DependencyInjection.Dependencies;
 using CorgEng.GenericInterfaces.Logging;
 using CorgEng.Core.Dependencies;
+using CorgEng.EntityComponentSystem.Events;
 
 namespace CorgEng.InputHandling
 {
@@ -24,6 +25,7 @@ namespace CorgEng.InputHandling
         private KeyCallback keyCallbackDelegate;
         private MouseButtonCallback mouseButtonCallback;
         private MouseCallback handleScrollCallback;
+        private MouseCallback handleCursorMove;
 
         private HashSet<Keys> heldKeys = new HashSet<Keys>();
 
@@ -33,15 +35,22 @@ namespace CorgEng.InputHandling
             keyCallbackDelegate = HandleKeyboardPress;
             mouseButtonCallback = HandleMousePress;
             handleScrollCallback = HandleScroll;
+            handleCursorMove = HandleCursorMove;
             window = targetWindow;
             Glfw.SetKeyCallback(targetWindow, keyCallbackDelegate);
             Glfw.SetMouseButtonCallback(targetWindow, mouseButtonCallback);
             Glfw.SetScrollCallback(targetWindow, handleScrollCallback);
+            Glfw.SetCursorPositionCallback(targetWindow, handleCursorMove);
         }
 
         private void HandleScroll(IntPtr window, double x, double y)
         {
             new MouseScrollEvent(y).RaiseGlobally();
+        }
+
+        private void HandleCursorMove(IntPtr window, double x, double y)
+        {
+            new MouseMoveEvent(x, y).RaiseGlobally();
         }
 
         private void HandleMousePress(IntPtr window, MouseButton button, InputState state, ModifierKeys modifiers)
@@ -57,6 +66,7 @@ namespace CorgEng.InputHandling
                 case InputState.Press:
                     MousePressEvent mousePressEvent = new MousePressEvent(x / width, y / height, button, modifiers);
                     mousePressEvent.RaiseGlobally();
+                    Logger.WriteLine("MOUSE PRESSED", LogType.TEMP);
                     return;
                 case InputState.Release:
                     MouseReleaseEvent mouseReleaseEvent = new MouseReleaseEvent(x / width, y / height, button, modifiers);

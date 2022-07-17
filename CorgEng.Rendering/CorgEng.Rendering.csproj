@@ -93,6 +93,7 @@
     <Compile Include="Models\Model.cs" />
     <Compile Include="Models\SquareModelFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RendererLookup.cs" />
     <Compile Include="Shaders\ShaderFactory.cs" />
     <Compile Include="Shaders\ShaderSet.cs" />
     <Compile Include="SpriteRendering\SpriteBatch.cs" />
@@ -110,6 +111,10 @@
     <Compile Include="Textures\TextureState.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\CorgEng.Constants\CorgEng.Constants.csproj">
+      <Project>{D287FB50-6DFA-4EFA-9169-5A6F31B44CA9}</Project>
+      <Name>CorgEng.Constants</Name>
+    </ProjectReference>
     <ProjectReference Include="..\CorgEng.Core\CorgEng.Core.csproj">
       <Project>{9CCC4A6B-2D13-425D-8C72-B034151EC11C}</Project>
       <Name>CorgEng.Core</Name>

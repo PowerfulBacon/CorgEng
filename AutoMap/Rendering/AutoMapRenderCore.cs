@@ -20,7 +20,7 @@ namespace AutoMap.Rendering
 
         public override void Initialize()
         {
-            spriteRenderer = SpriteRendererFactory.CreateSpriteRenderer();
+            spriteRenderer = SpriteRendererFactory.CreateSpriteRenderer(0);
             spriteRenderer?.Initialize();
         }
 

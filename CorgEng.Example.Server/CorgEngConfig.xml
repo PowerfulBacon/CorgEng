@@ -1,0 +1,18 @@
+﻿<CorgEngConfig>
+  <!--Specify which modules we need to load dynamically-->
+  <DependencyModules>
+    <Module>CorgEng.ContentLoading</Module>
+    <Module>CorgEng.DependencyInjection</Module>
+    <Module>CorgEng.EntityComponentSystem</Module>
+    <Module>CorgEng.Example.Shared</Module>
+    <Module>CorgEng.Font</Module>
+    <Module>CorgEng.InputHandling</Module>
+    <Module>CorgEng.Logging</Module>
+    <Module>CorgEng.Networking</Module>
+    <!--Rendering exists for debug purposes-->
+    <Module>CorgEng.Rendering</Module>
+    <Module>CorgEng.UtilityTypes</Module>
+    <Module>CorgEng.UserInterface</Module>
+    <Module>CorgEng.World</Module>
+  </DependencyModules>
+</CorgEngConfig>

@@ -1,18 +1,27 @@
-﻿using CorgEng.GenericInterfaces.UtilityTypes;
+﻿using CorgEng.GenericInterfaces.Networking.Serialisation;
+using CorgEng.GenericInterfaces.UtilityTypes;
 using System;
+using System.IO;
+using System.Runtime.InteropServices;
+using System.Runtime.Serialization;
+using System.Text;
 
 namespace CorgEng.UtilityTypes.Vectors
 {
 
-    public class Vector<T> : IVector<T>
+    public struct Vector<T> : IVector<T>, ICustomSerialisationBehaviour
+        where T : unmanaged
     {
 
         public static Vector<float> Zero => new Vector<float>(0, 0);
+
+        private int sizeOfT;
 
         public Vector(params T[] values)
         {
             Values = values;
             OnChange = null;
+            sizeOfT = Marshal.SizeOf(typeof(T));
         }
 
         private T[] Values;
@@ -311,6 +320,7 @@ namespace CorgEng.UtilityTypes.Vectors
         public static implicit operator Vector<long>(Vector<T> a) => Convert<long>(a);
 
         private static Vector<L> Convert<L>(Vector<T> a)
+            where L : unmanaged
         {
             //Create the new vector
             Vector<L> vector = new Vector<L>(new L[a.Dimensions]);
@@ -331,7 +341,7 @@ namespace CorgEng.UtilityTypes.Vectors
 
         public override string ToString()
         {
-            return $"{{{string.Join(", ", this)}}}";
+            return $"{{{string.Join(", ", Values)}}}";
         }
 
         public override bool Equals(object obj)
@@ -350,5 +360,96 @@ namespace CorgEng.UtilityTypes.Vectors
             return hashCode;
         }
 
+        public int GetSerialisationLength()
+        {
+            return 4 + sizeOfT * Values.Length;
+        }
+
+        public void DeserialiseFrom(BinaryReader binaryReader)
+        {
+            int length = binaryReader.ReadInt32();
+            //Construct
+            //new T[length] causes a stack overflow exception.
+            Values = new T[length];
+            OnChange = null;
+            sizeOfT = Marshal.SizeOf(typeof(T));
+            //Read Ts
+            for (int i = length - 1; i >= 0; i--)
+            {
+                if (typeof(ICustomSerialisationBehaviour).IsAssignableFrom(typeof(T)))
+                {
+                    ICustomSerialisationBehaviour thing = (ICustomSerialisationBehaviour)FormatterServices.GetUninitializedObject(typeof(T));
+                    thing.DeserialiseFrom(binaryReader);
+                    Values[i] = (T)thing;
+                }
+                //Assuming its a string
+                else if (typeof(T) == typeof(string))
+                {
+                    ushort stringLength = binaryReader.ReadUInt16();
+                    Values[i] = (T)System.Convert.ChangeType(Encoding.ASCII.GetString(binaryReader.ReadBytes(stringLength)), typeof(T));
+                }
+                else if (typeof(T) == typeof(byte))
+                    Values[i] = (T)System.Convert.ChangeType(binaryReader.ReadByte(), typeof(T));
+                else if (typeof(T) == typeof(char))
+                    Values[i] = (T)System.Convert.ChangeType(binaryReader.ReadChar(), typeof(T));
+                else if (typeof(T) == typeof(int))
+                    Values[i] = (T)System.Convert.ChangeType(binaryReader.ReadInt32(), typeof(T));
+                else if (typeof(T) == typeof(float))
+                    Values[i] = (T)System.Convert.ChangeType(binaryReader.ReadSingle(), typeof(T));
+                else if (typeof(T) == typeof(double))
+                    Values[i] = (T)System.Convert.ChangeType(binaryReader.ReadDouble(), typeof(T));
+                else if (typeof(T) == typeof(long))
+                    Values[i] = (T)System.Convert.ChangeType(binaryReader.ReadInt64(), typeof(T));
+                else if (typeof(T) == typeof(short))
+                    Values[i] = (T)System.Convert.ChangeType(binaryReader.ReadInt16(), typeof(T));
+                else if (typeof(T) == typeof(uint))
+                    Values[i] = (T)System.Convert.ChangeType(binaryReader.ReadUInt32(), typeof(T));
+                else if (typeof(T) == typeof(ushort))
+                    Values[i] = (T)System.Convert.ChangeType(binaryReader.ReadUInt16(), typeof(T));
+                else if (typeof(T) == typeof(ulong))
+                    Values[i] = (T)System.Convert.ChangeType(binaryReader.ReadUInt64(), typeof(T));
+                else if (typeof(T) == typeof(decimal))
+                    Values[i] = (T)System.Convert.ChangeType(binaryReader.ReadDecimal(), typeof(T));
+                else
+                    binaryReader.ReadBytes(sizeOfT);
+            }
+        }
+
+        public void SerialiseInto(BinaryWriter binaryWriter)
+        {
+            binaryWriter.Write(Values.Length);
+            for (int i = Values.Length - 1; i >= 0; i--)
+            {
+                object value = Values[i];
+                if (value is ICustomSerialisationBehaviour customSerialisationBehaviour)
+                    customSerialisationBehaviour.SerialiseInto(binaryWriter);
+                else if (value is byte[] byteArray)
+                    binaryWriter.Write(byteArray);
+                else if (value is byte valueByte)
+                    binaryWriter.Write(valueByte);
+                else if (value is char valueChar)
+                    binaryWriter.Write(valueChar);
+                else if (value is int valueInt)
+                    binaryWriter.Write(valueInt);
+                else if (value is float valueFloat)
+                    binaryWriter.Write(valueFloat);
+                else if (value is double valueDouble)
+                    binaryWriter.Write(valueDouble);
+                else if (value is long valueLong)
+                    binaryWriter.Write(valueLong);
+                else if (value is short valueShort)
+                    binaryWriter.Write(valueShort);
+                else if (value is uint valueUint)
+                    binaryWriter.Write(valueUint);
+                else if (value is ushort valueUshort)
+                    binaryWriter.Write(valueUshort);
+                else if (value is ulong valueUlong)
+                    binaryWriter.Write(valueUlong);
+                else if (value is decimal valueDecimal)
+                    binaryWriter.Write(valueDecimal);
+                else
+                    binaryWriter.Seek(Marshal.SizeOf(value), SeekOrigin.Current);
+            }
+        }
     }
 }

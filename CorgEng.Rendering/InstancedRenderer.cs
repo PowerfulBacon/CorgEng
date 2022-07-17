@@ -1,4 +1,5 @@
-﻿using CorgEng.Core.Dependencies;
+﻿using CorgEng.Constants;
+using CorgEng.Core.Dependencies;
 using CorgEng.GenericInterfaces.Logging;
 using CorgEng.GenericInterfaces.Rendering;
 using CorgEng.GenericInterfaces.Rendering.Renderers;
@@ -35,6 +36,20 @@ namespace CorgEng.Rendering
 
         //The location of buffers that we are using
         protected uint[] storedBufferLocations;
+
+        //Used to identifier the networker
+        public uint NetworkIdentifier { get; }
+
+        public InstancedRenderer(uint networkIdentifier)
+        {
+            //Set the network identifier
+            NetworkIdentifier = networkIdentifier;
+            //Do the renderer lookup
+            if (networkIdentifier != NetworkedRenderingConstants.NETWORK_RENDERING_ID_LOCAL)
+            {
+                RendererLookup.AddRenderer(this);
+            }
+        }
 
         public void Initialize()
         {

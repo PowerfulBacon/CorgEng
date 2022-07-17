@@ -6,7 +6,7 @@ using static OpenGL.Gl;
 
 namespace CorgEng.Core.Rendering
 {
-    internal class CorgEngWindow
+    public class CorgEngWindow
     {
 
         private Window glWindowInstance;
@@ -16,6 +16,9 @@ namespace CorgEng.Core.Rendering
 
         internal delegate void WindowResizeDelegate(int width, int height);
         internal WindowResizeDelegate OnWindowResized;
+
+        public int Width { get; set; }
+        public int Height { get; set; }
 
         /// <summary>
         /// Open the main window
@@ -61,7 +64,9 @@ namespace CorgEng.Core.Rendering
             int width = Glfw.PrimaryMonitor.WorkArea.Width;
             int height = Glfw.PrimaryMonitor.WorkArea.Height;
             //Create the window instance
-            glWindowInstance = Glfw.CreateWindow(Math.Min(width, 1920), Math.Min(height, 1080), "CorgEngApplication", Monitor.None, Window.None);
+            Height = Math.Min(height, 1080);
+            Width = Math.Min(width, 1920);
+            glWindowInstance = Glfw.CreateWindow(Width, Height, CorgEngMain.WindowName, Monitor.None, Window.None);
             //Set the current context to the window
             Glfw.MakeContextCurrent(glWindowInstance);
             //I don't actually know what this does
@@ -76,6 +81,8 @@ namespace CorgEng.Core.Rendering
         private void WindowResizeHandler(IntPtr window, int width, int height)
         {
             //Update the render core
+            Width = width;
+            Height = height;
             OnWindowResized?.Invoke(width, height);
         }
 

@@ -12,9 +12,9 @@ namespace CorgEng.Rendering.SpriteRendering
     public class SpriteRendererFactory : ISpriteRendererFactory
     {
 
-        public ISpriteRenderer CreateSpriteRenderer()
+        public ISpriteRenderer CreateSpriteRenderer(uint networkedIdentifier)
         {
-            return new SpriteRenderer();
+            return new SpriteRenderer(networkedIdentifier);
         }
 
     }

@@ -9,6 +9,8 @@ namespace CorgEng.GenericInterfaces.Rendering.Renderers
     public interface IRenderer
     {
 
+        uint NetworkIdentifier { get; }
+
         void Initialize();
 
         void Render(ICamera camera);

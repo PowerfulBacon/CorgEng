@@ -5,6 +5,7 @@ using CorgEng.EntityComponentSystem.Entities;
 using CorgEng.EntityComponentSystem.Events;
 using CorgEng.EntityComponentSystem.Systems;
 using CorgEng.GenericInterfaces.ContentLoading;
+using CorgEng.GenericInterfaces.EntityComponentSystem;
 using CorgEng.GenericInterfaces.Logging;
 using CorgEng.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -14,10 +15,11 @@ using System.Threading;
 namespace CorgEng.Tests.EntityComponentSystem
 {
 
-    internal class OtherEvent : Event
-    { }
+    internal class OtherEvent : IEvent
+    {
+    }
 
-    internal class TestEvent : Event
+    internal class TestEvent : IEvent
     {
         public int TestID { get; }
 
@@ -46,6 +48,9 @@ namespace CorgEng.Tests.EntityComponentSystem
     internal class TestEntitySystem : EntitySystem
     {
 
+        //Just run on everything
+        public override EntitySystemFlags SystemFlags { get; } = EntitySystemFlags.HOST_SYSTEM | EntitySystemFlags.CLIENT_SYSTEM;
+
         public override void SystemSetup()
         {
             RegisterLocalEvent<TestComponent, TestEvent>(HandleTestEvent);
@@ -53,7 +58,7 @@ namespace CorgEng.Tests.EntityComponentSystem
             RegisterGlobalEvent<TestEvent>(HandleGlobalEvent);
         }
 
-        private void HandleTestEvent(Entity entity, TestComponent component, TestEvent eventDetails)
+        private void HandleTestEvent(IEntity entity, TestComponent component, TestEvent eventDetails)
         {
             if (eventDetails.TestID != SignalTests.currentTestId)
             {
@@ -66,7 +71,7 @@ namespace CorgEng.Tests.EntityComponentSystem
             Console.WriteLine(SignalTests.handlesReceieved);
         }
 
-        private void HandleSecondaryTestEvent(Entity entity, SecondaryTestComponent component, TestEvent eventDetails)
+        private void HandleSecondaryTestEvent(IEntity entity, SecondaryTestComponent component, TestEvent eventDetails)
         {
             if (eventDetails.TestID != SignalTests.currentTestId)
             {
@@ -137,7 +142,7 @@ namespace CorgEng.Tests.EntityComponentSystem
             TestComponent testComponent = new TestComponent();
             testEntity.AddComponent(testComponent);
             //Remove the component
-            testEntity.RemoveComponent(testComponent);
+            testEntity.RemoveComponent(testComponent, false);
             //Test sending signal no longer works
             //Send a test signal
             new TestEvent().Raise(testEntity);
@@ -160,7 +165,7 @@ namespace CorgEng.Tests.EntityComponentSystem
             SecondaryTestComponent secondaryTestComponent = new SecondaryTestComponent();
             testEntity.AddComponent(secondaryTestComponent);
             //Remove the component
-            testEntity.RemoveComponent(testComponent);
+            testEntity.RemoveComponent(testComponent, false);
             //Test sending signal no longer works
             //Send a test signal
             new TestEvent().Raise(testEntity);

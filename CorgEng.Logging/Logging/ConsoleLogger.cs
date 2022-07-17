@@ -1,4 +1,5 @@
-﻿using CorgEng.DependencyInjection.Dependencies;
+﻿using CorgEng.Core.Modules;
+using CorgEng.DependencyInjection.Dependencies;
 using CorgEng.GenericInterfaces.Logging;
 using System;
 using System.Threading;
@@ -12,7 +13,8 @@ namespace CorgEng.Logging
 
         private static object consoleLock = new object();
 
-        private static LogType LogFlags = LogType.LOG_ALL;
+        private static LogType LogFlags = LogType.LOG_ALL & ~LogType.DEBUG_EVERYTHING;
+        //private static LogType LogFlags = LogType.LOG_ALL;
 
         public static int ExceptionCount = 0;
 
@@ -41,6 +43,9 @@ namespace CorgEng.Logging
         {
             switch (logType)
             {
+                case LogType.DEBUG_EVERYTHING:
+                    Console.ForegroundColor = ConsoleColor.Blue;
+                    return;
                 case LogType.DEBUG:
                     Console.ForegroundColor = ConsoleColor.Magenta;
                     return;

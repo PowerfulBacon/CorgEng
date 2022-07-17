@@ -1,13 +1,14 @@
 ﻿using CorgEng.EntityComponentSystem.Components;
+using CorgEng.GenericInterfaces.EntityComponentSystem;
 
 namespace CorgEng.EntityComponentSystem.Events.Events
 {
-    public class ComponentAddedEvent : Event
+    public class ComponentAddedEvent : IEvent
     {
 
-        public Component Component { get; set; }
+        public IComponent Component { get; set; }
 
-        public ComponentAddedEvent(Component component)
+        public ComponentAddedEvent(IComponent component)
         {
             Component = component;
         }

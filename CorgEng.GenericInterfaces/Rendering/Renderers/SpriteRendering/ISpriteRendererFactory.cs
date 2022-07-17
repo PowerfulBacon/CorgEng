@@ -9,7 +9,7 @@ namespace CorgEng.GenericInterfaces.Rendering.Renderers.SpriteRendering
     public interface ISpriteRendererFactory
     {
 
-        ISpriteRenderer CreateSpriteRenderer();
+        ISpriteRenderer CreateSpriteRenderer(uint networkedIdentifier);
 
     }
 }

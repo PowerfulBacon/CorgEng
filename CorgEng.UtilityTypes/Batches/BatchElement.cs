@@ -47,9 +47,9 @@ namespace CorgEng.UtilityTypes.Batches
             {
                 //Store the event handler, so it can be unbound later.
                 internalValues[i].ValueChanged -= eventHandlers[i];
-                //Nullify the event handler
-                eventHandlers = null;
             }
+            //Nullify the event handler
+            eventHandlers = null;
         }
 
         private void OnBindablePropertyChanged(int index, IVector<float> newValue)
