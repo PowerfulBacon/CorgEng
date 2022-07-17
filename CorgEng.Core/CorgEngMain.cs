@@ -200,8 +200,13 @@ namespace CorgEng.Core
                     {
                         case "DependencyModules":
                             List<Assembly> loadedAssemblies = new List<Assembly>();
-                            loadedAssemblies.Add(Assembly.GetEntryAssembly());
-                            loadedAssemblies.Add(Assembly.GetExecutingAssembly());
+                            if (Assembly.GetEntryAssembly() != null)
+                                loadedAssemblies.Add(Assembly.GetEntryAssembly());
+                            //Unit test support.
+                            else if (Assembly.GetCallingAssembly() != null)
+                                loadedAssemblies.Add(Assembly.GetCallingAssembly());
+                            if(Assembly.GetExecutingAssembly() != null)
+                                loadedAssemblies.Add(Assembly.GetExecutingAssembly());
                             foreach (XElement dependency in childElement.Elements())
                             {
                                 try
