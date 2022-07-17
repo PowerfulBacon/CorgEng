@@ -112,7 +112,7 @@ namespace CorgEng.Core.Rendering
                     glBufferData(GL_ARRAY_BUFFER, sizeof(float) * quadVertices.Length, vertexPointer, GL_STATIC_DRAW);
                 }
                 //Create the shaders
-                shaderSet = ShaderFactory?.CreateShaderSet("CoreShader");
+                shaderSet = ShaderFactory.CreateShaderSet("CoreShader");
                 //Get the uniform location of the shaders
                 shaderSet.AttachShaders(programUint);
                 glLinkProgram(programUint);

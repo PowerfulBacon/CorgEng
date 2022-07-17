@@ -169,7 +169,7 @@ namespace CorgEng.Core
         /// <summary>
         /// An enumerably containing assemblies loaded from the CorgEngConfig.
         /// </summary>
-        private static IEnumerable<Assembly> LoadedAssemblyModules;
+        public static IEnumerable<Assembly> LoadedAssemblyModules;
 
         /// <summary>
         /// Loads a CorgEng config file
@@ -200,6 +200,13 @@ namespace CorgEng.Core
                     {
                         case "DependencyModules":
                             List<Assembly> loadedAssemblies = new List<Assembly>();
+                            if (Assembly.GetEntryAssembly() != null)
+                                loadedAssemblies.Add(Assembly.GetEntryAssembly());
+                            //Unit test support.
+                            else if (Assembly.GetCallingAssembly() != null)
+                                loadedAssemblies.Add(Assembly.GetCallingAssembly());
+                            if(Assembly.GetExecutingAssembly() != null)
+                                loadedAssemblies.Add(Assembly.GetExecutingAssembly());
                             foreach (XElement dependency in childElement.Elements())
                             {
                                 try
@@ -257,7 +264,7 @@ namespace CorgEng.Core
         /// </summary>
         private static void PriorityModuleInit()
         {
-            ModuleLoadAttributes = AppDomain.CurrentDomain.GetAssemblies()
+            ModuleLoadAttributes = LoadedAssemblyModules
                 .SelectMany(assembly => assembly.GetTypes()
                 .SelectMany(type => type.GetMethods(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static)
                 .Where(method => method.GetCustomAttribute<ModuleLoadAttribute>() != null )));
@@ -302,7 +309,7 @@ namespace CorgEng.Core
         /// </summary>
         private static void TriggerTerminateMethods()
         {
-            IEnumerable<MethodInfo> TerminateAttributes = AppDomain.CurrentDomain.GetAssemblies()
+            IEnumerable<MethodInfo> TerminateAttributes = LoadedAssemblyModules
                 .SelectMany(assembly => assembly.GetTypes()
                 .SelectMany(type => type.GetMethods(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static)
                 .Where(method => method.GetCustomAttribute<ModuleTerminateAttribute>() != null)));

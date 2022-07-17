@@ -1,4 +1,5 @@
-﻿using CorgEng.Core.Dependencies;
+﻿using CorgEng.Core;
+using CorgEng.Core.Dependencies;
 using CorgEng.Core.Modules;
 using CorgEng.DependencyInjection.Dependencies;
 using System;
@@ -29,7 +30,7 @@ namespace CorgEng.DependencyInjection.Injection
             stopwatch.Start();
             //Go through all classes
             //Find those with the DependencyAttribute
-            IEnumerable<Type> locatedDependencyTypes = AppDomain.CurrentDomain.GetAssemblies().SelectMany(assembly => assembly.GetTypes().Where(exportedType =>
+            IEnumerable<Type> locatedDependencyTypes = CorgEngMain.LoadedAssemblyModules.SelectMany(assembly => assembly.GetTypes().Where(exportedType =>
                 {
                     return exportedType.IsClass && exportedType.GetCustomAttribute<DependencyAttribute>() != null;
                 }));
@@ -80,7 +81,7 @@ namespace CorgEng.DependencyInjection.Injection
         private static void InjectDependencies()
         {
             //Locate all members we need to inject dependencies into
-            IEnumerable<MemberInfo> requiredInjections = AppDomain.CurrentDomain.GetAssemblies().SelectMany(assembly => assembly.GetTypes().SelectMany(exportedType =>
+            IEnumerable<MemberInfo> requiredInjections = CorgEngMain.LoadedAssemblyModules.SelectMany(assembly => assembly.GetTypes().SelectMany(exportedType =>
                 {
                     return exportedType.GetFields(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic)
                         .Union<MemberInfo>(exportedType.GetProperties(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic))
@@ -91,16 +92,23 @@ namespace CorgEng.DependencyInjection.Injection
             {
                 try
                 {
+                    object injectedValue = null;
                     if (memberInfo is PropertyInfo property)
                     {
                         //Locate the type of the property
                         Type desiredType = property.PropertyType;
-                        property.SetValue(null, GetDependencyInstance(desiredType));
+                        injectedValue = GetDependencyInstance(desiredType);
+                        property.SetValue(null, injectedValue);
                     }
                     else if (memberInfo is FieldInfo field)
                     {
                         Type desiredType = field.FieldType;
-                        field.SetValue(null, GetDependencyInstance(desiredType));
+                        injectedValue = GetDependencyInstance(desiredType);
+                        field.SetValue(null, injectedValue);
+                    }
+                    if (injectedValue == null)
+                    {
+                        Console.WriteLine($"Injection failure on {memberInfo.Name} at {memberInfo.DeclaringType}: Couldn't locate dependency.");
                     }
                 }
                 catch (Exception e)
@@ -133,7 +141,7 @@ namespace CorgEng.DependencyInjection.Injection
         {
             //Locate everything we need to replace
             //Locate all members we need to inject dependencies into
-            IEnumerable<MemberInfo> requiredInjections = AppDomain.CurrentDomain.GetAssemblies().SelectMany(assembly => assembly.GetTypes().SelectMany(exportedType =>
+            IEnumerable<MemberInfo> requiredInjections = CorgEngMain.LoadedAssemblyModules.SelectMany(assembly => assembly.GetTypes().SelectMany(exportedType =>
             {
                 return exportedType.GetFields(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic)
                     .Where(fieldInfo => fieldInfo.FieldType == typeof(DependencyInterface)
@@ -148,6 +156,10 @@ namespace CorgEng.DependencyInjection.Injection
             {
                 try
                 {
+                    if (instantiatedDependency == null)
+                    {
+                        Console.WriteLine($"Injection failure on {memberInfo.Name} at {memberInfo.DeclaringType}: Could not locate dependency type.");
+                    }
                     if (memberInfo is PropertyInfo property)
                     {
                         //Locate the type of the property
