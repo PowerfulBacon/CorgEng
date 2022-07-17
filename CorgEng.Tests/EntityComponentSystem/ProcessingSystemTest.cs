@@ -33,7 +33,7 @@ namespace CorgEng.Tests.EntityComponentSystem
 
             protected override int ProcessDelay => 99;
 
-            public int timesSignalled = 0;
+            public volatile int timesSignalled = 0;
 
             public override void SystemSetup()
             {

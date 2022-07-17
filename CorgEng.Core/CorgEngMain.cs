@@ -61,7 +61,7 @@ namespace CorgEng.Core
         /// <summary>
         /// Get the current applicatino time
         /// </summary>
-        public static double Time => Glfw.Time;
+        public static double Time => (IsRendering ? Glfw.Time : (DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalSeconds);
 
         /// <summary>
         /// The time delta between the last frame and the current frame.
