@@ -411,36 +411,35 @@ namespace CorgEng.Networking.Networking.Client
                                         Logger?.WriteLine($"Unable to locate entity with ID {entityIdentifier} to raise local event on.", LogType.DEBUG);
                                         return;
                                     }
+                                    //Get the event that was raised
+                                    INetworkedEvent raisedEvent = VersionGenerator.CreateTypeFromIdentifier<INetworkedEvent>(networkedIdentifier);
+                                    Logger.WriteLine($"local event raised of type {raisedEvent.GetType()}");
+                                    //Deserialize the event
+                                    raisedEvent.Deserialise(reader);
+                                    raisedEvent.Raise(entityTarget);
                                 }
                             }
-
-                            
-                            //First we need to figure out what event is being raised
-                            //Now we need to deserialize the byte data into the actual packet data
-                            //Since implementation of this is specific to the classes, we need to create
-                            //the correct class.
-                            ushort eventID = BitConverter.ToUInt16(data, start);
-                            //Get the event that was raised
-                            INetworkedEvent raisedEvent = VersionGenerator.CreateTypeFromIdentifier<INetworkedEvent>(eventID);
-                            Logger.WriteLine($"global event raised of type {raisedEvent.GetType()}");
-                            //Deserialize the event
-                            raisedEvent.Deserialize(data.Skip(start + 0x06).Take(length).ToArray());
-                            raisedEvent.Raise(entityTarget);
                             return;
                         }
                     case PacketHeaders.GLOBAL_EVENT_RAISED:
                         {
-                            //First we need to figure out what event is being raised
-                            //Now we need to deserialize the byte data into the actual packet data
-                            //Since implementation of this is specific to the classes, we need to create
-                            //the correct class.
-                            ushort eventID = BitConverter.ToUInt16(data, start);
-                            //Get the event that was raised
-                            INetworkedEvent raisedEvent = VersionGenerator.CreateTypeFromIdentifier<INetworkedEvent>(eventID);
-                            Logger.WriteLine($"global event raised of type {raisedEvent.GetType()}");
-                            //Deserialize the event
-                            raisedEvent.Deserialize(data.Skip(start + 0x02).Take(length).ToArray());
-                            raisedEvent.RaiseGlobally(false);
+                            using (MemoryStream stream = new MemoryStream(data))
+                            {
+                                stream.Seek(start, SeekOrigin.Begin);
+                                using (BinaryReader reader = new BinaryReader(stream))
+                                {
+                                    //Serialisatino length
+                                    int serialisationLength = reader.ReadInt32();
+                                    //Networked identifier
+                                    ushort networkedIdentifier = reader.ReadUInt16();
+                                    //Get the event that was raised
+                                    INetworkedEvent raisedEvent = VersionGenerator.CreateTypeFromIdentifier<INetworkedEvent>(networkedIdentifier);
+                                    Logger.WriteLine($"global event raised of type {raisedEvent.GetType()}");
+                                    //Deserialize the event
+                                    raisedEvent.Deserialise(reader);
+                                    raisedEvent.RaiseGlobally(false);
+                                }
+                            }
                             return;
                         }
                     case PacketHeaders.PROTOTYPE_INFO:

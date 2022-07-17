@@ -21,6 +21,7 @@ using CorgEng.Networking.VersionSync;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
@@ -289,18 +290,26 @@ namespace CorgEng.Networking.Networking.Server
                             QueueMessage(ClientAddressingTable.GetFlagRepresentation(client), message);
                             return;
                         case PacketHeaders.GLOBAL_EVENT_RAISED:
-                            //First we need to figure out what event is being raised
-                            //Now we need to deserialize the byte data into the actual packet data
-                            //Since implementation of this is specific to the classes, we need to create
-                            //the correct class.
-                            ushort eventID = BitConverter.ToUInt16(data, start);
-                            //Get the event that was raised
-                            INetworkedEvent raisedEvent = VersionGenerator.CreateTypeFromIdentifier<INetworkedEvent>(eventID);
-                            Logger.WriteLine($"global event raised of type {raisedEvent.GetType()}");
-                            //Deserialize the event
-                            raisedEvent.Deserialize(data.Skip(start + 0x02).Take(length).ToArray());
-                            raisedEvent.RaiseGlobally(false);
-                            break;
+                            {
+                                using (MemoryStream stream = new MemoryStream(data))
+                                {
+                                    stream.Seek(start, SeekOrigin.Begin);
+                                    using (BinaryReader reader = new BinaryReader(stream))
+                                    {
+                                        //Serialisatino length
+                                        int serialisationLength = reader.ReadInt32();
+                                        //Networked identifier
+                                        ushort networkedIdentifier = reader.ReadUInt16();
+                                        //Get the event that was raised
+                                        INetworkedEvent raisedEvent = VersionGenerator.CreateTypeFromIdentifier<INetworkedEvent>(networkedIdentifier);
+                                        Logger.WriteLine($"global event raised of type {raisedEvent.GetType()}");
+                                        //Deserialize the event
+                                        raisedEvent.Deserialise(reader);
+                                        raisedEvent.RaiseGlobally(false);
+                                    }
+                                }
+                                return;
+                            }
 #if DEBUG
                         default:
                             Logger?.WriteLine($"Unhandled header: {header}", LogType.WARNING);

@@ -15,6 +15,7 @@ using CorgEng.Networking.VersionSync;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -153,15 +154,21 @@ namespace CorgEng.Tests.NetworkingTests
 
             public int testNumber { get; set; }
 
-            public void Deserialize(byte[] data)
+            public void Deserialise(BinaryReader reader)
             {
-                testNumber = BitConverter.ToInt32(data, 0);
+                testNumber = reader.ReadInt32();
             }
 
-            public byte[] Serialize()
+            public void Serialise(BinaryWriter writer)
             {
-                return BitConverter.GetBytes(testNumber);
+                writer.Write(testNumber);
             }
+
+            public int SerialisedLength()
+            {
+                return sizeof(int);
+            }
+
         }
 
         private class NetworkedTestComponent : Component

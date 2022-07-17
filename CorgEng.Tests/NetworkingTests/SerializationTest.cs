@@ -9,6 +9,7 @@ using CorgEng.UtilityTypes.Vectors;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization;
@@ -206,7 +207,7 @@ namespace CorgEng.Tests.NetworkingTests
                         }
                         else if (eventProperty.PropertyType == typeof(Vector<float>))
                         {
-                            appliedValue = new Vector<float>((float)random.NextDouble(), (float)random.NextDouble());
+                            appliedValue = new Vector<float>((float)random.NextDouble(), (float)random.NextDouble(), (float)random.NextDouble());
                         }
                         else
                         {
@@ -223,11 +224,26 @@ namespace CorgEng.Tests.NetworkingTests
                         continue;
                     }
                     //Serialize the data
-                    byte[] serializedData = instantiatedEvent.Serialize();
-                    Logger?.WriteLine($"SERIALIZED COMPONENT (Length: {serializedData.Length}): {string.Join(",", serializedData)}", LogType.DEBUG);
+                    byte[] serializedData = new byte[instantiatedEvent.SerialisedLength()];
                     //Deserialize
                     INetworkedEvent deserializedType = (INetworkedEvent)FormatterServices.GetUninitializedObject(type);
-                    deserializedType.Deserialize(serializedData);
+                    using (MemoryStream memoryStream = new MemoryStream(serializedData))
+                    {
+                        //Writer
+                        using (BinaryWriter binaryWriter = new BinaryWriter(memoryStream))
+                        {
+                            Logger?.WriteLine($"SERIALIZED COMPONENT (Length: {serializedData.Length}): {string.Join(",", serializedData)}", LogType.DEBUG);
+                            instantiatedEvent.Serialise(binaryWriter);
+                        }
+                    }
+                    using (MemoryStream memoryStream = new MemoryStream(serializedData))
+                    {
+                        //Reader
+                        using (BinaryReader binaryReader = new BinaryReader(memoryStream))
+                        {
+                            deserializedType.Deserialise(binaryReader);
+                        }
+                    }
                     //Verify
                     foreach (PropertyInfo property in appliedValues.Keys)
                     {
