@@ -1,4 +1,5 @@
-﻿using CorgEng.Core.Dependencies;
+﻿using CorgEng.Core;
+using CorgEng.Core.Dependencies;
 using CorgEng.EntityComponentSystem.Components;
 using CorgEng.EntityComponentSystem.Events;
 using CorgEng.GenericInterfaces.EntityComponentSystem;
@@ -31,7 +32,7 @@ namespace CorgEng.Tests.NetworkingTests
             //Give it a seed, so tests are repeatable
             Random random = new Random(0);
             //Get all component classes
-            IEnumerable<Type> components = AppDomain.CurrentDomain.GetAssemblies()
+            IEnumerable<Type> components = CorgEngMain.LoadedAssemblyModules
                 .SelectMany(assembly => assembly.GetTypes()
                 .Where(type => typeof(Component).IsAssignableFrom(type)));
             Logger?.WriteLine($"Located {components.Count()} components to test.", LogType.LOG);
@@ -149,7 +150,7 @@ namespace CorgEng.Tests.NetworkingTests
             //Give it a seed, so tests are repeatable
             Random random = new Random(0);
             //Get all event classes
-            IEnumerable<Type> Events = AppDomain.CurrentDomain.GetAssemblies()
+            IEnumerable<Type> Events = CorgEngMain.LoadedAssemblyModules
                 .SelectMany(assembly => assembly.GetTypes()
                 .Where(type => typeof(INetworkedEvent).IsAssignableFrom(type)));
             Logger?.WriteLine($"Located {Events.Count()} events to test.", LogType.LOG);

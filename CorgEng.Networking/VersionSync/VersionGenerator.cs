@@ -1,4 +1,5 @@
-﻿using CorgEng.Core.Dependencies;
+﻿using CorgEng.Core;
+using CorgEng.Core.Dependencies;
 using CorgEng.Core.Modules;
 using CorgEng.EntityComponentSystem.Components;
 using CorgEng.EntityComponentSystem.Events;
@@ -39,7 +40,7 @@ namespace CorgEng.Networking.VersionSync
             //Use reflection to collect all event types
             //Sort the types alphabetically (They need to be sorted to be deterministic)
             IVersionSynced e;
-            IOrderedEnumerable<Type> LocatedTypes = AppDomain.CurrentDomain.GetAssemblies()
+            IOrderedEnumerable<Type> LocatedTypes = CorgEngMain.LoadedAssemblyModules
                 .SelectMany(assembly => assembly.GetTypes()
                 .Where(t => !t.IsAbstract &&
                         typeof(IVersionSynced).IsAssignableFrom(t)

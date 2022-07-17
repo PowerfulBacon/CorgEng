@@ -97,7 +97,7 @@ namespace CorgEng.EntityComponentSystem.Systems
             Logger?.WriteLine($"Setting up systems...", LogType.LOG);
             //Locate all system types using reflection.
             //Note that we need all systems in all loaded modules
-            IEnumerable<Type> locatedSystems = AppDomain.CurrentDomain.GetAssemblies()
+            IEnumerable<Type> locatedSystems = CorgEngMain.LoadedAssemblyModules
                 .SelectMany(assembly => assembly.GetTypes()
                 .Where(type => typeof(EntitySystem).IsAssignableFrom(type) && !type.IsAbstract));
             Parallel.ForEach(locatedSystems, (type) => {
@@ -214,7 +214,7 @@ namespace CorgEng.EntityComponentSystem.Systems
             //Handle assembly cache
             if (TypeCache == null)
             {
-                TypeCache = AppDomain.CurrentDomain.GetAssemblies()
+                TypeCache = CorgEngMain.LoadedAssemblyModules
                     .SelectMany(assembly => assembly.GetTypes());
             }
             IEnumerable<Type> typesToRegister = TypeCache.Where(type => typeof(GComponent).IsAssignableFrom(type));

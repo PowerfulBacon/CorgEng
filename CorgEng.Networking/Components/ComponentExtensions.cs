@@ -1,4 +1,5 @@
-﻿using CorgEng.Core.Dependencies;
+﻿using CorgEng.Core;
+using CorgEng.Core.Dependencies;
 using CorgEng.Core.Modules;
 using CorgEng.EntityComponentSystem.Components;
 using CorgEng.GenericInterfaces.Logging;
@@ -45,7 +46,7 @@ namespace CorgEng.Networking.Components
             Stopwatch stopwatch = Stopwatch.StartNew();
             Logger?.WriteLine($"Loading Networking Component Extensions...", LogType.LOG);
             //Locate all component types
-            IEnumerable<Type> locatedComponentTypes = AppDomain.CurrentDomain.GetAssemblies()
+            IEnumerable<Type> locatedComponentTypes = CorgEngMain.LoadedAssemblyModules
                 .SelectMany(x => x.GetTypes())
                 .Where(type => typeof(Component).IsAssignableFrom(type) && !type.IsAbstract);
             //Populate the property info cache
