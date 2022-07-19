@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.Loader;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 
@@ -209,7 +210,8 @@ namespace CorgEng.Core
                             {
                                 try
                                 {
-                                    Assembly loadedModule = Assembly.LoadFile($"{Path.GetFullPath(dependency.Value)}.dll");
+                                    Assembly loadedModule = AssemblyLoadContext.Default.LoadFromAssemblyPath($"{Path.GetFullPath(dependency.Value)}.dll");
+                                    //Assembly loadedModule = Assembly.LoadFile($"{Path.GetFullPath(dependency.Value)}.dll");
                                     loadedAssemblies.Add(loadedModule);
                                 }
                                 catch (FileNotFoundException)

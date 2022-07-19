@@ -31,8 +31,7 @@ namespace CorgEng.DependencyInjection.Injection
             stopwatch.Start();
             //Find those with the DependencyAttribute
             IEnumerable<Type> locatedDependencyTypes = CorgEngMain.LoadedAssemblyModules.SelectMany(assembly => assembly.GetTypes().Where(
-                exportedType => exportedType.IsClass && exportedType.GetCustomAttributes().Any(
-                customAttribute => customAttribute.GetType().FullName == "CorgEng.DependencyInjection.Dependencies.DependencyAttribute")));
+                exportedType => exportedType.IsClass && exportedType.GetCustomAttribute<DependencyAttribute>() != null));
             Console.WriteLine($"Located {locatedDependencyTypes.Count()} dependency types.");
             //Load those classes into the dependency list
             foreach (Type dependencyType in locatedDependencyTypes)
@@ -41,10 +40,8 @@ namespace CorgEng.DependencyInjection.Injection
                 Type[] interfaces = dependencyType.GetInterfaces();
                 //Locate the attribute and get the reflection object
                 //MASSIVE REFLECTION HACK: THERES A BUG IN REFLECTION WITH LOADED ASSEMBLIES
-                Attribute locatedAttribute = dependencyType.GetCustomAttributes().Where(
-                    customAttribute => customAttribute.GetType().FullName == "CorgEng.DependencyInjection.Dependencies.DependencyAttribute").First();
-                Type locatedAttributeType = locatedAttribute.GetType();
-                int priority = (int)locatedAttributeType.GetField("priority").GetValue(locatedAttribute);
+                DependencyAttribute locatedAttribute = dependencyType.GetCustomAttribute<DependencyAttribute>();
+                int priority = locatedAttribute.priority;
                 //Load the dependency into the dependency list
                 foreach (Type targetInterface in interfaces)
                 {

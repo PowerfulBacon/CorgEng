@@ -54,7 +54,7 @@ namespace CorgEng.Networking.VersionSync
             ushort number = 1;
             foreach (Type type in LocatedTypes)
             {
-                Logger.WriteLine($"NETWORK VERSION: #{number}: {type.AssemblyQualifiedName}", LogType.DEBUG);
+                Logger.WriteLine($"NETWORK VERSION: #{number}: {type.AssemblyQualifiedName} (HASH: #{GetUnifiedHashedString(type.AssemblyQualifiedName)})", LogType.DEBUG);
                 networkIdToType.Add(number, type);
                 networkedTypeIds.Add(type, number++);
             }
@@ -103,7 +103,17 @@ namespace CorgEng.Networking.VersionSync
             int value = -1430992642;
             foreach (Type t in networkedTypeIds.Keys)
             {
-                value = unchecked(17 * value + t.AssemblyQualifiedName.GetHashCode());
+                value = unchecked(17 * value + GetUnifiedHashedString(t.AssemblyQualifiedName));
+            }
+            return value;
+        }
+
+        private static int GetUnifiedHashedString(string input)
+        {
+            int value = -1430992642;
+            foreach (char c in input)
+            {
+                value = unchecked(17 * value + c);
             }
             return value;
         }
