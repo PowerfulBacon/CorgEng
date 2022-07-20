@@ -202,7 +202,7 @@ namespace CorgEng.Core
                             if (Assembly.GetEntryAssembly() != null)
                                 loadedAssemblies.Add(Assembly.GetEntryAssembly());
                             //Unit test support.
-                            else if (Assembly.GetCallingAssembly() != null)
+                            if (Assembly.GetCallingAssembly() != null && Assembly.GetCallingAssembly() != Assembly.GetEntryAssembly())
                                 loadedAssemblies.Add(Assembly.GetCallingAssembly());
                             if(Assembly.GetExecutingAssembly() != null)
                                 loadedAssemblies.Add(Assembly.GetExecutingAssembly());

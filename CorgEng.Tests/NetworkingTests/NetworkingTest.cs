@@ -49,6 +49,7 @@ namespace CorgEng.Tests.NetworkingTests
         }
 
         [TestMethod]
+        [DoNotParallelize]
         [Timeout(3000)]
         public void TestNetworkConnection()
         {
@@ -64,6 +65,7 @@ namespace CorgEng.Tests.NetworkingTests
         }
 
         [TestMethod]
+        [DoNotParallelize]
         [Timeout(3000)]
         public void TestSendingToServer()
         {
@@ -101,6 +103,7 @@ namespace CorgEng.Tests.NetworkingTests
         }
 
         [TestMethod]
+        [DoNotParallelize]
         [Timeout(3000)]
         public void TestSendingToClient()
         {
@@ -136,12 +139,14 @@ namespace CorgEng.Tests.NetworkingTests
         }
 
         [TestMethod]
+        [DoNotParallelize]
         public void TestClientKick()
         {
             Assert.Inconclusive("Test isn't implemented");
         }
 
         [TestMethod]
+        [DoNotParallelize]
         public void TestBanning()
         {
             Assert.Inconclusive("Test isn't implemented");
@@ -206,6 +211,7 @@ namespace CorgEng.Tests.NetworkingTests
         /// events will be duplicated. We need to make sure we recieve 2 events.
         /// </summary>
         [TestMethod]
+        [DoNotParallelize]
         [Timeout(3000)]
         public void TestGlobalNetworkedEvent()
         {
