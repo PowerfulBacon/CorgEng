@@ -4,7 +4,7 @@ on: [push]
 
 jobs:
 
-  build:
+  windows:
 
     runs-on: windows-latest
     
@@ -36,4 +36,4 @@ jobs:
           msbuild.exe CorgEng.Core.sln /p:platform="ARM32" /p:configuration="Release"
         
       - name: Run Tests
-        run: vstest.console.exe ..\CorgEng.Tests\bin\ARM32\Release\CorgEng.Tests.dll
+        run: vstest.console.exe ..\CorgEng.Tests\bin\Release\CorgEng.Tests.dll
