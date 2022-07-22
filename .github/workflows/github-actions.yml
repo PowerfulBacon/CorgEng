@@ -36,4 +36,4 @@ jobs:
           msbuild.exe CorgEng.Core.sln /p:platform="ARM32" /p:configuration="Release"
         
       - name: Run Tests
-        run: vstest.console.exe ..\CorgEng.Tests\bin\Release\CorgEng.Tests.dll
+        run: vstest.console.exe ..\CorgEng.Tests\bin\Release\net6.0\CorgEng.Tests.dll
