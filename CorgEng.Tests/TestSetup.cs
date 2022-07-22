@@ -23,7 +23,6 @@ namespace CorgEng.Tests
         [AssemblyInitialize]
         public static void TestInitialize(TestContext testContext)
         {
-            Console.WriteLine(Assembly.GetEntryAssembly() == null ? "NULL" : "GOOD");
             //Load config
             CorgEngMain.LoadConfig("CorgEngConfig.xml", false, false);
             //Inject dependencies

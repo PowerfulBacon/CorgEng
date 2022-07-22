@@ -23,21 +23,21 @@ namespace CorgEng.Example.Shared.RenderCores
         private Entity renderableEntity;
 
         [UsingDependency]
-        private static ISpriteRendererFactory SpriteRendererFactory;
+        public static ISpriteRendererFactory SpriteRendererFactory;
 
         public ISpriteRenderer spriteRenderer;
 
         [UsingDependency]
-        private static ISpriteRenderObjectFactory spriteRenderObjectFactory;
+        public static ISpriteRenderObjectFactory spriteRenderObjectFactory;
 
         [UsingDependency]
-        private static ITextureFactory textureFactory;
+        public static ITextureFactory textureFactory;
 
         [UsingDependency]
-        private static IFontFactory FontFactory;
+        public static IFontFactory FontFactory;
 
         [UsingDependency]
-        private static ITextObjectFactory TextObjectFactory;
+        public static ITextObjectFactory TextObjectFactory;
 
         public override void Initialize()
         {

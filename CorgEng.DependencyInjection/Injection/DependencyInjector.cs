@@ -2,6 +2,7 @@
 using CorgEng.Core.Dependencies;
 using CorgEng.Core.Modules;
 using CorgEng.DependencyInjection.Dependencies;
+using CorgEng.GenericInterfaces.Logging;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -28,20 +29,19 @@ namespace CorgEng.DependencyInjection.Injection
         {
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
-            //Go through all classes
             //Find those with the DependencyAttribute
-            IEnumerable<Type> locatedDependencyTypes = CorgEngMain.LoadedAssemblyModules.SelectMany(assembly => assembly.GetTypes().Where(exportedType =>
-                {
-                    return exportedType.IsClass && exportedType.GetCustomAttribute<DependencyAttribute>() != null;
-                }));
+            IEnumerable<Type> locatedDependencyTypes = CorgEngMain.LoadedAssemblyModules.SelectMany(assembly => assembly.GetTypes().Where(
+                exportedType => exportedType.IsClass && exportedType.GetCustomAttribute<DependencyAttribute>() != null));
             Console.WriteLine($"Located {locatedDependencyTypes.Count()} dependency types.");
             //Load those classes into the dependency list
             foreach (Type dependencyType in locatedDependencyTypes)
             {
                 //Get the interface types
                 Type[] interfaces = dependencyType.GetInterfaces();
-                //Check if the dependency is default
-                DependencyAttribute dependencyAttribute = dependencyType.GetCustomAttribute<DependencyAttribute>();
+                //Locate the attribute and get the reflection object
+                //MASSIVE REFLECTION HACK: THERES A BUG IN REFLECTION WITH LOADED ASSEMBLIES
+                DependencyAttribute locatedAttribute = dependencyType.GetCustomAttribute<DependencyAttribute>();
+                int priority = locatedAttribute.priority;
                 //Load the dependency into the dependency list
                 foreach (Type targetInterface in interfaces)
                 {
@@ -58,11 +58,11 @@ namespace CorgEng.DependencyInjection.Injection
                     }
                     //Insert into the dependency list
                     //Check priority
-                    if (targetDependencyList.ImplementedDependency == null || targetDependencyList.CurrentPriority < dependencyAttribute.priority)
+                    if (targetDependencyList.ImplementedDependency == null || targetDependencyList.CurrentPriority < priority)
                     {
                         //Instantiate the type
                         object instantiatedDependency = Activator.CreateInstance(dependencyType);
-                        targetDependencyList.CurrentPriority = dependencyAttribute.priority;
+                        targetDependencyList.CurrentPriority = priority;
                         targetDependencyList.ImplementedDependency = instantiatedDependency;
                     }
                 }

@@ -21,6 +21,7 @@ namespace GJ2022.DmiIconConversionUtility
             CorgEngMain.Initialize(true);
 
             Application.EnableVisualStyles();
+            Application.SetHighDpiMode(HighDpiMode.SystemAware);
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new Form1());
         }

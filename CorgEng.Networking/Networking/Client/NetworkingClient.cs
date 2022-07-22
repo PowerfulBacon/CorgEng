@@ -181,6 +181,7 @@ namespace CorgEng.Networking.Networking.Client
                             });
                             //Start the networking thread
                             running = true;
+                            shutdownCountdown.Reset();
                             Thread networkingThread = new Thread(() => NetworkListenerThread(udpClient));
                             networkingThread.Name = $"Client Listener thread ({address}:{port})";
                             networkingThread.Start();
@@ -190,7 +191,6 @@ namespace CorgEng.Networking.Networking.Client
                             senderThread.Start();
                             //Started
                             started = true;
-                            shutdownCountdown.Reset();
                             //Log message
                             Logger?.WriteLine($"UDPClient connection established, sending connection request to server...", LogType.MESSAGE);
                             //Create connection packet
@@ -302,7 +302,7 @@ namespace CorgEng.Networking.Networking.Client
                     Logger?.WriteLine(e, LogType.ERROR);
                 }
             }
-            //Disconnected
+            //Disconnected.
             Logger?.WriteLine("Disconnected from remote server.", LogType.WARNING);
             shutdownCountdown.Signal();
         }
@@ -358,10 +358,6 @@ namespace CorgEng.Networking.Networking.Client
                         NetworkConfig.ProcessClientSystems = true;
                         //Trigger the connection success event
                         OnConnectionSuccess?.Invoke(address);
-                        //Start the network transmission thread
-                        Thread networkTransmissionThread = new Thread(() => NetworkSenderThread(udpClient));
-                        networkTransmissionThread.Name = $"Client transmission to {sender.Address}";
-                        networkTransmissionThread.Start();
                         Logger?.WriteLine($"Successfully connected to server {address}:{port}", LogType.MESSAGE);
                         return;
                     case PacketHeaders.CONNECTION_REJECT:

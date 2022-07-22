@@ -2,9 +2,7 @@
 using CorgEng.Core.Modules;
 using CorgEng.Core.Rendering;
 using CorgEng.Core.Rendering.Exceptions;
-using CorgEng.GenericInterfaces.InputHandler;
 using CorgEng.GenericInterfaces.Logging;
-using CorgEng.GenericInterfaces.Networking.Config;
 using CorgEng.GenericInterfaces.Rendering;
 using GLFW;
 using System;
@@ -12,6 +10,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.Loader;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 
@@ -203,7 +202,7 @@ namespace CorgEng.Core
                             if (Assembly.GetEntryAssembly() != null)
                                 loadedAssemblies.Add(Assembly.GetEntryAssembly());
                             //Unit test support.
-                            else if (Assembly.GetCallingAssembly() != null)
+                            if (Assembly.GetCallingAssembly() != null && Assembly.GetCallingAssembly() != Assembly.GetEntryAssembly())
                                 loadedAssemblies.Add(Assembly.GetCallingAssembly());
                             if(Assembly.GetExecutingAssembly() != null)
                                 loadedAssemblies.Add(Assembly.GetExecutingAssembly());
@@ -211,7 +210,8 @@ namespace CorgEng.Core
                             {
                                 try
                                 {
-                                    Assembly loadedModule = Assembly.LoadFile($"{Path.GetFullPath(dependency.Value)}.dll");
+                                    Assembly loadedModule = AssemblyLoadContext.Default.LoadFromAssemblyPath($"{Path.GetFullPath(dependency.Value)}.dll");
+                                    //Assembly loadedModule = Assembly.LoadFile($"{Path.GetFullPath(dependency.Value)}.dll");
                                     loadedAssemblies.Add(loadedModule);
                                 }
                                 catch (FileNotFoundException)
