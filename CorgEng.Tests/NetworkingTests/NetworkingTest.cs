@@ -25,6 +25,7 @@ using System.Threading.Tasks;
 namespace CorgEng.Tests.NetworkingTests
 {
     [TestClass]
+    [DoNotParallelize]
     public class NetworkingTest
     {
 
@@ -40,19 +41,30 @@ namespace CorgEng.Tests.NetworkingTests
         [UsingDependency]
         private static ILogger Logger;
 
+        private static bool TestRunning = false;
+
         [TestCleanup]
         public void AfterTest()
         {
             Server.Cleanup();
             Client.Cleanup();
             Logger?.WriteLine("TEST COMPLETED", LogType.DEBUG);
+            TestRunning = false;
+        }
+
+        [TestInitialize]
+        public void SetupServer()
+        {
+            Server.GetType().GetMethod("LoadDefaultPrototype").Invoke(Server, new object[0]);
         }
 
         [TestMethod]
-        [DoNotParallelize]
-        [Timeout(3000)]
+        //[Timeout(3000)]
         public void TestNetworkConnection()
         {
+            if (TestRunning)
+                Assert.Fail("Attempted to test while testing.");
+            TestRunning = true;
             bool success = false;
             Server.StartHosting(5000);
             Client.OnConnectionSuccess += (IPAddress ipAddress) => { success = true;  };
@@ -65,10 +77,12 @@ namespace CorgEng.Tests.NetworkingTests
         }
 
         [TestMethod]
-        [DoNotParallelize]
         [Timeout(3000)]
         public void TestSendingToServer()
         {
+            if (TestRunning)
+                Assert.Fail("Attempted to test while testing.");
+            TestRunning = true;
             bool connected = false;
             bool success = false;
             Server.StartHosting(5001);
@@ -103,10 +117,12 @@ namespace CorgEng.Tests.NetworkingTests
         }
 
         [TestMethod]
-        [DoNotParallelize]
         [Timeout(3000)]
         public void TestSendingToClient()
         {
+            if (TestRunning)
+                Assert.Fail("Attempted to test while testing.");
+            TestRunning = true;
             bool connected = false;
             bool success = false;
             Server.StartHosting(5002);
@@ -139,16 +155,20 @@ namespace CorgEng.Tests.NetworkingTests
         }
 
         [TestMethod]
-        [DoNotParallelize]
         public void TestClientKick()
         {
+            if (TestRunning)
+                Assert.Fail("Attempted to test while testing.");
+            TestRunning = true;
             Assert.Inconclusive("Test isn't implemented");
         }
 
         [TestMethod]
-        [DoNotParallelize]
         public void TestBanning()
         {
+            if (TestRunning)
+                Assert.Fail("Attempted to test while testing.");
+            TestRunning = true;
             Assert.Inconclusive("Test isn't implemented");
         }
 
@@ -211,10 +231,12 @@ namespace CorgEng.Tests.NetworkingTests
         /// events will be duplicated. We need to make sure we recieve 2 events.
         /// </summary>
         [TestMethod]
-        [DoNotParallelize]
-        [Timeout(3000)]
+        //[Timeout(3000)]
         public void TestGlobalNetworkedEvent()
         {
+            if (TestRunning)
+                Assert.Fail("Attempted to test while testing.");
+            TestRunning = true;
             //Set up a test entity system
             NetworkedTestEntitySystem networkedTestEntitySystem = new NetworkedTestEntitySystem();
             networkedTestEntitySystem.SystemSetup();
