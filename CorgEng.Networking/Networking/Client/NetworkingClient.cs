@@ -302,7 +302,7 @@ namespace CorgEng.Networking.Networking.Client
                     Logger?.WriteLine(e, LogType.ERROR);
                 }
             }
-            //Disconnected
+            //Disconnected.
             Logger?.WriteLine("Disconnected from remote server.", LogType.WARNING);
             shutdownCountdown.Signal();
         }
