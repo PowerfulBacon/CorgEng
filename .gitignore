@@ -18,7 +18,6 @@ mono_crash.*
 
 # Backup files
 *.backup
-*.clef
 
 # Build results
 [Dd]ebug/
