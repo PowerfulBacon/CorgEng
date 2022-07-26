@@ -10,8 +10,17 @@ using System.Threading.Tasks;
 
 namespace CorgEng.GenericInterfaces.UserInterface.Rendering.Renderer
 {
-    public interface IUserInterfaceRenderer : ISpriteRenderer
+    public interface IUserInterfaceRenderer<T>
+        where T : IUserInterfaceRenderObject
     {
+
+        void StartRendering(T spriteRenderObject);
+
+        void StopRendering(T spriteRenderObject);
+
+        void Initialize();
+
+        void Render(int pixelWidth, int pixelHeight);
 
     }
 }

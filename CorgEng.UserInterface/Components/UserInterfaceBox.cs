@@ -1,0 +1,67 @@
+﻿using CorgEng.Core.Dependencies;
+using CorgEng.GenericInterfaces.Logging;
+using CorgEng.GenericInterfaces.UserInterface.Anchors;
+using CorgEng.GenericInterfaces.UserInterface.Components;
+using CorgEng.GenericInterfaces.UtilityTypes;
+using CorgEng.UserInterface.Rendering.UserinterfaceRenderer.Box;
+using CorgEng.UtilityTypes.Colours;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace CorgEng.UserInterface.Components
+{
+    internal class UserInterfaceBox : UserInterfaceComponent
+    {
+
+        private float borderWidth = 5;
+
+        private IColour borderColour = new Colour(1, 1, 1);
+
+        private IColour fillColour = new Colour(0, 0, 0);
+
+        public UserInterfaceBox(IUserInterfaceComponent parent, IAnchor anchorDetails, IDictionary<string, string> arguments) : base(parent, anchorDetails)
+        {
+            Setup(arguments);
+        }
+
+        public UserInterfaceBox(IAnchor anchorDetails, IDictionary<string, string> arguments) : base(anchorDetails)
+        {
+            Setup(arguments);
+        }
+
+        private void Setup(IDictionary<string, string> arguments)
+        {
+            string output;
+            if (arguments.TryGetValue("borderWidth", out output))
+                borderWidth = float.Parse(output);
+            if (arguments.TryGetValue("borderColour", out output))
+                borderColour = Colour.Parse(output);
+            if (arguments.TryGetValue("fillColour", out output))
+                fillColour = Colour.Parse(output);
+            //Render a box
+            UserInterfaceBoxRenderObject boxRenderObject = new UserInterfaceBoxRenderObject()
+            {
+                BorderWidth = borderWidth,
+                BorderColour = borderColour,
+                FillColour = fillColour,
+            };
+            userInterfaceBoxRenderer.StartRendering(boxRenderObject);
+        }
+
+        private UserInterfaceBoxRenderer userInterfaceBoxRenderer;
+
+        public override void Initialize()
+        {
+            userInterfaceBoxRenderer = new UserInterfaceBoxRenderer();
+            userInterfaceBoxRenderer.Initialize();
+        }
+
+        public override void PerformRender()
+        {
+            userInterfaceBoxRenderer.Render(Width, Height);
+        }
+    }
+}

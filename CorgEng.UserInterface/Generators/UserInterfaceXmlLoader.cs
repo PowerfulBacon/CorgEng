@@ -48,16 +48,19 @@ namespace CorgEng.UserInterface.Generators
         private IUserInterfaceComponent LoadFromXmlComponent(XElement node, IUserInterfaceComponent parent = null)
         {
             //Load specific information from the config
-
+            IDictionary<string, string> parameters = new Dictionary<string, string>();
+            parameters = node.Attributes().ToDictionary(attribute => attribute.Name.LocalName, attribute => attribute.Value);
             //Create a generic user interface component
-            IUserInterfaceComponent currentElement = UserInterfaceComponentFactory.CreateGenericUserInterfaceComponent(
+            IUserInterfaceComponent currentElement = UserInterfaceComponentFactory.CreateUserInterfaceComponent(
+                node.Name.LocalName,
                 parent,
                 AnchorFactory.CreateAnchor(
                     GetAnchorDetails(node, AnchorDirections.LEFT),
                     GetAnchorDetails(node, AnchorDirections.RIGHT),
                     GetAnchorDetails(node, AnchorDirections.TOP),
                     GetAnchorDetails(node, AnchorDirections.BOTTOM)
-                )
+                ),
+                parameters
                 );
             //Parse children
             foreach (XElement childElement in node.Elements())

@@ -62,6 +62,8 @@ namespace CorgEng.Core.Rendering
 
         public unsafe RenderCore()
         {
+            if (!CorgEngMain.IsRendering)
+                return;
             //Generate a frame buffer
             FrameBufferUint = glGenFramebuffer();
             glBindFramebuffer(GL_FRAMEBUFFER, FrameBufferUint);
@@ -155,6 +157,10 @@ namespace CorgEng.Core.Rendering
             //Set the new width
             Width = width;
             Height = height;
+            //Log
+            Logger?.WriteLine($"Render core resized to {Width}x{Height}", LogType.DEBUG);
+            if (!CorgEngMain.IsRendering)
+                return;
             //Update the tex image
             //Bind the created texture so we can modify it
             glBindTexture(GL_TEXTURE_2D, RenderTextureUint);
@@ -163,8 +169,6 @@ namespace CorgEng.Core.Rendering
             //Set the texture parameters
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-            //Log
-            Logger?.WriteLine($"Render core resized to {Width}x{Height}", LogType.DEBUG);
         }
 
         public unsafe void DrawToBuffer(uint buffer, int drawX, int drawY, int bufferWidth, int bufferHeight)

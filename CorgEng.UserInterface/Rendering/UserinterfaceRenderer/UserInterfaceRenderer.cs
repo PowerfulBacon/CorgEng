@@ -1,5 +1,8 @@
-﻿using CorgEng.Core.Dependencies;
+﻿using CorgEng.Constants;
+using CorgEng.Core.Dependencies;
 using CorgEng.GenericInterfaces.Rendering;
+using CorgEng.GenericInterfaces.Rendering.Models;
+using CorgEng.GenericInterfaces.Rendering.Renderers;
 using CorgEng.GenericInterfaces.Rendering.RenderObjects.SpriteRendering;
 using CorgEng.GenericInterfaces.Rendering.Shaders;
 using CorgEng.GenericInterfaces.Rendering.SharedRenderAttributes;
@@ -11,6 +14,7 @@ using CorgEng.Rendering;
 using CorgEng.Rendering.Exceptions;
 using CorgEng.UtilityTypes.Batches;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,67 +23,140 @@ using static OpenGL.Gl;
 
 namespace CorgEng.UserInterface.Rendering.UserinterfaceRenderer
 {
-    internal sealed class UserInterfaceRenderer : InstancedRenderer<ISpriteSharedRenderAttributes, UserInterfaceBatch>, IUserInterfaceRenderer
+
+    internal static class UserInterfaceRendererDependencyHolder
     {
 
         [UsingDependency]
-        private static IShaderFactory ShaderFactory;
+        internal static IShaderFactory ShaderFactory;
 
-        private IShaderSet _shaderSet;
-        protected override IShaderSet ShaderSet => _shaderSet;
+        [UsingDependency]
+        internal static ISquareModelFactory SquareModelFactory;
 
-        internal UserInterfaceRenderer(uint networkedIdentifier) : base(networkedIdentifier) { }
+    }
 
-        protected override void CreateShaders()
+
+    /// <summary>
+    /// A basic interface renderer.
+    /// Due to the nature of user interface components, each one
+    /// will have a lot of different variables that need to be taken into account
+    /// when rendering.
+    /// As such, we will not use instancing but will just load standard uniform
+    /// variables for rendering.
+    /// </summary>
+    internal abstract class UserInterfaceRenderer<IRenderObjectType> : IUserInterfaceRenderer<IRenderObjectType>
+        where IRenderObjectType : IUserInterfaceRenderObject
+    {
+
+        protected static ISquareModelFactory SquareModelFactory
         {
-            _shaderSet = ShaderFactory.CreateShaderSet("UserInterfaceShader");
+            get => UserInterfaceRendererDependencyHolder.SquareModelFactory;
         }
 
-        public void StartRendering(ISpriteRenderObject spriteRenderObject)
-        {
-            //Check for duplicate render exceptions
-            if (spriteRenderObject.GetBelongingBatchElement<UserInterfaceBatch>() != null)
-                throw new DuplicateRenderException("Attempting to render a sprite object already being rendered.");
-            //Create a new batch element for this
-            IBatchElement<UserInterfaceBatch> batchElement = new BatchElement<UserInterfaceBatch>(new IBindableProperty<IVector<float>>[] {
-                spriteRenderObject.TransformFirstRow,
-                spriteRenderObject.TransformSecondRow,
-                spriteRenderObject.TextureDetails
-            });
-            //Remember the batch element we are stored in, so it can be saved
-            spriteRenderObject.SetBelongingBatchElement(batchElement);
-            //Add to rendering cache
-            AddToBatch(spriteRenderObject.GetSharedRenderAttributes(), batchElement);
+        protected static IShaderFactory ShaderFactory {
+            get => UserInterfaceRendererDependencyHolder.ShaderFactory;
         }
 
-        public void StopRendering(ISpriteRenderObject spriteRenderObject)
+        //Only render UI components locally
+        public uint NetworkIdentifier => NetworkedRenderingConstants.NETWORK_RENDERING_ID_LOCAL;
+
+        //The things we are rendering
+        private ConcurrentDictionary<IRenderObjectType, bool> renderSet = new ConcurrentDictionary<IRenderObjectType, bool>();
+
+        //The uint for the render program
+        protected uint programUint;
+
+        //The shaders that this renderer use
+        protected abstract IShaderSet ShaderSet { get; }
+
+        //The model
+        private IModel model;
+
+        private int UniformLocationPixelWidth;
+
+        private int UniformLocationPixelHeight;
+
+        public void Initialize()
         {
-            //Remove references to the on change event
-            spriteRenderObject.GetBelongingBatchElement<UserInterfaceBatch>().Unbind();
-            //Remove the batch element
-            RemoveFromBatch(spriteRenderObject.GetSharedRenderAttributes(), spriteRenderObject.GetBelongingBatchElement<UserInterfaceBatch>());
-            spriteRenderObject.SetBelongingBatchElement<UserInterfaceBatch>(null);
+            //Create the model
+            model = SquareModelFactory.CreateModel();
+            //Create a program for the renderer
+            programUint = glCreateProgram();
+            //Setup the program and start using it
+            glUseProgram(programUint);
+            //Attach the shader set to the prorgam
+            ShaderSet.AttachShaders(programUint);
+            //Link the program
+            glLinkProgram(programUint);
+            //Fetch uniform variable locations
+            FetchUniformVariableLocations();
+            //Bind this
+            UniformLocationPixelWidth = glGetUniformLocation(programUint, "pixelWidth");
+            UniformLocationPixelHeight = glGetUniformLocation(programUint, "pixelHeight");
         }
 
-        private int textureSamplerUniformLocation;
+        protected abstract void FetchUniformVariableLocations();
 
-        protected override void LoadUniformVariableLocations()
+        protected abstract void BindUniformLocations(IRenderObjectType renderObject);
+
+        /// <summary>
+        /// Extrememly basic render that individually binds every objects uniform variables before rendering it.
+        /// Assumes that there will never be a large amount being rendered on this.
+        /// </summary>
+        /// <param name="camera"></param>
+        public void Render(int pixelWidth, int pixelHeight)
         {
-            base.LoadUniformVariableLocations();
-            textureSamplerUniformLocation = glGetUniformLocation(programUint, "renderTexture");
+            //Start using our program
+            //Shaders were loaded during init
+            glUseProgram(programUint);
+            //Bind the model
+            BindAttribArray(0, model.VertexBuffer, 3);
+            BindAttribArray(1, model.UvBuffer, 2);
+            //Set the attrib divisors
+            glVertexAttribDivisor(0, 0);
+            glVertexAttribDivisor(1, 0);
+
+            glUniform1i(UniformLocationPixelWidth, pixelWidth);
+            glUniform1i(UniformLocationPixelHeight, pixelHeight);
+
+            foreach (IRenderObjectType renderObjectType in renderSet.Keys)
+            {
+                //Bind uniform locations
+                BindUniformLocations(renderObjectType);
+                //Do the actual render
+                glDrawArrays(GL_TRIANGLES, 0, model.VertexCount);
+            }
+
+            //Disable vertex arrays
+            glDisableVertexAttribArray(0);
+            glDisableVertexAttribArray(1);
         }
 
-        protected override void BindUniformVariables(ICamera camera)
+        public void StartRendering(IRenderObjectType userInterfaceRenderObject)
         {
-            base.BindUniformVariables(camera);
-            glUniform1i(textureSamplerUniformLocation, 0);
+            renderSet.TryAdd(userInterfaceRenderObject, true);
         }
 
-        protected override void BindBatchTexture(ISpriteSharedRenderAttributes batchAttributes)
+        public void StopRendering(IRenderObjectType userInterfaceRenderObject)
         {
-            //Bind the texture
-            glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, batchAttributes.SpriteTextureUint);
+            renderSet.Remove(userInterfaceRenderObject, out _);
+        }
+
+        /// <summary>
+        /// Binds the atrib array at index provided, with the buffer data provided.
+        /// </summary>
+        protected unsafe void BindAttribArray(uint index, uint buffer, int size)
+        {
+            glEnableVertexAttribArray(index);
+            glBindBuffer(GL_ARRAY_BUFFER, buffer);
+            glVertexAttribPointer(
+                index,              //Attribute - Where the layout location is in the vertex shader
+                size,               //Size of the triangles (3 sides)
+                GL_FLOAT,           //Type (Floats)
+                false,              //Normalized (nope)
+                0,                  //Stride (0)
+                NULL                //Array buffer offset (null)
+            );
         }
 
     }

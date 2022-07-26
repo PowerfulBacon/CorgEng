@@ -8,11 +8,11 @@ using System.Threading.Tasks;
 
 namespace CorgEng.Tests.Stubs
 {
-    internal class IRenderCoreStubFactory : IUserInterfaceRenderCoreFactory
+    /*internal class IRenderCoreStubFactory : IUserInterfaceRenderCoreFactory
     {
         public IRenderCore Create()
         {
             return new RenderCoreStub();
         }
-    }
+    }*/
 }

@@ -14,23 +14,13 @@ using System.Threading.Tasks;
 
 namespace CorgEng.UserInterface.Rendering.UserinterfaceRenderer
 {
-    public sealed class UserInterfaceRenderObject : IUserInterfaceRenderObject
+    public class UserInterfaceRenderObject : IUserInterfaceRenderObject
     {
-
-        public IBindableProperty<uint> TextureFile { get; set; }
-
-        public IBindableProperty<float> TextureFileX { get; set; }
-
-        public IBindableProperty<float> TextureFileY { get; set; }
-
-        public IBindableProperty<float> TextureFileWidth { get; set; }
-
-        public IBindableProperty<float> TextureFileHeight { get; set; }
 
         public IBindableProperty<IMatrix> Transform { get; } = new BindableProperty<IMatrix>(new Matrix(new float[,] {
             { 1, 0, 0 },
             { 0, 1, 0 },
-            //This last row is actually ignored
+            //This last row is actually ignored (It's not needed in 2 dimensional applications)
             { 0, 0, 1 }
         }));
 
@@ -42,7 +32,7 @@ namespace CorgEng.UserInterface.Rendering.UserinterfaceRenderer
 
         public IEntityDef TypeDef { get; set; }
 
-        public UserInterfaceRenderObject(uint textureUint, float textureX, float textureY, float textureWidth, float textureHeight)
+        public UserInterfaceRenderObject()
         {
             //When the vector changes, trigger change on the bindable property.
             Transform.Value.OnChange += (object src, EventArgs arg) => {
@@ -56,30 +46,21 @@ namespace CorgEng.UserInterface.Rendering.UserinterfaceRenderer
                 TransformSecondRow.Value.Z = Transform.Value[3, 2];
                 TransformSecondRow.TriggerChanged();
             };
-            //Set the bindable properties
-            TextureFile = new BindableProperty<uint>(textureUint);
-            TextureFileX = new BindableProperty<float>(textureX);
-            TextureFileY = new BindableProperty<float>(textureY);
-            TextureFileWidth = new BindableProperty<float>(textureWidth);
-            TextureFileHeight = new BindableProperty<float>(textureHeight);
-            TextureDetails = new BindablePropertyGroup(TextureFileX, TextureFileY, TextureFileWidth, TextureFileHeight);
         }
-
-        private object batchContained;
 
         public IBatchElement<BatchType> GetBelongingBatchElement<BatchType>() where BatchType : IBatch<BatchType>
         {
-            return (IBatchElement<BatchType>)batchContained;
+            throw new NotImplementedException("User interface objects do not use batches: They are not instanced.");
         }
 
         public void SetBelongingBatchElement<BatchType>(IBatchElement<BatchType> heldBatch) where BatchType : IBatch<BatchType>
         {
-            batchContained = heldBatch;
+            throw new NotImplementedException("User interface objects do not use batches: They are not instanced.");
         }
 
         public ISharedRenderAttributes GetSharedRenderAttributes()
         {
-            return new UserInterfaceSharedRenderAttributes(TextureFile.Value);
+            throw new NotImplementedException("User interface objects do not use shared render attributes: They are not instanced.");
         }
 
         public void PreInitialize(IVector<float> initializePosition)

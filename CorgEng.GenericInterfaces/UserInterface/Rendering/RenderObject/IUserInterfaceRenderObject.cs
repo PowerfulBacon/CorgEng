@@ -9,6 +9,6 @@ using System.Threading.Tasks;
 
 namespace CorgEng.GenericInterfaces.UserInterface.Rendering.RenderObject
 {
-    public interface IUserInterfaceRenderObject : ISpriteRenderObject
+    public interface IUserInterfaceRenderObject : IRenderObject
     { }
 }
