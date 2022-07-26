@@ -2,7 +2,9 @@
 using CorgEng.GenericInterfaces.Logging;
 using CorgEng.GenericInterfaces.UserInterface.Anchors;
 using CorgEng.GenericInterfaces.UserInterface.Components;
+using CorgEng.GenericInterfaces.UtilityTypes;
 using CorgEng.UserInterface.Rendering.UserinterfaceRenderer.Box;
+using CorgEng.UtilityTypes.Colours;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,12 +16,39 @@ namespace CorgEng.UserInterface.Components
     internal class UserInterfaceBox : UserInterfaceComponent
     {
 
-        public UserInterfaceBox(IUserInterfaceComponent parent, IAnchor anchorDetails) : base(parent, anchorDetails)
+        private float borderWidth = 5;
+
+        private IColour borderColour = new Colour(1, 1, 1);
+
+        private IColour fillColour = new Colour(0, 0, 0);
+
+        public UserInterfaceBox(IUserInterfaceComponent parent, IAnchor anchorDetails, IDictionary<string, string> arguments) : base(parent, anchorDetails)
         {
+            Setup(arguments);
         }
 
-        public UserInterfaceBox(IAnchor anchorDetails) : base(anchorDetails)
+        public UserInterfaceBox(IAnchor anchorDetails, IDictionary<string, string> arguments) : base(anchorDetails)
         {
+            Setup(arguments);
+        }
+
+        private void Setup(IDictionary<string, string> arguments)
+        {
+            string output;
+            if (arguments.TryGetValue("borderWidth", out output))
+                borderWidth = float.Parse(output);
+            if (arguments.TryGetValue("borderColour", out output))
+                borderColour = Colour.Parse(output);
+            if (arguments.TryGetValue("fillColour", out output))
+                fillColour = Colour.Parse(output);
+            //Render a box
+            UserInterfaceBoxRenderObject boxRenderObject = new UserInterfaceBoxRenderObject()
+            {
+                BorderWidth = borderWidth,
+                BorderColour = borderColour,
+                FillColour = fillColour,
+            };
+            userInterfaceBoxRenderer.StartRendering(boxRenderObject);
         }
 
         private UserInterfaceBoxRenderer userInterfaceBoxRenderer;
@@ -28,9 +57,6 @@ namespace CorgEng.UserInterface.Components
         {
             userInterfaceBoxRenderer = new UserInterfaceBoxRenderer();
             userInterfaceBoxRenderer.Initialize();
-            //Render a box
-            UserInterfaceBoxRenderObject boxRenderObject = new UserInterfaceBoxRenderObject();
-            userInterfaceBoxRenderer.StartRendering(boxRenderObject);
         }
 
         public override void PerformRender()

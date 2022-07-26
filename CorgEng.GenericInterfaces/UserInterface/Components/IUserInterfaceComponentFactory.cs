@@ -34,7 +34,7 @@ namespace CorgEng.GenericInterfaces.UserInterface.Components
         /// <param name="anchorDetails"></param>
         /// <param name="arguments"></param>
         /// <returns></returns>
-        IUserInterfaceComponent CreateUserInterfaceComponent(string componentType, IUserInterfaceComponent parent, IAnchor anchorDetails, params KeyValuePair<string, string>[] arguments);
+        IUserInterfaceComponent CreateUserInterfaceComponent(string componentType, IUserInterfaceComponent parent, IAnchor anchorDetails, IDictionary<string, string> arguments);
 
         /// <summary>
         /// 
@@ -43,7 +43,7 @@ namespace CorgEng.GenericInterfaces.UserInterface.Components
         /// <param name="anchorDetails"></param>
         /// <param name="arguments"></param>
         /// <returns></returns>
-        IUserInterfaceComponent CreateUserInterfaceComponent(string componentType, IAnchor anchorDetails, params KeyValuePair<string, string>[] arguments);
+        IUserInterfaceComponent CreateUserInterfaceComponent(string componentType, IAnchor anchorDetails, IDictionary<string, string> arguments);
 
     }
 }

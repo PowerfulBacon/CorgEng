@@ -23,12 +23,12 @@ namespace CorgEng.UserInterface.Components
             return new UserInterfaceComponent(anchorDetails);
         }
 
-        public IUserInterfaceComponent CreateUserInterfaceComponent(string componentType, IUserInterfaceComponent parent, IAnchor anchorDetails, params KeyValuePair<string, string>[] arguments)
+        public IUserInterfaceComponent CreateUserInterfaceComponent(string componentType, IUserInterfaceComponent parent, IAnchor anchorDetails, IDictionary<string, string> arguments)
         {
             switch (componentType)
             {
                 case "BoxComponent":
-                    return new UserInterfaceBox(parent, anchorDetails);
+                    return new UserInterfaceBox(parent, anchorDetails, arguments);
                 case "UserInterface":
                 case "UserInterfaceComponent":
                     return new UserInterfaceComponent(parent, anchorDetails);
@@ -37,7 +37,7 @@ namespace CorgEng.UserInterface.Components
             }
         }
 
-        public IUserInterfaceComponent CreateUserInterfaceComponent(string componentType, IAnchor anchorDetails, params KeyValuePair<string, string>[] arguments)
+        public IUserInterfaceComponent CreateUserInterfaceComponent(string componentType, IAnchor anchorDetails, IDictionary<string, string> arguments)
         {
             throw new NotImplementedException();
         }
