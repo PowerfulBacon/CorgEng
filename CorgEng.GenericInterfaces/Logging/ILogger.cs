@@ -3,7 +3,7 @@
     public interface ILogger
     {
 
-        void WriteLine(object message, LogType logType = LogType.MESSAGE);
+        void WriteLine(object message, LogType logType = LogType.TEMP);
 
     }
 }

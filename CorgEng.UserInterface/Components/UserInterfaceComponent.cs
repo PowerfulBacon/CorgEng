@@ -1,4 +1,5 @@
-﻿using CorgEng.Core;
+﻿using CorgEng.Constants;
+using CorgEng.Core;
 using CorgEng.Core.Dependencies;
 using CorgEng.Core.Rendering;
 using CorgEng.GenericInterfaces.Core;
@@ -6,6 +7,7 @@ using CorgEng.GenericInterfaces.Logging;
 using CorgEng.GenericInterfaces.UserInterface.Anchors;
 using CorgEng.GenericInterfaces.UserInterface.Components;
 using CorgEng.GenericInterfaces.UserInterface.Rendering;
+using CorgEng.GenericInterfaces.UserInterface.Rendering.Renderer;
 using CorgEng.UserInterface.Rendering;
 using System;
 using System.Collections.Generic;
@@ -15,7 +17,7 @@ using System.Threading.Tasks;
 
 namespace CorgEng.UserInterface.Components
 {
-    internal class UserInterfaceComponent : IUserInterfaceComponent
+    internal class UserInterfaceComponent : RenderCore, IUserInterfaceComponent
     {
 
         private static int IdCounter = 0;
@@ -23,27 +25,61 @@ namespace CorgEng.UserInterface.Components
         [UsingDependency]
         private static ILogger Logger;
 
-        [UsingDependency]
-        private static IUserInterfaceRenderCoreFactory UserInterfaceRenderCoreFactory;
-
+        /// <summary>
+        /// The anchor details for this component
+        /// </summary>
         public IAnchor Anchor { get; }
 
+        /// <summary>
+        /// The parent component for this user interface component
+        /// </summary>
         public IUserInterfaceComponent Parent { get; }
 
+        /// <summary>
+        /// Is this component fullscreen?
+        /// If so, it will stretch its width and height to match the screen's width and height.
+        /// Only valid for root components.
+        /// </summary>
         public bool Fullscreen { get; set; } = false;
 
+        /// <summary>
+        /// The width of this component in pixels.
+        /// </summary>
         public double PixelWidth { get; private set; }
 
+        /// <summary>
+        /// The height of this component in pixels.
+        /// </summary>
         public double PixelHeight { get; private set; }
 
+        /// <summary>
+        /// The minimum width this component can be.
+        /// </summary>
         public double MinimumPixelWidth { get; private set; }
 
+        /// <summary>
+        /// The minimum height this component can be.
+        /// </summary>
         public double MinimumPixelHeight { get; private set; }
 
+        /// <summary>
+        /// The left offset from the parent
+        /// </summary>
+        public double LeftOffset { get; private set; }
+
+        /// <summary>
+        /// The bottom offset from the parent
+        /// </summary>
+        public double BottomOffset { get; private set; }
+
+        /// <summary>
+        /// A list of all of the user interface components contained within outself
+        /// </summary>
         private List<IUserInterfaceComponent> Children { get; } = new List<IUserInterfaceComponent>();
 
-        private IRenderCore RenderCore { get; } = UserInterfaceRenderCoreFactory?.Create();
-
+        /// <summary>
+        /// A unique identifier for this component.
+        /// </summary>
         private int uniqueId = IdCounter++;
 
         public UserInterfaceComponent(IUserInterfaceComponent parent, IAnchor anchorDetails) : this(anchorDetails)
@@ -77,8 +113,12 @@ namespace CorgEng.UserInterface.Components
             //Calculate minimum scales
             CalculateMinimumScales();
             //Render core init
-            RenderCore.Initialize();
+            Initialize();
         }
+
+        //====================================
+        // Component Rendering Interfaces
+        //====================================
 
         private void Render(UserInterfaceComponent parent, UserInterfaceComponent userInterfaceComponent, uint buffer)
         {
@@ -88,18 +128,17 @@ namespace CorgEng.UserInterface.Components
                 userInterfaceComponent.SetWidth(CorgEngMain.MainRenderCore.Width, CorgEngMain.MainRenderCore.Height);
             }
             //Switch to the correct render core and draw it to the framebuffer
-            userInterfaceComponent.RenderCore.DoRender();
-            //userInterfaceComponent.RenderCore.DrawToBuffer(buffer, 0, 0, parent?.RenderCore?.Width ?? CorgEngMain.MainRenderCore.Width, parent?.RenderCore?.Height ?? CorgEngMain.MainRenderCore.Height);
+            userInterfaceComponent.DoRender();
             //Draw children
             foreach (IUserInterfaceComponent childComponent in userInterfaceComponent.GetChildren())
             {
                 //Render the child component to our buffer
-                Render(this, childComponent as UserInterfaceComponent, userInterfaceComponent.RenderCore.FrameBufferUint);
+                Render(this, childComponent as UserInterfaceComponent, userInterfaceComponent.FrameBufferUint);
             }
-            userInterfaceComponent.RenderCore.DrawToBuffer(
+            userInterfaceComponent.DrawToBuffer(
                 buffer,
-                0,
-                0,
+                (int)userInterfaceComponent.LeftOffset,
+                (int)userInterfaceComponent.BottomOffset,
                 (int)userInterfaceComponent.PixelWidth,
                 (int)userInterfaceComponent.PixelHeight
             );
@@ -109,6 +148,10 @@ namespace CorgEng.UserInterface.Components
         {
             Render(null, this, frameBuffer);
         }
+
+        //====================================
+        // Component Handling
+        //====================================
 
         public void AddChild(IUserInterfaceComponent userInterfaceComponent)
         {
@@ -165,20 +208,19 @@ namespace CorgEng.UserInterface.Components
             double desiredWidth;
             double desiredHeight;
             //Calculate our left position relative to the left
-            double leftSideOffset;
             if (Anchor.LeftDetails.AnchorUnits == AnchorUnits.PERCENTAGE)
             {
                 if (Anchor.LeftDetails.AnchorSide == AnchorDirections.LEFT)
-                    leftSideOffset = Anchor.LeftDetails.AnchorOffset * (Parent.PixelWidth / 100.0);
+                    LeftOffset = Anchor.LeftDetails.AnchorOffset * (Parent.PixelWidth / 100.0);
                 else
-                    leftSideOffset = (100.0 - Anchor.LeftDetails.AnchorOffset) * (Parent.PixelWidth / 100.0);
+                    LeftOffset = (100.0 - Anchor.LeftDetails.AnchorOffset) * (Parent.PixelWidth / 100.0);
             }
             else
             {
                 if (Anchor.LeftDetails.AnchorSide == AnchorDirections.LEFT)
-                    leftSideOffset = Anchor.LeftDetails.AnchorOffset;
+                    LeftOffset = Anchor.LeftDetails.AnchorOffset;
                 else
-                    leftSideOffset = Parent.PixelWidth - Anchor.LeftDetails.AnchorOffset;
+                    LeftOffset = Parent.PixelWidth - Anchor.LeftDetails.AnchorOffset;
             }
             //Calculate our right position relative to the right
             double rightSideOffset;
@@ -197,20 +239,19 @@ namespace CorgEng.UserInterface.Components
                     rightSideOffset = Parent.PixelWidth - Anchor.RightDetails.AnchorOffset;
             }
             //Calculate our bottom position relative to the bottom
-            double bottomSideOffset;
             if (Anchor.BottomDetails.AnchorUnits == AnchorUnits.PERCENTAGE)
             {
                 if (Anchor.BottomDetails.AnchorSide == AnchorDirections.BOTTOM)
-                    bottomSideOffset = Anchor.BottomDetails.AnchorOffset * (Parent.PixelHeight / 100.0);
+                    BottomOffset = Anchor.BottomDetails.AnchorOffset * (Parent.PixelHeight / 100.0);
                 else
-                    bottomSideOffset = (100.0 - Anchor.BottomDetails.AnchorOffset) * (Parent.PixelHeight / 100.0);
+                    BottomOffset = (100.0 - Anchor.BottomDetails.AnchorOffset) * (Parent.PixelHeight / 100.0);
             }
             else
             {
                 if (Anchor.BottomDetails.AnchorSide == AnchorDirections.BOTTOM)
-                    bottomSideOffset = Anchor.BottomDetails.AnchorOffset;
+                    BottomOffset = Anchor.BottomDetails.AnchorOffset;
                 else
-                    bottomSideOffset = Parent.PixelHeight - Anchor.BottomDetails.AnchorOffset;
+                    BottomOffset = Parent.PixelHeight - Anchor.BottomDetails.AnchorOffset;
             }
             //Calculate our right position relative to the right
             double topSideOffset;
@@ -229,8 +270,8 @@ namespace CorgEng.UserInterface.Components
                     topSideOffset = Parent.PixelHeight - Anchor.TopDetails.AnchorOffset;
             }
             //The desired width
-            desiredWidth = rightSideOffset - leftSideOffset;
-            desiredHeight = topSideOffset - bottomSideOffset;
+            desiredWidth = rightSideOffset - LeftOffset;
+            desiredHeight = topSideOffset - BottomOffset;
             //Set our new scale
             SetWidth(desiredWidth, desiredHeight);
         }
@@ -300,7 +341,7 @@ namespace CorgEng.UserInterface.Components
             PixelWidth = Math.Max(MinimumPixelWidth, width);
             PixelHeight = Math.Max(MinimumPixelHeight, height);
             //Update our render core size
-            RenderCore?.Resize((int)PixelWidth, (int)PixelHeight);
+            Resize((int)PixelWidth, (int)PixelHeight);
             Logger?.WriteLine($"Reszied UI Element {uniqueId} to {PixelWidth}x{PixelHeight}", LogType.DEBUG);
             //Update child components
             foreach (IUserInterfaceComponent childComponent in Children)
@@ -308,5 +349,11 @@ namespace CorgEng.UserInterface.Components
                 childComponent.OnParentResized();
             }
         }
+
+        public override void Initialize()
+        { }
+
+        public override void PerformRender()
+        { }
     }
 }

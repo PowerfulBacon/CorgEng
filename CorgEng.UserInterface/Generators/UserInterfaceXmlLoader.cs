@@ -50,7 +50,8 @@ namespace CorgEng.UserInterface.Generators
             //Load specific information from the config
 
             //Create a generic user interface component
-            IUserInterfaceComponent currentElement = UserInterfaceComponentFactory.CreateGenericUserInterfaceComponent(
+            IUserInterfaceComponent currentElement = UserInterfaceComponentFactory.CreateUserInterfaceComponent(
+                node.Name.LocalName,
                 parent,
                 AnchorFactory.CreateAnchor(
                     GetAnchorDetails(node, AnchorDirections.LEFT),

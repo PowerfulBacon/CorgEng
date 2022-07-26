@@ -28,7 +28,7 @@ namespace CorgEng.Tests
             //Inject dependencies
             DependencyInjector.LoadDependencyInjection();
             //Replace any openGL dependant dependencies
-            DependencyInjector.OverrideDependency<IUserInterfaceRenderCoreFactory>(new IRenderCoreStubFactory());
+            //DependencyInjector.OverrideDependency<IUserInterfaceRenderCoreFactory>(new IRenderCoreStubFactory());
             DependencyInjector.OverrideDependency<ITextureFactory>(new TextureFactoryStub());
             //Initialize networked IDs
             VersionGenerator.CreateNetworkedIDs();
