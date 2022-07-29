@@ -15,7 +15,7 @@ namespace CorgEng.EntityComponentSystem.Entities
     public class Entity : IEntity
     {
 
-        internal delegate void InternalSignalHandleDelegate(IEntity entity, IEvent signal);
+        internal delegate void InternalSignalHandleDelegate(IEntity entity, IEvent signal, bool synchronous);
 
         [UsingDependency]
         private static ILogger Logger;
@@ -90,7 +90,7 @@ namespace CorgEng.EntityComponentSystem.Entities
         /// Internal method for handling signals.
         /// </summary>
         /// <param name="signal"></param>
-        public void HandleSignal(IEvent signal)
+        public void HandleSignal(IEvent signal, bool synchronous = false)
         {
             //Verify that this signal is being listened for
             if (EventListeners == null)
@@ -102,7 +102,7 @@ namespace CorgEng.EntityComponentSystem.Entities
             //Call the signals
             foreach (InternalSignalHandleDelegate internalSignalHandler in signalHandleDelegates)
             {
-                internalSignalHandler.Invoke(this, signal);
+                internalSignalHandler.Invoke(this, signal, synchronous);
             }
         }
 

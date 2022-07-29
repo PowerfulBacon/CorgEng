@@ -242,5 +242,26 @@ namespace CorgEng.Tests.EntityComponentSystem
                 Thread.Sleep(1);
         }
 
+        [TestMethod]
+        [Timeout(1000)]
+        public void TestSynchronousSignalHandling()
+        {
+            Assert.AreEqual(0, handlesReceieved, "INCORRECT TEST CONFIGURATION");
+            Logger?.WriteLine($"Current thread: {Thread.CurrentThread.ManagedThreadId}. TestID: {currentTestId}");
+            //Create a test entity
+            Entity testEntity = new Entity();
+            //Add a test component
+            TestComponent testComponent = new TestComponent();
+            testEntity.AddComponent(testComponent);
+            //Test
+            Assert.AreEqual(0, handlesReceieved);
+            //Send a test signal
+            for (int i = 1; i < 100; i++)
+            {
+                new TestEvent().Raise(testEntity, true);
+                Assert.AreEqual(i, handlesReceieved);
+            }
+        }
+
     }
 }

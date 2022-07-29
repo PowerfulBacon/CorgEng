@@ -1,4 +1,5 @@
 ﻿using CorgEng.GenericInterfaces.UtilityTypes;
+using CorgEng.UserInterface.Style;
 using CorgEng.UtilityTypes.Colours;
 using System;
 using System.Collections.Generic;
@@ -11,11 +12,7 @@ namespace CorgEng.UserInterface.Rendering.UserinterfaceRenderer.Box
     internal class UserInterfaceBoxRenderObject : UserInterfaceRenderObject
     {
 
-        public float BorderWidth { get; set; } = 5;
-
-        public IColour BorderColour { get; set; } = new Colour(1, 1, 1);
-
-        public IColour FillColour { get; set; } = new Colour(0, 0, 0);
+        public BoxStyle Style { get; set; } = new BoxStyle();
 
     }
 }

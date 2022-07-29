@@ -19,7 +19,7 @@ namespace CorgEng.GenericInterfaces.EntityComponentSystem
 
         void RemoveComponent(IComponent component, bool networked);
 
-        void HandleSignal(IEvent signal);
+        void HandleSignal(IEvent signal, bool synchronous = false);
 
         /// <summary>
         /// Gets a component of type. This is slow, avoid using it extensively.
