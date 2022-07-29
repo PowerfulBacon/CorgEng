@@ -28,30 +28,32 @@ namespace CorgEng.EntityComponentSystem.Events
         /// <summary>
         /// Raise this event against a specified target
         /// </summary>
-        public static void Raise(this IEvent signal, IEntity target)
+        public static void Raise(this IEvent signal, IEntity target, bool synchronous = false)
         {
             Logger.WriteLine($"Event raised {signal}", LogType.DEBUG_EVERYTHING);
             //Handle the signal
-            target.HandleSignal(signal);
+            target.HandleSignal(signal, synchronous);
         }
 
         /// <summary>
         /// Raise this event and network it
         /// </summary>
-        public static void Raise(this INetworkedEvent signal, IEntity target)
+        public static void Raise(this INetworkedEvent signal, IEntity target, bool synchronous = false)
         {
             Logger.WriteLine($"Networked event raised {signal}", LogType.DEBUG_EVERYTHING);
             //Handle the signal
-            target.HandleSignal(signal);
+            target.HandleSignal(signal, synchronous);
             //Inform the entity that networked event was raised
             //Skip directly to signal handling
             target.HandleSignal(new NetworkedEventRaisedEvent(signal));
         }
 
         /// <summary>
-        /// Raise the event globally
+        /// Raise the event globally.
+        /// Use of synchronous is recommended only when there is no other options
+        /// as it will freeze the running thread
         /// </summary>
-        public static void RaiseGlobally(this IEvent signal)
+        public static void RaiseGlobally(this IEvent signal, bool synchronous = false)
         {
             Logger.WriteLine($"Event raised {signal}", LogType.DEBUG_EVERYTHING);
             //Check if we have any registered signals
@@ -64,14 +66,14 @@ namespace CorgEng.EntityComponentSystem.Events
             {
                 List<SystemEventHandlerDelegate> systemEventHandlers = RegisteredSystemSignalHandlers[key];
                 foreach (SystemEventHandlerDelegate systemEventHandler in systemEventHandlers)
-                    systemEventHandler.Invoke(null, null, signal);
+                    systemEventHandler.Invoke(null, null, signal, synchronous);
             }
         }
 
         /// <summary>
         /// Raise the event globally
         /// </summary>
-        public static void RaiseGlobally(this INetworkedEvent signal, bool sourcedLocally = true)
+        public static void RaiseGlobally(this INetworkedEvent signal, bool sourcedLocally = true, bool synchronous = false)
         {
             Logger.WriteLine($"Network event raised {signal}", LogType.DEBUG_EVERYTHING);
             //Check if we have any registered signals
@@ -84,7 +86,7 @@ namespace CorgEng.EntityComponentSystem.Events
             {
                 List<SystemEventHandlerDelegate> systemEventHandlers = RegisteredSystemSignalHandlers[key];
                 foreach (SystemEventHandlerDelegate systemEventHandler in systemEventHandlers)
-                    systemEventHandler.Invoke(null, null, signal);
+                    systemEventHandler.Invoke(null, null, signal, synchronous);
             }
             //Don't relay messages coming from other clients already
             if (!sourcedLocally)
@@ -103,7 +105,7 @@ namespace CorgEng.EntityComponentSystem.Events
             }
             List<SystemEventHandlerDelegate> networkedEventHandlers = RegisteredSystemSignalHandlers[networkKey];
             foreach (SystemEventHandlerDelegate systemEventHandler in networkedEventHandlers)
-                systemEventHandler.Invoke(null, null, new NetworkedEventRaisedEvent(signal));
+                systemEventHandler.Invoke(null, null, new NetworkedEventRaisedEvent(signal), synchronous);
         }
 
     }

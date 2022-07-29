@@ -21,6 +21,9 @@ namespace CorgEng.Tests.EntityComponentSystem
 
     internal class TestEvent : IEvent
     {
+
+        public bool Handled { get; set; } = false;
+
         public int TestID { get; }
 
         public TestEvent()
@@ -69,6 +72,7 @@ namespace CorgEng.Tests.EntityComponentSystem
             Console.WriteLine($"[LOCAL EVENT]: Current thread: {Thread.CurrentThread.Name} - {Environment.StackTrace}");
             SignalTests.handlesReceieved++;
             Console.WriteLine(SignalTests.handlesReceieved);
+            eventDetails.Handled = true;
         }
 
         private void HandleSecondaryTestEvent(IEntity entity, SecondaryTestComponent component, TestEvent eventDetails)
@@ -82,12 +86,14 @@ namespace CorgEng.Tests.EntityComponentSystem
             Console.WriteLine($"[LOCAL EVENT]: Current thread: {Thread.CurrentThread.Name} - {Environment.StackTrace}");
             SignalTests.secondaryHandlesReceieved++;
             Console.WriteLine(SignalTests.secondaryHandlesReceieved);
+            eventDetails.Handled = true;
         }
 
         private void HandleGlobalEvent(TestEvent globalEvent)
         {
             Console.WriteLine($"[GLOBAL EVENT]: Current thread: {Thread.CurrentThread.Name}");
             SignalTests.passedGlobalTest = true;
+            globalEvent.Handled = true;
         }
 
     }
@@ -240,6 +246,30 @@ namespace CorgEng.Tests.EntityComponentSystem
             new TestEvent().Raise(testEntity);
             while (handlesReceieved != 1 && secondaryHandlesReceieved != 1)
                 Thread.Sleep(1);
+        }
+
+        [TestMethod]
+        [Timeout(1000)]
+        public void TestSynchronousSignalHandling()
+        {
+            Assert.AreEqual(0, handlesReceieved, "INCORRECT TEST CONFIGURATION");
+            Logger?.WriteLine($"Current thread: {Thread.CurrentThread.ManagedThreadId}. TestID: {currentTestId}");
+            //Create a test entity
+            Entity testEntity = new Entity();
+            //Add a test component
+            TestComponent testComponent = new TestComponent();
+            testEntity.AddComponent(testComponent);
+            //Test
+            Assert.AreEqual(0, handlesReceieved);
+            //Send a test signal
+            for (int i = 1; i < 100; i++)
+            {
+                TestEvent testEvent = new TestEvent();
+                Assert.AreEqual(false, testEvent.Handled);
+                testEvent.Raise(testEntity, true);
+                Assert.AreEqual(i, handlesReceieved);
+                Assert.AreEqual(true, testEvent.Handled);
+            }
         }
 
     }

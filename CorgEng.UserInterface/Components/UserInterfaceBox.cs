@@ -4,6 +4,7 @@ using CorgEng.GenericInterfaces.UserInterface.Anchors;
 using CorgEng.GenericInterfaces.UserInterface.Components;
 using CorgEng.GenericInterfaces.UtilityTypes;
 using CorgEng.UserInterface.Rendering.UserinterfaceRenderer.Box;
+using CorgEng.UserInterface.Style;
 using CorgEng.UtilityTypes.Colours;
 using System;
 using System.Collections.Generic;
@@ -16,11 +17,18 @@ namespace CorgEng.UserInterface.Components
     internal class UserInterfaceBox : UserInterfaceComponent
     {
 
-        private float borderWidth = 5;
+        /// <summary>
+        /// The render object.
+        /// </summary>
+        private UserInterfaceBoxRenderObject boxRenderObject = new UserInterfaceBoxRenderObject();
 
-        private IColour borderColour = new Colour(1, 1, 1);
-
-        private IColour fillColour = new Colour(0, 0, 0);
+        /// <summary>
+        /// Helper property to get the style component of our box
+        /// </summary>
+        public BoxStyle Style
+        {
+            get => boxRenderObject.Style;
+        }
 
         public UserInterfaceBox(IUserInterfaceComponent parent, IAnchor anchorDetails, IDictionary<string, string> arguments) : base(parent, anchorDetails)
         {
@@ -32,22 +40,13 @@ namespace CorgEng.UserInterface.Components
             Setup(arguments);
         }
 
+        /// <summary>
+        /// Setup the component by parsing the styles and starting to render the component
+        /// </summary>
+        /// <param name="arguments"></param>
         private void Setup(IDictionary<string, string> arguments)
         {
-            string output;
-            if (arguments.TryGetValue("borderWidth", out output))
-                borderWidth = float.Parse(output);
-            if (arguments.TryGetValue("borderColour", out output))
-                borderColour = Colour.Parse(output);
-            if (arguments.TryGetValue("fillColour", out output))
-                fillColour = Colour.Parse(output);
-            //Render a box
-            UserInterfaceBoxRenderObject boxRenderObject = new UserInterfaceBoxRenderObject()
-            {
-                BorderWidth = borderWidth,
-                BorderColour = borderColour,
-                FillColour = fillColour,
-            };
+            Style.ParseSettings(arguments);
             userInterfaceBoxRenderer.StartRendering(boxRenderObject);
         }
 

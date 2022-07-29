@@ -42,7 +42,7 @@ namespace CorgEng.EntityComponentSystem.Systems
         [UsingDependency]
         protected static INetworkConfig NetworkConfig;
 
-        internal delegate void SystemEventHandlerDelegate(IEntity entity, IComponent component, IEvent signal);
+        internal delegate void SystemEventHandlerDelegate(IEntity entity, IComponent component, IEvent signal, bool synchronous);
 
         /// <summary>
         /// Matches event and component types to registered signal handlers on systems
@@ -55,6 +55,12 @@ namespace CorgEng.EntityComponentSystem.Systems
         protected readonly AutoResetEvent waitHandle = new AutoResetEvent(false);
 
         protected volatile bool isWaiting = false;
+
+        /// <summary>
+        /// A queue of actions that other parts of the code are waiting for the action's completion.
+        /// These will be execution before anything in the invokation queue.
+        /// </summary>
+        protected readonly ConcurrentQueue<Action> priorityInvokationQueue = new ConcurrentQueue<Action>();
 
         /// <summary>
         /// The invokation queue. A queue of actions that need to be triggered (Raised events)
@@ -124,14 +130,17 @@ namespace CorgEng.EntityComponentSystem.Systems
             while (!CorgEngMain.Terminated && !assassinated)
             {
                 //Wait until we are awoken again
-                if (invokationQueue.Count == 0)
+                if (invokationQueue.Count == 0 && priorityInvokationQueue.Count == 0)
                 {
                     isWaiting = true;
                     waitHandle.WaitOne();
                     isWaiting = false;
                 }
                 Action firstInvokation;
-                invokationQueue.TryDequeue(out firstInvokation);
+                if (priorityInvokationQueue.Count != 0)
+                    priorityInvokationQueue.TryDequeue(out firstInvokation);
+                else
+                    invokationQueue.TryDequeue(out firstInvokation);
                 if (firstInvokation != null)
                 {
                     try
@@ -184,9 +193,11 @@ namespace CorgEng.EntityComponentSystem.Systems
             {
                 if (!RegisteredSystemSignalHandlers.ContainsKey(eventComponentPair))
                     RegisteredSystemSignalHandlers.Add(eventComponentPair, new List<SystemEventHandlerDelegate>());
-                RegisteredSystemSignalHandlers[eventComponentPair].Add((IEntity entity, IComponent component, IEvent signal) =>
+                RegisteredSystemSignalHandlers[eventComponentPair].Add((IEntity entity, IComponent component, IEvent signal, bool synchronous) =>
                 {
-                    invokationQueue.Enqueue(() =>
+                    ConcurrentQueue<Action> targetQueue = synchronous ? priorityInvokationQueue : invokationQueue;
+                    AutoResetEvent synchronousWaitEvent = synchronous ? new AutoResetEvent(false) : null;
+                    targetQueue.Enqueue(() =>
                     {
                         //Check if we don't process
                         if (NetworkConfig != null
@@ -195,9 +206,18 @@ namespace CorgEng.EntityComponentSystem.Systems
                             && ((SystemFlags & EntitySystemFlags.CLIENT_SYSTEM) == 0 || !NetworkConfig.ProcessClientSystems))
                             return;
                         eventHandler.Invoke((GEvent)signal);
+                        //If we were synchronous, indicate that the queuer can continue
+                        if (synchronous)
+                        {
+                            synchronousWaitEvent.Set();
+                        }
                     });
+                    //Wake up the system if its sleeping
                     if(isWaiting)
                         waitHandle.Set();
+                    //If this event is synchronous, wait for completion
+                    if (synchronous)
+                        synchronousWaitEvent.WaitOne();
                 });
             }
         }
@@ -235,7 +255,7 @@ namespace CorgEng.EntityComponentSystem.Systems
                 {
                     if (!RegisteredSystemSignalHandlers.ContainsKey(eventComponentPair))
                         RegisteredSystemSignalHandlers.Add(eventComponentPair, new List<SystemEventHandlerDelegate>());
-                    RegisteredSystemSignalHandlers[eventComponentPair].Add((IEntity entity, IComponent component, IEvent signal) =>
+                    RegisteredSystemSignalHandlers[eventComponentPair].Add((IEntity entity, IComponent component, IEvent signal, bool synchronous) =>
                     {
                         //Check if we don't process
                         if (NetworkConfig != null
@@ -243,12 +263,22 @@ namespace CorgEng.EntityComponentSystem.Systems
                                 && ((SystemFlags & EntitySystemFlags.HOST_SYSTEM) == 0 || !NetworkConfig.ProcessServerSystems)
                                 && ((SystemFlags & EntitySystemFlags.CLIENT_SYSTEM) == 0 || !NetworkConfig.ProcessClientSystems))
                             return;
-                        invokationQueue.Enqueue(() =>
+                        ConcurrentQueue<Action> targetQueue = synchronous ? priorityInvokationQueue : invokationQueue;
+                        AutoResetEvent synchronousWaitEvent = synchronous ? new AutoResetEvent(false) : null;
+                        targetQueue.Enqueue(() =>
                         {
                             eventHandler(entity, (GComponent)component, (GEvent)signal);
+                            //If we were synchronous, indicate that the queuer can continue
+                            if (synchronous)
+                            {
+                                synchronousWaitEvent.Set();
+                            }
                         });
                         if (isWaiting)
                             waitHandle.Set();
+                        //If this event is synchronous, wait for completion
+                        if (synchronous)
+                            synchronousWaitEvent.WaitOne();
                     });
                 }
             }
