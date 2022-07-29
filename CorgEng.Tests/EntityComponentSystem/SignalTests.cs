@@ -21,6 +21,9 @@ namespace CorgEng.Tests.EntityComponentSystem
 
     internal class TestEvent : IEvent
     {
+
+        public bool Handled { get; set; } = false;
+
         public int TestID { get; }
 
         public TestEvent()
@@ -69,6 +72,7 @@ namespace CorgEng.Tests.EntityComponentSystem
             Console.WriteLine($"[LOCAL EVENT]: Current thread: {Thread.CurrentThread.Name} - {Environment.StackTrace}");
             SignalTests.handlesReceieved++;
             Console.WriteLine(SignalTests.handlesReceieved);
+            eventDetails.Handled = true;
         }
 
         private void HandleSecondaryTestEvent(IEntity entity, SecondaryTestComponent component, TestEvent eventDetails)
@@ -82,12 +86,14 @@ namespace CorgEng.Tests.EntityComponentSystem
             Console.WriteLine($"[LOCAL EVENT]: Current thread: {Thread.CurrentThread.Name} - {Environment.StackTrace}");
             SignalTests.secondaryHandlesReceieved++;
             Console.WriteLine(SignalTests.secondaryHandlesReceieved);
+            eventDetails.Handled = true;
         }
 
         private void HandleGlobalEvent(TestEvent globalEvent)
         {
             Console.WriteLine($"[GLOBAL EVENT]: Current thread: {Thread.CurrentThread.Name}");
             SignalTests.passedGlobalTest = true;
+            globalEvent.Handled = true;
         }
 
     }
@@ -258,8 +264,11 @@ namespace CorgEng.Tests.EntityComponentSystem
             //Send a test signal
             for (int i = 1; i < 100; i++)
             {
-                new TestEvent().Raise(testEntity, true);
+                TestEvent testEvent = new TestEvent();
+                Assert.AreEqual(false, testEvent.Handled);
+                testEvent.Raise(testEntity, true);
                 Assert.AreEqual(i, handlesReceieved);
+                Assert.AreEqual(true, testEvent.Handled);
             }
         }
 
