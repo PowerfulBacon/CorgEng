@@ -5,6 +5,7 @@ using CorgEng.EntityComponentSystem.Implementations.Transform;
 using CorgEng.EntityComponentSystem.Systems;
 using CorgEng.GenericInterfaces.EntityComponentSystem;
 using CorgEng.GenericInterfaces.World;
+using CorgEng.World.Components;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,6 +27,9 @@ namespace CorgEng.World.EntitySystems
             RegisterLocalEvent<TransformComponent, ComponentAddedEvent>(OnEntityCreated);
             RegisterLocalEvent<TransformComponent, MoveEvent>(OnEntityMoved);
             RegisterLocalEvent<TransformComponent, ComponentRemovedEvent>(OnComponentRemoved);
+            RegisterLocalEvent<TrackComponent, ComponentAddedEvent>(OnEntityCreated);
+            RegisterLocalEvent<TrackComponent, MoveEvent>(OnEntityMoved);
+            RegisterLocalEvent<TrackComponent, ComponentRemovedEvent>(OnComponentRemoved);
         }
 
         /// <summary>
@@ -53,9 +57,51 @@ namespace CorgEng.World.EntitySystems
             WorldAccess.AddEntity(entity, moveEvent.NewPosition.X, moveEvent.NewPosition.Y, 0);
         }
 
+        /// <summary>
+        /// Stop tracking a component when the transform is removed
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <param name="transformComponent"></param>
+        /// <param name="componentRemovedEvent"></param>
         private void OnComponentRemoved(IEntity entity, TransformComponent transformComponent, ComponentRemovedEvent componentRemovedEvent)
         {
             WorldAccess.RemoveEntity(entity, transformComponent.Position.X, transformComponent.Position.Y, 0);
+        }
+
+        /// <summary>
+        /// When the transform component is added to an entity, it needs
+        /// to begin tracking in the world system.
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <param name="transformComponent"></param>
+        /// <param name="componentAddedEvent"></param>
+        private void OnEntityCreated(IEntity entity, TrackComponent trackComponent, ComponentAddedEvent componentAddedEvent)
+        {
+            //Add the entity to the world
+            WorldAccess.AddEntity(entity, trackComponent.Transform.Position.X, trackComponent.Transform.Position.Y, 0);
+        }
+
+        /// <summary>
+        /// When the entity moves it needs to be updated in the world system.
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <param name="transformComponent"></param>
+        /// <param name="moveEvent"></param>
+        private void OnEntityMoved(IEntity entity, TrackComponent trackComponent, MoveEvent moveEvent)
+        {
+            WorldAccess.RemoveEntity(entity, moveEvent.OldPosition.X, moveEvent.OldPosition.Y, 0);
+            WorldAccess.AddEntity(entity, moveEvent.NewPosition.X, moveEvent.NewPosition.Y, 0);
+        }
+
+        /// <summary>
+        /// Stop tracking a component when the transform is removed
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <param name="transformComponent"></param>
+        /// <param name="componentRemovedEvent"></param>
+        private void OnComponentRemoved(IEntity entity, TrackComponent trackComponent, ComponentRemovedEvent componentRemovedEvent)
+        {
+            WorldAccess.RemoveEntity(entity, trackComponent.Transform.Position.X, trackComponent.Transform.Position.Y, 0);
         }
 
     }
