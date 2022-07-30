@@ -58,7 +58,7 @@ namespace CorgEng.Core
         private static double lastFrameTime;
 
         /// <summary>
-        /// Get the current applicatino time
+        /// Get the current application time
         /// </summary>
         public static double Time => (IsRendering ? Glfw.Time : (DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalSeconds);
 

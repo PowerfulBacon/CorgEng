@@ -25,6 +25,11 @@ namespace CorgEng.InputHandling.Events
 
         public ModifierKeys ModifierKeys { get; set; }
 
+        /// <summary>
+        /// The time that the mouse was held down for.
+        /// </summary>
+        public double HeldTime { get; set; }
+
         public MouseReleaseEvent(double cursorX, double cursorY, MouseButton mouseButton, ModifierKeys modifierKeys)
         {
             CursorX = cursorX;

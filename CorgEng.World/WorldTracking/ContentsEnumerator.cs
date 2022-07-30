@@ -25,7 +25,7 @@ namespace CorgEng.World.WorldTracking
 
         object IEnumerator.Current => reference.contentsArray[head];
 
-        private int head = 0;
+        private int head = -1;
 
         public void Dispose()
         {
