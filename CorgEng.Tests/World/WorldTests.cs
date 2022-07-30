@@ -19,6 +19,7 @@ namespace CorgEng.Tests.World
         public static IWorld WorldAccess;
 
         [TestMethod]
+        [Timeout(1000)]
         public void TestWorld()
         {
             Assert.IsNotNull(WorldAccess, "Dependency injection failed");
