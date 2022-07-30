@@ -28,13 +28,19 @@ namespace CorgEng.Tests.World
             IEntity entityC = new Entity();
             IEntity entityD = new Entity();
             IEntity entityE = new Entity();
+            IEntity entityF = new Entity();
+            IEntity entityG = new Entity();
             //Do some adding and removing
             WorldAccess.AddEntity(entityA, 1, 1, 0);
             WorldAccess.AddEntity(entityB, 1, 1, 0);
             WorldAccess.AddEntity(entityC, -1.3, 0, 0);
             WorldAccess.AddEntity(entityE, -1, 0, 0);
             WorldAccess.AddEntity(entityD, 0, 0, 6);
+            WorldAccess.AddEntity("FG", entityF, 0, 0, 6);
+            WorldAccess.AddEntity("FG", entityG, 0, 4, 6);
             WorldAccess.RemoveEntity(entityC, -1.3, 0, 0);
+            WorldAccess.RemoveEntity("FG", entityF, 0, 0, 6);
+            WorldAccess.AddEntity("FG", entityF, 0, 0, 7);
             WorldAccess.AddEntity(entityC, -1.3, 0, 0);
             WorldAccess.RemoveEntity(entityC, -1.3, 0, 0);
             //Test what we expect
@@ -66,8 +72,32 @@ namespace CorgEng.Tests.World
                 if (entity == entityD && !foundD)
                     foundD = true;
                 else
-                    Assert.Fail($"Located an entity that was not meant to be at (0, 0, 6). foundE: {foundD}, Entity Found: {entity}");
+                    Assert.Fail($"Located an entity that was not meant to be at (0, 0, 6). foundD: {foundD}, Entity Found: {entity}");
             }
+            //('FG', 0, 0, 7)
+            bool foundF = false;
+            foreach (IEntity entity in WorldAccess.GetContentsAt("FG", 0, 0, 7).GetContents())
+            {
+                if (entity == entityF && !foundF)
+                    foundF = true;
+                else
+                    Assert.Fail($"Located an entity that was not meant to be at ('FG', 0, 0, 7). foundF: {foundF}, Entity Found: {entity}");
+            }
+            //('FG', 0, 4, 6)
+            bool foundG = false;
+            foreach (IEntity entity in WorldAccess.GetContentsAt("FG", 0, 4, 6).GetContents())
+            {
+                if (entity == entityG && !foundG)
+                    foundG = true;
+                else
+                    Assert.Fail($"Located an entity that was not meant to be at ('FG', 0, 4, 7). foundG: {foundG}, Entity Found: {entity}");
+            }
+            Assert.IsTrue(foundA, $"Could not locate A. There were {WorldAccess.GetContentsAt(1, 1, 0).GetContents().Count()} elements located at (1, 1, 0)");
+            Assert.IsTrue(foundB, $"Could not locate B. There were {WorldAccess.GetContentsAt(1, 1, 0).GetContents().Count()} elements located at (1, 1, 0)");
+            Assert.IsTrue(foundD, $"Could not locate D. There were {WorldAccess.GetContentsAt(0, 0, 6).GetContents().Count()} elements located at (0, 0, 6)");
+            Assert.IsTrue(foundE, $"Could not locate E. There were {WorldAccess.GetContentsAt(-1, 0, 0).GetContents().Count()} elements located at (-1, 0, 0)");
+            Assert.IsTrue(foundF, $"Could not locate F. There were {WorldAccess.GetContentsAt("FG", 0, 0, 7).GetContents().Count()} elements located at ('FG', 0, 0, 7)");
+            Assert.IsTrue(foundG, $"Could not locate G. There were {WorldAccess.GetContentsAt("FG", 0, 4, 6).GetContents().Count()} elements located at ('FG', 0, 4, 7)");
         }
 
     }

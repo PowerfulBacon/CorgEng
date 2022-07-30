@@ -10,6 +10,7 @@ using CorgEng.DependencyInjection.Dependencies;
 using CorgEng.GenericInterfaces.Logging;
 using CorgEng.Core.Dependencies;
 using CorgEng.EntityComponentSystem.Events;
+using CorgEng.Core;
 
 namespace CorgEng.InputHandling
 {
@@ -53,6 +54,8 @@ namespace CorgEng.InputHandling
             new MouseMoveEvent(x, y).RaiseGlobally();
         }
 
+        private double mouseDownAt = 0;
+
         private void HandleMousePress(IntPtr window, MouseButton button, InputState state, ModifierKeys modifiers)
         {
             double x;
@@ -66,10 +69,12 @@ namespace CorgEng.InputHandling
                 case InputState.Press:
                     MousePressEvent mousePressEvent = new MousePressEvent(x / width, y / height, button, modifiers);
                     mousePressEvent.RaiseGlobally();
+                    mouseDownAt = CorgEngMain.Time;
                     Logger.WriteLine("MOUSE PRESSED", LogType.TEMP);
                     return;
                 case InputState.Release:
                     MouseReleaseEvent mouseReleaseEvent = new MouseReleaseEvent(x / width, y / height, button, modifiers);
+                    mouseReleaseEvent.HeldTime = CorgEngMain.Time - mouseDownAt;
                     mouseReleaseEvent.RaiseGlobally();
                     return;
             }
