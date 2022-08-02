@@ -21,7 +21,7 @@ namespace CorgEng.World.WorldTracking
             reference = contentsHolder;
         }
 
-        public IEntity Current => reference.contentsArray[head];
+        public IEntity Current => head < reference.contentsArray.Length ? reference.contentsArray[head] : null;
 
         object IEnumerator.Current => reference.contentsArray[head];
 
@@ -37,7 +37,7 @@ namespace CorgEng.World.WorldTracking
             do
             {
                 head++;
-                if (head == reference.nextInsertionPointer)
+                if (head == reference.nextInsertionPointer || head >= reference.contentsArray.Length)
                     return false;
             }
             while (Current == null);
@@ -46,7 +46,7 @@ namespace CorgEng.World.WorldTracking
 
         public void Reset()
         {
-            head = 0;
+            head = -1;
         }
 
     }

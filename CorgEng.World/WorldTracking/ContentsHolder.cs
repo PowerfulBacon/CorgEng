@@ -1,6 +1,9 @@
-﻿using CorgEng.EntityComponentSystem.Entities;
+﻿using CorgEng.Core.Dependencies;
+using CorgEng.EntityComponentSystem.Entities;
 using CorgEng.GenericInterfaces.EntityComponentSystem;
+using CorgEng.GenericInterfaces.Logging;
 using CorgEng.GenericInterfaces.World;
+using CorgEng.UtilityTypes.Vectors;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -38,7 +41,14 @@ namespace CorgEng.World.WorldTracking
         /// Maximum value used in the array
         /// </summary>
         internal int nextInsertionPointer = 0;
-        
+
+        private Vector<int> position;
+
+        public ContentsHolder(int x, int y)
+        {
+            position = new Vector<int>(x, y);
+        }
+
         public IEnumerable<IEntity> GetContents()
         {
             return new ContentsEnumerable(this);
@@ -72,6 +82,7 @@ namespace CorgEng.World.WorldTracking
             }
             //Insert the entity
             entity.ContentsIndex = nextInsertionPointer;
+            entity.ContentsLocation = position;
             contentsArray[nextInsertionPointer] = entity;
             //Insert the next entity in the next position
             nextInsertionPointer++;
@@ -80,7 +91,7 @@ namespace CorgEng.World.WorldTracking
         public void Remove(IEntity entity)
         {
             //Validation check
-            if (contentsArray[entity.ContentsIndex] != entity)
+            if (entity.ContentsIndex >= contentsArray.Length || entity.ContentsIndex < 0 || contentsArray[entity.ContentsIndex] != entity)
                 throw new Exception($"Invalid entity in WorldTile array, entity claims to be at position {entity.ContentsIndex}");
             //Remove the entity
             contentsArray[entity.ContentsIndex] = null;

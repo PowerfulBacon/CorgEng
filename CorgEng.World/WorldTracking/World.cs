@@ -2,6 +2,7 @@
 using CorgEng.DependencyInjection.Dependencies;
 using CorgEng.EntityComponentSystem.Entities;
 using CorgEng.GenericInterfaces.EntityComponentSystem;
+using CorgEng.GenericInterfaces.Logging;
 using CorgEng.GenericInterfaces.UtilityTypes.BinaryLists;
 using CorgEng.GenericInterfaces.World;
 using System;
@@ -56,7 +57,7 @@ namespace CorgEng.World.WorldTracking
             ContentsHolder worldTile = targetLevel.Get(xInteger, yInteger);
             if (worldTile == null)
             {
-                worldTile = new ContentsHolder();
+                worldTile = new ContentsHolder(xInteger, yInteger);
                 targetLevel.Add(xInteger, yInteger, worldTile);
             }
             worldTile.Insert(entity);

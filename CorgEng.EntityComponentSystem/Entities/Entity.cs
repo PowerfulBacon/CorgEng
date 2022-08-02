@@ -4,6 +4,7 @@ using CorgEng.EntityComponentSystem.Events;
 using CorgEng.EntityComponentSystem.Events.Events;
 using CorgEng.GenericInterfaces.EntityComponentSystem;
 using CorgEng.GenericInterfaces.Logging;
+using CorgEng.GenericInterfaces.UtilityTypes;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -34,6 +35,11 @@ namespace CorgEng.EntityComponentSystem.Entities
         /// The index of this entity in the contents array of the parent.
         /// </summary>
         public int ContentsIndex { get; set; } = -1;
+
+        /// <summary>
+        /// The location of the contents that we are stored at
+        /// </summary>
+        public IVector<int> ContentsLocation { get; set; }
 
         /// <summary>
         /// Components register themselves to this when needed, and this gets fired off to the component
@@ -118,6 +124,11 @@ namespace CorgEng.EntityComponentSystem.Entities
                 }
             }
             throw new Exception($"Component of type {typeof(T)} was not found on Entity {this}");
+        }
+
+        public override string ToString()
+        {
+            return $"Entity{Identifier}";
         }
 
     }

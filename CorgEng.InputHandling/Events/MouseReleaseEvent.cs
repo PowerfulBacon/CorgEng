@@ -30,6 +30,11 @@ namespace CorgEng.InputHandling.Events
         /// </summary>
         public double HeldTime { get; set; }
 
+        /// <summary>
+        /// Was this event handled?
+        /// </summary>
+        public bool Handled { get; set; } = false;
+
         public MouseReleaseEvent(double cursorX, double cursorY, MouseButton mouseButton, ModifierKeys modifierKeys)
         {
             CursorX = cursorX;
