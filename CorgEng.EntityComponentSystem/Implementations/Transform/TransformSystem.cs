@@ -1,7 +1,9 @@
-﻿using CorgEng.EntityComponentSystem.Entities;
+﻿using CorgEng.Core.Dependencies;
+using CorgEng.EntityComponentSystem.Entities;
 using CorgEng.EntityComponentSystem.Events;
 using CorgEng.EntityComponentSystem.Systems;
 using CorgEng.GenericInterfaces.EntityComponentSystem;
+using CorgEng.GenericInterfaces.Logging;
 using CorgEng.UtilityTypes.Vectors;
 using System;
 using System.Collections.Generic;
@@ -16,6 +18,9 @@ namespace CorgEng.EntityComponentSystem.Implementations.Transform
 
         //Runs only on the server, triggers MoveEvents from position change events.
         public override EntitySystemFlags SystemFlags { get; } = EntitySystemFlags.HOST_SYSTEM;
+
+        [UsingDependency]
+        private static ILogger Logger;
 
         public override void SystemSetup()
         {

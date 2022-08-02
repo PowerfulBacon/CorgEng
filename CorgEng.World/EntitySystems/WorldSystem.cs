@@ -41,6 +41,8 @@ namespace CorgEng.World.EntitySystems
         /// <param name="componentAddedEvent"></param>
         private void OnEntityCreated(IEntity entity, TransformComponent transformComponent, ComponentAddedEvent componentAddedEvent)
         {
+            if (componentAddedEvent.Component != transformComponent)
+                return;
             //Add the entity to the world
             WorldAccess.AddEntity(entity, transformComponent.Position.X, transformComponent.Position.Y, 0);
         }
@@ -53,7 +55,7 @@ namespace CorgEng.World.EntitySystems
         /// <param name="moveEvent"></param>
         private void OnEntityMoved(IEntity entity, TransformComponent transformComponent, MoveEvent moveEvent)
         {
-            WorldAccess.RemoveEntity(entity, moveEvent.OldPosition.X, moveEvent.OldPosition.Y, 0);
+            WorldAccess.RemoveEntity(entity, entity.ContentsLocation.X, entity.ContentsLocation.Y, 0);
             WorldAccess.AddEntity(entity, moveEvent.NewPosition.X, moveEvent.NewPosition.Y, 0);
         }
 
@@ -65,6 +67,8 @@ namespace CorgEng.World.EntitySystems
         /// <param name="componentRemovedEvent"></param>
         private void OnComponentRemoved(IEntity entity, TransformComponent transformComponent, ComponentRemovedEvent componentRemovedEvent)
         {
+            if (componentRemovedEvent.Component != transformComponent)
+                return;
             WorldAccess.RemoveEntity(entity, transformComponent.Position.X, transformComponent.Position.Y, 0);
         }
 
@@ -77,8 +81,10 @@ namespace CorgEng.World.EntitySystems
         /// <param name="componentAddedEvent"></param>
         private void OnEntityCreated(IEntity entity, TrackComponent trackComponent, ComponentAddedEvent componentAddedEvent)
         {
+            if (componentAddedEvent.Component != trackComponent)
+                return;
             //Add the entity to the world
-            WorldAccess.AddEntity(entity, trackComponent.Transform.Position.X, trackComponent.Transform.Position.Y, 0);
+            WorldAccess.AddEntity(trackComponent.Key, entity, trackComponent.Transform.Position.X, trackComponent.Transform.Position.Y, 0);
         }
 
         /// <summary>
@@ -89,8 +95,8 @@ namespace CorgEng.World.EntitySystems
         /// <param name="moveEvent"></param>
         private void OnEntityMoved(IEntity entity, TrackComponent trackComponent, MoveEvent moveEvent)
         {
-            WorldAccess.RemoveEntity(entity, moveEvent.OldPosition.X, moveEvent.OldPosition.Y, 0);
-            WorldAccess.AddEntity(entity, moveEvent.NewPosition.X, moveEvent.NewPosition.Y, 0);
+            WorldAccess.RemoveEntity(trackComponent.Key, entity, moveEvent.OldPosition.X, moveEvent.OldPosition.Y, 0);
+            WorldAccess.AddEntity(trackComponent.Key, entity, moveEvent.NewPosition.X, moveEvent.NewPosition.Y, 0);
         }
 
         /// <summary>
@@ -101,7 +107,9 @@ namespace CorgEng.World.EntitySystems
         /// <param name="componentRemovedEvent"></param>
         private void OnComponentRemoved(IEntity entity, TrackComponent trackComponent, ComponentRemovedEvent componentRemovedEvent)
         {
-            WorldAccess.RemoveEntity(entity, trackComponent.Transform.Position.X, trackComponent.Transform.Position.Y, 0);
+            if (componentRemovedEvent.Component != trackComponent)
+                return;
+            WorldAccess.RemoveEntity(trackComponent.Key, entity, trackComponent.Transform.Position.X, trackComponent.Transform.Position.Y, 0);
         }
 
     }

@@ -11,6 +11,7 @@ using CorgEng.GenericInterfaces.Logging;
 using CorgEng.Core.Dependencies;
 using CorgEng.EntityComponentSystem.Events;
 using CorgEng.Core;
+using CorgEng.InputHandling.ClickHandler;
 
 namespace CorgEng.InputHandling
 {
@@ -75,7 +76,12 @@ namespace CorgEng.InputHandling
                 case InputState.Release:
                     MouseReleaseEvent mouseReleaseEvent = new MouseReleaseEvent(x / width, y / height, button, modifiers);
                     mouseReleaseEvent.HeldTime = CorgEngMain.Time - mouseDownAt;
-                    mouseReleaseEvent.RaiseGlobally();
+                    //Raise synchronously, so we can determine if the event was handled
+                    mouseReleaseEvent.RaiseGlobally(true);
+                    if (!mouseReleaseEvent.Handled)
+                    {
+                        WorldClickHandler.HandleWorldClick(mouseReleaseEvent, CorgEngMain.GameWindow.Width, CorgEngMain.GameWindow.Height);
+                    }
                     return;
             }
         }

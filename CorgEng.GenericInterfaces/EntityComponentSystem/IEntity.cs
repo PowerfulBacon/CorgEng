@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CorgEng.GenericInterfaces.UtilityTypes;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,6 +13,8 @@ namespace CorgEng.GenericInterfaces.EntityComponentSystem
         List<IComponent> Components { get; }
 
         int ContentsIndex { get; set; }
+
+        IVector<int> ContentsLocation { get; set; }
 
         uint Identifier { get; }
 

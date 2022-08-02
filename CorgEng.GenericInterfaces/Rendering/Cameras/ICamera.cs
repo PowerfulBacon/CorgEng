@@ -14,5 +14,13 @@ namespace CorgEng.GenericInterfaces.Rendering
 
         IMatrix GetViewMatrix(float windowWidth, float windowHeight);
 
+        /// <summary>
+        /// Converts world coordinates into screen coordinates.
+        /// </summary>
+        /// <param name="x">The X position ranging from -1 to 1</param>
+        /// <param name="y">The Y position ranging from -1 to 1</param>
+        /// <returns></returns>
+        IVector<float> ScreenToWorldCoordinates(double x, double y, float windowWidth, float windowHeight);
+
     }
 }
