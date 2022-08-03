@@ -18,7 +18,22 @@ namespace CorgEng.GenericInterfaces.Rendering.RenderObjects.SpriteRendering
         IBindableProperty<float> TextureFileHeight { get; set; }
         IBindableProperty<float> TextureFileWidth { get; set; }
 
+        /// <summary>
+        /// The texture detail wrapper
+        /// </summary>
         IBindablePropertyGroup TextureDetails { get; }
+
+        /// <summary>
+        /// Add an overlay to be rendered on top of this object
+        /// </summary>
+        /// <param name="overlay">The overlay to be rendered along with this object</param>
+        void AddOverlay(ISpriteRenderObject overlay);
+
+        /// <summary>
+        /// Removes an overlay that is currently applied to this render object.
+        /// </summary>
+        /// <param name="overlay">The overlay to be removed</param>
+        void RemoveOverlay(ISpriteRenderObject overlay);
 
     }
 }

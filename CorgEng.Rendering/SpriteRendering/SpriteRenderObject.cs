@@ -43,6 +43,11 @@ namespace CorgEng.Rendering.SpriteRendering
 
         public IBindableProperty<IVector<float>> TransformSecondRow { get; } = new BindableProperty<IVector<float>>(new Vector<float>(0, 1, 0));
 
+        /// <summary>
+        /// A hashset containing all overlays that are currently attached to us
+        /// </summary>
+        private HashSet<ISpriteRenderObject> overlays = new HashSet<ISpriteRenderObject>();
+
         public SpriteRenderObject(uint textureUint, float textureX, float textureY, float textureWidth, float textureHeight)
         {
             //When the vector changes, trigger change on the bindable property.
@@ -58,6 +63,11 @@ namespace CorgEng.Rendering.SpriteRendering
                 TransformSecondRow.TriggerChanged();
                 //Trigger a transform update
                 Transform.TriggerChanged();
+                //Update overlays
+                foreach (ISpriteRenderObject overlayObject in overlays)
+                {
+                    overlayObject.Transform.Value = Transform.Value;
+                }
             };
             //Set the bindable properties
             TextureFile = new BindableProperty<uint>(textureUint);
@@ -95,6 +105,19 @@ namespace CorgEng.Rendering.SpriteRendering
         {
             //TODO: Textures can be loaded from the def file
             return false;
+        }
+
+        public void AddOverlay(ISpriteRenderObject overlay)
+        {
+            //Add the overlay
+            overlays.Add(overlay);
+        }
+
+        public void RemoveOverlay(ISpriteRenderObject overlay)
+        {
+            //Remove the overlay
+            overlays.Remove(overlay);
+            
         }
 
     }
