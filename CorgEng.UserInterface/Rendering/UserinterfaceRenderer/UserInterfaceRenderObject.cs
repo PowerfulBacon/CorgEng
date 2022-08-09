@@ -17,16 +17,16 @@ namespace CorgEng.UserInterface.Rendering.UserinterfaceRenderer
     public class UserInterfaceRenderObject : IUserInterfaceRenderObject
     {
 
-        public IBindableProperty<IMatrix> Transform { get; } = new BindableProperty<IMatrix>(new Matrix(new float[,] {
+        public IBindableProperty<IMatrix> CombinedTransform { get; } = new BindableProperty<IMatrix>(new Matrix(new float[,] {
             { 1, 0, 0 },
             { 0, 1, 0 },
             //This last row is actually ignored (It's not needed in 2 dimensional applications)
             { 0, 0, 1 }
         }));
 
-        public IBindableProperty<IVector<float>> TransformFirstRow { get; } = new BindableProperty<IVector<float>>(new Vector<float>(1, 0, 0));
+        public IBindableProperty<IVector<float>> CombinedTransformFirstRow { get; } = new BindableProperty<IVector<float>>(new Vector<float>(1, 0, 0));
 
-        public IBindableProperty<IVector<float>> TransformSecondRow { get; } = new BindableProperty<IVector<float>>(new Vector<float>(0, 1, 0));
+        public IBindableProperty<IVector<float>> CombinedTransformSecondRow { get; } = new BindableProperty<IVector<float>>(new Vector<float>(0, 1, 0));
 
         public IBindablePropertyGroup TextureDetails { get; }
 
@@ -35,16 +35,16 @@ namespace CorgEng.UserInterface.Rendering.UserinterfaceRenderer
         public UserInterfaceRenderObject()
         {
             //When the vector changes, trigger change on the bindable property.
-            Transform.Value.OnChange += (object src, EventArgs arg) => {
+            CombinedTransform.Value.OnChange += (object src, EventArgs arg) => {
                 //Trigger updates to our transform rows
-                TransformFirstRow.Value.X = Transform.Value[1, 1];
-                TransformFirstRow.Value.Y = Transform.Value[2, 1];
-                TransformFirstRow.Value.Z = Transform.Value[3, 1];
-                TransformFirstRow.TriggerChanged();
-                TransformSecondRow.Value.X = Transform.Value[1, 2];
-                TransformSecondRow.Value.Y = Transform.Value[2, 2];
-                TransformSecondRow.Value.Z = Transform.Value[3, 2];
-                TransformSecondRow.TriggerChanged();
+                CombinedTransformFirstRow.Value.X = CombinedTransform.Value[1, 1];
+                CombinedTransformFirstRow.Value.Y = CombinedTransform.Value[2, 1];
+                CombinedTransformFirstRow.Value.Z = CombinedTransform.Value[3, 1];
+                CombinedTransformFirstRow.TriggerChanged();
+                CombinedTransformSecondRow.Value.X = CombinedTransform.Value[1, 2];
+                CombinedTransformSecondRow.Value.Y = CombinedTransform.Value[2, 2];
+                CombinedTransformSecondRow.Value.Z = CombinedTransform.Value[3, 2];
+                CombinedTransformSecondRow.TriggerChanged();
             };
         }
 

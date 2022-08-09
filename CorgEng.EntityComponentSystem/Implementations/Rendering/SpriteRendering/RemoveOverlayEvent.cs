@@ -1,5 +1,4 @@
 ﻿using CorgEng.Core.Dependencies;
-using CorgEng.EntityComponentSystem.Events;
 using CorgEng.GenericInterfaces.EntityComponentSystem;
 using CorgEng.GenericInterfaces.Rendering.Icons;
 using CorgEng.GenericInterfaces.Serialization;
@@ -12,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace CorgEng.EntityComponentSystem.Implementations.Rendering.SpriteRendering
 {
-    public class SetSpriteEvent : INetworkedEvent
+    public class RemoveOverlayEvent : INetworkedEvent
     {
 
         [UsingDependency]
@@ -22,7 +21,7 @@ namespace CorgEng.EntityComponentSystem.Implementations.Rendering.SpriteRenderin
 
         public IIcon TextureFile { get; set; }
 
-        public SetSpriteEvent(IIcon textureFile)
+        public RemoveOverlayEvent(IIcon textureFile)
         {
             TextureFile = textureFile;
         }
@@ -41,5 +40,6 @@ namespace CorgEng.EntityComponentSystem.Implementations.Rendering.SpriteRenderin
         {
             return AutoSerialiser.SerialisationLength(typeof(IIcon), TextureFile);
         }
+
     }
 }

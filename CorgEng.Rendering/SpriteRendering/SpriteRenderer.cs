@@ -41,10 +41,12 @@ namespace CorgEng.Rendering.SpriteRendering
             //Check for duplicate render exceptions
             if (spriteRenderObject.GetBelongingBatchElement<SpriteBatch>() != null)
                 throw new DuplicateRenderException("Attempting to render a sprite object already being rendered.");
+            //Indicate that we are rendering
+            spriteRenderObject.CurrentRenderer = this;
             //Create a new batch element for this
             IBatchElement<SpriteBatch> batchElement = new BatchElement<SpriteBatch>(new IBindableProperty<IVector<float>>[] {
-                spriteRenderObject.TransformFirstRow,
-                spriteRenderObject.TransformSecondRow,
+                spriteRenderObject.CombinedTransformFirstRow,
+                spriteRenderObject.CombinedTransformSecondRow,
                 spriteRenderObject.TextureDetails
             });
             //Remember the batch element we are stored in, so it can be saved
@@ -55,6 +57,10 @@ namespace CorgEng.Rendering.SpriteRendering
 
         public void StopRendering(ISpriteRenderObject spriteRenderObject)
         {
+            if (spriteRenderObject.CurrentRenderer != this)
+                throw new Exception("Attempted to stop rendering a render object thats not rendering on this renderer.");
+            //Stop rendering
+            spriteRenderObject.CurrentRenderer = null;
             //Remove references to the on change event
             spriteRenderObject.GetBelongingBatchElement<SpriteBatch>().Unbind();
             //Remove the batch element

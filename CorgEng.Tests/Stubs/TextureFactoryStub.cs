@@ -1,4 +1,5 @@
-﻿using CorgEng.GenericInterfaces.Rendering.Textures;
+﻿using CorgEng.GenericInterfaces.Rendering.Icons;
+using CorgEng.GenericInterfaces.Rendering.Textures;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,7 +25,7 @@ namespace CorgEng.Tests.Stubs
             throw new NotImplementedException($"Texture file extension .{fileExtension} is not supported.");
         }
 
-        public ITextureState GetTextureFromIconState(string iconState)
+        public ITextureState GetTextureFromIconState(IIcon iconState)
         {
             return null;
         }
