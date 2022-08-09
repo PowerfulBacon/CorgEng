@@ -15,6 +15,7 @@ using CorgEng.GenericInterfaces.Logging;
 using CorgEng.GenericInterfaces.Networking.Networking.Server;
 using CorgEng.GenericInterfaces.Networking.PrototypeManager;
 using CorgEng.GenericInterfaces.Rendering.Cameras.Isometric;
+using CorgEng.GenericInterfaces.Rendering.Icons;
 using CorgEng.InputHandling.Events;
 using CorgEng.Networking.Components;
 using CorgEng.UtilityTypes.Vectors;
@@ -45,6 +46,9 @@ namespace CorgEng.Example.Server
         private static IIsometricCameraFactory IsometricCameraFactory;
 #endif
 
+        [UsingDependency]
+        private static IIconFactory IconFactory;
+
         static void Main(string[] args)
         {
             //Load the application config
@@ -73,7 +77,7 @@ namespace CorgEng.Example.Server
                     testingEntity.AddComponent(new SpriteRenderComponent());
                     //Update the entity
                     new SetPositionEvent(new Vector<float>(x, y)).Raise(testingEntity);
-                    new SetSpriteEvent("human.ghost").Raise(testingEntity);
+                    new SetSpriteEvent(IconFactory.CreateIcon("human.ghost")).Raise(testingEntity);
                     new SetSpriteRendererEvent(1).Raise(testingEntity);
                 }
             }
@@ -102,7 +106,7 @@ namespace CorgEng.Example.Server
             IEntity playerPrototype = new Entity();
             playerPrototype.AddComponent(new ClientComponent());
             playerPrototype.AddComponent(new NetworkTransformComponent());
-            playerPrototype.AddComponent(new SpriteRenderComponent() { Sprite = "human.ghost", SpriteRendererIdentifier = 1 });
+            playerPrototype.AddComponent(new SpriteRenderComponent() { Sprite = IconFactory.CreateIcon("human.ghost"), SpriteRendererIdentifier = 1 });
             playerPrototype.AddComponent(new PlayerMovementComponent());
             playerPrototype.AddComponent(new DeleteableComponent());
             IPrototype prototype = PrototypeManager.GetPrototype(playerPrototype);
