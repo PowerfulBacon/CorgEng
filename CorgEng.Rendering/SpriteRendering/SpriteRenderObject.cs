@@ -1,8 +1,12 @@
-﻿using CorgEng.DependencyInjection.Dependencies;
+﻿using CorgEng.Core.Dependencies;
+using CorgEng.DependencyInjection.Dependencies;
 using CorgEng.GenericInterfaces.ContentLoading;
+using CorgEng.GenericInterfaces.Rendering.Icons;
 using CorgEng.GenericInterfaces.Rendering.Positioning;
+using CorgEng.GenericInterfaces.Rendering.Renderers.SpriteRendering;
 using CorgEng.GenericInterfaces.Rendering.RenderObjects.SpriteRendering;
 using CorgEng.GenericInterfaces.Rendering.SharedRenderAttributes;
+using CorgEng.GenericInterfaces.Rendering.Textures;
 using CorgEng.GenericInterfaces.UtilityTypes;
 using CorgEng.GenericInterfaces.UtilityTypes.Batches;
 using CorgEng.UtilityTypes.BindableProperties;
@@ -18,6 +22,13 @@ namespace CorgEng.Rendering.SpriteRendering
 {
     public sealed class SpriteRenderObject : ISpriteRenderObject
     {
+
+        [UsingDependency]
+        private static ITextureFactory TextureFactory;
+
+        [UsingDependency]
+        private static ISpriteRenderObjectFactory SpriteRenderObjectFactory;
+
         public IBindableProperty<uint> TextureFile { get; set; }
 
         public IBindableProperty<float> TextureFileX { get; set; }
@@ -32,42 +43,68 @@ namespace CorgEng.Rendering.SpriteRendering
 
         public IEntityDef TypeDef { get; set; }
 
-        public IBindableProperty<IMatrix> Transform { get; } = new BindableProperty<IMatrix>(new Matrix(new float[,] {
+        public IBindableProperty<IMatrix> CombinedTransform { get; } = new BindableProperty<IMatrix>(new Matrix(new float[,] {
             { 1, 0, 0 },
             { 0, 1, 0 },
             //This last row is actually ignored
             { 0, 0, 1 }
         }));
 
-        public IBindableProperty<IVector<float>> TransformFirstRow { get; } = new BindableProperty<IVector<float>>(new Vector<float>(1, 0, 0));
+        public IBindableProperty<IVector<float>> CombinedTransformFirstRow { get; } = new BindableProperty<IVector<float>>(new Vector<float>(1, 0, 0));
 
-        public IBindableProperty<IVector<float>> TransformSecondRow { get; } = new BindableProperty<IVector<float>>(new Vector<float>(0, 1, 0));
+        public IBindableProperty<IVector<float>> CombinedTransformSecondRow { get; } = new BindableProperty<IVector<float>>(new Vector<float>(0, 1, 0));
+
+        public ISpriteRenderer CurrentRenderer { get; set; }
+
+        public ISpriteRenderObject Container { get; set; }
+
+        public IBindableProperty<IMatrix> SelfTransform { get; set; } = new BindableProperty<IMatrix>(new Matrix(new float[,] {
+            { 1, 0, 0 },
+            { 0, 1, 0 },
+            //This last row is actually ignored
+            { 0, 0, 1 }
+        }));
 
         /// <summary>
         /// A hashset containing all overlays that are currently attached to us
         /// </summary>
-        private HashSet<ISpriteRenderObject> overlays = new HashSet<ISpriteRenderObject>();
+        private Dictionary<IIcon, ISpriteRenderObject> overlays = new Dictionary<IIcon, ISpriteRenderObject>();
 
         public SpriteRenderObject(uint textureUint, float textureX, float textureY, float textureWidth, float textureHeight)
         {
             //When the vector changes, trigger change on the bindable property.
-            Transform.Value.OnChange += (object src, EventArgs arg) => {
-                //Trigger updates to our transform rows
-                TransformFirstRow.Value.X = Transform.Value[1, 1];
-                TransformFirstRow.Value.Y = Transform.Value[2, 1];
-                TransformFirstRow.Value.Z = Transform.Value[3, 1];
-                TransformFirstRow.TriggerChanged();
-                TransformSecondRow.Value.X = Transform.Value[1, 2];
-                TransformSecondRow.Value.Y = Transform.Value[2, 2];
-                TransformSecondRow.Value.Z = Transform.Value[3, 2];
-                TransformSecondRow.TriggerChanged();
+            CombinedTransform.Value.OnChange += (object src, EventArgs arg) => {
                 //Trigger a transform update
-                Transform.TriggerChanged();
-                //Update overlays
-                foreach (ISpriteRenderObject overlayObject in overlays)
+                CombinedTransform.TriggerChanged();
+            };
+            //When the value of the combined transform is changed, we need to update our
+            //rows, as they are bound to by the renderer which is where the updating needs
+            //to be done.
+            CombinedTransform.ValueChanged += (object src, EventArgs arg) => {
+                //Trigger updates to our transform rows
+                CombinedTransformFirstRow.Value.X = CombinedTransform.Value[1, 1];
+                CombinedTransformFirstRow.Value.Y = CombinedTransform.Value[2, 1];
+                CombinedTransformFirstRow.Value.Z = CombinedTransform.Value[3, 1];
+                CombinedTransformFirstRow.TriggerChanged();
+                CombinedTransformSecondRow.Value.X = CombinedTransform.Value[1, 2];
+                CombinedTransformSecondRow.Value.Y = CombinedTransform.Value[2, 2];
+                CombinedTransformSecondRow.Value.Z = CombinedTransform.Value[3, 2];
+                CombinedTransformSecondRow.TriggerChanged();
+                //Update overlays transforms.
+                foreach (ISpriteRenderObject overlayObject in overlays.Values)
                 {
-                    overlayObject.Transform.Value = Transform.Value;
+                    overlayObject.CombinedTransform.Value = CombinedTransform.Value.Multiply(overlayObject.SelfTransform.Value);
                 }
+            };
+            //When the self transform is updated, the combined transform needs to be updated too
+            SelfTransform.Value.OnChange += (object src, EventArgs arg) => {
+                SelfTransform.TriggerChanged();
+            };
+            //When the self transform is updated, calculate and apply our combined transform
+            SelfTransform.ValueChanged += (object src, EventArgs args) => {
+                CombinedTransform.Value = Container != null
+                    ? Container.CombinedTransform.Value.Multiply(SelfTransform.Value)
+                    : SelfTransform.Value;
             };
             //Set the bindable properties
             TextureFile = new BindableProperty<uint>(textureUint);
@@ -107,17 +144,36 @@ namespace CorgEng.Rendering.SpriteRendering
             return false;
         }
 
-        public void AddOverlay(ISpriteRenderObject overlay)
+        public void AddOverlay(IIcon overlay)
         {
+            //Get the texture details
+            ITextureState textureState = TextureFactory.GetTextureFromIconState(overlay);
+            //Get the sprite render object
+            ISpriteRenderObject spriteRenderObject = SpriteRenderObjectFactory.CreateSpriteRenderObject(
+                textureState.TextureFile.TextureID,
+                textureState.OffsetX,
+                textureState.OffsetY,
+                textureState.OffsetWidth,
+                textureState.OffsetHeight);
+            //Set it as the container
+            spriteRenderObject.Container = this;
+            //If we are currently being rendered, render the overlay on the same renderer
+            CurrentRenderer?.StartRendering(spriteRenderObject);
+            //Copy across the transform
+            spriteRenderObject.SelfTransform.Value = Matrix.Identity[3];
             //Add the overlay
-            overlays.Add(overlay);
+            overlays.Add(
+                overlay,
+                spriteRenderObject
+                );
         }
 
-        public void RemoveOverlay(ISpriteRenderObject overlay)
+        public void RemoveOverlay(IIcon overlay)
         {
+            //Stop rendering the overlay
+            CurrentRenderer?.StopRendering(overlays[overlay]);
             //Remove the overlay
             overlays.Remove(overlay);
-            
         }
 
     }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CorgEng.GenericInterfaces.Rendering.Icons;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,7 +12,7 @@ namespace CorgEng.GenericInterfaces.Rendering.Textures
 
         ITexture CreateTexture(string texturePath);
 
-        ITextureState GetTextureFromIconState(string iconState);
+        ITextureState GetTextureFromIconState(IIcon iconState);
 
     }
 }

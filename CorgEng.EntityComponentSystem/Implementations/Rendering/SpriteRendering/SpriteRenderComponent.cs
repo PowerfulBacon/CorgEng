@@ -1,6 +1,7 @@
 ﻿using CorgEng.EntityComponentSystem.Components;
 using CorgEng.GenericInterfaces.ContentLoading;
 using CorgEng.GenericInterfaces.Networking.Attributes;
+using CorgEng.GenericInterfaces.Rendering.Icons;
 using CorgEng.GenericInterfaces.Rendering.Renderers.SpriteRendering;
 using CorgEng.GenericInterfaces.Rendering.RenderObjects.SpriteRendering;
 using CorgEng.GenericInterfaces.UtilityTypes;
@@ -20,7 +21,7 @@ namespace CorgEng.EntityComponentSystem.Implementations.Rendering.SpriteRenderin
         public IVector<float> CachedPosition { get; set; } = null;
 
         [NetworkSerialized]
-        public string Sprite { get; set; }
+        public IIcon Sprite { get; set; }
 
         public ISpriteRenderObject SpriteRenderObject { get; internal set; }
 
@@ -28,6 +29,7 @@ namespace CorgEng.EntityComponentSystem.Implementations.Rendering.SpriteRenderin
         public uint SpriteRendererIdentifier { get; set; }
 
         private uint cachedSpriteRendererIdentifier = 0;
+
         private ISpriteRenderer _spriteRenderer;
 
         public ISpriteRenderer SpriteRenderer
@@ -47,12 +49,6 @@ namespace CorgEng.EntityComponentSystem.Implementations.Rendering.SpriteRenderin
 
         public override bool SetProperty(string name, IPropertyDef property)
         {
-            switch (name)
-            {
-                case "Sprite":
-                    Sprite = (string)property.GetValue(Vector<float>.Zero);
-                    return true;
-            }
             return false;
         }
     }

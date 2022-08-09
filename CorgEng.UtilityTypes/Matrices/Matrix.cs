@@ -215,6 +215,34 @@ namespace CorgEng.UtilityTypes.Matrices
             return outputMatrix;
         }
 
+        public IMatrix Multiply(IMatrix other)
+        {
+            //Check to make sure the matrices can be multiplied together
+            if (X != other.Y) throw new InvalidMatrixDimensionError($"Invalid matrix dimensions: a.X ({X}) != b.Y ({other.Y})");
+            int dotProductLength = other.X;
+            //Create the new output matrix
+            Matrix outputMatrix = new Matrix(other.X, other.Y);
+
+            //For each column in the output matrix
+            for (int x = 1; x <= other.X; x++)
+            {
+                //And each row in the output matrix
+                for (int y = 1; y <= other.Y; y++)
+                {
+                    float dotProductSum = 0;
+                    //The result is the dot product of the rows
+                    for (int i = 1; i <= dotProductLength; i++)
+                    {
+                        dotProductSum += this[i, y] * other[x, i];
+                    }
+                    //Calculate the result
+                    outputMatrix[x, y] = dotProductSum;
+                }
+            }
+            //Return the result
+            return outputMatrix;
+        }
+
         /// <summary>
         /// Returns the appropriate translation matrix
         /// </summary>

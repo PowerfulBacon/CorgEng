@@ -18,5 +18,12 @@ namespace CorgEng.GenericInterfaces.UtilityTypes
 
         unsafe float* GetPointer();
 
+        /// <summary>
+        /// Multiply this matrix with another matrix and return the result as a new matrix
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns></returns>
+        IMatrix Multiply(IMatrix other);
+
     }
 }

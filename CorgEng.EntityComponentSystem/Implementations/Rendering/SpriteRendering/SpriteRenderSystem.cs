@@ -40,6 +40,8 @@ namespace CorgEng.EntityComponentSystem.Implementations.Rendering.SpriteRenderin
             RegisterLocalEvent<SpriteRenderComponent, DeleteEntityEvent>(OnEntityDestroyed);
             RegisterLocalEvent<SpriteRenderComponent, MoveEvent>(OnEntityMoved);
             RegisterLocalEvent<SpriteRenderComponent, InitialiseNetworkedEntityEvent>(OnInitialise);
+            RegisterLocalEvent<SpriteRenderComponent, AddOverlayEvent>(AddOverlay);
+            RegisterLocalEvent<SpriteRenderComponent, RemoveOverlayEvent>(RemoveOverlay);
         }
 
         private void OnInitialise(IEntity entity, SpriteRenderComponent spriteRenderComponent, InitialiseNetworkedEntityEvent componentAddedEvent)
@@ -74,8 +76,8 @@ namespace CorgEng.EntityComponentSystem.Implementations.Rendering.SpriteRenderin
             }
             else
             {
-                spriteRenderComponent.SpriteRenderObject.Transform.Value[3, 1] = moveEvent.NewPosition.X;
-                spriteRenderComponent.SpriteRenderObject.Transform.Value[3, 2] = moveEvent.NewPosition.Y;
+                spriteRenderComponent.SpriteRenderObject.CombinedTransform.Value[3, 1] = moveEvent.NewPosition.X;
+                spriteRenderComponent.SpriteRenderObject.CombinedTransform.Value[3, 2] = moveEvent.NewPosition.Y;
             }
         }
 
@@ -124,14 +126,36 @@ namespace CorgEng.EntityComponentSystem.Implementations.Rendering.SpriteRenderin
                     newTexture.OffsetHeight);
                 if (spriteRenderComponent.CachedPosition != null)
                 {
-                    spriteRenderComponent.SpriteRenderObject.Transform.Value[3, 1] = spriteRenderComponent.CachedPosition.X;
-                    spriteRenderComponent.SpriteRenderObject.Transform.Value[3, 2] = spriteRenderComponent.CachedPosition.Y;
+                    spriteRenderComponent.SpriteRenderObject.CombinedTransform.Value[3, 1] = spriteRenderComponent.CachedPosition.X;
+                    spriteRenderComponent.SpriteRenderObject.CombinedTransform.Value[3, 2] = spriteRenderComponent.CachedPosition.Y;
                     spriteRenderComponent.CachedPosition = null;
                 }
                 //Start rendering
                 if (spriteRenderComponent.SpriteRenderer != null)
                     spriteRenderComponent.SpriteRenderer.StartRendering(spriteRenderComponent.SpriteRenderObject);
             }
+        }
+
+        /// <summary>
+        /// Adds an overlay to this sprite
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <param name="spriteRenderComponent"></param>
+        /// <param name="addOverlayEvent"></param>
+        private void AddOverlay(IEntity entity, SpriteRenderComponent spriteRenderComponent, AddOverlayEvent addOverlayEvent)
+        {
+            spriteRenderComponent.SpriteRenderObject.AddOverlay(addOverlayEvent.TextureFile);
+        }
+
+        /// <summary>
+        /// Remove an overlay from this sprite
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <param name="spriteRenderComponent"></param>
+        /// <param name="removeOverlayEvent"></param>
+        private void RemoveOverlay(IEntity entity, SpriteRenderComponent spriteRenderComponent, RemoveOverlayEvent removeOverlayEvent)
+        {
+            spriteRenderComponent.SpriteRenderObject.RemoveOverlay(removeOverlayEvent.TextureFile);
         }
 
     }
