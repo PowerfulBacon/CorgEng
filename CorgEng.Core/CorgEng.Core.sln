@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CorgEng.EntityComponentSyst
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CorgEng.Rendering", "..\CorgEng.Rendering\CorgEng.Rendering.csproj", "{BFC5583F-3A05-43E4-9D07-81D80B1EC685}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CorgEng.Tests", "..\CorgEng.Tests\CorgEng.Tests.csproj", "{04D2DFC7-ABE3-46BA-9E98-8E01A8BE92B5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CorgEng.Tests", "..\CorgEng.Tests\CorgEng.Tests.csproj", "{04D2DFC7-ABE3-46BA-9E98-8E01A8BE92B5}"
 	ProjectSection(ProjectDependencies) = postProject
 		{19E048D9-1587-40CC-BEE3-E1883A21FEC8} = {19E048D9-1587-40CC-BEE3-E1883A21FEC8}
 	EndProjectSection
@@ -34,7 +34,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CorgEng.ContentLoading", ".
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CorgEng.MapLoading", "..\CorgEng.MapLoading\CorgEng.MapLoading.csproj", "{B324FB97-A466-4E19-BA67-9536023EE5B9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoMap", "..\AutoMap\AutoMap.csproj", "{ADA9CC94-5705-499C-9C93-888E96F87DEA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AutoMap", "..\AutoMap\AutoMap.csproj", "{ADA9CC94-5705-499C-9C93-888E96F87DEA}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CorgEng.UserInterface", "..\CorgEng.UserInterface\CorgEng.UserInterface.csproj", "{19E048D9-1587-40CC-BEE3-E1883A21FEC8}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -44,7 +44,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CorgEng.UserInterface", "..
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CorgEng.Font", "..\CorgEng.Font\CorgEng.Font.csproj", "{A18B4113-8CBF-44B3-BC4A-C27920D2F6BE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DmiIconConversionUtility", "..\DmiIconConversionUtility\DmiIconConversionUtility.csproj", "{047A7C91-7A94-4393-8D25-54BF23498193}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DmiIconConversionUtility", "..\DmiIconConversionUtility\DmiIconConversionUtility.csproj", "{047A7C91-7A94-4393-8D25-54BF23498193}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CorgEng.Networking", "..\CorgEng.Networking\CorgEng.Networking.csproj", "{1D5738B7-BC6F-46EF-8C49-47622AF0D74A}"
 EndProject
@@ -60,6 +60,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CorgEng.World", "..\CorgEng.World\CorgEng.World.csproj", "{808305D8-C662-4C9A-A26F-D9A3E07E1271}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CorgEng.Constants", "..\CorgEng.Constants\CorgEng.Constants.csproj", "{D287FB50-6DFA-4EFA-9169-5A6F31B44CA9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CorgEng.AiBehaviour", "..\CorgEng.AiBehaviour\CorgEng.AiBehaviour.csproj", "{39C428B3-A5DD-409C-9EB1-7F4FCDDD61B4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -495,6 +497,26 @@ Global
 		{D287FB50-6DFA-4EFA-9169-5A6F31B44CA9}.Release|x64.Build.0 = Release|x64
 		{D287FB50-6DFA-4EFA-9169-5A6F31B44CA9}.Release|x86.ActiveCfg = Release|x86
 		{D287FB50-6DFA-4EFA-9169-5A6F31B44CA9}.Release|x86.Build.0 = Release|x86
+		{39C428B3-A5DD-409C-9EB1-7F4FCDDD61B4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{39C428B3-A5DD-409C-9EB1-7F4FCDDD61B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{39C428B3-A5DD-409C-9EB1-7F4FCDDD61B4}.Debug|ARM32.ActiveCfg = Debug|Any CPU
+		{39C428B3-A5DD-409C-9EB1-7F4FCDDD61B4}.Debug|ARM32.Build.0 = Debug|Any CPU
+		{39C428B3-A5DD-409C-9EB1-7F4FCDDD61B4}.Debug|ARM64.ActiveCfg = Debug|Any CPU
+		{39C428B3-A5DD-409C-9EB1-7F4FCDDD61B4}.Debug|ARM64.Build.0 = Debug|Any CPU
+		{39C428B3-A5DD-409C-9EB1-7F4FCDDD61B4}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{39C428B3-A5DD-409C-9EB1-7F4FCDDD61B4}.Debug|x64.Build.0 = Debug|Any CPU
+		{39C428B3-A5DD-409C-9EB1-7F4FCDDD61B4}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{39C428B3-A5DD-409C-9EB1-7F4FCDDD61B4}.Debug|x86.Build.0 = Debug|Any CPU
+		{39C428B3-A5DD-409C-9EB1-7F4FCDDD61B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{39C428B3-A5DD-409C-9EB1-7F4FCDDD61B4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{39C428B3-A5DD-409C-9EB1-7F4FCDDD61B4}.Release|ARM32.ActiveCfg = Release|Any CPU
+		{39C428B3-A5DD-409C-9EB1-7F4FCDDD61B4}.Release|ARM32.Build.0 = Release|Any CPU
+		{39C428B3-A5DD-409C-9EB1-7F4FCDDD61B4}.Release|ARM64.ActiveCfg = Release|Any CPU
+		{39C428B3-A5DD-409C-9EB1-7F4FCDDD61B4}.Release|ARM64.Build.0 = Release|Any CPU
+		{39C428B3-A5DD-409C-9EB1-7F4FCDDD61B4}.Release|x64.ActiveCfg = Release|Any CPU
+		{39C428B3-A5DD-409C-9EB1-7F4FCDDD61B4}.Release|x64.Build.0 = Release|Any CPU
+		{39C428B3-A5DD-409C-9EB1-7F4FCDDD61B4}.Release|x86.ActiveCfg = Release|Any CPU
+		{39C428B3-A5DD-409C-9EB1-7F4FCDDD61B4}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

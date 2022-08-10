@@ -9,7 +9,7 @@ namespace CorgEng.GenericInterfaces.UtilityTypes.BinaryLists
 
     public delegate bool BinaryListValidityCheckDelegate<T>(T input);
 
-    public interface IBinaryList<T>
+    public interface IBinaryList<T> : IEnumerable<T>
     {
 
         T TakeFirst();
