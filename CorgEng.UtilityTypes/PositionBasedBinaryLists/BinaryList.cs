@@ -1,5 +1,6 @@
 ﻿using CorgEng.GenericInterfaces.UtilityTypes.BinaryLists;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -140,5 +141,14 @@ namespace CorgEng.UtilityTypes.PositionBasedBinaryLists
                 return ElementsInRange(min, max, midPoint + 1, end);
         }
 
+        public IEnumerator<T> GetEnumerator()
+        {
+            return new BinaryListEnumerator<T>(this);
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return new BinaryListEnumerator<T>(this);
+        }
     }
 }
