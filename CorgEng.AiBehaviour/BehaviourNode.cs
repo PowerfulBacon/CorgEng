@@ -31,10 +31,11 @@ namespace CorgEng.AiBehaviour
             //Preaction completed
             if (!PreAction())
                 return false;
+
             //Complete subtasks
             foreach (BehaviourNode childNode in Subtasks)
             {
-                //If the child action failed
+                //Run the child action
                 if (!await childNode.Action())
                 {
                     //If the child node should cancel this task on fail, then cancel
