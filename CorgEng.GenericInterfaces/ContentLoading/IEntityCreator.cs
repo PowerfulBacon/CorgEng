@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CorgEng.GenericInterfaces.ContentLoading
 {
-    public interface IEntityDef : IPropertyDef
+    internal interface IEntityCreator
     {
     }
 }

@@ -22,9 +22,5 @@ namespace CorgEng.Example.Common.Components.Camera
             Camera = camera;
         }
 
-        public override bool SetProperty(string name, IPropertyDef property)
-        {
-            return false;
-        }
     }
 }

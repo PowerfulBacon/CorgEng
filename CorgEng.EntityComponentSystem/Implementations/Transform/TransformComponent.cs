@@ -25,10 +25,5 @@ namespace CorgEng.EntityComponentSystem.Implementations.Transform
         [NetworkSerialized(prototypeInclude = false)]
         public Vector<float> Position { get; internal set; } = new Vector<float>(0, 0);
 
-        public override bool SetProperty(string name, IPropertyDef property)
-        {
-            return false;
-        }
-
     }
 }

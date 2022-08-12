@@ -41,7 +41,7 @@ namespace CorgEng.Rendering.SpriteRendering
 
         public IBindablePropertyGroup TextureDetails { get; }
 
-        public IEntityDef TypeDef { get; set; }
+        public IEntityDefinition TypeDef { get; set; }
 
         public IBindableProperty<IMatrix> CombinedTransform { get; } = new BindableProperty<IMatrix>(new Matrix(new float[,] {
             { 1, 0, 0 },
@@ -130,18 +130,6 @@ namespace CorgEng.Rendering.SpriteRendering
         public ISharedRenderAttributes GetSharedRenderAttributes()
         {
             return new SpriteSharedRenderAttributes(TextureFile.Value);
-        }
-
-        public void PreInitialize(IVector<float> initializePosition)
-        { }
-
-        public void Initialize(IVector<float> initializePosition)
-        { }
-
-        public bool SetProperty(string name, IPropertyDef property)
-        {
-            //TODO: Textures can be loaded from the def file
-            return false;
         }
 
         public void AddOverlay(IIcon overlay)

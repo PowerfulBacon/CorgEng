@@ -15,7 +15,7 @@ namespace CorgEng.MapLoading
 
         public int MapHeight => throw new NotImplementedException();
 
-        public List<IEntityDef>[,] MapContents => throw new NotImplementedException();
+        public List<IEntityDefinition>[,] MapContents => throw new NotImplementedException();
 
     }
 }

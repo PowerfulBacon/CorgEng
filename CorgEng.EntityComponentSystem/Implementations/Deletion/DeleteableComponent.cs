@@ -11,10 +11,5 @@ namespace CorgEng.EntityComponentSystem.Implementations.Deletion
     public class DeleteableComponent : Component
     {
 
-        public override bool SetProperty(string name, IPropertyDef property)
-        {
-            return false;
-        }
-
     }
 }

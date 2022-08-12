@@ -17,10 +17,5 @@ namespace CorgEng.Networking.Components
         /// </summary>
         public IClient AttachedClient { get; set; }
 
-        public override bool SetProperty(string name, IPropertyDef property)
-        {
-            return false;
-        }
-
     }
 }

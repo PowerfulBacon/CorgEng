@@ -25,17 +25,9 @@ namespace CorgEng.EntityComponentSystem.Components
         /// </summary>
         public IEntity Parent { get; set; }
 
-        public IEntityDef TypeDef { get; set; }
+        public IEntityDefinition TypeDef { get; set; }
 
         public virtual bool IsSynced { get; } = true;
-
-        public void Initialize(IVector<float> initializePosition)
-        { }
-
-        public void PreInitialize(IVector<float> initializePosition)
-        { }
-
-        public abstract bool SetProperty(string name, IPropertyDef property);
 
         private List<InternalSignalHandleDelegate> componentInjectionLambdas = new List<InternalSignalHandleDelegate>();
 

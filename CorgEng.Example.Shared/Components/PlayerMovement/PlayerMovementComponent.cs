@@ -11,10 +11,5 @@ namespace CorgEng.Example.Components.PlayerMovement
     public class PlayerMovementComponent : Component
     {
 
-        public override bool SetProperty(string name, IPropertyDef property)
-        {
-            return false;
-        }
-
     }
 }
