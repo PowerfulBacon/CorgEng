@@ -10,17 +10,11 @@ namespace CorgEng.GenericInterfaces.ContentLoading.DefinitionNodes
     internal abstract class DefinitionNode
     {
 
-        /// <summary>
-        /// A list of our children
-        /// </summary>
-        internal List<DefinitionNode> Children { get; } = new List<DefinitionNode>();
-
-        internal DefinitionNode Parent { get; }
+        public List<DefinitionNode> Children { get; } = new List<DefinitionNode>();
 
         public DefinitionNode(DefinitionNode parent)
         {
-            //Set the parent node
-            Parent = parent;
+            parent?.Children.Add(this);
         }
 
         /// <summary>
@@ -30,19 +24,10 @@ namespace CorgEng.GenericInterfaces.ContentLoading.DefinitionNodes
         public abstract void ParseSelf(XmlNode node);
 
         /// <summary>
-        /// Spawn this node.
+        /// Called when the instance needs to be created
         /// </summary>
-        /// <param name="createdParent"></param>
-        public void CreateInstance(object createdParent)
-        {
-            object createdThing = CreateSelf(createdParent);
-            foreach (DefinitionNode childNode in Children)
-            {
-                childNode.CreateInstance(createdThing);
-            }
-        }
-
-        public abstract object CreateSelf(object createdParent);
+        /// <returns></returns>
+        public abstract object CreateInstance(object parent);
 
     }
 }

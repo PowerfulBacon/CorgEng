@@ -28,7 +28,9 @@ namespace CorgEng.ContentLoading
         public static void LoadEntities()
         {
             //Generate a list of typepaths
-            TypePaths = CorgEngMain.LoadedAssemblyModules.SelectMany(x => x.GetTypes())
+            TypePaths = CorgEngMain.LoadedAssemblyModules
+                .OrderBy(x => x.FullName)
+                .SelectMany(x => x.GetTypes())
                 .DistinctBy(x => x.Name)
                 .ToDictionary(x => x.Name, x => x);
 
@@ -39,17 +41,20 @@ namespace CorgEng.ContentLoading
                 XmlDocument xmlDocument = new XmlDocument();
                 try
                 {
-                    xmlDocument.LoadXml(fileName);
+                    xmlDocument.Load(fileName);
                 }
-                catch (XmlException)
+                catch (XmlException e)
                 {
+                    Logger?.WriteLine(e, LogType.ERROR);
                     continue;
                 }
                 //Check the root element
-                if (xmlDocument.FirstChild?.Name != "Entities")
+                if (xmlDocument.LastChild?.Name != "Entities")
                     continue;
                 foreach (XmlNode node in xmlDocument.ChildNodes)
                 {
+                    if (node is XmlDeclaration || node is XmlComment)
+                        continue;
                     RecursivelyParse(node);
                 }
             }
@@ -63,6 +68,9 @@ namespace CorgEng.ContentLoading
             DefinitionNode createdNode;
             switch (node.Name.ToLower())
             {
+                case "entities":
+                    createdNode = null;
+                    break;
                 case "entity":
                     createdNode = new EntityNode(parentNode);
                     break;
@@ -80,7 +88,7 @@ namespace CorgEng.ContentLoading
                     return;
             }
             //Parse our own node
-            createdNode.ParseSelf(node);
+            createdNode?.ParseSelf(node);
             //Parse children
             foreach (XmlNode child in node.ChildNodes)
             {
