@@ -33,20 +33,10 @@ namespace CorgEng.Tests.EntityComponentSystem
     }
 
     internal class TestComponent : Component
-    {
-        public override bool SetProperty(string name, IPropertyDef property)
-        {
-            return false;
-        }
-    }
+    { }
 
     internal class SecondaryTestComponent : Component
-    {
-        public override bool SetProperty(string name, IPropertyDef property)
-        {
-            return false;
-        }
-    }
+    { }
 
     internal class TestEntitySystem : EntitySystem
     {

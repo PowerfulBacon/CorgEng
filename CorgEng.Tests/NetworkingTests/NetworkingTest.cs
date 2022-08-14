@@ -197,12 +197,7 @@ namespace CorgEng.Tests.NetworkingTests
         }
 
         private class NetworkedTestComponent : Component
-        {
-            public override bool SetProperty(string name, IPropertyDef property)
-            {
-                return false;
-            }
-        }
+        { }
 
         private class NetworkedTestEntitySystem : EntitySystem
         {

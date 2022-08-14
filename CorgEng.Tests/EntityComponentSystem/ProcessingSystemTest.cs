@@ -23,7 +23,6 @@ namespace CorgEng.Tests.EntityComponentSystem
 
             public int timesProcessed = 0;
 
-            public override bool SetProperty(string name, IPropertyDef property) => false;
         }
 
         private class TestSystem : ProcessingSystem
