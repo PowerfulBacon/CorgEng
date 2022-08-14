@@ -120,7 +120,7 @@ namespace CorgEng.DependencyInjection.Injection
             Console.WriteLine($"Injected {requiredInjections.Count()} dependencies.");
         }
 
-        private static object GetDependencyInstance(Type interfaceType)
+        internal static object GetDependencyInstance(Type interfaceType)
         {
             //Locate dependency
             if (DependencyList.ContainsKey(interfaceType))

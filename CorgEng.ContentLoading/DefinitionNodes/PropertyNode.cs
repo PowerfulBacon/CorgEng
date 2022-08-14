@@ -1,4 +1,5 @@
 ﻿using CorgEng.ContentLoading;
+using CorgEng.ContentLoading.DefinitionNodes;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -59,11 +60,19 @@ namespace CorgEng.GenericInterfaces.ContentLoading.DefinitionNodes
             {
                 TargetProperty.SetValue(parent, PropertyValue);
             }
-            else
+            else if (Children[0] is ObjectNode childNode)
             {
-                ObjectNode childNode = Children[0] as ObjectNode;
                 object createdObject = childNode.CreateInstance(null);
                 TargetProperty.SetValue(parent, createdObject);
+            }
+            else if (Children[0] is DependencyNode dependencyNode)
+            {
+                object createdObject = dependencyNode.CreateInstance(null);
+                TargetProperty.SetValue(parent, createdObject);
+            }
+            else
+            {
+                throw new Exception("Failed to set property, invalid value.");
             }
             //Returns nothing
             return null;

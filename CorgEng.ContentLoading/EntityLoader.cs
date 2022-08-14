@@ -1,4 +1,5 @@
-﻿using CorgEng.Core;
+﻿using CorgEng.ContentLoading.DefinitionNodes;
+using CorgEng.Core;
 using CorgEng.Core.Dependencies;
 using CorgEng.Core.Modules;
 using CorgEng.GenericInterfaces.ContentLoading.DefinitionNodes;
@@ -29,8 +30,8 @@ namespace CorgEng.ContentLoading
         {
             //Generate a list of typepaths
             TypePaths = CorgEngMain.LoadedAssemblyModules
-                .OrderBy(x => x.FullName)
                 .SelectMany(x => x.GetTypes())
+                .OrderBy(x => x.FullName)
                 .DistinctBy(x => x.Name)
                 .ToDictionary(x => x.Name, x => x);
 
@@ -82,6 +83,9 @@ namespace CorgEng.ContentLoading
                     break;
                 case "component":
                     createdNode = new ComponentNode(parentNode);
+                    break;
+                case "dependency":
+                    createdNode = new DependencyNode(parentNode);
                     break;
                 default:
                     Logger?.WriteLine($"Unknown node in entitiy definition file: {node.Name}.", LogType.ERROR);

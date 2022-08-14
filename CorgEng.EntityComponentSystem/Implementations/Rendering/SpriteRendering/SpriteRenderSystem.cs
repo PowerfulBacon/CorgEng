@@ -38,6 +38,7 @@ namespace CorgEng.EntityComponentSystem.Implementations.Rendering.SpriteRenderin
             RegisterLocalEvent<SpriteRenderComponent, SetSpriteEvent>(OnSetSprite);
             RegisterLocalEvent<SpriteRenderComponent, SetSpriteRendererEvent>(OnSetRenderer);
             RegisterLocalEvent<SpriteRenderComponent, DeleteEntityEvent>(OnEntityDestroyed);
+            RegisterLocalEvent<SpriteRenderComponent, ComponentAddedEvent>(OnComponentAdded);
             RegisterLocalEvent<SpriteRenderComponent, MoveEvent>(OnEntityMoved);
             RegisterLocalEvent<SpriteRenderComponent, InitialiseNetworkedEntityEvent>(OnInitialise);
             RegisterLocalEvent<SpriteRenderComponent, AddOverlayEvent>(AddOverlay);
@@ -61,6 +62,14 @@ namespace CorgEng.EntityComponentSystem.Implementations.Rendering.SpriteRenderin
                 spriteRenderComponent.SpriteRenderer.StopRendering(spriteRenderComponent.SpriteRenderObject);
             spriteRenderComponent.SpriteRendererIdentifier = 0;
             spriteRenderComponent.SpriteRenderObject = null;
+        }
+
+        public void OnComponentAdded(IEntity entity, SpriteRenderComponent spriteRenderComponent, ComponentAddedEvent componentAddedEvent)
+        {
+            //If the client isn't running, abort
+            if (!CorgEngMain.IsRendering || spriteRenderComponent.Sprite == null)
+                return;
+            UpdateSprite(spriteRenderComponent);
         }
 
         /// <summary>
