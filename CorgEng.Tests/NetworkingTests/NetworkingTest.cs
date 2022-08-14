@@ -155,6 +155,7 @@ namespace CorgEng.Tests.NetworkingTests
         }
 
         [TestMethod]
+        [Timeout(5000)]
         public void TestClientKick()
         {
             if (TestRunning)
@@ -164,6 +165,7 @@ namespace CorgEng.Tests.NetworkingTests
         }
 
         [TestMethod]
+        [Timeout(5000)]
         public void TestBanning()
         {
             if (TestRunning)
