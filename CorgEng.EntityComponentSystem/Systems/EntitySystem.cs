@@ -27,10 +27,6 @@ namespace CorgEng.EntityComponentSystem.Systems
         /// </summary>
         internal class GlobalEventComponent : Component
         {
-            public override bool SetProperty(string name, IPropertyDef property)
-            {
-                return false;
-            }
         }
 
         [UsingDependency]

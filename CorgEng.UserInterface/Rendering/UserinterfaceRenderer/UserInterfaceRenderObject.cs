@@ -30,7 +30,7 @@ namespace CorgEng.UserInterface.Rendering.UserinterfaceRenderer
 
         public IBindablePropertyGroup TextureDetails { get; }
 
-        public IEntityDef TypeDef { get; set; }
+        public IEntityDefinition TypeDef { get; set; }
 
         public UserInterfaceRenderObject()
         {
@@ -61,18 +61,6 @@ namespace CorgEng.UserInterface.Rendering.UserinterfaceRenderer
         public ISharedRenderAttributes GetSharedRenderAttributes()
         {
             throw new NotImplementedException("User interface objects do not use shared render attributes: They are not instanced.");
-        }
-
-        public void PreInitialize(IVector<float> initializePosition)
-        { }
-
-        public void Initialize(IVector<float> initializePosition)
-        { }
-
-        public bool SetProperty(string name, IPropertyDef property)
-        {
-            //TODO: Textures can be loaded from the def file
-            return false;
         }
 
     }

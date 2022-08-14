@@ -1,5 +1,7 @@
 ﻿using CorgEng.DependencyInjection.Dependencies;
-using CorgEng.GenericInterfaces.UtilityTypes;
+using CorgEng.GenericInterfaces.ContentLoading;
+using CorgEng.GenericInterfaces.ContentLoading.DefinitionNodes;
+using CorgEng.GenericInterfaces.EntityComponentSystem;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,17 +11,29 @@ using System.Threading.Tasks;
 namespace CorgEng.ContentLoading
 {
     [Dependency]
-    public class EntityCreator
+    internal class EntityCreator : IEntityCreator
     {
 
         /// <summary>
-        /// Create an entity from the xml construct at a specified position.
+        /// The entity nodes by the name
         /// </summary>
-        /// <param name="name">The name of the entity's xml data.</param>
-        /// <param name="position">The position to spawn the entity at.</param>
-        public T CreateEntity<T>(string name, IVector<float> position)
+        public static Dictionary<string, EntityNode> EntityNodesByName = new Dictionary<string, EntityNode>();
+
+        /// <summary>
+        /// Create the entity
+        /// </summary>
+        /// <param name="entityName"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public IEntity CreateEntity(string entityName)
         {
-            return (T)EntityConfig.LoadedEntityDefs[name].InstantiateAt(position);
+            if (EntityNodesByName.ContainsKey(entityName))
+            {
+                return EntityNodesByName[entityName].CreateEntity();
+            }
+            //Entity not found :(
+            throw new Exception($"The entity with name {entityName} could not be spawned as it doesn't exist.");
         }
+
     }
 }

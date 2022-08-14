@@ -36,10 +36,6 @@ namespace CorgEng.Tests.NetworkingTests
         [NetworkSerialized(prototypeInclude = false)]
         public double DontSerialise { get; set; } = 10;
 
-        public override bool SetProperty(string name, IPropertyDef property)
-        {
-            return false;
-        }
     }
 
     [TestClass]

@@ -24,7 +24,7 @@ namespace CorgEng.GenericInterfaces.MapLoader
         /// The contents of the map file.
         /// Array of X and Y, with a list of all entities at that location.
         /// </summary>
-        List<IEntityDef>[,] MapContents { get; }
+        List<IEntityDefinition>[,] MapContents { get; }
 
     }
 }

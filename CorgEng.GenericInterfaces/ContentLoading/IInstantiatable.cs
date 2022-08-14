@@ -13,19 +13,7 @@ namespace CorgEng.GenericInterfaces.ContentLoading
     public interface IInstantiatable
     {
 
-        IEntityDef TypeDef { get; set; }
-
-        /// <summary>
-        /// Set the property of this object
-        /// </summary>
-        bool SetProperty(string name, IPropertyDef property);
-
-        /// <summary>
-        /// Called after the object has been instantiated and all the properties have been set.
-        /// </summary>
-        void Initialize(IVector<float> initializePosition);
-
-        void PreInitialize(IVector<float> initializePosition);
+        IEntityDefinition TypeDef { get; set; }
 
     }
 }
