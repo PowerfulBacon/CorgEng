@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace CorgEng.AiBehaviour
 {
-    internal abstract class BehaviourNode : IBehaviourNode
+    public abstract class BehaviourNode : IBehaviourNode
     {
 
         [UsingDependency]
