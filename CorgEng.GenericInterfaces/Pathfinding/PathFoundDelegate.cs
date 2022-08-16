@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CorgEng.GenericInterfaces.Pathfinding
 {
-    internal class PathFoundDelegate
-    {
-    }
+
+    public delegate void PathFoundDelegate(IPath path);
+
 }
