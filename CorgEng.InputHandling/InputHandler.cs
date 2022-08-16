@@ -78,7 +78,7 @@ namespace CorgEng.InputHandling
                     mouseReleaseEvent.HeldTime = CorgEngMain.Time - mouseDownAt;
                     //Raise synchronously, so we can determine if the event was handled
                     mouseReleaseEvent.RaiseGlobally(true);
-                    if (!mouseReleaseEvent.Handled)
+                    if (!mouseReleaseEvent.Handled && mouseReleaseEvent.MouseButton == MouseButton.Left)
                     {
                         WorldClickHandler.HandleWorldClick(mouseReleaseEvent, CorgEngMain.GameWindow.Width, CorgEngMain.GameWindow.Height);
                     }

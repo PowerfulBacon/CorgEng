@@ -37,7 +37,7 @@ namespace CorgEng.Rendering.Cameras.Isometic
             float widthMultiplier = (windowHeight / windowWidth) * (1.0f / (Width * 0.5f));
             float heightMultiplier = 1.0f / (Height * 0.5f);
             //Scale the X and Y
-            float worldX = (float)(x / widthMultiplier) - X;
+            float worldX = (float)(x / widthMultiplier) + X;
             float worldY = (float)(y / heightMultiplier) - Y;
             return new Vector<float>(worldX, -worldY);
         }
