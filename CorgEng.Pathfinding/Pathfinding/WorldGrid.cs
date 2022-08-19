@@ -39,7 +39,15 @@ namespace CorgEng.Pathfinding.Pathfinding
 
         public void RemoveElement(int x, int y)
         {
-
+            int? valueAtLocation = worldGrid.Get(x, y);
+            if (valueAtLocation - 1 == 0)
+            {
+                worldGrid.Remove(x, y);
+            }
+            else
+            {
+                worldGrid.Set(x, y, valueAtLocation - 1);
+            }
         }
 
     }
