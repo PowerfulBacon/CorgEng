@@ -18,7 +18,7 @@ namespace CorgEng.Pathfinding.Systems
         /// <summary>
         /// The world layers
         /// </summary>
-        private static Dictionary<int, WorldGrid> WorldLayers = new Dictionary<int, WorldGrid>();
+        internal static Dictionary<int, WorldGrid> WorldLayers = new Dictionary<int, WorldGrid>();
 
         public override EntitySystemFlags SystemFlags => EntitySystemFlags.HOST_SYSTEM;
 
