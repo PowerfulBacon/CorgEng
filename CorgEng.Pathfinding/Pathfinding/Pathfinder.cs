@@ -13,7 +13,7 @@ namespace CorgEng.Pathfinding.Pathfinding
     [Dependency]
     internal class Pathfinder : IPathfinder
     {
-        public async Task<IPath> GetPath(IPathfindingRequest pathfindingRequest)
+        public async Task<IPath?> GetPath(IPathfindingRequest pathfindingRequest)
         {
             //Perform pathfinding on an awaitable thread
             return await Task.Run(() => {

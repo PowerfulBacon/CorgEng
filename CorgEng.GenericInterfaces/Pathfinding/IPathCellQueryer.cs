@@ -21,7 +21,7 @@ namespace CorgEng.GenericInterfaces.Pathfinding
         /// <param name="position">The position that is trying to be entered.</param>
         /// <param name="enterDirection">The directino the cell is being entered from. If a node attempts to travel from below into this cell, it will be north.</param>
         /// <returns></returns>
-        bool CanEnterPosition(IVector<float> position, Direction enterDirection);
+        int EnterPositionCost(IVector<float> position, Direction enterDirection);
 
     }
 }
