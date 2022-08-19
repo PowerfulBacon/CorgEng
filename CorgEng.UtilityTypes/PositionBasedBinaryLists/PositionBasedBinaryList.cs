@@ -122,6 +122,26 @@ namespace CorgEng.UtilityTypes.PositionBasedBinaryLists
             }
             return output + "\n}";
         }
+
+        public void Set(int x, int y, T element)
+        {
+            //Locate the X element
+            BinaryList<T> located = list.ElementWithKey(x);
+            //X element contains nothing, initialize it
+            if (located == null)
+            {
+                BinaryList<T> createdList = new BinaryList<T>();
+                located = createdList;
+                list.Add(x, located);
+            }
+            //Add the y element
+            if (!located.ElementWithKey(y).Equals(default(T)))
+            {
+                located.Remove(y);
+            }
+            located.Add(y, element);
+        }
+
     }
 
 }

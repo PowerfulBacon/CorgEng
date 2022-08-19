@@ -9,6 +9,7 @@
     <Module>CorgEng.Logging</Module>
     <Module>CorgEng.Rendering</Module>
     <Module>CorgEng.Networking</Module>
+    <Module>CorgEng.Pathfinding</Module>
     <Module>CorgEng.UtilityTypes</Module>
     <Module>CorgEng.UserInterface</Module>
     <Module>CorgEng.World</Module>
