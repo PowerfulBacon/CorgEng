@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace CorgEng.Pathfinding.Pathfinding
 {
-    public class PathfindingRequest : IPathfindingRequest
+    internal class PathfindingRequest : IPathfindingRequest
     {
         public IVector<float> Start { get; set; }
 
