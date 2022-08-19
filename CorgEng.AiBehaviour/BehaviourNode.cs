@@ -15,7 +15,7 @@ namespace CorgEng.AiBehaviour
         [UsingDependency]
         private static IBinaryListFactory BinaryListFactory;
 
-        public abstract bool CanStart();
+        public abstract Task<bool> CanStart(IBehaviourManager manager);
 
         protected IBinaryList<BehaviourNode> Subtasks;
 
@@ -26,17 +26,21 @@ namespace CorgEng.AiBehaviour
             Subtasks = BinaryListFactory.CreateEmpty<BehaviourNode>();
         }
 
-        public async Task<bool> Action()
+        public async Task<bool> Action(IBehaviourManager manager)
         {
+            //If we canno start
+            if (!await CanStart(manager))
+                return false;
+
             //Preaction completed
-            if (!PreAction())
+            if (!await PreAction(manager))
                 return false;
 
             //Complete subtasks
             foreach (BehaviourNode childNode in Subtasks)
             {
                 //Run the child action
-                if (!await childNode.Action())
+                if (!await childNode.Action(manager))
                 {
                     //If the child node should cancel this task on fail, then cancel
                     if (childNode.ContinuationMode == BehaviourContinuationMode.CANCEL_ON_FAIL)
@@ -45,18 +49,18 @@ namespace CorgEng.AiBehaviour
             }
 
             //Actions completed
-            return PostAction();
+            return await PostAction(manager);
         }
 
         /// <summary>
         /// The action to run before running children nodes
         /// </summary>
-        public virtual bool PreAction() => true;
+        public virtual async Task<bool> PreAction(IBehaviourManager manager) => true;
 
         /// <summary>
         /// The action to run after running children nodes
         /// </summary>
-        public virtual bool PostAction() => true;
+        public virtual async Task<bool> PostAction(IBehaviourManager manager) => true;
 
     }
 }
