@@ -42,7 +42,7 @@ namespace CorgEng.AiBehaviour
         /// <summary>
         /// The root behaviour node
         /// </summary>
-        private BehaviourRoot root = new BehaviourRoot();
+        internal BehaviourRoot root = new BehaviourRoot();
 
         /// <summary>
         /// Setup the behaviour manager

@@ -13,9 +13,17 @@ namespace CorgEng.AiBehaviour.Factories
     internal class BehaviourManagerFactory : IBehaviourManagerFactory
     {
 
-        public IBehaviourManager CreateBehaviourManager(IEntity attachedPawn)
+        public IBehaviourManager CreateBehaviourManager(IEntity attachedPawn, params IBehaviourNode[] behaviourNodes)
         {
-            return new BehaviourManager(attachedPawn);
+            BehaviourManager createdManager = new BehaviourManager(attachedPawn);
+
+            int i = 0;
+            foreach (IBehaviourNode behaviourNode in behaviourNodes)
+            {
+                createdManager.root.AddSubtask(i, behaviourNode);
+            }
+
+            return createdManager;
         }
 
     }

@@ -32,5 +32,10 @@ namespace CorgEng.GenericInterfaces.AiBehaviours
         /// <returns>Returns false if the action failed.</returns>
         Task<bool> Action(IBehaviourManager manager);
 
+        /// <summary>
+        /// Add on a subtask to this task
+        /// </summary>
+        void AddSubtask(int priority, IBehaviourNode subtask);
+
     }
 }
