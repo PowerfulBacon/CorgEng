@@ -35,6 +35,9 @@ namespace CorgEng.Tests.Pathfinding
         [UsingDependency]
         private static ILogger Logger;
 
+        [UsingDependency]
+        private static IPathfindingRequestFactory PathfindingRequestFactory;
+
         /// <summary>
         /// Test a simple path
         /// </summary>
@@ -42,7 +45,7 @@ namespace CorgEng.Tests.Pathfinding
         [Timeout(5000)]
         public async Task TestSimplePath()
         {
-            PathfindingRequest pathfindingRequest = new PathfindingRequest(
+            IPathfindingRequest pathfindingRequest = PathfindingRequestFactory.CreateRequest(
                 new Vector<float>(0, 0),
                 new Vector<float>(0, 10),
                 new PathfindingTestQueryer(),
@@ -60,7 +63,7 @@ namespace CorgEng.Tests.Pathfinding
         [Timeout(5000)]
         public async Task TestDiagonalPath()
         {
-            PathfindingRequest pathfindingRequest = new PathfindingRequest(
+            IPathfindingRequest pathfindingRequest = PathfindingRequestFactory.CreateRequest(
                 new Vector<float>(0, 0),
                 new Vector<float>(10, 10),
                 new PathfindingTestQueryer(),
@@ -86,9 +89,27 @@ namespace CorgEng.Tests.Pathfinding
 
         [TestMethod]
         [Timeout(5000)]
+        public async Task TestFloatPositions()
+        {
+            IPathfindingRequest pathfindingRequest = PathfindingRequestFactory.CreateRequest(
+                new Vector<float>(0.1f, 0.3f),
+                new Vector<float>(10.2f, -10.6f),
+                new PathfindingWallTestQueryer(),
+                (path) => { },
+                () => {
+                    Assert.Fail("Pathfinding failed");
+                }
+                );
+            IPath foundPath = await Pathfinder.GetPath(pathfindingRequest);
+            Assert.IsNotNull(foundPath);
+            Logger.WriteLine(foundPath);
+        }
+
+        [TestMethod]
+        [Timeout(5000)]
         public async Task TestWallPath()
         {
-            PathfindingRequest pathfindingRequest = new PathfindingRequest(
+            IPathfindingRequest pathfindingRequest = PathfindingRequestFactory.CreateRequest(
                 new Vector<float>(0, 0),
                 new Vector<float>(10, -10),
                 new PathfindingWallTestQueryer(),

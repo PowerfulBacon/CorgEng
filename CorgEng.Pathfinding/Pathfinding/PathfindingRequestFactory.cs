@@ -1,6 +1,7 @@
 ﻿using CorgEng.DependencyInjection.Dependencies;
 using CorgEng.GenericInterfaces.Pathfinding;
 using CorgEng.GenericInterfaces.UtilityTypes;
+using CorgEng.UtilityTypes.Vectors;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,17 +16,17 @@ namespace CorgEng.Pathfinding.Pathfinding
 
         public IPathfindingRequest CreateRequest(IVector<float> start, IVector<float> end, IPathCellQueryer pathCellQueryer)
         {
-            return new PathfindingRequest(start, end, pathCellQueryer);
+            return new PathfindingRequest(start, (Vector<int>)(Vector<float>)end, pathCellQueryer);
         }
 
         public IPathfindingRequest CreateRequest(IVector<float> start, IVector<float> end, IPathCellQueryer pathCellQueryer, PathFoundDelegate onPathFound)
         {
-            return new PathfindingRequest(start, end, pathCellQueryer, onPathFound);     
+            return new PathfindingRequest(start, (Vector<int>)(Vector<float>)end, pathCellQueryer, onPathFound);     
         }
 
         public IPathfindingRequest CreateRequest(IVector<float> start, IVector<float> end, IPathCellQueryer pathCellQueryer, PathFoundDelegate onPathFound, PathFailedDelegate onPathFailed)
         {
-            return new PathfindingRequest(start, end, pathCellQueryer, onPathFound, onPathFailed);
+            return new PathfindingRequest(start, (Vector<int>)(Vector<float>)end, pathCellQueryer, onPathFound, onPathFailed);
         }
 
     }

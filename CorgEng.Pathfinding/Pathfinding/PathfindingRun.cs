@@ -33,7 +33,7 @@ namespace CorgEng.Pathfinding.Pathfinding
         {
             request = pathfindingRequest;
             //Add the first node
-            PathfinderNode initialNode = new PathfinderNode(null, (Vector<int>)(Vector<float>)request.Start, 0, (Vector<float>)request.End);
+            PathfinderNode initialNode = new PathfinderNode(null, (Vector<float>)request.Start, 0, (Vector<int>)request.End);
             examinationQueue.UpdateNode((Vector<float>)request.Start, 0, null, request);
             //Do processing until we can no longer process
             while (examinationQueue.HasNodes())
