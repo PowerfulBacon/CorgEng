@@ -1,4 +1,5 @@
-﻿using CorgEng.GenericInterfaces.UtilityTypes;
+﻿using CorgEng.GenericInterfaces.EntityComponentSystem;
+using CorgEng.GenericInterfaces.UtilityTypes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,6 +21,11 @@ namespace CorgEng.GenericInterfaces.AiBehaviours
         /// The position of our pawn
         /// </summary>
         IVector<float> Position { get; }
+
+        /// <summary>
+        /// The pawn that we belong to
+        /// </summary>
+        IEntity PawnEntity { get; set; }
 
         /// <summary>
         /// Process the behaviour manager node.
