@@ -28,6 +28,12 @@ namespace CorgEng.ContentLoading.DefinitionNodes
         /// </summary>
         private MethodInfo methodToCall;
 
+        private string[] dynamicKeys;
+
+        private bool[] isDynamic;
+
+        private bool hasDynamicParams = false;
+
         private object[] parameters;
 
         public DependencyNode(DefinitionNode parent) : base(parent)
@@ -36,6 +42,8 @@ namespace CorgEng.ContentLoading.DefinitionNodes
 
         public override void ParseSelf(XmlNode node)
         {
+            //Perform base parsing actions
+            base.ParseSelf(node);
             //Get the type name
             string typeName = node.Attributes["type"].Value;
             //The type
@@ -55,15 +63,47 @@ namespace CorgEng.ContentLoading.DefinitionNodes
             }
             //Get the parameters
             parameters = new object[node.ChildNodes.Count];
+            isDynamic = new bool[node.ChildNodes.Count];
+            dynamicKeys = new string[node.ChildNodes.Count];
             for (int i = 0; i < node.ChildNodes.Count; i ++)
             {
-                parameters[i] = TypeDescriptor.GetConverter(methodToCall.GetParameters()[i].ParameterType).ConvertFromString(node.ChildNodes[i].InnerText.Trim());
+                //Parse the static value of the node
+                if (!(node.ChildNodes[i].FirstChild is XmlElement))
+                {
+                    parameters[i] = TypeDescriptor.GetConverter(methodToCall.GetParameters()[i].ParameterType).ConvertFromString(node.ChildNodes[i].InnerText.Trim());
+                }
+                //Mark the node as dynamic
+                else
+                {
+                    //TODO: Allow for dynamic object parameters
+                    hasDynamicParams = true;
+                    isDynamic[i] = true;
+                    dynamicKeys[i] = node.FirstChild.InnerText.Trim();
+                }
             }
         }
 
-        public override object CreateInstance(object parent)
+        public override object CreateInstance(object parent, Dictionary<string, object> instanceRefs)
         {
-            return methodToCall.Invoke(dependencyObject, parameters);
+            //Set the parameters
+            if (hasDynamicParams)
+            {
+                for (int i = 0; i < isDynamic.Length; i++)
+                {
+                    if (isDynamic[i])
+                    {
+                        parameters[i] = instanceRefs[dynamicKeys[i]];
+                    }
+                }
+            }
+            //Call the method and get the result
+            object result = methodToCall.Invoke(dependencyObject, parameters);
+            //Store the created object
+            if (Key != null)
+            {
+                instanceRefs.Add(Key, result);
+            }
+            return result;
         }
 
     }

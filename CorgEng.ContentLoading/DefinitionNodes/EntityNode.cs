@@ -35,6 +35,8 @@ namespace CorgEng.GenericInterfaces.ContentLoading.DefinitionNodes
 
         public override void ParseSelf(XmlNode node)
         {
+            //Perform base parsing actions
+            base.ParseSelf(node);
             Name = node.Attributes["name"].Value;
             Abstract = node.Attributes["abstract"]?.Value.ToLower() == "true";
             EntityCreator.EntityNodesByName.Add(Name, this);
@@ -46,16 +48,21 @@ namespace CorgEng.GenericInterfaces.ContentLoading.DefinitionNodes
         /// <returns></returns>
         public IEntity CreateEntity()
         {
-            return (IEntity)CreateInstance(null);
+            return (IEntity)CreateInstance(null, new Dictionary<string, object>());
         }
 
-        public override object CreateInstance(object parent)
+        public override object CreateInstance(object parent, Dictionary<string, object> instanceRefs)
         {
             IEntity createdEntity = EntityFactory.CreateEmptyEntity();
+            //Store the key
+            if (Key != null)
+            {
+                instanceRefs.Add(Key, createdEntity);
+            }
             //Add on properties
             foreach (DefinitionNode childNode in Children)
             {
-                childNode.CreateInstance(createdEntity);
+                childNode.CreateInstance(createdEntity, instanceRefs);
             }
             return createdEntity;
         }

@@ -12,6 +12,8 @@ namespace CorgEng.GenericInterfaces.ContentLoading.DefinitionNodes
 
         public List<DefinitionNode> Children { get; } = new List<DefinitionNode>();
 
+        protected string? Key { get; private set; }
+
         public DefinitionNode(DefinitionNode parent)
         {
             parent?.Children.Add(this);
@@ -21,13 +23,16 @@ namespace CorgEng.GenericInterfaces.ContentLoading.DefinitionNodes
         /// Parse the node
         /// </summary>
         /// <param name="node"></param>
-        public abstract void ParseSelf(XmlNode node);
+        public virtual void ParseSelf(XmlNode node)
+        {
+            Key = node.Attributes["key"]?.Value;
+        }
 
         /// <summary>
         /// Called when the instance needs to be created
         /// </summary>
         /// <returns></returns>
-        public abstract object CreateInstance(object parent);
+        public abstract object CreateInstance(object parent, Dictionary<string, object> instanceRefs);
 
     }
 }
