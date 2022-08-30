@@ -47,7 +47,7 @@ namespace CorgEng.Pathfinding.Pathfinding
         /// <param name="position"></param>
         /// <param name="newDistance"></param>
         /// <param name="newSource"></param>
-        public void UpdateNode(Vector<float> position, float newDistance, PathfinderNode? newSource, IPathfindingRequest request)
+        public void UpdateNode(Vector<int> position, float newDistance, PathfinderNode? newSource, IPathfindingRequest request)
         {
             if (nodeLookup.ContainsKey(position))
             {
@@ -81,7 +81,7 @@ namespace CorgEng.Pathfinding.Pathfinding
             else
             {
                 //A new node was created
-                PathfinderNode createdNode = new PathfinderNode(newSource, position, newDistance, (Vector<float>)request.End);
+                PathfinderNode createdNode = new PathfinderNode(newSource, position, newDistance, (Vector<int>)request.End);
                 //Add the reference to this node
                 nodeLookup.Add(position, createdNode);
                 //Add the node to the new position in the queue

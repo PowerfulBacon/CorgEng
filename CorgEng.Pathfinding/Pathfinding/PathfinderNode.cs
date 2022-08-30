@@ -42,12 +42,13 @@ namespace CorgEng.Pathfinding.Pathfinding
         /// </summary>
         public Vector<int> Position { get; set; }
 
-        public PathfinderNode(PathfinderNode? source, Vector<int> position, float sourceDistance, Vector<float> destination)
+        public PathfinderNode(PathfinderNode? source, Vector<int> position, float sourceDistance, Vector<int> destination)
         {
             Source = source;
             SourceDistance = sourceDistance;
             EndDistance = QuickDistance(position, destination);
             Position = position;
+            Console.WriteLine(position);
         }
 
         public IPath CompilePath()
