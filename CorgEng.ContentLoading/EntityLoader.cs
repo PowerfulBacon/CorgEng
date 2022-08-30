@@ -87,6 +87,9 @@ namespace CorgEng.ContentLoading
                 case "dependency":
                     createdNode = new DependencyNode(parentNode);
                     break;
+                case "instance":
+                    createdNode = new InstanceNode(parentNode);
+                    break;
                 default:
                     Logger?.WriteLine($"Unknown node in entitiy definition file: {node.Name}.", LogType.ERROR);
                     return;
