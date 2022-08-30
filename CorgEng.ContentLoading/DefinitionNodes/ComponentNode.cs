@@ -23,10 +23,11 @@ namespace CorgEng.GenericInterfaces.ContentLoading.DefinitionNodes
             }
         }
 
-        public override object CreateInstance(object parent)
+        public override object CreateInstance(object parent, Dictionary<string, object> instanceRefs)
         {
-            IComponent createdComponent = base.CreateInstance(parent) as IComponent;
-
+            //Create the component
+            IComponent createdComponent = base.CreateInstance(parent, instanceRefs) as IComponent;
+            //Add the compoennt
             IEntity parentEntity = parent as IEntity;
             parentEntity.AddComponent(createdComponent);
             return createdComponent;

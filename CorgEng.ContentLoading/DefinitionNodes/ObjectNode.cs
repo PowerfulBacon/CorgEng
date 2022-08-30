@@ -21,6 +21,8 @@ namespace CorgEng.GenericInterfaces.ContentLoading.DefinitionNodes
 
         public override void ParseSelf(XmlNode node)
         {
+            //Perform base parsing actions
+            base.ParseSelf(node);
             string typeName = node.Attributes["type"].Value;
             if (!EntityLoader.TypePaths.ContainsKey(typeName))
             {
@@ -29,14 +31,19 @@ namespace CorgEng.GenericInterfaces.ContentLoading.DefinitionNodes
             ObjectType = EntityLoader.TypePaths[typeName];
         }
 
-        public override object CreateInstance(object parent)
+        public override object CreateInstance(object parent, Dictionary<string, object> instanceRefs)
         {
             //Create ourself
             object createdObject = Activator.CreateInstance(ObjectType);
+            //Store it
+            if (Key != null)
+            {
+                instanceRefs.Add(Key, createdObject);
+            }
             //Pass ourself to our children
             foreach (DefinitionNode childNode in Children)
             {
-                childNode.CreateInstance(createdObject);
+                childNode.CreateInstance(createdObject, instanceRefs);
             }
             //Return the created object
             return createdObject;

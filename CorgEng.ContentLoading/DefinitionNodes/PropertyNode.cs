@@ -38,6 +38,8 @@ namespace CorgEng.GenericInterfaces.ContentLoading.DefinitionNodes
 
         public override void ParseSelf(XmlNode node)
         {
+            //Perform base parsing actions
+            base.ParseSelf(node);
             //Get the property that we effect
             TargetProperty = ObjectParent.ObjectType.GetProperty(node.Attributes["name"].Value);
             //Determine our property value
@@ -54,20 +56,32 @@ namespace CorgEng.GenericInterfaces.ContentLoading.DefinitionNodes
             }
         }
 
-        public override object CreateInstance(object parent)
+        public override object CreateInstance(object parent, Dictionary<string, object> instanceRefs)
         {
             if (PropertyValue != null)
             {
                 TargetProperty.SetValue(parent, PropertyValue);
+                if (Key != null)
+                {
+                    instanceRefs.Add(Key, PropertyValue);
+                }
             }
             else if (Children[0] is ObjectNode childNode)
             {
-                object createdObject = childNode.CreateInstance(null);
+                object createdObject = childNode.CreateInstance(null, instanceRefs);
+                if (Key != null)
+                {
+                    instanceRefs.Add(Key, createdObject);
+                }
                 TargetProperty.SetValue(parent, createdObject);
             }
             else if (Children[0] is DependencyNode dependencyNode)
             {
-                object createdObject = dependencyNode.CreateInstance(null);
+                object createdObject = dependencyNode.CreateInstance(null, instanceRefs);
+                if (Key != null)
+                {
+                    instanceRefs.Add(Key, createdObject);
+                }
                 TargetProperty.SetValue(parent, createdObject);
             }
             else
