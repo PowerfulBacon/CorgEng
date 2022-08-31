@@ -72,6 +72,9 @@ namespace CorgEng.ContentLoading
                 case "entities":
                     createdNode = null;
                     break;
+                case "parameter":
+                    createdNode = new ParameterNode(parentNode);
+                    break;
                 case "entity":
                     createdNode = new EntityNode(parentNode);
                     break;
@@ -89,6 +92,12 @@ namespace CorgEng.ContentLoading
                     break;
                 case "instance":
                     createdNode = new InstanceNode(parentNode);
+                    break;
+                case "array":
+                    createdNode = new ArrayNode(parentNode);
+                    break;
+                case "element":
+                    createdNode = new ElementNode(parentNode);
                     break;
                 default:
                     Logger?.WriteLine($"Unknown node in entitiy definition file: {node.Name}.", LogType.ERROR);
