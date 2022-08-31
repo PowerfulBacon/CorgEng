@@ -28,8 +28,6 @@ namespace CorgEng.ContentLoading.DefinitionNodes
         /// </summary>
         private MethodInfo methodToCall;
 
-        private string[] dynamicKeys;
-
         private bool[] isDynamic;
 
         private bool hasDynamicParams = false;
@@ -64,7 +62,6 @@ namespace CorgEng.ContentLoading.DefinitionNodes
             //Get the parameters
             parameters = new object[node.ChildNodes.Count];
             isDynamic = new bool[node.ChildNodes.Count];
-            dynamicKeys = new string[node.ChildNodes.Count];
             for (int i = 0; i < node.ChildNodes.Count; i ++)
             {
                 //Parse the static value of the node
@@ -75,10 +72,8 @@ namespace CorgEng.ContentLoading.DefinitionNodes
                 //Mark the node as dynamic
                 else
                 {
-                    //TODO: Allow for dynamic object parameters
                     hasDynamicParams = true;
                     isDynamic[i] = true;
-                    dynamicKeys[i] = node.FirstChild.InnerText.Trim();
                 }
             }
         }
@@ -92,7 +87,7 @@ namespace CorgEng.ContentLoading.DefinitionNodes
                 {
                     if (isDynamic[i])
                     {
-                        parameters[i] = instanceRefs[dynamicKeys[i]];
+                        parameters[i] = Children[i].CreateInstance(parent, instanceRefs);
                     }
                 }
             }

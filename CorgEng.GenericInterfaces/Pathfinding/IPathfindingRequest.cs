@@ -12,7 +12,7 @@ namespace CorgEng.GenericInterfaces.Pathfinding
 
         IVector<float> Start { get; }
 
-        IVector<float> End { get; }
+        IVector<int> End { get; }
 
         /// <summary>
         /// Lets us query if we can enter a specified cell.

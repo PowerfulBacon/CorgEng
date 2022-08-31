@@ -13,7 +13,7 @@ namespace CorgEng.Pathfinding.Pathfinding
     {
         public IVector<float> Start { get; set; }
 
-        public IVector<float> End { get; set; }
+        public IVector<int> End { get; set; }
 
         public IPathCellQueryer PathCellQueryer { get; set; }
 
@@ -21,14 +21,14 @@ namespace CorgEng.Pathfinding.Pathfinding
 
         public PathFailedDelegate OnPathFailed { get; set; }
 
-        public PathfindingRequest(IVector<float> start, IVector<float> end, IPathCellQueryer pathCellQueryer)
+        public PathfindingRequest(IVector<float> start, IVector<int> end, IPathCellQueryer pathCellQueryer)
         {
             Start = start;
             End = end;
             PathCellQueryer = pathCellQueryer;
         }
 
-        public PathfindingRequest(IVector<float> start, IVector<float> end, IPathCellQueryer pathCellQueryer, PathFoundDelegate onPathFound)
+        public PathfindingRequest(IVector<float> start, IVector<int> end, IPathCellQueryer pathCellQueryer, PathFoundDelegate onPathFound)
         {
             Start = start;
             End = end;
@@ -36,7 +36,7 @@ namespace CorgEng.Pathfinding.Pathfinding
             OnPathFound = onPathFound;
         }
 
-        public PathfindingRequest(IVector<float> start, IVector<float> end, IPathCellQueryer pathCellQueryer, PathFoundDelegate onPathFound, PathFailedDelegate onPathFailed)
+        public PathfindingRequest(IVector<float> start, IVector<int> end, IPathCellQueryer pathCellQueryer, PathFoundDelegate onPathFound, PathFailedDelegate onPathFailed)
         {
             Start = start;
             End = end;
