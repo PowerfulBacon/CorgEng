@@ -17,13 +17,13 @@ namespace CorgEng.AiBehaviour
 
         public abstract Task<bool> CanStart(IBehaviourManager manager);
 
-        protected IBinaryList<BehaviourNode> Subtasks;
+        protected IBinaryList<IBehaviourNode> Subtasks;
 
         public abstract BehaviourContinuationMode ContinuationMode { get; }
 
         public BehaviourNode()
         {
-            Subtasks = BinaryListFactory.CreateEmpty<BehaviourNode>();
+            Subtasks = BinaryListFactory.CreateEmpty<IBehaviourNode>();
         }
 
         public async Task<bool> Action(IBehaviourManager manager)
@@ -62,5 +62,15 @@ namespace CorgEng.AiBehaviour
         /// </summary>
         public virtual async Task<bool> PostAction(IBehaviourManager manager) => true;
 
+        /// <summary>
+        /// Add on a subtask
+        /// </summary>
+        /// <param name="priority"></param>
+        /// <param name="subtask"></param>
+        /// <exception cref="NotImplementedException"></exception>
+        public void AddSubtask(int priority, IBehaviourNode subtask)
+        {
+            Subtasks.Add(priority, subtask);
+        }
     }
 }
