@@ -62,6 +62,8 @@ Updates the property of the parent type.
  - Can contain 'Property' nodes. This will affect the assigned value of this property, which will usually be the default value, unless already specified.
  - Can contain 'Object' nodes. This will create a new object and replace the default value of the property.
 
+---
+
 ### Object
 
 Creates a new object from a specified type. Can be used to create entities if the name attribute is used instead of the type.
@@ -78,6 +80,52 @@ Creates a new object from a specified type. Can be used to create entities if th
 ### Instance
 
 Fetches the created instance based on a key.
+
+---
+
+### Array
+
+Defines a collection of elements stored in an Array object.
+Requires a type to be specified - The type is not automatically inferred.
+
+#### Content:
+
+ - Can contain Element nodes
+
+#### Example
+
+An array of value types:
+
+```xml
+<Array type="Int32">
+    <Element>4</Element>
+    <Element>8</Element>
+    <Element>30</Element>
+    ...
+</Array>
+```
+
+An array of complex types:
+
+```xml
+<Array type="ComplexType">
+    <Element>
+        <Object type="ComplexType">
+            ...
+        </Object>
+    </Element>
+    ...
+</Array>
+```
+
+---
+
+### Element
+
+Defines an element of a collection type.
+Can either be a value type, or a complex type.
+
+---
 
 ## Sample File
 
