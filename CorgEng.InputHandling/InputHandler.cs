@@ -51,12 +51,16 @@ namespace CorgEng.InputHandling
 
         private void HandleScroll(IntPtr window, double x, double y)
         {
-            new MouseScrollEvent(y).RaiseGlobally();
+            //Synchronous to prevent subsystem overloading, will not render the
+            //next frame until this is handled.
+            new MouseScrollEvent(y).RaiseGlobally(synchronous: true);
         }
 
         private void HandleCursorMove(IntPtr window, double x, double y)
         {
-            new MouseMoveEvent(x, y).RaiseGlobally();
+            //Synchronous to prevent subsystem overloading, will not render the
+            //next frame until this is handled.
+            new MouseMoveEvent(x, y).RaiseGlobally(synchronous: true);
         }
 
         private double mouseDownAt = 0;
