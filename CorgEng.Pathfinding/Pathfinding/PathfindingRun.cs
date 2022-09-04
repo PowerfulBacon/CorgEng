@@ -6,6 +6,7 @@ using CorgEng.GenericInterfaces.UtilityTypes;
 using CorgEng.UtilityTypes.Vectors;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -31,6 +32,8 @@ namespace CorgEng.Pathfinding.Pathfinding
 
         public IPath? GetPath(IPathfindingRequest pathfindingRequest)
         {
+            Stopwatch timer = Stopwatch.StartNew();
+
             request = pathfindingRequest;
             //Add the first node
             PathfinderNode initialNode = new PathfinderNode(null, (Vector<float>)request.Start, 0, (Vector<int>)request.End);
@@ -42,10 +45,20 @@ namespace CorgEng.Pathfinding.Pathfinding
                 if (result != null)
                 {
                     request.OnPathFound?.Invoke(result);
+
+                    //Temp code to test performance.
+                    timer.Stop();
+                    Logger.WriteLine($"Pathfinding run completed in {timer.ElapsedMilliseconds}ms, examining {positionToNodeDictionary.Count} nodes.", LogType.TEMP);
+
                     return result;
                 }
             }
             request.OnPathFailed?.Invoke();
+
+            //Temp code to test performance.
+            timer.Stop();
+            Logger.WriteLine($"Pathfinding run failed in {timer.ElapsedMilliseconds}ms, examining {positionToNodeDictionary.Count} nodes.", LogType.TEMP);
+
             return null;
         }
 

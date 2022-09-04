@@ -1,4 +1,5 @@
-﻿using CorgEng.GenericInterfaces.UserInterface.Anchors;
+﻿using CorgEng.GenericInterfaces.EntityComponentSystem;
+using CorgEng.GenericInterfaces.UserInterface.Anchors;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,6 +28,13 @@ namespace CorgEng.GenericInterfaces.UserInterface.Components
         IUserInterfaceComponent Parent { get; }
 
         /// <summary>
+        /// An entity to hold the components for this interface component,
+        /// so we can have a component based user interface model despite
+        /// the oversight of not implementing it this way initially
+        /// </summary>
+        IEntity ComponentHolder { get; } 
+
+        /// <summary>
         /// If true, the user interface will automatically resize to always be fullscreen.
         /// </summary>
         bool Fullscreen { get; set; }
@@ -51,6 +59,16 @@ namespace CorgEng.GenericInterfaces.UserInterface.Components
         /// The minimum possible height of the user inetrface component in pixels.
         /// </summary>
         double MinimumPixelHeight { get; }
+
+        /// <summary>
+        /// Offset from the left of the parent component
+        /// </summary>
+        double LeftOffset { get; }
+
+        /// <summary>
+        /// Offset from the bottom of the parent component
+        /// </summary>
+        double BottomOffset { get; }
 
         /// <summary>
         /// Draw the user interface component to the screen
@@ -87,6 +105,25 @@ namespace CorgEng.GenericInterfaces.UserInterface.Components
         /// Recalculate the minimum pixel width and height
         /// </summary>
         void CalculateMinimumScales();
+
+        /// <summary>
+        /// Enable screencasting on this component.
+        /// Even if not rendering, this will
+        /// </summary>
+        void EnableScreencast();
+
+        /// <summary>
+        /// Disable screencasting on this component.
+        /// </summary>
+        void DisableScreencast();
+
+        /// <summary>
+        /// Get the component that was at the screen position
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <returns></returns>
+        IUserInterfaceComponent Screencast(int relativeX, int relativeY);
 
     }
 }

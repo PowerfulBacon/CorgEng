@@ -6,6 +6,7 @@ using CorgEng.Networking.Components;
 using CorgEng.Networking.EntitySystems;
 using CorgEng.Networking.VersionSync;
 using CorgEng.Tests.Stubs;
+using CorgEng.UserInterface;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
@@ -34,6 +35,7 @@ namespace CorgEng.Tests
             VersionGenerator.CreateNetworkedIDs();
             //Load any module loads that we HAVE to load
             ComponentExtensions.LoadPropertyInfoCache();
+            UserInterfaceModule.OnModuleLoad();
         }
 
     }

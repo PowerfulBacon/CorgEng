@@ -3,11 +3,13 @@ using CorgEng.Core;
 using CorgEng.Core.Dependencies;
 using CorgEng.Core.Rendering;
 using CorgEng.GenericInterfaces.Core;
+using CorgEng.GenericInterfaces.EntityComponentSystem;
 using CorgEng.GenericInterfaces.Logging;
 using CorgEng.GenericInterfaces.UserInterface.Anchors;
 using CorgEng.GenericInterfaces.UserInterface.Components;
 using CorgEng.GenericInterfaces.UserInterface.Rendering;
 using CorgEng.GenericInterfaces.UserInterface.Rendering.Renderer;
+using CorgEng.UserInterface.Hooks;
 using CorgEng.UserInterface.Rendering;
 using System;
 using System.Collections.Generic;
@@ -25,6 +27,9 @@ namespace CorgEng.UserInterface.Components
         [UsingDependency]
         private static ILogger Logger;
 
+        [UsingDependency]
+        private static IEntityFactory EntityFactory;
+
         /// <summary>
         /// The anchor details for this component
         /// </summary>
@@ -34,6 +39,13 @@ namespace CorgEng.UserInterface.Components
         /// The parent component for this user interface component
         /// </summary>
         public IUserInterfaceComponent Parent { get; }
+
+        /// <summary>
+        /// An entity to hold the components for this interface component,
+        /// so we can have a component based user interface model despite
+        /// the oversight of not implementing it this way initially
+        /// </summary>
+        public IEntity ComponentHolder { get; } = EntityFactory.CreateEmptyEntity();
 
         /// <summary>
         /// Is this component fullscreen?
@@ -355,5 +367,34 @@ namespace CorgEng.UserInterface.Components
 
         public override void PerformRender()
         { }
+
+        public IUserInterfaceComponent Screencast(int relativeX, int relativeY)
+        {
+            //Screencast children first (Children are above us)
+            foreach (IUserInterfaceComponent childComponent in Children)
+            {
+                //Determine new relative positions
+                int newRelativeX = relativeX - (int)childComponent.LeftOffset;
+                int newRelativeY = relativeY - (int)childComponent.BottomOffset;
+                IUserInterfaceComponent selected = childComponent.Screencast(newRelativeX, newRelativeY);
+                if (selected != null)
+                    return selected;
+            }
+            //Test ourselves
+            if (relativeX >= 0 && relativeY >= 0 && relativeX <= PixelWidth && relativeY <= PixelHeight)
+                return this;
+            //Nothing was hit
+            return null;
+        }
+
+        public void EnableScreencast()
+        {
+            UserInterfaceClickHook.ScreencastingComopnents.Add(this);
+        }
+
+        public void DisableScreencast()
+        {
+            UserInterfaceClickHook.ScreencastingComopnents.Remove(this);
+        }
     }
 }

@@ -40,6 +40,7 @@
     <ProjectReference Include="..\CorgEng.Constants\CorgEng.Constants.csproj" />
     <ProjectReference Include="..\CorgEng.Core\CorgEng.Core.csproj" />
     <ProjectReference Include="..\CorgEng.DependencyInjection\CorgEng.DependencyInjection.csproj" />
+    <ProjectReference Include="..\CorgEng.EntityComponentSystem\CorgEng.EntityComponentSystem.csproj" />
     <ProjectReference Include="..\CorgEng.GenericInterfaces\CorgEng.GenericInterfaces.csproj" />
     <ProjectReference Include="..\CorgEng.Rendering\CorgEng.Rendering.csproj" />
     <ProjectReference Include="..\CorgEng.UtilityTypes\CorgEng.UtilityTypes.csproj" />

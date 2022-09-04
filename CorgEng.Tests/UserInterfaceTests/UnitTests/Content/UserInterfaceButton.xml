@@ -1,0 +1,4 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<UserInterface>
+  <UserInterfaceButton leftAnchor="left:0" rightAnchor="right:0" topAnchor="top:0" bottomAnchor="bottom:0" onClick="PassTest" />
+</UserInterface>

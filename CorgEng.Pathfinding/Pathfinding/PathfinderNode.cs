@@ -48,7 +48,6 @@ namespace CorgEng.Pathfinding.Pathfinding
             SourceDistance = sourceDistance;
             EndDistance = QuickDistance(position, destination);
             Position = position;
-            Console.WriteLine(position);
         }
 
         public IPath CompilePath()
