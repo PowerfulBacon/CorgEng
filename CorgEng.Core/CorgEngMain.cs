@@ -1,4 +1,6 @@
-﻿using CorgEng.Core.Dependencies;
+﻿#define PERFORMANCE
+
+using CorgEng.Core.Dependencies;
 using CorgEng.Core.Modules;
 using CorgEng.Core.Rendering;
 using CorgEng.Core.Rendering.Exceptions;
@@ -111,6 +113,10 @@ namespace CorgEng.Core
         /// </summary>
         public static void TransferToRenderingThread()
         {
+#if PERFORMANCE
+            int i = 0;
+            double total = 0;
+#endif
             //While the window shouldn't close
             while (!GameWindow.ShouldClose())
             {
@@ -129,6 +135,17 @@ namespace CorgEng.Core
                 //Pass the output image from the render core to the internal renderer
                 InternalRenderMaster.RenderImageToScreen(MainRenderCore);
                 DeltaTime = Glfw.Time - lastFrameTime;
+#if PERFORMANCE
+                total += DeltaTime;
+                i++;
+                if (i >= 200)
+                {
+                    total /= i;
+                    Logger.WriteLine($"Average delta time: {total} seconds Avg FPS: ({1/total})", LogType.TEMP);
+                    i = 0;
+                    total = 0;
+                }
+#endif
             }
         }
 
