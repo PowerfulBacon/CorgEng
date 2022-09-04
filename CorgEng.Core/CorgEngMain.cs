@@ -1,4 +1,4 @@
-﻿#define PERFORMANCE
+﻿//#define PERFORMANCE
 
 using CorgEng.Core.Dependencies;
 using CorgEng.Core.Modules;
