@@ -17,6 +17,11 @@ namespace CorgEng.UserInterface.Style
 
         public IColour FillColour { get; set; } = new Colour(0, 0, 0);
 
+        /// <summary>
+        /// Colour change when hovered
+        /// </summary>
+        public IColour HoverColour { get; set; } = null;
+
         public override void ParseSettings(IDictionary<string, string> settings)
         {
             string output;
@@ -26,6 +31,8 @@ namespace CorgEng.UserInterface.Style
                 BorderColour = Colour.Parse(output);
             if (settings.TryGetValue("fillColour", out output))
                 FillColour = Colour.Parse(output);
+            if (settings.TryGetValue("hoverColour", out output))
+                HoverColour = Colour.Parse(output);
         }
 
     }

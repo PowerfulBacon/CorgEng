@@ -32,6 +32,8 @@ namespace CorgEng.UserInterface.Components
                 case "UserInterface":
                 case "UserInterfaceComponent":
                     return new UserInterfaceComponent(parent, anchorDetails);
+                case "UserInterfaceButton":
+                    return new UserInterfaceButton(parent, anchorDetails, arguments);
                 default:
                     throw new NotImplementedException($"The component {componentType} is not recognised.");
             }
