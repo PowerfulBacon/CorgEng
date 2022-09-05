@@ -15,9 +15,11 @@ using System.Threading;
 namespace CorgEng.Tests.EntityComponentSystem
 {
 
+    internal class UnregisterEvent : IEvent
+    { }
+
     internal class OtherEvent : IEvent
-    {
-    }
+    { }
 
     internal class TestEvent : IEvent
     {
@@ -49,8 +51,6 @@ namespace CorgEng.Tests.EntityComponentSystem
             RegisterLocalEvent<TestComponent, TestEvent>(HandleTestEvent);
             RegisterLocalEvent<SecondaryTestComponent, TestEvent>(HandleSecondaryTestEvent);
             RegisterGlobalEvent<TestEvent>(HandleGlobalEvent);
-<<<<<<< Updated upstream
-=======
             RegisterLocalEvent<TestComponent, UnregisterEvent>(UnregisterSelf);
             RegisterGlobalEvent<UnregisterEvent>(UnregisterSelfGlobally);
         }
@@ -67,7 +67,6 @@ namespace CorgEng.Tests.EntityComponentSystem
             UnregisterLocalEvent<TestComponent, UnregisterEvent>(UnregisterSelf);
             SignalTests.handlesReceieved++;
             Console.WriteLine(SignalTests.handlesReceieved);
->>>>>>> Stashed changes
         }
 
         private void HandleTestEvent(IEntity entity, TestComponent component, TestEvent eventDetails)
@@ -281,8 +280,6 @@ namespace CorgEng.Tests.EntityComponentSystem
             }
         }
 
-<<<<<<< Updated upstream
-=======
         [TestMethod]
         [Timeout(1000)]
         public void TestUnregisteringSignals()
@@ -305,6 +302,5 @@ namespace CorgEng.Tests.EntityComponentSystem
             Assert.AreEqual(2, handlesReceieved, "Should have receieved 2 handles.");
         }
 
->>>>>>> Stashed changes
     }
 }
