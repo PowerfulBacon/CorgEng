@@ -49,8 +49,10 @@ namespace CorgEng.EntityComponentSystem.Components
                 //Create a lambda function that injects this component and relays it to the system
                 InternalSignalHandleDelegate componentInjectionLambda = (IEntity entity, IEvent signal, bool synchronous) =>
                 {
-                    foreach (SystemEventHandlerDelegate systemEventHandler in systemEventHandlers)
-                        systemEventHandler.Invoke(entity, component, signal, synchronous);
+                    for (int i = systemEventHandlers.Count - 1; i >= 0; i--)
+                    {
+                        systemEventHandlers[i].Invoke(entity, component, signal, synchronous);
+                    }
                 };
                 if (!componentInjectionLambdas.ContainsKey(component))
                 {
