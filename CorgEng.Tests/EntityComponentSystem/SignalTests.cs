@@ -49,6 +49,25 @@ namespace CorgEng.Tests.EntityComponentSystem
             RegisterLocalEvent<TestComponent, TestEvent>(HandleTestEvent);
             RegisterLocalEvent<SecondaryTestComponent, TestEvent>(HandleSecondaryTestEvent);
             RegisterGlobalEvent<TestEvent>(HandleGlobalEvent);
+<<<<<<< Updated upstream
+=======
+            RegisterLocalEvent<TestComponent, UnregisterEvent>(UnregisterSelf);
+            RegisterGlobalEvent<UnregisterEvent>(UnregisterSelfGlobally);
+        }
+
+        private void UnregisterSelfGlobally(UnregisterEvent ungregisterEvent)
+        {
+            UnregisterGlobalEvent<UnregisterEvent>(UnregisterSelfGlobally);
+            SignalTests.handlesReceieved++;
+            Console.WriteLine(SignalTests.handlesReceieved);
+        }
+
+        private void UnregisterSelf(IEntity entity, TestComponent testComponent, UnregisterEvent ungregisterEvent)
+        {
+            UnregisterLocalEvent<TestComponent, UnregisterEvent>(UnregisterSelf);
+            SignalTests.handlesReceieved++;
+            Console.WriteLine(SignalTests.handlesReceieved);
+>>>>>>> Stashed changes
         }
 
         private void HandleTestEvent(IEntity entity, TestComponent component, TestEvent eventDetails)
@@ -262,5 +281,30 @@ namespace CorgEng.Tests.EntityComponentSystem
             }
         }
 
+<<<<<<< Updated upstream
+=======
+        [TestMethod]
+        [Timeout(1000)]
+        public void TestUnregisteringSignals()
+        {
+            Assert.AreEqual(0, handlesReceieved, "INCORRECT TEST CONFIGURATION");
+            Logger?.WriteLine($"Current thread: {Thread.CurrentThread.ManagedThreadId}. TestID: {currentTestId}");
+            //Create a test entity
+            Entity testEntity = new Entity();
+            //Add a test component
+            TestComponent testComponent = new TestComponent();
+            testEntity.AddComponent(testComponent);
+            //Test
+            Assert.AreEqual(0, handlesReceieved);
+            //Send a test signal
+            new UnregisterEvent().Raise(testEntity, true);
+            new UnregisterEvent().Raise(testEntity, true);
+            Assert.AreEqual(1, handlesReceieved, "Should have receieved 1 handle.");
+            new UnregisterEvent().RaiseGlobally(true);
+            new UnregisterEvent().RaiseGlobally(true);
+            Assert.AreEqual(2, handlesReceieved, "Should have receieved 2 handles.");
+        }
+
+>>>>>>> Stashed changes
     }
 }

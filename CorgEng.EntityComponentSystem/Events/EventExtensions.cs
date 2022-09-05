@@ -65,8 +65,8 @@ namespace CorgEng.EntityComponentSystem.Events
             if (RegisteredSystemSignalHandlers.ContainsKey(key))
             {
                 List<SystemEventHandlerDelegate> systemEventHandlers = RegisteredSystemSignalHandlers[key];
-                foreach (SystemEventHandlerDelegate systemEventHandler in systemEventHandlers)
-                    systemEventHandler.Invoke(null, null, signal, synchronous);
+                for (int i = systemEventHandlers.Count - 1; i >= 0; i--)
+                    systemEventHandlers[i].Invoke(null, null, signal, synchronous);
             }
         }
 
@@ -85,8 +85,8 @@ namespace CorgEng.EntityComponentSystem.Events
             if (RegisteredSystemSignalHandlers.ContainsKey(key))
             {
                 List<SystemEventHandlerDelegate> systemEventHandlers = RegisteredSystemSignalHandlers[key];
-                foreach (SystemEventHandlerDelegate systemEventHandler in systemEventHandlers)
-                    systemEventHandler.Invoke(null, null, signal, synchronous);
+                for (int i = systemEventHandlers.Count - 1; i >= 0; i--)
+                    systemEventHandlers[i].Invoke(null, null, signal, synchronous);
             }
             //Don't relay messages coming from other clients already
             if (!sourcedLocally)
@@ -104,8 +104,8 @@ namespace CorgEng.EntityComponentSystem.Events
                 return;
             }
             List<SystemEventHandlerDelegate> networkedEventHandlers = RegisteredSystemSignalHandlers[networkKey];
-            foreach (SystemEventHandlerDelegate systemEventHandler in networkedEventHandlers)
-                systemEventHandler.Invoke(null, null, new NetworkedEventRaisedEvent(signal), synchronous);
+            for (int i = networkedEventHandlers.Count - 1; i >= 0; i--)
+                networkedEventHandlers[i].Invoke(null, null, new NetworkedEventRaisedEvent(signal), synchronous);
         }
 
     }
