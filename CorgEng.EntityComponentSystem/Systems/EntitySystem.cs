@@ -167,6 +167,8 @@ namespace CorgEng.EntityComponentSystem.Systems
                 waitHandle.Set();
         }
 
+        private Dictionary<object, SystemEventHandlerDelegate> _globalLinkedHandlers = new Dictionary<object, SystemEventHandlerDelegate>();
+
         /// <summary>
         /// Registers a signal to a global event.
         /// </summary>
@@ -189,7 +191,7 @@ namespace CorgEng.EntityComponentSystem.Systems
             {
                 if (!RegisteredSystemSignalHandlers.ContainsKey(eventComponentPair))
                     RegisteredSystemSignalHandlers.Add(eventComponentPair, new List<SystemEventHandlerDelegate>());
-                RegisteredSystemSignalHandlers[eventComponentPair].Add((IEntity entity, IComponent component, IEvent signal, bool synchronous) =>
+                SystemEventHandlerDelegate createdEventHandler = (IEntity entity, IComponent component, IEvent signal, bool synchronous) =>
                 {
                     ConcurrentQueue<Action> targetQueue = synchronous ? priorityInvokationQueue : invokationQueue;
                     AutoResetEvent synchronousWaitEvent = synchronous ? new AutoResetEvent(false) : null;
@@ -214,7 +216,48 @@ namespace CorgEng.EntityComponentSystem.Systems
                     //If this event is synchronous, wait for completion
                     if (synchronous)
                         synchronousWaitEvent.WaitOne();
-                });
+                };
+                lock (_globalLinkedHandlers)
+                {
+                    if (_globalLinkedHandlers.ContainsKey(eventHandler))
+                        throw new Exception("Attempting to register a global signal handler that is already registered to this system.");
+                    _globalLinkedHandlers.Add(eventHandler, createdEventHandler);
+                }
+                RegisteredSystemSignalHandlers[eventComponentPair].Add(createdEventHandler);
+            }
+        }
+
+        /// <summary>
+        /// Unregister a global event
+        /// </summary>
+        /// <typeparam name="GEvent"></typeparam>
+        /// <param name="eventHandler"></param>
+        /// <exception cref="Exception"></exception>
+        public void UnregisterGlobalEvent<GEvent>(Action<GEvent> eventHandler)
+            where GEvent : IEvent
+        {
+            //Register the component to recieve the target event on the event manager
+            lock (EventManager.RegisteredEvents)
+            {
+                if (!EventManager.RegisteredEvents.ContainsKey(typeof(GlobalEventComponent)))
+                    throw new Exception("Attempted to unregister an event that was not present on the target entity system. (Component is not registered, are you using the right generic types?)");
+                if (!EventManager.RegisteredEvents[typeof(GlobalEventComponent)].Contains(typeof(GEvent)))
+                    throw new Exception("Attempted to unregister an event that was not present on the target entity system. (Event was not registered, are you using the right generic types?)");
+            }
+            //Register the system to receieve the event
+            EventComponentPair eventComponentPair = new EventComponentPair(typeof(GEvent), typeof(GlobalEventComponent));
+            lock (RegisteredSystemSignalHandlers)
+            {
+                if (!RegisteredSystemSignalHandlers.ContainsKey(eventComponentPair))
+                    RegisteredSystemSignalHandlers.Add(eventComponentPair, new List<SystemEventHandlerDelegate>());
+                //Hnadle unregistering
+                lock (_globalLinkedHandlers)
+                {
+                    if (!_globalLinkedHandlers.ContainsKey(eventHandler))
+                        throw new Exception("Attempting to unregister a global event handler that isn't currently registered.");
+                    RegisteredSystemSignalHandlers[eventComponentPair].Remove(_globalLinkedHandlers[eventHandler]);
+                    _globalLinkedHandlers.Remove(eventHandler);
+                }
             }
         }
 

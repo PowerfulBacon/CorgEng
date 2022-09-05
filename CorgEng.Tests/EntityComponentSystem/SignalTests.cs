@@ -19,8 +19,7 @@ namespace CorgEng.Tests.EntityComponentSystem
     { }
 
     internal class OtherEvent : IEvent
-    {
-    }
+    { }
 
     internal class TestEvent : IEvent
     {
@@ -53,6 +52,14 @@ namespace CorgEng.Tests.EntityComponentSystem
             RegisterLocalEvent<SecondaryTestComponent, TestEvent>(HandleSecondaryTestEvent);
             RegisterGlobalEvent<TestEvent>(HandleGlobalEvent);
             RegisterLocalEvent<TestComponent, UnregisterEvent>(UnregisterSelf);
+            RegisterGlobalEvent<UnregisterEvent>(UnregisterSelfGlobally);
+        }
+
+        private void UnregisterSelfGlobally(UnregisterEvent ungregisterEvent)
+        {
+            UnregisterGlobalEvent<UnregisterEvent>(UnregisterSelfGlobally);
+            SignalTests.handlesReceieved++;
+            Console.WriteLine(SignalTests.handlesReceieved);
         }
 
         private void UnregisterSelf(IEntity entity, TestComponent testComponent, UnregisterEvent ungregisterEvent)
@@ -290,6 +297,9 @@ namespace CorgEng.Tests.EntityComponentSystem
             new UnregisterEvent().Raise(testEntity, true);
             new UnregisterEvent().Raise(testEntity, true);
             Assert.AreEqual(1, handlesReceieved, "Should have receieved 1 handle.");
+            new UnregisterEvent().RaiseGlobally(true);
+            new UnregisterEvent().RaiseGlobally(true);
+            Assert.AreEqual(2, handlesReceieved, "Should have receieved 2 handles.");
         }
 
     }
