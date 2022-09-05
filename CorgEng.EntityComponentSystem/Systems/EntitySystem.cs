@@ -263,9 +263,12 @@ namespace CorgEng.EntityComponentSystem.Systems
 
         private static IEnumerable<Type> TypeCache;
 
+        private Dictionary<object, SystemEventHandlerDelegate> _linkedHandlers = new Dictionary<object, SystemEventHandlerDelegate>();
+
         /// <summary>
         /// Register to a local event
         /// </summary>
+        /// <returns>Returns a reference</returns>
         public void RegisterLocalEvent<GComponent, GEvent>(Action<IEntity, GComponent, GEvent> eventHandler)
             where GComponent : IComponent
             where GEvent : IEvent
@@ -277,6 +280,7 @@ namespace CorgEng.EntityComponentSystem.Systems
                     .SelectMany(assembly => assembly.GetTypes());
             }
             IEnumerable<Type> typesToRegister = TypeCache.Where(type => typeof(GComponent).IsAssignableFrom(type));
+            SystemEventHandlerDelegate createdEventHandler = null;
             //Determine all types that need to be registered
             foreach (Type typeToRegister in typesToRegister)
             {
@@ -294,7 +298,8 @@ namespace CorgEng.EntityComponentSystem.Systems
                 {
                     if (!RegisteredSystemSignalHandlers.ContainsKey(eventComponentPair))
                         RegisteredSystemSignalHandlers.Add(eventComponentPair, new List<SystemEventHandlerDelegate>());
-                    RegisteredSystemSignalHandlers[eventComponentPair].Add((IEntity entity, IComponent component, IEvent signal, bool synchronous) =>
+                    //Create and return an event handler so that it can be 
+                    createdEventHandler = (IEntity entity, IComponent component, IEvent signal, bool synchronous) =>
                     {
                         //Check if we don't process
                         if (NetworkConfig != null
@@ -318,9 +323,66 @@ namespace CorgEng.EntityComponentSystem.Systems
                         //If this event is synchronous, wait for completion
                         if (synchronous)
                             synchronousWaitEvent.WaitOne();
-                    });
+                    };
+                    lock (_linkedHandlers)
+                    {
+                        if (_linkedHandlers.ContainsKey(eventHandler))
+                            throw new Exception("Attempting to register an event that is already registered.");
+                        _linkedHandlers.Add(eventHandler, createdEventHandler);
+                    }
+                    RegisteredSystemSignalHandlers[eventComponentPair].Add(createdEventHandler);
                 }
             }
         }
+
+        /// <summary>
+        /// Allows a signal to be unregistered
+        /// </summary>
+        /// <typeparam name="GComponent"></typeparam>
+        /// <typeparam name="GEvent"></typeparam>
+        /// <param name="handlerToRemove"></param>
+        public void UnregisterLocalEvent<GComponent, GEvent>(Action<IEntity, GComponent, GEvent> eventHandler)
+            where GComponent : IComponent
+            where GEvent : IEvent
+        {
+            //Handle assembly cache
+            if (TypeCache == null)
+            {
+                TypeCache = CorgEngMain.LoadedAssemblyModules
+                    .SelectMany(assembly => assembly.GetTypes());
+            }
+            IEnumerable<Type> typesToRegister = TypeCache.Where(type => typeof(GComponent).IsAssignableFrom(type));
+            //Determine all types that need to be registered
+            foreach (Type typeToRegister in typesToRegister)
+            {
+                //Register the component to recieve the target event on the event manager
+                lock (EventManager.RegisteredEvents)
+                {
+                    if (!EventManager.RegisteredEvents.ContainsKey(typeToRegister))
+                        throw new Exception("Attempted to unregister an event that was not present on the target entity system. (Component is not registered, are you using the right generic types?)");
+                    if (!EventManager.RegisteredEvents[typeToRegister].Contains(typeof(GEvent)))
+                        throw new Exception("Attempted to unregister an event that was not present on the target entity system. (Event was not registered, are you using the right generic types?)");
+                }
+                //Register the system to receieve the event
+                EventComponentPair eventComponentPair = new EventComponentPair(typeof(GEvent), typeToRegister);
+                lock (RegisteredSystemSignalHandlers)
+                {
+                    lock (_linkedHandlers)
+                    {
+                        if (!_linkedHandlers.ContainsKey(eventHandler))
+                        {
+                            throw new Exception($"Attempting to unregister an event handler that isn't registered on {GetType()}.");
+                        }
+                        //Create and return an event handler so that it can be 
+                        RegisteredSystemSignalHandlers[eventComponentPair].Remove(_linkedHandlers[eventHandler]);
+                        if (RegisteredSystemSignalHandlers[eventComponentPair].Count == 0)
+                        {
+                            RegisteredSystemSignalHandlers.Remove(eventComponentPair);
+                        }
+                    }
+                }
+            }
+        }
+
     }
 }
