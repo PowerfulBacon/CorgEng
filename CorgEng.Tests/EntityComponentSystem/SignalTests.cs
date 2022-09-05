@@ -15,6 +15,9 @@ using System.Threading;
 namespace CorgEng.Tests.EntityComponentSystem
 {
 
+    internal class UnregisterEvent : IEvent
+    { }
+
     internal class OtherEvent : IEvent
     {
     }
@@ -49,6 +52,14 @@ namespace CorgEng.Tests.EntityComponentSystem
             RegisterLocalEvent<TestComponent, TestEvent>(HandleTestEvent);
             RegisterLocalEvent<SecondaryTestComponent, TestEvent>(HandleSecondaryTestEvent);
             RegisterGlobalEvent<TestEvent>(HandleGlobalEvent);
+            RegisterLocalEvent<TestComponent, UnregisterEvent>(UnregisterSelf);
+        }
+
+        private void UnregisterSelf(IEntity entity, TestComponent testComponent, UnregisterEvent ungregisterEvent)
+        {
+            UnregisterLocalEvent<TestComponent, UnregisterEvent>(UnregisterSelf);
+            SignalTests.handlesReceieved++;
+            Console.WriteLine(SignalTests.handlesReceieved);
         }
 
         private void HandleTestEvent(IEntity entity, TestComponent component, TestEvent eventDetails)
@@ -260,6 +271,25 @@ namespace CorgEng.Tests.EntityComponentSystem
                 Assert.AreEqual(i, handlesReceieved);
                 Assert.AreEqual(true, testEvent.Handled);
             }
+        }
+
+        [TestMethod]
+        [Timeout(1000)]
+        public void TestUnregisteringSignals()
+        {
+            Assert.AreEqual(0, handlesReceieved, "INCORRECT TEST CONFIGURATION");
+            Logger?.WriteLine($"Current thread: {Thread.CurrentThread.ManagedThreadId}. TestID: {currentTestId}");
+            //Create a test entity
+            Entity testEntity = new Entity();
+            //Add a test component
+            TestComponent testComponent = new TestComponent();
+            testEntity.AddComponent(testComponent);
+            //Test
+            Assert.AreEqual(0, handlesReceieved);
+            //Send a test signal
+            new UnregisterEvent().Raise(testEntity, true);
+            new UnregisterEvent().Raise(testEntity, true);
+            Assert.AreEqual(1, handlesReceieved, "Should have receieved 1 handle.");
         }
 
     }
