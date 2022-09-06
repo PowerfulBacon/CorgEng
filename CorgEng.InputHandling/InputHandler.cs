@@ -60,7 +60,7 @@ namespace CorgEng.InputHandling
         {
             //Synchronous to prevent subsystem overloading, will not render the
             //next frame until this is handled.
-            new MouseMoveEvent(x, y).RaiseGlobally(synchronous: true);
+            new MouseMoveEvent(x / CorgEngMain.GameWindow.Width, y / CorgEngMain.GameWindow.Height).RaiseGlobally(synchronous: true);
         }
 
         private double mouseDownAt = 0;

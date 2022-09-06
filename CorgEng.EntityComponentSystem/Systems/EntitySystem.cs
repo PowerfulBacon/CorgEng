@@ -30,7 +30,7 @@ namespace CorgEng.EntityComponentSystem.Systems
         }
 
         [UsingDependency]
-        private static ILogger Logger;
+        protected static ILogger Logger;
 
         /// <summary>
         /// Network config, null if the application doesn't have networking capabilities.
@@ -197,17 +197,23 @@ namespace CorgEng.EntityComponentSystem.Systems
                     AutoResetEvent synchronousWaitEvent = synchronous ? new AutoResetEvent(false) : null;
                     targetQueue.Enqueue(() =>
                     {
-                        //Check if we don't process
-                        if (NetworkConfig != null
-                            && NetworkConfig.NetworkingActive
-                            && ((SystemFlags & EntitySystemFlags.HOST_SYSTEM) == 0 || !NetworkConfig.ProcessServerSystems)
-                            && ((SystemFlags & EntitySystemFlags.CLIENT_SYSTEM) == 0 || !NetworkConfig.ProcessClientSystems))
-                            return;
-                        eventHandler.Invoke((GEvent)signal);
-                        //If we were synchronous, indicate that the queuer can continue
-                        if (synchronous)
+                        try
                         {
-                            synchronousWaitEvent.Set();
+                            //Check if we don't process
+                            if (NetworkConfig != null
+                                && NetworkConfig.NetworkingActive
+                                && ((SystemFlags & EntitySystemFlags.HOST_SYSTEM) == 0 || !NetworkConfig.ProcessServerSystems)
+                                && ((SystemFlags & EntitySystemFlags.CLIENT_SYSTEM) == 0 || !NetworkConfig.ProcessClientSystems))
+                                return;
+                            eventHandler.Invoke((GEvent)signal);
+                        }
+                        finally
+                        {
+                            //If we were synchronous, indicate that the queuer can continue
+                            if (synchronous)
+                            {
+                                synchronousWaitEvent.Set();
+                            }
                         }
                     });
                     //Wake up the system if its sleeping
@@ -311,11 +317,17 @@ namespace CorgEng.EntityComponentSystem.Systems
                         AutoResetEvent synchronousWaitEvent = synchronous ? new AutoResetEvent(false) : null;
                         targetQueue.Enqueue(() =>
                         {
-                            eventHandler(entity, (GComponent)component, (GEvent)signal);
-                            //If we were synchronous, indicate that the queuer can continue
-                            if (synchronous)
+                            try
                             {
-                                synchronousWaitEvent.Set();
+                                eventHandler(entity, (GComponent)component, (GEvent)signal);
+                            }
+                            finally
+                            {
+                                //If we were synchronous, indicate that the queuer can continue
+                                if (synchronous)
+                                {
+                                    synchronousWaitEvent.Set();
+                                }
                             }
                         });
                         if (isWaiting)
