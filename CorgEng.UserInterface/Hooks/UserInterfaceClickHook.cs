@@ -32,10 +32,10 @@ namespace CorgEng.UserInterface.Hooks
         {
             foreach (UserInterfaceComponent component in ScreencastingComopnents)
             {
-                if (component.Screencast((int)(CorgEngMain.GameWindow.Width * x), (int)(CorgEngMain.GameWindow.Height * (1 - y))) is UserInterfaceBox)
+                if (component.Screencast((int)(CorgEngMain.GameWindow.Width * x), (int)(CorgEngMain.GameWindow.Height * (1 - y))) is UserInterfaceBox clickedBox)
                 {
                     //Send a clicked signal to the component
-                    new UserInterfaceClickEvent().Raise(component.ComponentHolder);
+                    new UserInterfaceClickEvent().Raise(clickedBox.ComponentHolder);
                     //Return true
                     return true;
                 }
