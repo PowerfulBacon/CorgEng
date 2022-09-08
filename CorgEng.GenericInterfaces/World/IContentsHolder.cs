@@ -14,19 +14,19 @@ namespace CorgEng.GenericInterfaces.World
         /// Insert an element into this tile
         /// </summary>
         /// <param name="entity"></param>
-        void Insert(IEntity entity);
+        void Insert(IWorldTrackComponent entity);
 
         /// <summary>
         /// Remove an element from the world tile
         /// </summary>
         /// <param name="entity"></param>
-        void Remove(IEntity entity);
+        void Remove(IWorldTrackComponent entity);
 
         /// <summary>
         /// Get all the contents of this world tile
         /// </summary>
         /// <returns></returns>
-        IEnumerable<IEntity> GetContents();
+        IEnumerable<IWorldTrackComponent> GetContents();
 
     }
 }

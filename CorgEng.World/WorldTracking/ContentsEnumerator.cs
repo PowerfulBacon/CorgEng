@@ -1,4 +1,5 @@
 ﻿using CorgEng.GenericInterfaces.EntityComponentSystem;
+using CorgEng.GenericInterfaces.World;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace CorgEng.World.WorldTracking
 {
-    internal class ContentsEnumerator : IEnumerator<IEntity>
+    internal class ContentsEnumerator : IEnumerator<IWorldTrackComponent>
     {
 
         /// <summary>
@@ -21,7 +22,7 @@ namespace CorgEng.World.WorldTracking
             reference = contentsHolder;
         }
 
-        public IEntity Current => head < reference.contentsArray.Length ? reference.contentsArray[head] : null;
+        public IWorldTrackComponent Current => head < reference.contentsArray.Length ? reference.contentsArray[head] : null;
 
         object IEnumerator.Current => reference.contentsArray[head];
 

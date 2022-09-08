@@ -2,6 +2,7 @@
 using CorgEng.GenericInterfaces.ContentLoading;
 using CorgEng.GenericInterfaces.Networking.Attributes;
 using CorgEng.UtilityTypes.Vectors;
+using CorgEng.World.Components;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,15 +16,21 @@ namespace CorgEng.EntityComponentSystem.Implementations.Transform
     /// with different positions, scales or rotations.
     /// This component is not networked, for a networked transform variant, use
     /// NetworkedTransformComponent from CorgEng.Networking.
+    /// Inherets from trackcomponent.
     /// </summary>
-    public class TransformComponent : Component
+    public class TransformComponent : TrackComponent
     {
+
+        public TransformComponent() : base("_world")
+        { }
 
         /// <summary>
         /// Start with a zero value
         /// </summary>
         [NetworkSerialized(prototypeInclude = false)]
         public Vector<float> Position { get; internal set; } = new Vector<float>(0, 0);
+
+        public override TransformComponent Transform => this;
 
     }
 }

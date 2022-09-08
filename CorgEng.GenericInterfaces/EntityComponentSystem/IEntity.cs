@@ -12,10 +12,6 @@ namespace CorgEng.GenericInterfaces.EntityComponentSystem
 
         List<IComponent> Components { get; }
 
-        int ContentsIndex { get; set; }
-
-        IVector<int> ContentsLocation { get; set; }
-
         uint Identifier { get; }
 
         void AddComponent(IComponent component);
