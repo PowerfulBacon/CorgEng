@@ -36,7 +36,7 @@ namespace CorgEng.InputHandling.ClickHandler
         //Track the last clicked location for cyclical selection of entities
         private static int lastClickedX = 0;
         private static int lastClickedY = 0;
-        private static IEnumerator<IEntity> contentEnumerator;
+        private static IEnumerator<IWorldTrackComponent> contentEnumerator;
 
         public override EntitySystemFlags SystemFlags => EntitySystemFlags.CLIENT_SYSTEM;
 
@@ -131,8 +131,8 @@ namespace CorgEng.InputHandling.ClickHandler
                     return;
                 }
             }
-            //Select the element
-            contentEnumerator.Current.AddComponent(new SelectedComponent());
+            //Select the element (TODO: SelectableComponent)
+            contentEnumerator.Current.Parent.AddComponent(new SelectedComponent());
             Logger.WriteLine($"({releaseEvent.CursorX * 2 - 1}, {releaseEvent.CursorY * 2 - 1}), {clickedLocation} Selected Entity: {contentEnumerator.Current}");
         }
     }

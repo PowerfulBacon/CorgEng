@@ -1,4 +1,5 @@
 ﻿using CorgEng.GenericInterfaces.EntityComponentSystem;
+using CorgEng.GenericInterfaces.World;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace CorgEng.World.WorldTracking
 {
-    internal class ContentsEnumerable : IEnumerable<IEntity>
+    internal class ContentsEnumerable : IEnumerable<IWorldTrackComponent>
     {
 
         private ContentsHolder holder;
@@ -18,7 +19,7 @@ namespace CorgEng.World.WorldTracking
             holder = parent;
         }
 
-        public IEnumerator<IEntity> GetEnumerator()
+        public IEnumerator<IWorldTrackComponent> GetEnumerator()
         {
             return new ContentsEnumerator(holder);
         }

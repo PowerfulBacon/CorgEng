@@ -18,7 +18,7 @@ namespace CorgEng.GenericInterfaces.World
         /// <param name="x"></param>
         /// <param name="y"></param>
         /// <param name="mapLevel"></param>
-        void AddEntity(IEntity entity, double x, double y, int mapLevel);
+        void AddEntity(IWorldTrackComponent trackComponent, double x, double y, int mapLevel);
 
         /// <summary>
         /// Removes an entity from world tracking
@@ -28,7 +28,7 @@ namespace CorgEng.GenericInterfaces.World
         /// <param name="x"></param>
         /// <param name="y"></param>
         /// <param name="mapLevel"></param>
-        void RemoveEntity(IEntity entity, double x, double y, int mapLevel);
+        void RemoveEntity(IWorldTrackComponent trackComponent, double x, double y, int mapLevel);
 
         /// <summary>
         /// Gets all of the contents at a given location.
@@ -44,21 +44,21 @@ namespace CorgEng.GenericInterfaces.World
         /// Adds an entity to the world tracking
         /// </summary>
         /// <param name="trackKey">The key of the map level to use. Allows for optimised searching of specific items that are searched a lot.</param>
-        /// <param name="entity"></param>
+        /// <param name="trackComponent"></param>
         /// <param name="x"></param>
         /// <param name="y"></param>
         /// <param name="mapLevel"></param>
-        void AddEntity(string trackKey, IEntity entity, double x, double y, int mapLevel);
+        void AddEntity(string trackKey, IWorldTrackComponent trackComponent, double x, double y, int mapLevel);
 
         /// <summary>
         /// Removes an entity from world tracking
         /// </summary>
         /// <param name="trackKey">The key of the map level to use. Allows for optimised searching of specific items that are searched a lot.</param>
-        /// <param name="entity"></param>
+        /// <param name="trackComponent"></param>
         /// <param name="x"></param>
         /// <param name="y"></param>
         /// <param name="mapLevel"></param>
-        void RemoveEntity(string trackKey, IEntity entity, double x, double y, int mapLevel);
+        void RemoveEntity(string trackKey, IWorldTrackComponent trackComponent, double x, double y, int mapLevel);
 
         /// <summary>
         /// Gets all of the contents at a given location.

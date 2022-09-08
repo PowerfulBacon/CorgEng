@@ -269,7 +269,7 @@ namespace CorgEng.EntityComponentSystem.Systems
 
         private static IEnumerable<Type> TypeCache;
 
-        private Dictionary<object, SystemEventHandlerDelegate> _linkedHandlers = new Dictionary<object, SystemEventHandlerDelegate>();
+        private Dictionary<(Type, object), SystemEventHandlerDelegate> _linkedHandlers = new Dictionary<(Type, object), SystemEventHandlerDelegate>();
 
         /// <summary>
         /// Register to a local event
@@ -338,9 +338,9 @@ namespace CorgEng.EntityComponentSystem.Systems
                     };
                     lock (_linkedHandlers)
                     {
-                        if (_linkedHandlers.ContainsKey(eventHandler))
+                        if (_linkedHandlers.ContainsKey((typeToRegister, eventHandler)))
                             throw new Exception("Attempting to register an event that is already registered.");
-                        _linkedHandlers.Add(eventHandler, createdEventHandler);
+                        _linkedHandlers.Add((typeToRegister, eventHandler), createdEventHandler);
                     }
                     RegisteredSystemSignalHandlers[eventComponentPair].Add(createdEventHandler);
                 }
@@ -381,12 +381,12 @@ namespace CorgEng.EntityComponentSystem.Systems
                 {
                     lock (_linkedHandlers)
                     {
-                        if (!_linkedHandlers.ContainsKey(eventHandler))
+                        if (!_linkedHandlers.ContainsKey((typeToRegister, eventHandler)))
                         {
                             throw new Exception($"Attempting to unregister an event handler that isn't registered on {GetType()}.");
                         }
                         //Create and return an event handler so that it can be 
-                        RegisteredSystemSignalHandlers[eventComponentPair].Remove(_linkedHandlers[eventHandler]);
+                        RegisteredSystemSignalHandlers[eventComponentPair].Remove(_linkedHandlers[(typeToRegister, eventHandler)]);
                         if (RegisteredSystemSignalHandlers[eventComponentPair].Count == 0)
                         {
                             RegisteredSystemSignalHandlers.Remove(eventComponentPair);

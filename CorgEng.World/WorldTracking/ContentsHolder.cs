@@ -35,7 +35,7 @@ namespace CorgEng.World.WorldTracking
         /// </summary>
         private int fragmentationFactor = 0;
 
-        internal IEntity[] contentsArray = new IEntity[DEFAULT_CONTENT_ARRAY_SIZE];
+        internal IWorldTrackComponent[] contentsArray = new IWorldTrackComponent[DEFAULT_CONTENT_ARRAY_SIZE];
 
         /// <summary>
         /// Maximum value used in the array
@@ -49,18 +49,18 @@ namespace CorgEng.World.WorldTracking
             position = new Vector<int>(x, y);
         }
 
-        public IEnumerable<IEntity> GetContents()
+        public IEnumerable<IWorldTrackComponent> GetContents()
         {
             return new ContentsEnumerable(this);
         }
 
-        public void Insert(IEntity entity)
+        public void Insert(IWorldTrackComponent entity)
         {
             //Array needs growing
             while (nextInsertionPointer == contentsArray.Length)
             {
-                IEntity[] arrayRef = contentsArray;
-                contentsArray = new Entity[arrayRef.Length * ARRAY_GROWTH_FACTORY];
+                IWorldTrackComponent[] arrayRef = contentsArray;
+                contentsArray = new IWorldTrackComponent[arrayRef.Length * ARRAY_GROWTH_FACTORY];
                 arrayRef.CopyTo(contentsArray, 0);
             }
             //Array needs defragmenting
@@ -81,21 +81,21 @@ namespace CorgEng.World.WorldTracking
                 fragmentationFactor = 0;
             }
             //Insert the entity
-            entity.ContentsIndex = nextInsertionPointer;
+            entity.ContentsIndexPosition = nextInsertionPointer;
             entity.ContentsLocation = position;
             contentsArray[nextInsertionPointer] = entity;
             //Insert the next entity in the next position
             nextInsertionPointer++;
         }
 
-        public void Remove(IEntity entity)
+        public void Remove(IWorldTrackComponent entity)
         {
             //Validation check
-            if (entity.ContentsIndex >= contentsArray.Length || entity.ContentsIndex < 0 || contentsArray[entity.ContentsIndex] != entity)
-                throw new Exception($"Invalid entity in WorldTile array, entity claims to be at position {entity.ContentsIndex}");
+            if (entity.ContentsIndexPosition >= contentsArray.Length || entity.ContentsIndexPosition < 0 || contentsArray[entity.ContentsIndexPosition] != entity)
+                throw new Exception($"Invalid entity in WorldTile array, entity claims to be at position {entity.ContentsIndexPosition}");
             //Remove the entity
-            contentsArray[entity.ContentsIndex] = null;
-            entity.ContentsIndex = -1;
+            contentsArray[entity.ContentsIndexPosition] = null;
+            entity.ContentsIndexPosition = -1;
             //Increase the fragmentation factor
             fragmentationFactor++;
         }

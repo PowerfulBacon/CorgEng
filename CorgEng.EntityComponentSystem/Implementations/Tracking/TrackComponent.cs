@@ -1,5 +1,8 @@
-﻿using CorgEng.EntityComponentSystem.Implementations.Transform;
+﻿using CorgEng.EntityComponentSystem.Components;
+using CorgEng.EntityComponentSystem.Implementations.Transform;
 using CorgEng.GenericInterfaces.EntityComponentSystem;
+using CorgEng.GenericInterfaces.UtilityTypes;
+using CorgEng.GenericInterfaces.World;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,12 +11,8 @@ using System.Threading.Tasks;
 
 namespace CorgEng.World.Components
 {
-    public class TrackComponent : IComponent
+    public class TrackComponent : Component, IWorldTrackComponent
     {
-
-        public bool IsSynced => false;
-
-        public IEntity Parent { get; set; }
 
         public string Key { get; set; }
 
@@ -21,13 +20,17 @@ namespace CorgEng.World.Components
         /// Get the transform linked to this component
         /// </summary>
         private TransformComponent _storedTransform;
-        public TransformComponent Transform {
+        public virtual TransformComponent Transform {
             get {
                 if(_storedTransform == null)
                     _storedTransform = Parent.GetComponent<TransformComponent>();
                 return _storedTransform;
             }
         }
+
+        public int ContentsIndexPosition { get; set; } = -1;
+
+        public IVector<int> ContentsLocation { get; set; } = null;
 
         public TrackComponent(string key)
         {

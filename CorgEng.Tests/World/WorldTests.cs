@@ -2,6 +2,7 @@
 using CorgEng.EntityComponentSystem.Entities;
 using CorgEng.GenericInterfaces.EntityComponentSystem;
 using CorgEng.GenericInterfaces.World;
+using CorgEng.World.Components;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
@@ -24,13 +25,13 @@ namespace CorgEng.Tests.World
         {
             Assert.IsNotNull(WorldAccess, "Dependency injection failed");
             //Create some entities
-            IEntity entityA = new Entity();
-            IEntity entityB = new Entity();
-            IEntity entityC = new Entity();
-            IEntity entityD = new Entity();
-            IEntity entityE = new Entity();
-            IEntity entityF = new Entity();
-            IEntity entityG = new Entity();
+            IWorldTrackComponent entityA = new TrackComponent("default");
+            IWorldTrackComponent entityB = new TrackComponent("default");
+            IWorldTrackComponent entityC = new TrackComponent("default");
+            IWorldTrackComponent entityD = new TrackComponent("default");
+            IWorldTrackComponent entityE = new TrackComponent("default");
+            IWorldTrackComponent entityF = new TrackComponent("default");
+            IWorldTrackComponent entityG = new TrackComponent("default");
             //Do some adding and removing
             WorldAccess.AddEntity(entityA, 1, 1, 0);
             WorldAccess.AddEntity(entityB, 1, 1, 0);
@@ -48,7 +49,7 @@ namespace CorgEng.Tests.World
             //(1, 1, 0)
             bool foundA = false;
             bool foundB = false;
-            foreach (IEntity entity in WorldAccess.GetContentsAt(1, 1, 0).GetContents())
+            foreach (IWorldTrackComponent entity in WorldAccess.GetContentsAt(1, 1, 0).GetContents())
             {
                 if (entity == entityA && !foundA)
                     foundA = true;
@@ -59,7 +60,7 @@ namespace CorgEng.Tests.World
             }
             //(-1, 0, 0)
             bool foundE = false;
-            foreach (IEntity entity in WorldAccess.GetContentsAt(-1, 0, 0).GetContents())
+            foreach (IWorldTrackComponent entity in WorldAccess.GetContentsAt(-1, 0, 0).GetContents())
             {
                 if (entity == entityE && !foundE)
                     foundE = true;
@@ -68,7 +69,7 @@ namespace CorgEng.Tests.World
             }
             //(0, 0, 6)
             bool foundD = false;
-            foreach (IEntity entity in WorldAccess.GetContentsAt(0, 0, 6).GetContents())
+            foreach (IWorldTrackComponent entity in WorldAccess.GetContentsAt(0, 0, 6).GetContents())
             {
                 if (entity == entityD && !foundD)
                     foundD = true;
@@ -77,7 +78,7 @@ namespace CorgEng.Tests.World
             }
             //('FG', 0, 0, 7)
             bool foundF = false;
-            foreach (IEntity entity in WorldAccess.GetContentsAt("FG", 0, 0, 7).GetContents())
+            foreach (IWorldTrackComponent entity in WorldAccess.GetContentsAt("FG", 0, 0, 7).GetContents())
             {
                 if (entity == entityF && !foundF)
                     foundF = true;
@@ -86,7 +87,7 @@ namespace CorgEng.Tests.World
             }
             //('FG', 0, 4, 6)
             bool foundG = false;
-            foreach (IEntity entity in WorldAccess.GetContentsAt("FG", 0, 4, 6).GetContents())
+            foreach (IWorldTrackComponent entity in WorldAccess.GetContentsAt("FG", 0, 4, 6).GetContents())
             {
                 if (entity == entityG && !foundG)
                     foundG = true;
