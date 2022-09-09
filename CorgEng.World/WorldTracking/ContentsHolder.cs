@@ -1,4 +1,6 @@
-﻿using CorgEng.Core.Dependencies;
+﻿#define DEBUG_MODE
+
+using CorgEng.Core.Dependencies;
 using CorgEng.EntityComponentSystem.Entities;
 using CorgEng.GenericInterfaces.EntityComponentSystem;
 using CorgEng.GenericInterfaces.Logging;
@@ -40,9 +42,11 @@ namespace CorgEng.World.WorldTracking
         /// <summary>
         /// Maximum value used in the array
         /// </summary>
-        internal int nextInsertionPointer = 0;
+        internal volatile int nextInsertionPointer = 0;
 
         private Vector<int> position;
+
+        public int Count { get; set; } = 0;
 
         public ContentsHolder(int x, int y)
         {
@@ -54,50 +58,88 @@ namespace CorgEng.World.WorldTracking
             return new ContentsEnumerable(this);
         }
 
+        private object _lock = new object();
+
         public void Insert(IWorldTrackComponent entity)
         {
-            //Array needs growing
-            while (nextInsertionPointer == contentsArray.Length)
+            lock (_lock)
             {
-                IWorldTrackComponent[] arrayRef = contentsArray;
-                contentsArray = new IWorldTrackComponent[arrayRef.Length * ARRAY_GROWTH_FACTORY];
-                arrayRef.CopyTo(contentsArray, 0);
-            }
-            //Array needs defragmenting
-            if (fragmentationFactor >= (nextInsertionPointer + 1) * FRAGMENTATION_PROPORTION_LIMIT)
-            {
-                int startPointer = 0;
-                int endPointer = 0;
-                while (endPointer < nextInsertionPointer)
+                if (entity.ContentsIndexPosition != -1)
                 {
-                    if (contentsArray[endPointer] != null)
-                    {
-                        contentsArray[startPointer++] = contentsArray[endPointer];
-                    }
-                    endPointer++;
+                    throw new Exception("Attempting to isnert an entity into a contents holder while it already is inside anotehr contents holder.");
                 }
-                //Defragmentation is completed
-                nextInsertionPointer = startPointer;
-                fragmentationFactor = 0;
+                //Array needs growing
+                while (nextInsertionPointer == contentsArray.Length)
+                {
+                    IWorldTrackComponent[] arrayRef = contentsArray;
+                    contentsArray = new IWorldTrackComponent[arrayRef.Length * ARRAY_GROWTH_FACTORY];
+                    arrayRef.CopyTo(contentsArray, 0);
+                }
+                //Array needs defragmenting
+                if (fragmentationFactor >= (nextInsertionPointer + 1) * FRAGMENTATION_PROPORTION_LIMIT)
+                {
+                    int startPointer = 0;
+                    int endPointer = 0;
+                    while (endPointer < nextInsertionPointer)
+                    {
+                        if (contentsArray[endPointer] != null)
+                        {
+                            //Shift the element
+                            contentsArray[startPointer] = contentsArray[endPointer];
+                            contentsArray[startPointer].ContentsIndexPosition = startPointer;
+                            if (endPointer != startPointer)
+                                contentsArray[endPointer] = null;
+                            startPointer++;
+                        }
+                        endPointer++;
+                    }
+                    //Defragmentation is completed
+                    nextInsertionPointer = startPointer;
+                    fragmentationFactor = 0;
+                }
+                //Increase count
+                Count++;
+                //Insert the entity
+                entity.ContentsIndexPosition = nextInsertionPointer;
+                entity.ContentsLocation = position;
+#if DEBUG_MODE
+                if (contentsArray[nextInsertionPointer] != null)
+                    throw new Exception("Something already exists at the insertion pointer.");
+#endif
+                contentsArray[nextInsertionPointer] = entity;
+                //Insert the next entity in the next position
+                nextInsertionPointer++;
             }
-            //Insert the entity
-            entity.ContentsIndexPosition = nextInsertionPointer;
-            entity.ContentsLocation = position;
-            contentsArray[nextInsertionPointer] = entity;
-            //Insert the next entity in the next position
-            nextInsertionPointer++;
         }
 
         public void Remove(IWorldTrackComponent entity)
         {
-            //Validation check
-            if (entity.ContentsIndexPosition >= contentsArray.Length || entity.ContentsIndexPosition < 0 || contentsArray[entity.ContentsIndexPosition] != entity)
-                throw new Exception($"Invalid entity in WorldTile array, entity claims to be at position {entity.ContentsIndexPosition}");
-            //Remove the entity
-            contentsArray[entity.ContentsIndexPosition] = null;
-            entity.ContentsIndexPosition = -1;
-            //Increase the fragmentation factor
-            fragmentationFactor++;
+            lock (_lock)
+            {
+                //Validation check
+                if (entity.ContentsIndexPosition >= contentsArray.Length || entity.ContentsIndexPosition < 0 || contentsArray[entity.ContentsIndexPosition] != entity)
+                {
+                    int locatedIndex = -1;
+                    int i = 0;
+                    foreach (IWorldTrackComponent element in contentsArray)
+                    {
+                        if (element == entity)
+                        {
+                            locatedIndex = i;
+                            break;
+                        }
+                        i++;
+                    }
+                    throw new Exception($"Invalid entity in WorldTile array, entity claims to be at position {entity.ContentsIndexPosition}. It was actually found at {locatedIndex}!");
+                }
+                //Remove the entity
+                contentsArray[entity.ContentsIndexPosition] = null;
+                entity.ContentsIndexPosition = -1;
+                //Decrease count
+                Count--;
+                //Increase the fragmentation factor
+                fragmentationFactor++;
+            }
         }
 
     }

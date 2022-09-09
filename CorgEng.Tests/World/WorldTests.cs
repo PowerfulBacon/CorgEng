@@ -3,6 +3,7 @@ using CorgEng.EntityComponentSystem.Entities;
 using CorgEng.GenericInterfaces.EntityComponentSystem;
 using CorgEng.GenericInterfaces.World;
 using CorgEng.World.Components;
+using CorgEng.World.EntitySystems;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
@@ -18,6 +19,54 @@ namespace CorgEng.Tests.World
 
         [UsingDependency]
         public static IWorld WorldAccess;
+
+        [TestMethod]
+        public void TestMassInsertion()
+        {
+            Assert.IsNotNull(WorldAccess, "Dependency injection failed");
+            //Create some entities
+            IWorldTrackComponent entityA = new TrackComponent("default");
+            IWorldTrackComponent entityB = new TrackComponent("default");
+            IWorldTrackComponent entityC = new TrackComponent("default");
+            IWorldTrackComponent entityD = new TrackComponent("default");
+            IWorldTrackComponent entityE = new TrackComponent("default");
+            IWorldTrackComponent entityF = new TrackComponent("default");
+            IWorldTrackComponent entityG = new TrackComponent("default");
+            WorldAccess.AddEntity(entityA, 19, 1, 0);
+            WorldAccess.AddEntity(entityB, 19, 1, 0);
+            WorldAccess.AddEntity(entityC, 19, 1, 0);
+            WorldAccess.AddEntity(entityD, 19, 1, 0);
+            WorldAccess.AddEntity(entityE, 19, 1, 0);
+            WorldAccess.AddEntity(entityF, 19, 1, 0);
+            WorldAccess.AddEntity(entityG, 19, 1, 0);
+            int count = 0;
+            foreach (IWorldTrackComponent entity in WorldAccess.GetContentsAt(19, 1, 0).GetContents())
+            {
+                count++;
+            }
+            Assert.AreEqual(7, count, "Expected 7 entities at that location.");
+            WorldAccess.RemoveEntity(entityA, 19, 1, 0);
+            WorldAccess.RemoveEntity(entityB, 19, 1, 0);
+            WorldAccess.RemoveEntity(entityC, 19, 1, 0);
+            WorldAccess.RemoveEntity(entityD, 19, 1, 0);
+            WorldAccess.RemoveEntity(entityE, 19, 1, 0);
+            WorldAccess.RemoveEntity(entityF, 19, 1, 0);
+            WorldAccess.RemoveEntity(entityG, 19, 1, 0);
+            Assert.IsNull(WorldAccess.GetContentsAt(19, 1, 0));
+            WorldAccess.AddEntity(entityA, 19, 1, 0);
+            WorldAccess.AddEntity(entityB, 19, 1, 0);
+            WorldAccess.AddEntity(entityC, 19, 1, 0);
+            WorldAccess.AddEntity(entityD, 19, 1, 0);
+            WorldAccess.RemoveEntity(entityD, 19, 1, 0);
+            WorldAccess.RemoveEntity(entityB, 19, 1, 0);
+            WorldAccess.AddEntity(entityE, 19, 1, 0);
+            count = 0;
+            foreach (IWorldTrackComponent entity in WorldAccess.GetContentsAt(19, 1, 0).GetContents())
+            {
+                count++;
+            }
+            Assert.AreEqual(3, count, "Expected 3 entities at that location.");
+        }
 
         [TestMethod]
         [Timeout(1000)]

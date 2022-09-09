@@ -35,6 +35,11 @@ namespace CorgEng.AiBehaviour
         }
 
         /// <summary>
+        /// The behaviour managers permanent memory
+        /// </summary>
+        private Dictionary<string, object> permanentMemoryStore = new Dictionary<string, object>();
+
+        /// <summary>
         /// The behaviour managers memory
         /// </summary>
         private Dictionary<string, object> memStore = new Dictionary<string, object>();
@@ -51,6 +56,18 @@ namespace CorgEng.AiBehaviour
         public BehaviourManager(IEntity pawnEntity)
         {
             PawnEntity = pawnEntity;
+        }
+
+        public async Task Process()
+        {
+            //Start thinking
+            Thinking = true;
+            //Process the root
+            await root.Action(this);
+            //Flush the temporary memory store
+            memStore.Clear();
+            //Finish thinking
+            Thinking = false;
         }
 
         public T? GetMemory<T>(string memory)
@@ -75,12 +92,26 @@ namespace CorgEng.AiBehaviour
             }
         }
 
-        public async Task Process()
+        public T? GetPermanentMemory<T>(string memory)
         {
-            //Start thinking
-            Thinking = true;
-            //Process the root
-            await root.Action(this);
+            if (!permanentMemoryStore.ContainsKey(memory))
+                return default;
+            return (T)permanentMemoryStore[memory];
+        }
+
+        public void SetPermanentMemory<T>(string memory, T? value)
+        {
+            if (permanentMemoryStore.ContainsKey(memory))
+            {
+                if (value == null)
+                    permanentMemoryStore.Remove(memory);
+                else
+                    permanentMemoryStore[memory] = value;
+            }
+            else if (value != null)
+            {
+                permanentMemoryStore.Add(memory, value);
+            }
         }
 
     }
