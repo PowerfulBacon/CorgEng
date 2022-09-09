@@ -1,5 +1,6 @@
 ﻿using CorgEng.Core.Dependencies;
 using CorgEng.EntityComponentSystem.Entities;
+using CorgEng.EntityComponentSystem.Implementations.Deletion;
 using CorgEng.GenericInterfaces.EntityComponentSystem;
 using CorgEng.GenericInterfaces.Logging;
 using CorgEng.GenericInterfaces.Networking.PrototypeManager;
@@ -131,6 +132,9 @@ namespace CorgEng.Networking.Prototypes
             //Go through each component and serialize it
             foreach (Type componentType in prototypeComponents.Keys)
             {
+                //Ignore deletable compoent since its common
+                if (componentType == typeof(DeleteableComponent))
+                    continue;
                 //First serialize a component identifier
                 ushort typeIdentifier = componentType.GetNetworkedIdentifier();
                 size += sizeof(ushort);

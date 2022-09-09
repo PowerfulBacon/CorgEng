@@ -2,6 +2,7 @@
 using CorgEng.EntityComponentSystem.Components;
 using CorgEng.EntityComponentSystem.Events;
 using CorgEng.EntityComponentSystem.Events.Events;
+using CorgEng.EntityComponentSystem.Implementations.Deletion;
 using CorgEng.GenericInterfaces.EntityComponentSystem;
 using CorgEng.GenericInterfaces.Logging;
 using CorgEng.GenericInterfaces.UtilityTypes;
@@ -51,12 +52,16 @@ namespace CorgEng.EntityComponentSystem.Entities
         {
             Identifier = EntityManager.GetNewEntityId();
             EntityManager.RegisterEntity(this);
+            //Entities are deletable by default
+            AddComponent(new DeleteableComponent());
         }
 
         public Entity(uint identifier)
         {
             Identifier = identifier;
             EntityManager.RegisterEntity(this);
+            //Entities are deletable by default
+            AddComponent(new DeleteableComponent());
         }
 
         ~Entity()
