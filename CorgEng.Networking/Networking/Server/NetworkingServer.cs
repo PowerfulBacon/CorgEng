@@ -111,7 +111,6 @@ namespace CorgEng.Networking.Networking.Server
             IEntity sampleEntity = new Entity();
             sampleEntity.AddComponent(new NetworkTransformComponent());
             sampleEntity.AddComponent(new ClientComponent());
-            sampleEntity.AddComponent(new DeleteableComponent());
             //Get the prototype
             DefaultEntityPrototype = PrototypeManager.GetPrototype(sampleEntity, false);
             //Delete the entity

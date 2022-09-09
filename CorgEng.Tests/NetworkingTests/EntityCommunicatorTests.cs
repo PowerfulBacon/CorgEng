@@ -1,5 +1,6 @@
 ﻿using CorgEng.Core.Dependencies;
 using CorgEng.EntityComponentSystem.Entities;
+using CorgEng.EntityComponentSystem.Implementations.Deletion;
 using CorgEng.GenericInterfaces.EntityComponentSystem;
 using CorgEng.GenericInterfaces.Logging;
 using CorgEng.GenericInterfaces.Networking.Networking;
@@ -64,6 +65,8 @@ namespace CorgEng.Tests.NetworkingTests
 
             foreach (IComponent component in deserialisedEntity.Components)
             {
+                if (component is DeleteableComponent)
+                    continue;
                 if (component is TestComponent addedTestComponent)
                 {
                     //Add a test component

@@ -94,7 +94,7 @@ namespace CorgEng.Tests.NetworkingTests
             IEntity createdEntity = deserialisedPrototype.CreateEntityFromPrototype();     //We don't care about the identifier for this test
             //Verify the entity is correct
             Assert.AreEqual(entity.Components.Count, createdEntity.Components.Count);
-            TestComponent deserializedComponent = (TestComponent)createdEntity.Components[0];
+            TestComponent deserializedComponent = (TestComponent)createdEntity.Components[1];
             Assert.AreEqual(59, deserializedComponent.Integer);
             Assert.AreEqual("Hello World!", deserializedComponent.Text);
             Assert.AreEqual(3.14159265, deserializedComponent.Double);
