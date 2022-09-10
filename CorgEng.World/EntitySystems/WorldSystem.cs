@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace CorgEng.World.EntitySystems
 {
-    internal class WorldSystem : EntitySystem
+    public class WorldSystem : EntitySystem
     {
 
         [UsingDependency]
@@ -52,7 +52,7 @@ namespace CorgEng.World.EntitySystems
         /// <param name="moveEvent"></param>
         private void OnEntityMoved(IEntity entity, TrackComponent trackComponent, MoveEvent moveEvent)
         {
-            WorldAccess.RemoveEntity(trackComponent.Key, trackComponent, moveEvent.OldPosition.X, moveEvent.OldPosition.Y, 0);
+            WorldAccess.RemoveEntity(trackComponent.Key, trackComponent, trackComponent.ContentsLocation.X, trackComponent.ContentsLocation.Y, 0);
             WorldAccess.AddEntity(trackComponent.Key, trackComponent, moveEvent.NewPosition.X, moveEvent.NewPosition.Y, 0);
         }
 
@@ -66,7 +66,7 @@ namespace CorgEng.World.EntitySystems
         {
             if (componentRemovedEvent.Component != trackComponent)
                 return;
-            WorldAccess.RemoveEntity(trackComponent.Key, trackComponent, trackComponent.Transform.Position.X, trackComponent.Transform.Position.Y, 0);
+            WorldAccess.RemoveEntity(trackComponent.Key, trackComponent, trackComponent.ContentsLocation.X, trackComponent.ContentsLocation.Y, 0);
         }
 
     }

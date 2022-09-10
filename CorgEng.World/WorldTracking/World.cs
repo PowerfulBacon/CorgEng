@@ -23,49 +23,65 @@ namespace CorgEng.World.WorldTracking
         [UsingDependency]
         private static IBinaryListFactory BinaryListFactory;
 
-        private IDictionary<string, IBinaryList<IPositionBasedBinaryList<ContentsHolder>>> _worldtiles;
+        private IDictionary<string, IBinaryList<IPositionBasedBinaryList<IContentsHolder>>> _worldtiles;
 
-        private IDictionary<string, IBinaryList<IPositionBasedBinaryList<ContentsHolder>>> WorldTiles
+        private IDictionary<string, IBinaryList<IPositionBasedBinaryList<IContentsHolder>>> WorldTiles
         {
             get
             {
                 if (_worldtiles == null)
-                    _worldtiles = new Dictionary<string, IBinaryList<IPositionBasedBinaryList<ContentsHolder>>>();
+                    _worldtiles = new Dictionary<string, IBinaryList<IPositionBasedBinaryList<IContentsHolder>>>();
                 return _worldtiles;
             }
         }
 
         public void AddEntity(string trackKey, IWorldTrackComponent trackComponent, double x, double y, int mapLevel)
         {
-            if (trackComponent.ContentsIndexPosition != -1)
-                throw new Exception($"Attempting to insert an entity while it is already in another location");
-            if (!WorldTiles.ContainsKey(trackKey))
+            //World is pretty important, so single thread it
+            lock (this)
             {
-                WorldTiles.Add(trackKey, BinaryListFactory.CreateEmpty<IPositionBasedBinaryList<ContentsHolder>>());
+                if (trackComponent.ContentsIndexPosition != -1)
+                    throw new Exception($"Attempting to insert an entity while it is already in another location");
+                if (!WorldTiles.ContainsKey(trackKey))
+                {
+                    WorldTiles.Add(trackKey, BinaryListFactory.CreateEmpty<IPositionBasedBinaryList<IContentsHolder>>());
+                }
+                IPositionBasedBinaryList<IContentsHolder> targetLevel = WorldTiles[trackKey].ElementWithKey(mapLevel);
+                //Get the z-level to affect
+                if (targetLevel == null)
+                {
+                    targetLevel = PositionBasedBinaryListFactory.CreateEmpty<IContentsHolder>();
+                    WorldTiles[trackKey].Add(mapLevel, targetLevel);
+                }
+                //Get the position to affect
+                int xInteger = (int)Math.Floor(x);
+                int yInteger = (int)Math.Floor(y);
+                //Add the entity
+                IContentsHolder worldTile = targetLevel.Get(xInteger, yInteger);
+                if (worldTile == null)
+                {
+                    worldTile = new ContentsHolder(xInteger, yInteger);
+                    targetLevel.Add(xInteger, yInteger, worldTile);
+                }
+                worldTile.Insert(trackComponent);
             }
-            IPositionBasedBinaryList<ContentsHolder> targetLevel = WorldTiles[trackKey].ElementWithKey(mapLevel);
-            //Get the z-level to affect
-            if (targetLevel == null)
-            {
-                targetLevel = PositionBasedBinaryListFactory.CreateEmpty<ContentsHolder>();
-                WorldTiles[trackKey].Add(mapLevel, targetLevel);
-            }
-            //Get the position to affect
-            int xInteger = (int)Math.Floor(x);
-            int yInteger = (int)Math.Floor(y);
-            //Add the entity
-            ContentsHolder worldTile = targetLevel.Get(xInteger, yInteger);
-            if (worldTile == null)
-            {
-                worldTile = new ContentsHolder(xInteger, yInteger);
-                targetLevel.Add(xInteger, yInteger, worldTile);
-            }
-            worldTile.Insert(trackComponent);
         }
 
         public void AddEntity(IWorldTrackComponent trackComponent, double x, double y, int mapLevel)
         {
             AddEntity("_world", trackComponent, x, y, mapLevel);
+        }
+
+        public IPositionBasedBinaryList<IContentsHolder> GetContents(int mapLevel)
+        {
+            return GetContents("_world", mapLevel);
+        }
+
+        public IPositionBasedBinaryList<IContentsHolder> GetContents(string trackKey, int mapLevel)
+        {
+            if (!WorldTiles.ContainsKey(trackKey))
+                return null;
+            return WorldTiles[trackKey].ElementWithKey(mapLevel);
         }
 
         public IContentsHolder GetContentsAt(string trackKey, double x, double y, int mapLevel)
@@ -82,21 +98,29 @@ namespace CorgEng.World.WorldTracking
 
         public void RemoveEntity(string trackKey, IWorldTrackComponent trackComponent, double x, double y, int mapLevel)
         {
-            if (trackComponent.ContentsIndexPosition == -1)
-                throw new Exception($"Attempting to remove an entity from an invalid location ({x}, {y})");
-            IPositionBasedBinaryList<ContentsHolder> targetLevel = WorldTiles[trackKey].ElementWithKey(mapLevel);
-            //Target doesn't exist
-            if (targetLevel == null)
-                return;
-            //Find the tile
-            //Get the position to affect
-            int xInteger = (int)Math.Floor(x);
-            int yInteger = (int)Math.Floor(y);
-            //Add the entity
-            ContentsHolder worldTile = targetLevel.Get(xInteger, yInteger);
-            if (worldTile == null)
-                return;
-            worldTile.Remove(trackComponent);
+            lock (this)
+            {
+                if (trackComponent.ContentsIndexPosition == -1)
+                    throw new Exception($"Attempting to remove an entity from an invalid location ({x}, {y})");
+                IPositionBasedBinaryList<IContentsHolder> targetLevel = WorldTiles[trackKey].ElementWithKey(mapLevel);
+                //Target doesn't exist
+                if (targetLevel == null)
+                    return;
+                //Find the tile
+                //Get the position to affect
+                int xInteger = (int)Math.Floor(x);
+                int yInteger = (int)Math.Floor(y);
+                //Add the entity
+                IContentsHolder worldTile = targetLevel.Get(xInteger, yInteger);
+                if (worldTile == null)
+                    return;
+                worldTile.Remove(trackComponent);
+                //If the world tile is empty, remove it from the world
+                if (worldTile.Count == 0)
+                {
+                    targetLevel.Remove(xInteger, yInteger);
+                }
+            }
         }
 
         public void RemoveEntity(IWorldTrackComponent trackComponent, double x, double y, int mapLevel)

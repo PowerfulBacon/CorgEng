@@ -1,4 +1,5 @@
 ﻿using CorgEng.GenericInterfaces.EntityComponentSystem;
+using CorgEng.GenericInterfaces.UtilityTypes.BinaryLists;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -69,6 +70,25 @@ namespace CorgEng.GenericInterfaces.World
         /// <param name="mapLevel"></param>
         /// <returns></returns>
         IContentsHolder GetContentsAt(string trackKey, double x, double y, int mapLevel);
+
+        /// <summary>
+        /// Gets the entire default map level contents.
+        /// This allows the position based binary list to be queried directly, for example
+        /// if large portions of the world need to be accessed.
+        /// </summary>
+        /// <param name="mapLevel">The map level to get from</param>
+        /// <returns></returns>
+        IPositionBasedBinaryList<IContentsHolder> GetContents(int mapLevel);
+
+        /// <summary>
+        /// Gets the entire map level contents.
+        /// This allows the position based binary list to be queried directly, for example
+        /// if large portions of the world need to be accessed.
+        /// </summary>
+        /// <param name="trackKey">The track key to gather.</param>
+        /// <param name="mapLevel">The map level to get from</param>
+        /// <returns></returns>
+        IPositionBasedBinaryList<IContentsHolder> GetContents(string trackKey, int mapLevel);
 
     }
 }

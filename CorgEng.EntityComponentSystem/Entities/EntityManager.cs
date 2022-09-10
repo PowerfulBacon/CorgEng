@@ -31,7 +31,7 @@ namespace CorgEng.EntityComponentSystem.Entities
 
         public static void RegisterEntity(IEntity entity)
         {
-            while (entityList.Length < entity.Identifier)
+            while (entityList.Length <= entity.Identifier)
             {
                 IEntity[] newEntityList = new IEntity[entityList.Length * 2];
                 entityList.CopyTo(newEntityList, 0);

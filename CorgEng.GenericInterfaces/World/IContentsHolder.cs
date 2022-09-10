@@ -11,6 +11,11 @@ namespace CorgEng.GenericInterfaces.World
     {
 
         /// <summary>
+        /// Amount of elements in the contents holder.
+        /// </summary>
+        public int Count { get; }
+
+        /// <summary>
         /// Insert an element into this tile
         /// </summary>
         /// <param name="entity"></param>

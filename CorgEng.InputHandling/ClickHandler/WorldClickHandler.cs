@@ -1,4 +1,5 @@
-﻿using CorgEng.Core;
+﻿using CorgEng.Constants;
+using CorgEng.Core;
 using CorgEng.Core.Dependencies;
 using CorgEng.EntityComponentSystem.Events;
 using CorgEng.EntityComponentSystem.Events.Events;
@@ -112,7 +113,7 @@ namespace CorgEng.InputHandling.ClickHandler
             //If we clicked on a different tile, reset the last contents index
             if (lastClickedX != clickedTileX || lastClickedY != clickedTileY || contentEnumerator == null)
             {
-                contentEnumerator = World.GetContentsAt(clickedTileX, clickedTileY, 0)?.GetContents().GetEnumerator();
+                contentEnumerator = World.GetContentsAt(clickedTileX, clickedTileY, TemporaryMapLayers.DEFAULT_MAP_LAYER)?.GetContents().GetEnumerator();
                 lastClickedX = clickedTileX;
                 lastClickedY = clickedTileY;
             }
