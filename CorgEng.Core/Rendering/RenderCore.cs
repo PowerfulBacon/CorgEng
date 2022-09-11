@@ -54,6 +54,7 @@ namespace CorgEng.Core.Rendering
         public int Height { get; internal set; } = 1080;
 
         private static int CurrentBlendSource = GL_SRC_ALPHA;
+
         private static int CurrentBlendDestination = GL_ONE_MINUS_SRC_ALPHA;
 
         public virtual int BlendSource { get; } = GL_SRC_ALPHA;

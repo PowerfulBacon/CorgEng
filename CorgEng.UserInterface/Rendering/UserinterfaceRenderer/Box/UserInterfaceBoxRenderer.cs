@@ -26,8 +26,8 @@ namespace CorgEng.UserInterface.Rendering.UserinterfaceRenderer.Box
         protected override void BindUniformLocations(UserInterfaceBoxRenderObject userInterfaceBoxRenderObject)
         {
             glUniform1f(UniformLocationBorderWidth, userInterfaceBoxRenderObject.Style.BorderWidth);
-            glUniform3f(UniformLocationBorderColour, userInterfaceBoxRenderObject.Style.BorderColour.Red, userInterfaceBoxRenderObject.Style.BorderColour.Green, userInterfaceBoxRenderObject.Style.BorderColour.Blue);
-            glUniform3f(UniformLocationFillColour, userInterfaceBoxRenderObject.Style.FillColour.Red, userInterfaceBoxRenderObject.Style.FillColour.Green, userInterfaceBoxRenderObject.Style.FillColour.Blue);
+            glUniform4f(UniformLocationBorderColour, userInterfaceBoxRenderObject.Style.BorderColour.Red, userInterfaceBoxRenderObject.Style.BorderColour.Green, userInterfaceBoxRenderObject.Style.BorderColour.Blue, userInterfaceBoxRenderObject.Style.BorderColour.Alpha);
+            glUniform4f(UniformLocationFillColour, userInterfaceBoxRenderObject.Style.FillColour.Red, userInterfaceBoxRenderObject.Style.FillColour.Green, userInterfaceBoxRenderObject.Style.FillColour.Blue, userInterfaceBoxRenderObject.Style.FillColour.Alpha);
         }
 
 

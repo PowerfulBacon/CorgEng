@@ -1,6 +1,7 @@
 ﻿using CorgEng.DependencyInjection.Dependencies;
 using CorgEng.GenericInterfaces.UserInterface.Anchors;
 using CorgEng.GenericInterfaces.UserInterface.Components;
+using CorgEng.UserInterface.UserInterfaceComponents;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,14 +14,16 @@ namespace CorgEng.UserInterface.Components
     internal class UserInterfaceComponentFactory : IUserInterfaceComponentFactory
     {
 
+        private static Dictionary<string, string> Empty { get; } = new Dictionary<string, string>();
+
         public IUserInterfaceComponent CreateGenericUserInterfaceComponent(IUserInterfaceComponent parent, IAnchor anchorDetails)
         {
-            return new UserInterfaceComponent(parent, anchorDetails);
+            return new UserInterfaceComponent(parent, anchorDetails, Empty);
         }
 
         public IUserInterfaceComponent CreateGenericUserInterfaceComponent(IAnchor anchorDetails)
         {
-            return new UserInterfaceComponent(anchorDetails);
+            return new UserInterfaceComponent(anchorDetails, Empty);
         }
 
         public IUserInterfaceComponent CreateUserInterfaceComponent(string componentType, IUserInterfaceComponent parent, IAnchor anchorDetails, IDictionary<string, string> arguments)
@@ -31,9 +34,11 @@ namespace CorgEng.UserInterface.Components
                     return new UserInterfaceBox(parent, anchorDetails, arguments);
                 case "UserInterface":
                 case "UserInterfaceComponent":
-                    return new UserInterfaceComponent(parent, anchorDetails);
+                    return new UserInterfaceComponent(parent, anchorDetails, arguments);
                 case "UserInterfaceButton":
                     return new UserInterfaceButton(parent, anchorDetails, arguments);
+                case "DropdownComponent":
+                    return new UserInterfaceDropdown(parent, anchorDetails, arguments);
                 default:
                     throw new NotImplementedException($"The component {componentType} is not recognised.");
             }

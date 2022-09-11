@@ -68,7 +68,7 @@ namespace CorgEng.EntityComponentSystem.Entities
         {
             Interlocked.Increment(ref EntityManager.GarbageCollectionCount);
             //Debug
-            Logger.WriteLine($"Entity GC'd. {EntityManager.GarbageCollectionCount}/{EntityManager.DeletionCount}", LogType.TEMP);
+            //Logger.WriteLine($"Entity GC'd. {EntityManager.GarbageCollectionCount}/{EntityManager.DeletionCount}", LogType.TEMP);
         }
 
         /// <summary>

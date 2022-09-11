@@ -5,6 +5,7 @@ using CorgEng.EntityComponentSystem.Events.Events;
 using CorgEng.GenericInterfaces.EntityComponentSystem;
 using CorgEng.GenericInterfaces.Logging;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,7 +21,7 @@ namespace CorgEng.EntityComponentSystem.Components
         [UsingDependency]
         private static ILogger Logger;
 
-        private static Dictionary<IComponent, List<InternalSignalHandleDelegate>> componentInjectionLambdas = new Dictionary<IComponent, List<InternalSignalHandleDelegate>>();
+        private static ConcurrentDictionary<IComponent, List<InternalSignalHandleDelegate>> componentInjectionLambdas = new ConcurrentDictionary<IComponent, List<InternalSignalHandleDelegate>>();
 
         /// <summary>
         /// Register existing signals when we are added
@@ -56,7 +57,7 @@ namespace CorgEng.EntityComponentSystem.Components
                 };
                 if (!componentInjectionLambdas.ContainsKey(component))
                 {
-                    componentInjectionLambdas.Add(component, new List<InternalSignalHandleDelegate>());
+                    componentInjectionLambdas.TryAdd(component, new List<InternalSignalHandleDelegate>());
                 }
                 lock (componentInjectionLambdas[component])
                 {
@@ -118,7 +119,7 @@ namespace CorgEng.EntityComponentSystem.Components
                         }
                         if (componentInjectionLambdas[component].Count == 0)
                         {
-                            componentInjectionLambdas.Remove(component);
+                            componentInjectionLambdas.TryRemove(component, out _);
                         }
                     }
                 }

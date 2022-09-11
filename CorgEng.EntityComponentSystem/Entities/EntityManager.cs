@@ -79,7 +79,7 @@ namespace CorgEng.EntityComponentSystem.Entities
             {
                 entity.RemoveComponent(entity.Components[i], false);
             }
-            Logger.WriteLine($"Entity deletion triggered. {GarbageCollectionCount}/{DeletionCount}", LogType.TEMP);
+            //Logger.WriteLine($"Entity deletion triggered. {GarbageCollectionCount}/{DeletionCount}", LogType.TEMP);
         }
 
     }
