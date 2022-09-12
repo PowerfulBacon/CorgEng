@@ -36,6 +36,10 @@ namespace CorgEng.UserInterface.UserInterfaceComponents
 
         private ITextObject internalTextObject;
 
+        protected override bool ScreencastInclude => false;
+
+        private bool ready = false;
+
         public UserInterfaceText(IAnchor anchorDetails, IDictionary<string, string> arguments) : base(anchorDetails, arguments)
         {
             Setup(arguments);
@@ -62,10 +66,13 @@ namespace CorgEng.UserInterface.UserInterfaceComponents
             string text = arguments["text"];
             internalTextObject = TextObjectFactory.CreateTextObject(spriteRenderer, font, text);
             internalTextObject.StartRendering();
+            ready = true;
         }
 
         public override void PerformRender()
         {
+            if (!ready)
+                return;
             IsometricCamera.X = 0.8f;
             IsometricCamera.Width = Width * 0.003f;
             IsometricCamera.Height = Height * 0.003f;

@@ -1,4 +1,5 @@
-﻿using CorgEng.EntityComponentSystem.Systems;
+﻿using CorgEng.Core;
+using CorgEng.EntityComponentSystem.Systems;
 using CorgEng.GenericInterfaces.EntityComponentSystem;
 using CorgEng.UserInterface.Components;
 using CorgEng.UserInterface.Events;
@@ -23,12 +24,18 @@ namespace CorgEng.UserInterface.Systems
 
         private void OnUserInterfaceElementClicked(IEntity entity, UserInterfaceClickerComponent clickerComponent, UserInterfaceClickEvent userInterfaceClickEvent)
         {
-            clickerComponent.InvokationMethod.Invoke(null, null);
+            CorgEngMain.ExecuteOnRenderingThread(() =>
+            {
+                clickerComponent.InvokationMethod.Invoke(null, new object[] { clickerComponent.ClickedComponent });
+            });
         }
 
         private void OnUserInterfaceActionElementClicked(IEntity entity, UserInterfaceClickActionComponent clickerComponent, UserInterfaceClickEvent userInterfaceClickEvent)
         {
-            clickerComponent.InvokationAction.Invoke();
+            CorgEngMain.ExecuteOnRenderingThread(() =>
+            {
+                clickerComponent.InvokationAction.Invoke();
+            });
         }
 
     }

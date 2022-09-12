@@ -17,7 +17,9 @@ namespace CorgEng.ContentLoading
         /// <summary>
         /// The entity nodes by the name
         /// </summary>
-        public static Dictionary<string, EntityNode> EntityNodesByName = new Dictionary<string, EntityNode>();
+        public static Dictionary<string, IEntityDefinition> EntityNodesByName = new Dictionary<string, IEntityDefinition>();
+
+        public Dictionary<string, IEntityDefinition> EntityNodes => EntityNodesByName;
 
         /// <summary>
         /// Create the entity

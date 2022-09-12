@@ -8,6 +8,7 @@ using CorgEng.GenericInterfaces.Logging;
 using CorgEng.GenericInterfaces.Rendering;
 using GLFW;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -77,6 +78,11 @@ namespace CorgEng.Core
         public static bool IsRendering { get; private set; } = false;
 
         /// <summary>
+        /// List of actions queued to be execuetd on the main thread
+        /// </summary>
+        private static ConcurrentQueue<Action> queuedActions = new ConcurrentQueue<Action>();
+
+        /// <summary>
         /// Initializes the CorgEng game engine.
         /// Will call initialization on all CorgEng modules.
         /// </summary>
@@ -121,6 +127,15 @@ namespace CorgEng.Core
             while (!GameWindow.ShouldClose())
             {
                 lastFrameTime = Glfw.Time;
+                //Trigger any render thread code
+                if (!queuedActions.IsEmpty)
+                {
+                    Action action;
+                    while (queuedActions.TryDequeue(out action))
+                    {
+                        action.Invoke();
+                    }
+                }
                 //Swap the framebuffers
                 GameWindow.SwapFramebuffers();
                 //Poll for system events to prevent the program from showing as hanging
@@ -334,6 +349,15 @@ namespace CorgEng.Core
             {
                 methodToInvoke.Invoke(null, new object[] { });
             }
+        }
+
+        /// <summary>
+        /// Queue something to be executed on the rendering thread
+        /// </summary>
+        /// <param name="action"></param>
+        public static void ExecuteOnRenderingThread(Action action)
+        {
+            queuedActions.Enqueue(action);
         }
 
     }

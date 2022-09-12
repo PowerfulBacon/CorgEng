@@ -14,7 +14,7 @@ using System.Xml;
 
 namespace CorgEng.ContentLoading
 {
-    internal class EntityLoader
+    public class EntityLoader
     {
 
         [UsingDependency]
@@ -34,6 +34,9 @@ namespace CorgEng.ContentLoading
                 .OrderBy(x => x.FullName)
                 .DistinctBy(x => x.Name)
                 .ToDictionary(x => x.Name, x => x);
+
+            //Clear existing nodes
+            EntityCreator.EntityNodesByName.Clear();
 
             //Load all files
             foreach (string fileName in Directory.GetFiles(".", "*.xml", SearchOption.AllDirectories))
