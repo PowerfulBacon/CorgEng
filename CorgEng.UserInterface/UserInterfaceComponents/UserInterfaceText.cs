@@ -66,8 +66,9 @@ namespace CorgEng.UserInterface.UserInterfaceComponents
 
         public override void PerformRender()
         {
-            //IsometricCamera.Width = Width * 0.001f;
-            //IsometricCamera.Height = Height * 0.001f;
+            IsometricCamera.X = 0.8f;
+            IsometricCamera.Width = Width * 0.003f;
+            IsometricCamera.Height = Height * 0.003f;
             spriteRenderer.Render(IsometricCamera);
         }
     }
