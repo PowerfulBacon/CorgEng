@@ -357,7 +357,16 @@ namespace CorgEng.Core
         /// <param name="action"></param>
         public static void ExecuteOnRenderingThread(Action action)
         {
-            queuedActions.Enqueue(action);
+            if (IsRendering)
+            {
+                //Rendering thread exists, queue the action
+                queuedActions.Enqueue(action);
+            }
+            else
+            {
+                //Headless mode, immedaitely execute
+                action.Invoke();
+            }
         }
 
     }

@@ -26,7 +26,7 @@ namespace CorgEng.Tests.UserInterfaceTests.UnitTests
         private static bool TestPassed = false;
 
         [UserInterfaceCodeCallback("PassTest")]
-        public static void OnButtonPressed()
+        public static void OnButtonPressed(IUserInterfaceComponent userInterfaceComponent)
         {
             TestPassed = true;
         }
