@@ -31,12 +31,12 @@ namespace CorgEng.UserInterface.Components
             get => boxRenderObject.Style;
         }
 
-        public UserInterfaceBox(IUserInterfaceComponent parent, IAnchor anchorDetails, IDictionary<string, string> arguments) : base(parent, anchorDetails)
+        public UserInterfaceBox(IUserInterfaceComponent parent, IAnchor anchorDetails, IDictionary<string, string> arguments) : base(parent, anchorDetails, arguments)
         {
             Setup(arguments);
         }
 
-        public UserInterfaceBox(IAnchor anchorDetails, IDictionary<string, string> arguments) : base(anchorDetails)
+        public UserInterfaceBox(IAnchor anchorDetails, IDictionary<string, string> arguments) : base(anchorDetails, arguments)
         {
             Setup(arguments);
         }

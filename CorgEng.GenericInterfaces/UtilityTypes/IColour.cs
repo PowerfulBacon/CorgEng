@@ -27,5 +27,11 @@ namespace CorgEng.GenericInterfaces.UtilityTypes
         /// </summary>
         public float Blue { get; set; }
 
+        /// <summary>
+        /// Alpha value.
+        /// Ranges from 0 to 1
+        /// </summary>
+        public float Alpha { get; set; }
+
     }
 }

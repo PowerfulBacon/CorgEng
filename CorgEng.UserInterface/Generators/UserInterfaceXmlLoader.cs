@@ -47,29 +47,37 @@ namespace CorgEng.UserInterface.Generators
 
         private IUserInterfaceComponent LoadFromXmlComponent(XElement node, IUserInterfaceComponent parent = null)
         {
-            //Load specific information from the config
-            IDictionary<string, string> parameters = new Dictionary<string, string>();
-            parameters = node.Attributes().ToDictionary(attribute => attribute.Name.LocalName, attribute => attribute.Value);
-            //Create a generic user interface component
-            IUserInterfaceComponent currentElement = UserInterfaceComponentFactory.CreateUserInterfaceComponent(
-                node.Name.LocalName,
-                parent,
-                AnchorFactory.CreateAnchor(
-                    GetAnchorDetails(node, AnchorDirections.LEFT),
-                    GetAnchorDetails(node, AnchorDirections.RIGHT),
-                    GetAnchorDetails(node, AnchorDirections.TOP),
-                    GetAnchorDetails(node, AnchorDirections.BOTTOM)
-                ),
-                parameters
-                );
-            //Parse children
-            foreach (XElement childElement in node.Elements())
+            try
             {
-                //Children are automatically added when created with a parent
-                LoadFromXmlComponent(childElement, currentElement);
+                //Load specific information from the config
+                IDictionary<string, string> parameters = new Dictionary<string, string>();
+                parameters = node.Attributes().ToDictionary(attribute => attribute.Name.LocalName, attribute => attribute.Value);
+                //Create a generic user interface component
+                IUserInterfaceComponent currentElement = UserInterfaceComponentFactory.CreateUserInterfaceComponent(
+                    node.Name.LocalName,
+                    parent,
+                    AnchorFactory.CreateAnchor(
+                        GetAnchorDetails(node, AnchorDirections.LEFT),
+                        GetAnchorDetails(node, AnchorDirections.RIGHT),
+                        GetAnchorDetails(node, AnchorDirections.TOP),
+                        GetAnchorDetails(node, AnchorDirections.BOTTOM)
+                    ),
+                    parameters
+                    );
+                //Parse children
+                foreach (XElement childElement in node.Elements())
+                {
+                    //Children are automatically added when created with a parent
+                    LoadFromXmlComponent(childElement, currentElement);
+                }
+                //Return the current one
+                return currentElement;
             }
-            //Return the current one
-            return currentElement;
+            catch (Exception e)
+            {
+                Logger.WriteLine(e, LogType.ERROR);
+                return null;
+            }
         }
 
         private IAnchorDetails GetAnchorDetails(XElement node, AnchorDirections side)

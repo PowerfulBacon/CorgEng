@@ -85,16 +85,27 @@ namespace CorgEng.UserInterface.Components
         public double BottomOffset { get; private set; }
 
         /// <summary>
+        /// Include self in screencasting?
+        /// if not, this element cannot be clicked, but its children can be clicked.
+        /// </summary>
+        protected virtual bool ScreencastInclude { get; } = true;
+
+        /// <summary>
+        /// Should this component be rendered?
+        /// </summary>
+        protected virtual bool RenderInclude { get; } = true;
+
+        /// <summary>
         /// A list of all of the user interface components contained within outself
         /// </summary>
-        private List<IUserInterfaceComponent> Children { get; } = new List<IUserInterfaceComponent>();
+        protected List<IUserInterfaceComponent> Children { get; } = new List<IUserInterfaceComponent>();
 
         /// <summary>
         /// A unique identifier for this component.
         /// </summary>
         private int uniqueId = IdCounter++;
 
-        public UserInterfaceComponent(IUserInterfaceComponent parent, IAnchor anchorDetails) : this(anchorDetails)
+        public UserInterfaceComponent(IUserInterfaceComponent parent, IAnchor anchorDetails, IDictionary<string, string> arguments) : this(anchorDetails, arguments)
         {
             //Set the parent
             Parent = parent;
@@ -102,7 +113,7 @@ namespace CorgEng.UserInterface.Components
             Parent?.AddChild(this);
         }
 
-        public UserInterfaceComponent(IAnchor anchorDetails)
+        public UserInterfaceComponent(IAnchor anchorDetails, IDictionary<string, string> arguments)
         {
             // Set the anchor details
             Anchor = anchorDetails;
@@ -140,7 +151,15 @@ namespace CorgEng.UserInterface.Components
                 userInterfaceComponent.SetWidth(CorgEngMain.MainRenderCore.Width, CorgEngMain.MainRenderCore.Height);
             }
             //Switch to the correct render core and draw it to the framebuffer
-            userInterfaceComponent.DoRender();
+            if (userInterfaceComponent.RenderInclude)
+            {
+                userInterfaceComponent.DoRender();
+            }
+            else
+            {
+                //Clear the buffer
+                userInterfaceComponent.PreRender();
+            }
             //Draw children
             foreach (IUserInterfaceComponent childComponent in userInterfaceComponent.GetChildren())
             {
@@ -165,7 +184,7 @@ namespace CorgEng.UserInterface.Components
         // Component Handling
         //====================================
 
-        public void AddChild(IUserInterfaceComponent userInterfaceComponent)
+        public virtual void AddChild(IUserInterfaceComponent userInterfaceComponent)
         {
             //Add the child
             Children.Add(userInterfaceComponent);
@@ -205,7 +224,7 @@ namespace CorgEng.UserInterface.Components
             CheckExpansion(current.Parent);
         }
 
-        public List<IUserInterfaceComponent> GetChildren()
+        public virtual List<IUserInterfaceComponent> GetChildren()
         {
             return Children;
         }
@@ -368,8 +387,13 @@ namespace CorgEng.UserInterface.Components
         public override void PerformRender()
         { }
 
-        public IUserInterfaceComponent Screencast(int relativeX, int relativeY)
+        public virtual IUserInterfaceComponent Screencast(int relativeX, int relativeY)
         {
+            //If outside bounds, return nothing
+            if (relativeX < 0 || relativeY < 0 || relativeX > PixelWidth || relativeY > PixelHeight)
+            {
+                return null;
+            }
             //Screencast children first (Children are above us)
             foreach (IUserInterfaceComponent childComponent in Children)
             {
@@ -380,11 +404,8 @@ namespace CorgEng.UserInterface.Components
                 if (selected != null)
                     return selected;
             }
-            //Test ourselves
-            if (relativeX >= 0 && relativeY >= 0 && relativeX <= PixelWidth && relativeY <= PixelHeight)
-                return this;
             //Nothing was hit
-            return null;
+            return ScreencastInclude ? this : null;
         }
 
         public void EnableScreencast()

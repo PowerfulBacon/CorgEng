@@ -16,6 +16,16 @@ namespace CorgEng.UtilityTypes.Colours
 
         public float Blue { get; set; } = 0;
 
+        public float Alpha { get; set; } = 1;
+
+        public Colour(float red, float green, float blue, float alpha)
+        {
+            Red = red;
+            Green = green;
+            Blue = blue;
+            Alpha = alpha;
+        }
+
         public Colour(float red, float green, float blue)
         {
             Red = red;
@@ -34,6 +44,10 @@ namespace CorgEng.UtilityTypes.Colours
             c.Red = int.Parse(textJustNumbers.Substring(0, 2), System.Globalization.NumberStyles.HexNumber) / 255.0f;
             c.Green = int.Parse(textJustNumbers.Substring(2, 2), System.Globalization.NumberStyles.HexNumber) / 255.0f;
             c.Blue = int.Parse(textJustNumbers.Substring(4, 2), System.Globalization.NumberStyles.HexNumber) / 255.0f;
+            if (textJustNumbers.Length == 8)
+            {
+                c.Alpha = int.Parse(textJustNumbers.Substring(6, 2), System.Globalization.NumberStyles.HexNumber) / 255.0f;
+            }
             return c;
         }
 

@@ -33,6 +33,11 @@ namespace CorgEng.UserInterface.Style
                 FillColour = Colour.Parse(output);
             if (settings.TryGetValue("hoverColour", out output))
                 HoverColour = Colour.Parse(output);
+            if (settings.TryGetValue("opacity", out output))
+            {
+                FillColour.Alpha = (float)double.Parse(output);
+                BorderColour.Alpha = (float)double.Parse(output);
+            }
         }
 
     }
