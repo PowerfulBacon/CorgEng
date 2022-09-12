@@ -60,7 +60,7 @@ namespace CorgEng.UserInterface.Components
                 {
                     throw new Exception($"No static method with the key '{methodName}' exists.");
                 }
-                ComponentHolder.AddComponent(new UserInterfaceClickerComponent(UserInterfaceModule.KeyMethods[methodName]));
+                ComponentHolder.AddComponent(new UserInterfaceClickerComponent(UserInterfaceModule.KeyMethods[methodName], this));
             }
         }
 

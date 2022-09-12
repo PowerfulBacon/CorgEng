@@ -1,4 +1,5 @@
 ﻿using CorgEng.EntityComponentSystem.Components;
+using CorgEng.GenericInterfaces.UserInterface.Components;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,9 +17,12 @@ namespace CorgEng.UserInterface.Components
 
         public MethodInfo InvokationMethod { get; }
 
-        public UserInterfaceClickerComponent(MethodInfo invokationMethod)
+        public IUserInterfaceComponent ClickedComponent { get; }
+
+        public UserInterfaceClickerComponent(MethodInfo invokationMethod, IUserInterfaceComponent clickedComponent)
         {
             InvokationMethod = invokationMethod;
+            ClickedComponent = clickedComponent;
         }
     }
 }

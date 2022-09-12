@@ -10,6 +10,8 @@ namespace CorgEng.GenericInterfaces.ContentLoading
     public interface IEntityCreator
     {
 
+        Dictionary<string, IEntityDefinition> EntityNodes { get; }
+
         /// <summary>
         /// Create an entity with the specific one
         /// </summary>

@@ -105,6 +105,13 @@ namespace CorgEng.UserInterface.Components
         /// </summary>
         private int uniqueId = IdCounter++;
 
+        /// <summary>
+        /// have we initialized yet?
+        /// </summary>
+        private bool initialized = false;
+
+        private static object lockObject = new object();
+
         public UserInterfaceComponent(IUserInterfaceComponent parent, IAnchor anchorDetails, IDictionary<string, string> arguments) : this(anchorDetails, arguments)
         {
             //Set the parent
@@ -137,14 +144,18 @@ namespace CorgEng.UserInterface.Components
             CalculateMinimumScales();
             //Render core init
             Initialize();
+            initialized = true;
         }
 
         //====================================
         // Component Rendering Interfaces
         //====================================
 
-        private void Render(UserInterfaceComponent parent, UserInterfaceComponent userInterfaceComponent, uint buffer)
+        private static void Render(UserInterfaceComponent userInterfaceComponent, uint buffer)
         {
+            //Not initalized yet
+            if (!userInterfaceComponent.initialized)
+                return;
             //Resize if necessary
             if (userInterfaceComponent.Fullscreen && userInterfaceComponent.Parent == null && (userInterfaceComponent.PixelWidth != CorgEngMain.MainRenderCore.Width || userInterfaceComponent.PixelHeight != CorgEngMain.MainRenderCore.Height))
             {
@@ -161,10 +172,13 @@ namespace CorgEng.UserInterface.Components
                 userInterfaceComponent.PreRender();
             }
             //Draw children
-            foreach (IUserInterfaceComponent childComponent in userInterfaceComponent.GetChildren())
+            lock (lockObject)
             {
-                //Render the child component to our buffer
-                Render(this, childComponent as UserInterfaceComponent, userInterfaceComponent.FrameBufferUint);
+                foreach (IUserInterfaceComponent childComponent in userInterfaceComponent.GetChildren())
+                {
+                    //Render the child component to our buffer
+                    Render(childComponent as UserInterfaceComponent, userInterfaceComponent.FrameBufferUint);
+                }
             }
             userInterfaceComponent.DrawToBuffer(
                 buffer,
@@ -177,7 +191,14 @@ namespace CorgEng.UserInterface.Components
 
         public void DrawToFramebuffer(uint frameBuffer)
         {
-            Render(null, this, frameBuffer);
+            try
+            {
+                Render(this, frameBuffer);
+            }
+            catch (Exception e)
+            {
+                Logger.WriteLine(e, LogType.ERROR);
+            }
         }
 
         //====================================
@@ -186,14 +207,17 @@ namespace CorgEng.UserInterface.Components
 
         public virtual void AddChild(IUserInterfaceComponent userInterfaceComponent)
         {
-            //Add the child
-            Children.Add(userInterfaceComponent);
-            //Recalculate minimum UI scale
-            GetTopLevelParent(this).CalculateMinimumScales();
-            //Recalculate child component's scale
-            userInterfaceComponent.OnParentResized();
-            //Check for expansion
-            CheckExpansion(this);
+            lock (lockObject)
+            {
+                //Add the child
+                Children.Add(userInterfaceComponent);
+                //Recalculate minimum UI scale
+                GetTopLevelParent(this).CalculateMinimumScales();
+                //Recalculate child component's scale
+                userInterfaceComponent.OnParentResized();
+                //Check for expansion
+                CheckExpansion(this);
+            }
         }
 
         /// <summary>
@@ -318,35 +342,38 @@ namespace CorgEng.UserInterface.Components
             //Skip if all are strict
             if (!Anchor.LeftDetails.Strict || !Anchor.RightDetails.Strict || !Anchor.TopDetails.Strict || !Anchor.BottomDetails.Strict)
             {
-                foreach (IUserInterfaceComponent childComponent in Children)
+                lock (lockObject)
                 {
-                    //Calclate the minimum scale
-                    childComponent.CalculateMinimumScales();
-                    //Determine our minimum scales based on this child component (Account for child min width + child offset)
-                    if (!Anchor.LeftDetails.Strict || !Anchor.RightDetails.Strict)
+                    foreach (IUserInterfaceComponent childComponent in Children)
                     {
-                        MinimumPixelWidth = Math.Max(
-                            MinimumPixelWidth,
-                            childComponent.MinimumPixelWidth
-                            + (childComponent.Anchor.LeftDetails.AnchorSide == AnchorDirections.LEFT && childComponent.Anchor.LeftDetails.AnchorUnits == AnchorUnits.PIXELS
-                                ? childComponent.Anchor.LeftDetails.AnchorOffset
-                                : 0)
-                            + (childComponent.Anchor.RightDetails.AnchorSide == AnchorDirections.RIGHT && childComponent.Anchor.RightDetails.AnchorUnits == AnchorUnits.PIXELS
-                                ? childComponent.Anchor.RightDetails.AnchorOffset
-                                : 0));
-                    }
-                    //Determine minimum pixel height
-                    if (!Anchor.TopDetails.Strict || !Anchor.BottomDetails.Strict)
-                    {
-                        MinimumPixelHeight = Math.Max(
-                            MinimumPixelHeight,
-                            childComponent.MinimumPixelHeight
-                            + (childComponent.Anchor.BottomDetails.AnchorSide == AnchorDirections.BOTTOM && childComponent.Anchor.BottomDetails.AnchorUnits == AnchorUnits.PIXELS
-                                ? childComponent.Anchor.BottomDetails.AnchorOffset
-                                : 0)
-                            + (childComponent.Anchor.TopDetails.AnchorSide == AnchorDirections.TOP && childComponent.Anchor.TopDetails.AnchorUnits == AnchorUnits.PIXELS
-                                ? childComponent.Anchor.TopDetails.AnchorOffset
-                                : 0));
+                        //Calclate the minimum scale
+                        childComponent.CalculateMinimumScales();
+                        //Determine our minimum scales based on this child component (Account for child min width + child offset)
+                        if (!Anchor.LeftDetails.Strict || !Anchor.RightDetails.Strict)
+                        {
+                            MinimumPixelWidth = Math.Max(
+                                MinimumPixelWidth,
+                                childComponent.MinimumPixelWidth
+                                + (childComponent.Anchor.LeftDetails.AnchorSide == AnchorDirections.LEFT && childComponent.Anchor.LeftDetails.AnchorUnits == AnchorUnits.PIXELS
+                                    ? childComponent.Anchor.LeftDetails.AnchorOffset
+                                    : 0)
+                                + (childComponent.Anchor.RightDetails.AnchorSide == AnchorDirections.RIGHT && childComponent.Anchor.RightDetails.AnchorUnits == AnchorUnits.PIXELS
+                                    ? childComponent.Anchor.RightDetails.AnchorOffset
+                                    : 0));
+                        }
+                        //Determine minimum pixel height
+                        if (!Anchor.TopDetails.Strict || !Anchor.BottomDetails.Strict)
+                        {
+                            MinimumPixelHeight = Math.Max(
+                                MinimumPixelHeight,
+                                childComponent.MinimumPixelHeight
+                                + (childComponent.Anchor.BottomDetails.AnchorSide == AnchorDirections.BOTTOM && childComponent.Anchor.BottomDetails.AnchorUnits == AnchorUnits.PIXELS
+                                    ? childComponent.Anchor.BottomDetails.AnchorOffset
+                                    : 0)
+                                + (childComponent.Anchor.TopDetails.AnchorSide == AnchorDirections.TOP && childComponent.Anchor.TopDetails.AnchorUnits == AnchorUnits.PIXELS
+                                    ? childComponent.Anchor.TopDetails.AnchorOffset
+                                    : 0));
+                        }
                     }
                 }
             }
@@ -373,11 +400,14 @@ namespace CorgEng.UserInterface.Components
             PixelHeight = Math.Max(MinimumPixelHeight, height);
             //Update our render core size
             Resize((int)PixelWidth, (int)PixelHeight);
-            Logger?.WriteLine($"Reszied UI Element {uniqueId} to {PixelWidth}x{PixelHeight}", LogType.DEBUG);
+            Logger?.WriteLine($"Reszied UI Element {uniqueId} to {PixelWidth}x{PixelHeight} at ({LeftOffset}, {BottomOffset})", LogType.DEBUG);
             //Update child components
-            foreach (IUserInterfaceComponent childComponent in Children)
+            lock (lockObject)
             {
-                childComponent.OnParentResized();
+                foreach (IUserInterfaceComponent childComponent in Children)
+                {
+                    childComponent.OnParentResized();
+                }
             }
         }
 
@@ -395,14 +425,17 @@ namespace CorgEng.UserInterface.Components
                 return null;
             }
             //Screencast children first (Children are above us)
-            foreach (IUserInterfaceComponent childComponent in Children)
+            lock (lockObject)
             {
-                //Determine new relative positions
-                int newRelativeX = relativeX - (int)childComponent.LeftOffset;
-                int newRelativeY = relativeY - (int)childComponent.BottomOffset;
-                IUserInterfaceComponent selected = childComponent.Screencast(newRelativeX, newRelativeY);
-                if (selected != null)
-                    return selected;
+                foreach (IUserInterfaceComponent childComponent in Children)
+                {
+                    //Determine new relative positions
+                    int newRelativeX = relativeX - (int)childComponent.LeftOffset;
+                    int newRelativeY = relativeY - (int)childComponent.BottomOffset;
+                    IUserInterfaceComponent selected = childComponent.Screencast(newRelativeX, newRelativeY);
+                    if (selected != null)
+                        return selected;
+                }
             }
             //Nothing was hit
             return ScreencastInclude ? this : null;
