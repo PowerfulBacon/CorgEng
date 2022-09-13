@@ -12,7 +12,7 @@ namespace CorgEng.UtilityTypes.PositionBasedBinaryLists
     internal class PositionBasedBinaryList<T> : IPositionBasedBinaryList<T>
     {
 
-        private BinaryList<BinaryList<T>> list = new BinaryList<BinaryList<T>>();
+        internal BinaryList<BinaryList<T>> list = new BinaryList<BinaryList<T>>();
 
         public bool HasElements => list.Length() > 0;
 
@@ -142,6 +142,15 @@ namespace CorgEng.UtilityTypes.PositionBasedBinaryLists
             located.Add(y, element);
         }
 
+        public IEnumerator<T> GetEnumerator()
+        {
+            return new PositionBasedBinaryListEnumerator<T>(this);
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return new PositionBasedBinaryListEnumerator<T>(this);
+        }
     }
 
 }

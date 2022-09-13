@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CorgEng.GenericInterfaces.UtilityTypes.BinaryLists
 {
-    public interface IPositionBasedBinaryList<T>
+    public interface IPositionBasedBinaryList<T> : IEnumerable<T>
     {
 
         bool HasElements { get; }

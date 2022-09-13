@@ -27,5 +27,12 @@ namespace CorgEng.GenericInterfaces.EntityComponentSystem
         /// <returns></returns>
         T GetComponent<T>();
 
+        /// <summary>
+        /// Returns true if this object has the requested component type.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        bool HasComponent<T>();
+
     }
 }

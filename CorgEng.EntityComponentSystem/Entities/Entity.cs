@@ -124,8 +124,8 @@ namespace CorgEng.EntityComponentSystem.Entities
             {
                 foreach (IComponent component in Components)
                 {
-                    if (typeof(T).IsAssignableFrom(component.GetType()))
-                        return (T)component;
+                    if (component is T componentAsType)
+                        return componentAsType;
                 }
             }
             throw new Exception($"Component of type {typeof(T)} was not found on Entity {this}");
@@ -136,5 +136,18 @@ namespace CorgEng.EntityComponentSystem.Entities
             return $"Entity{Identifier}";
         }
 
+        public bool HasComponent<T>()
+        {
+            //Get derived types too
+            lock (Components)
+            {
+                foreach (IComponent component in Components)
+                {
+                    if (component is T)
+                        return true;
+                }
+            }
+            return false;
+        }
     }
 }

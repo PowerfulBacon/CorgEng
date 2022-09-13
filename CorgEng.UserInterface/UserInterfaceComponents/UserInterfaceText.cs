@@ -40,6 +40,8 @@ namespace CorgEng.UserInterface.UserInterfaceComponents
 
         private bool ready = false;
 
+        public string Text { get; private set; } = "";
+
         public UserInterfaceText(IAnchor anchorDetails, IDictionary<string, string> arguments) : base(anchorDetails, arguments)
         {
             Setup(arguments);
@@ -66,6 +68,7 @@ namespace CorgEng.UserInterface.UserInterfaceComponents
             string text = arguments["text"];
             internalTextObject = TextObjectFactory.CreateTextObject(spriteRenderer, font, text);
             internalTextObject.StartRendering();
+            Text = text;
             ready = true;
         }
 

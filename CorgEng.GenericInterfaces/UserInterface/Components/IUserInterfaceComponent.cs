@@ -76,6 +76,11 @@ namespace CorgEng.GenericInterfaces.UserInterface.Components
         List<IUserInterfaceComponent> Children { get; }
 
         /// <summary>
+        /// The parameters
+        /// </summary>
+        IDictionary<string, string> Parameters { get; }
+
+        /// <summary>
         /// Draw the user interface component to the screen
         /// </summary>
         void DrawToFramebuffer(uint frameBuffer);
