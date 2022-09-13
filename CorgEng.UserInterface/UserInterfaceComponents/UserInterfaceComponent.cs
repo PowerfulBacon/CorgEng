@@ -98,7 +98,7 @@ namespace CorgEng.UserInterface.Components
         /// <summary>
         /// A list of all of the user interface components contained within outself
         /// </summary>
-        protected List<IUserInterfaceComponent> Children { get; } = new List<IUserInterfaceComponent>();
+        public List<IUserInterfaceComponent> Children { get; } = new List<IUserInterfaceComponent>();
 
         /// <summary>
         /// A unique identifier for this component.
@@ -211,6 +211,21 @@ namespace CorgEng.UserInterface.Components
             {
                 //Add the child
                 Children.Add(userInterfaceComponent);
+                //Recalculate minimum UI scale
+                GetTopLevelParent(this).CalculateMinimumScales();
+                //Recalculate child component's scale
+                userInterfaceComponent.OnParentResized();
+                //Check for expansion
+                CheckExpansion(this);
+            }
+        }
+
+        public void RemoveChild(IUserInterfaceComponent userInterfaceComponent)
+        {
+            lock (lockObject)
+            {
+                //Remove the interface component
+                Children.Remove(userInterfaceComponent);
                 //Recalculate minimum UI scale
                 GetTopLevelParent(this).CalculateMinimumScales();
                 //Recalculate child component's scale
