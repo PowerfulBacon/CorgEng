@@ -63,7 +63,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CorgEng.Constants", "..\Cor
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CorgEng.AiBehaviour", "..\CorgEng.AiBehaviour\CorgEng.AiBehaviour.csproj", "{39C428B3-A5DD-409C-9EB1-7F4FCDDD61B4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CorgEng.Pathfinding", "..\CorgEng.Pathfinding\CorgEng.Pathfinding.csproj", "{ECD0B287-A23B-487B-87EA-B61922D18F64}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CorgEng.Pathfinding", "..\CorgEng.Pathfinding\CorgEng.Pathfinding.csproj", "{ECD0B287-A23B-487B-87EA-B61922D18F64}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CorgEng.Claims", "..\CorgEng.Claims\CorgEng.Claims.csproj", "{738F1392-2518-402E-B2BC-E2C531495F81}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -539,6 +541,26 @@ Global
 		{ECD0B287-A23B-487B-87EA-B61922D18F64}.Release|x64.Build.0 = Release|Any CPU
 		{ECD0B287-A23B-487B-87EA-B61922D18F64}.Release|x86.ActiveCfg = Release|Any CPU
 		{ECD0B287-A23B-487B-87EA-B61922D18F64}.Release|x86.Build.0 = Release|Any CPU
+		{738F1392-2518-402E-B2BC-E2C531495F81}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{738F1392-2518-402E-B2BC-E2C531495F81}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{738F1392-2518-402E-B2BC-E2C531495F81}.Debug|ARM32.ActiveCfg = Debug|Any CPU
+		{738F1392-2518-402E-B2BC-E2C531495F81}.Debug|ARM32.Build.0 = Debug|Any CPU
+		{738F1392-2518-402E-B2BC-E2C531495F81}.Debug|ARM64.ActiveCfg = Debug|Any CPU
+		{738F1392-2518-402E-B2BC-E2C531495F81}.Debug|ARM64.Build.0 = Debug|Any CPU
+		{738F1392-2518-402E-B2BC-E2C531495F81}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{738F1392-2518-402E-B2BC-E2C531495F81}.Debug|x64.Build.0 = Debug|Any CPU
+		{738F1392-2518-402E-B2BC-E2C531495F81}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{738F1392-2518-402E-B2BC-E2C531495F81}.Debug|x86.Build.0 = Debug|Any CPU
+		{738F1392-2518-402E-B2BC-E2C531495F81}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{738F1392-2518-402E-B2BC-E2C531495F81}.Release|Any CPU.Build.0 = Release|Any CPU
+		{738F1392-2518-402E-B2BC-E2C531495F81}.Release|ARM32.ActiveCfg = Release|Any CPU
+		{738F1392-2518-402E-B2BC-E2C531495F81}.Release|ARM32.Build.0 = Release|Any CPU
+		{738F1392-2518-402E-B2BC-E2C531495F81}.Release|ARM64.ActiveCfg = Release|Any CPU
+		{738F1392-2518-402E-B2BC-E2C531495F81}.Release|ARM64.Build.0 = Release|Any CPU
+		{738F1392-2518-402E-B2BC-E2C531495F81}.Release|x64.ActiveCfg = Release|Any CPU
+		{738F1392-2518-402E-B2BC-E2C531495F81}.Release|x64.Build.0 = Release|Any CPU
+		{738F1392-2518-402E-B2BC-E2C531495F81}.Release|x86.ActiveCfg = Release|Any CPU
+		{738F1392-2518-402E-B2BC-E2C531495F81}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

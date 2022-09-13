@@ -100,6 +100,8 @@ namespace CorgEng.UserInterface.Components
         /// </summary>
         public List<IUserInterfaceComponent> Children { get; } = new List<IUserInterfaceComponent>();
 
+        public IDictionary<string, string> Parameters { get; private set; } = null;
+
         /// <summary>
         /// A unique identifier for this component.
         /// </summary>
@@ -122,6 +124,7 @@ namespace CorgEng.UserInterface.Components
 
         public UserInterfaceComponent(IAnchor anchorDetails, IDictionary<string, string> arguments)
         {
+            Parameters = arguments;
             // Set the anchor details
             Anchor = anchorDetails;
             // Give warnings if the anchor units are mismatched.
