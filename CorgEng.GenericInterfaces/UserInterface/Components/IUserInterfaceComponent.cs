@@ -71,6 +71,11 @@ namespace CorgEng.GenericInterfaces.UserInterface.Components
         double BottomOffset { get; }
 
         /// <summary>
+        /// Raw list of children
+        /// </summary>
+        List<IUserInterfaceComponent> Children { get; }
+
+        /// <summary>
         /// Draw the user interface component to the screen
         /// </summary>
         void DrawToFramebuffer(uint frameBuffer);
@@ -80,6 +85,12 @@ namespace CorgEng.GenericInterfaces.UserInterface.Components
         /// </summary>
         /// <param name="userInterfaceComponent">The user interface component to add to the children of this one.</param>
         void AddChild(IUserInterfaceComponent userInterfaceComponent);
+
+        /// <summary>
+        /// Remove a user interface component from the list of children.
+        /// </summary>
+        /// <param name="userInterfaceComponent"></param>
+        void RemoveChild(IUserInterfaceComponent userInterfaceComponent);
 
         /// <summary>
         /// Gets a list of all children components
