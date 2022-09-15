@@ -25,6 +25,13 @@ namespace CorgEng.ContentLoading
         /// </summary>
         public static Dictionary<string, Type> TypePaths = null;
 
+        /// <summary>
+        /// List of all loaded definitions
+        /// </summary>
+        internal static Dictionary<string, DefinitionNode> LoadedDefinitions = new Dictionary<string, DefinitionNode>();
+
+        private static Dictionary<string, XmlNode> XmlLoadQueue = new Dictionary<string, XmlNode>();
+
         [ModuleLoad]
         public static void LoadEntities()
         {
@@ -37,6 +44,7 @@ namespace CorgEng.ContentLoading
 
             //Clear existing nodes
             EntityCreator.EntityNodesByName.Clear();
+            LoadedDefinitions.Clear();
 
             //Load all files
             foreach (string fileName in Directory.GetFiles(".", "*.xml", SearchOption.AllDirectories))
@@ -55,15 +63,68 @@ namespace CorgEng.ContentLoading
                 //Check the root element
                 if (xmlDocument.LastChild?.Name != "Entities")
                     continue;
-                foreach (XmlNode node in xmlDocument.ChildNodes)
+                foreach (XmlNode parent in xmlDocument.ChildNodes)
                 {
-                    if (node is XmlDeclaration || node is XmlComment)
-                        continue;
-                    RecursivelyParse(node);
+                    foreach (XmlNode node in parent.ChildNodes)
+                    {
+                        //Ignore declarations or comments
+                        if (node is XmlDeclaration || node is XmlComment)
+                            continue;
+                        //Get the node name
+                        string nodeName = node.Attributes["id"]?.Value;
+                        //Make sure the node hasn't been preloaded already
+                        if (string.IsNullOrEmpty(nodeName))
+                        {
+                            Logger.WriteLine($"Top level definition node {node.Name} in file {node.BaseURI} has no 'ID' attribute; skipping loading.", LogType.WARNING);
+                            continue;
+                        }
+                        if (XmlLoadQueue.ContainsKey(nodeName))
+                        {
+                            Logger.WriteLine($"There exists 2 definition nodes with the ID '{nodeName}'. Only one of them will be loaded which may cause inconsistent or broken behaviour.", LogType.WARNING);
+                            continue;
+                        }
+                        XmlLoadQueue.Add(nodeName, node);
+                    }
                 }
+            }
+            //Perform loading
+            while (XmlLoadQueue.Count > 0)
+            {
+                //Take one
+                string nodeName = XmlLoadQueue.Keys.First();
+                XmlNode node = XmlLoadQueue[nodeName];
+                //Remove the node from the processing queue
+                XmlLoadQueue.Remove(nodeName);
+                //Load the node
+                RecursivelyParse(node);
             }
             //No longer required
             TypePaths = null;
+        }
+
+        /// <summary>
+        /// Get the definition of something and load it if it isn't loaded
+        /// </summary>
+        /// <param name="definitionName"></param>
+        /// <returns></returns>
+        internal static DefinitionNode GetDefinition(string definitionName)
+        {
+            if (LoadedDefinitions.ContainsKey(definitionName))
+            {
+                return LoadedDefinitions[definitionName];
+            }
+            if (XmlLoadQueue.ContainsKey(definitionName))
+            {
+                //Load and return
+                XmlNode node = XmlLoadQueue[definitionName];
+                //Remove the node from the processing queue
+                XmlLoadQueue.Remove(definitionName);
+                //Load the node
+                RecursivelyParse(node);
+                //Return it
+                return LoadedDefinitions[definitionName];
+            }
+            throw new ContentLoadException($"Could not locate the definition named '{definitionName}'.");
         }
 
         private static void RecursivelyParse(XmlNode node, DefinitionNode parentNode = null)
@@ -108,6 +169,11 @@ namespace CorgEng.ContentLoading
             }
             //Parse our own node
             createdNode?.ParseSelf(node);
+            //Definition was loaded
+            if (!string.IsNullOrEmpty(createdNode?.ID))
+            {
+                LoadedDefinitions.Add(createdNode.ID, createdNode);
+            }
             //Parse children
             foreach (XmlNode child in node.ChildNodes)
             {
