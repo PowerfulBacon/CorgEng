@@ -17,10 +17,6 @@ namespace CorgEng.GenericInterfaces.ContentLoading.DefinitionNodes
         public ComponentNode(DefinitionNode parent) : base(parent)
         {
             Parent = parent as EntityNode;
-            if (Parent == null)
-            {
-                throw new ContentLoadException("Component nodes must be children of an entity node.");
-            }
         }
 
         public override object CreateInstance(object parent, Dictionary<string, object> instanceRefs)

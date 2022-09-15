@@ -16,8 +16,6 @@ namespace CorgEng.GenericInterfaces.ContentLoading.DefinitionNodes
         [UsingDependency]
         public static IEntityFactory EntityFactory;
 
-        public string Name { get; set; }
-
         public bool Abstract { get; set; } = false;
 
         /// <summary>
@@ -37,9 +35,13 @@ namespace CorgEng.GenericInterfaces.ContentLoading.DefinitionNodes
         {
             //Perform base parsing actions
             base.ParseSelf(node);
-            Name = node.Attributes["name"].Value;
+            // Allow ID to be got from the 'name' attribute from backwards compatability.
+            ID = node.Attributes["id"]?.Value ?? node.Attributes["name"]?.Value;
             Abstract = node.Attributes["abstract"]?.Value.ToLower() == "true";
-            EntityCreator.EntityNodesByName.Add(Name, this);
+            if (!string.IsNullOrEmpty(ID))
+            {
+                EntityCreator.EntityNodesByName.Add(ID, this);
+            }
         }
 
         /// <summary>

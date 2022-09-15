@@ -27,7 +27,14 @@ namespace CorgEng.ContentLoading.DefinitionNodes
 
         public override object CreateInstance(object parent, Dictionary<string, object> instanceRefs)
         {
-            return instanceRefs[referenceName];
+            if (instanceRefs.ContainsKey(referenceName))
+            {
+                return instanceRefs[referenceName];
+            }
+            else
+            {
+                return EntityLoader.GetDefinition(referenceName);
+            }
         }
 
     }
