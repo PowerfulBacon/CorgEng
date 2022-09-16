@@ -111,8 +111,10 @@ namespace CorgEng.EntityComponentSystem.Entities
             //Fetch the registered signal handlers
             List<InternalSignalHandleDelegate> signalHandleDelegates = EventListeners[signal.GetType()];
             //Call the signals
-            foreach (InternalSignalHandleDelegate internalSignalHandler in signalHandleDelegates)
+            //Inverse for loop to account for removal of components and signals during iteration
+            for (int i = signalHandleDelegates.Count - 1; i >= 0; i = Math.Min(i - 1, signalHandleDelegates.Count - 1))
             {
+                InternalSignalHandleDelegate internalSignalHandler = signalHandleDelegates[i];
                 internalSignalHandler.Invoke(this, signal, synchronous);
             }
         }
