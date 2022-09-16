@@ -30,6 +30,14 @@ namespace CorgEng.ContentLoading
         /// </summary>
         internal static Dictionary<string, DefinitionNode> LoadedDefinitions = new Dictionary<string, DefinitionNode>();
 
+        public static IEnumerable<string> LoadedDefinitionNames
+        {
+            get => LoadedDefinitions.Keys;
+        }
+
+        /// <summary>
+        /// The load queue
+        /// </summary>
         private static Dictionary<string, XmlNode> XmlLoadQueue = new Dictionary<string, XmlNode>();
 
         [ModuleLoad]
@@ -95,8 +103,16 @@ namespace CorgEng.ContentLoading
                 XmlNode node = XmlLoadQueue[nodeName];
                 //Remove the node from the processing queue
                 XmlLoadQueue.Remove(nodeName);
-                //Load the node
-                RecursivelyParse(node);
+                try
+                {
+                    //Load the node
+                    RecursivelyParse(node);
+                }
+                catch (Exception e)
+                {
+                    //Throw a more detailed exception
+                    throw new ContentLoadException($"An exception occured while loading {nodeName} in {node.BaseURI}.", e);
+                }
             }
             //No longer required
             TypePaths = null;
@@ -162,6 +178,15 @@ namespace CorgEng.ContentLoading
                     break;
                 case "element":
                     createdNode = new ElementNode(parentNode);
+                    break;
+                case "key":
+                    createdNode = new KeyNode(parentNode);
+                    break;
+                case "value":
+                    createdNode = new ValueNode(parentNode);
+                    break;
+                case "dictionary":
+                    createdNode = new DictionaryNode(parentNode);
                     break;
                 default:
                     Logger?.WriteLine($"Unknown node in entitiy definition file: {node.Name}.", LogType.ERROR);

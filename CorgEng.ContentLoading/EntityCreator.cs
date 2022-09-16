@@ -1,7 +1,9 @@
-﻿using CorgEng.DependencyInjection.Dependencies;
+﻿using CorgEng.Core.Dependencies;
+using CorgEng.DependencyInjection.Dependencies;
 using CorgEng.GenericInterfaces.ContentLoading;
 using CorgEng.GenericInterfaces.ContentLoading.DefinitionNodes;
 using CorgEng.GenericInterfaces.EntityComponentSystem;
+using CorgEng.GenericInterfaces.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +15,9 @@ namespace CorgEng.ContentLoading
     [Dependency]
     internal class EntityCreator : IEntityCreator
     {
+
+        [UsingDependency]
+        private static ILogger Logger;
 
         /// <summary>
         /// The entity nodes by the name
@@ -29,12 +34,20 @@ namespace CorgEng.ContentLoading
         /// <exception cref="Exception"></exception>
         public IEntity CreateEntity(string entityName)
         {
-            if (EntityNodesByName.ContainsKey(entityName))
+            try
             {
-                return EntityNodesByName[entityName].CreateEntity();
+                if (EntityNodesByName.ContainsKey(entityName))
+                {
+                    return EntityNodesByName[entityName].CreateEntity();
+                }
+                //Entity not found :(
+                throw new Exception($"The entity with name {entityName} could not be spawned as it doesn't exist.");
             }
-            //Entity not found :(
-            throw new Exception($"The entity with name {entityName} could not be spawned as it doesn't exist.");
+            catch (Exception e)
+            {
+                Logger.WriteLine($"An expection occured while creating entity with ID '{entityName}': {e}", LogType.ERROR);
+                throw;
+            }
         }
 
         /// <summary>
@@ -45,12 +58,20 @@ namespace CorgEng.ContentLoading
         /// <exception cref="Exception"></exception>
         public object CreateObject(string objectIdentifier)
         {
-            if (EntityLoader.LoadedDefinitions.ContainsKey(objectIdentifier))
+            try
             {
-                return EntityLoader.LoadedDefinitions[objectIdentifier].CreateInstance(null, new Dictionary<string, object>());
+                if (EntityLoader.LoadedDefinitions.ContainsKey(objectIdentifier))
+                {
+                    return EntityLoader.LoadedDefinitions[objectIdentifier].CreateInstance(null, new Dictionary<string, object>());
+                }
+                //Entity not found :(
+                throw new Exception($"The object with name {objectIdentifier} could not be spawned as it doesn't exist.");
             }
-            //Entity not found :(
-            throw new Exception($"The object with name {objectIdentifier} could not be spawned as it doesn't exist.");
+            catch (Exception e)
+            {
+                Logger.WriteLine($"An expection occured while creating object with ID '{objectIdentifier}': {e}", LogType.ERROR);
+                throw;
+            }
         }
 
     }
