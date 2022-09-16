@@ -48,8 +48,13 @@ namespace CorgEng.GenericInterfaces.ContentLoading.DefinitionNodes
 
         protected void ParseValue(XmlNode node)
         {
+            //Is enum
+            if (TargetProperty.PropertyType.IsEnum)
+            {
+                PropertyValue = Enum.Parse(TargetProperty.PropertyType, node.InnerText.Trim());
+            }
             //If we are a value type, attempt to directly convert
-            if (TargetProperty.PropertyType.IsValueType || TargetProperty.PropertyType == typeof(string))
+            else if (TargetProperty.PropertyType.IsValueType || TargetProperty.PropertyType == typeof(string))
             {
                 //Since its a value type, we should be able to just convert it from a string
                 PropertyValue = TypeDescriptor.GetConverter(TargetProperty.PropertyType).ConvertFrom(node.InnerText.Trim());
@@ -66,27 +71,14 @@ namespace CorgEng.GenericInterfaces.ContentLoading.DefinitionNodes
                     instanceRefs.Add(Key, PropertyValue);
                 }
             }
-            else if (Children[0] is ObjectNode childNode)
-            {
-                object createdObject = childNode.CreateInstance(null, instanceRefs);
-                if (Key != null)
-                {
-                    instanceRefs.Add(Key, createdObject);
-                }
-                TargetProperty.SetValue(parent, createdObject);
-            }
-            else if (Children[0] is DependencyNode dependencyNode)
-            {
-                object createdObject = dependencyNode.CreateInstance(null, instanceRefs);
-                if (Key != null)
-                {
-                    instanceRefs.Add(Key, createdObject);
-                }
-                TargetProperty.SetValue(parent, createdObject);
-            }
             else
             {
-                throw new Exception("Failed to set property, invalid value.");
+                object createdObject = Children[0].CreateInstance(null, instanceRefs);
+                if (Key != null)
+                {
+                    instanceRefs.Add(Key, createdObject);
+                }
+                TargetProperty.SetValue(parent, createdObject);
             }
             //Returns nothing
             return null;

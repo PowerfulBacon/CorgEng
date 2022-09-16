@@ -65,8 +65,13 @@ namespace CorgEng.GenericInterfaces.ContentLoading.DefinitionNodes
 
         protected void ParseValue(XmlNode node)
         {
+            //Is enum
+            if (ObjectType.IsEnum)
+            {
+                PropertyValue = Enum.Parse(ObjectType, node.InnerText.Trim());
+            }
             //If we are a value type, attempt to directly convert
-            if ((!ObjectType.IsGenericType && ObjectType.IsValueType) || ObjectType == typeof(string))
+            else if ((!ObjectType.IsGenericType && ObjectType.IsValueType) || ObjectType == typeof(string))
             {
                 //Since its a value type, we should be able to just convert it from a string
                 PropertyValue = TypeDescriptor.GetConverter(ObjectType).ConvertFrom(node.InnerText.Trim());
