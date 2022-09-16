@@ -145,6 +145,8 @@ namespace CorgEng.ContentLoading
 
         private static void RecursivelyParse(XmlNode node, DefinitionNode parentNode = null)
         {
+            if (node is XmlText || node is XmlComment)
+                return;
             //Create the node
             DefinitionNode createdNode;
             switch (node.Name.ToLower())
