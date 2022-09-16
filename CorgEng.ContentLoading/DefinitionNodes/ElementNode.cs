@@ -108,25 +108,19 @@ namespace CorgEng.ContentLoading.DefinitionNodes
             {
                 throw new ContentLoadException("Element node contains invalid children count, it should either contain a single value, or a <Key> and <Value> node.");
             }
+            if (Children[0] is KeyNode)
+            {
+                throw new ContentLoadException("Cannot have a key node as a child of an element node.");
+            }
             //1 Child, return value
             if (PropertyValue != null)
             {
                 return PropertyValue;
             }
             // Either object or value node
-            else if (Children[0] is ObjectNode childNode && !(Children[0] is KeyNode))
-            {
-                object createdObject = childNode.CreateInstance(null, instanceRefs);
-                return createdObject;
-            }
-            else if (Children[0] is DependencyNode dependencyNode)
-            {
-                object createdObject = dependencyNode.CreateInstance(null, instanceRefs);
-                return createdObject;
-            }
             else
             {
-                throw new ContentLoadException("Failed to set array node, invalid value.");
+                return Children[0].CreateInstance(null, instanceRefs);
             }
         }
 
