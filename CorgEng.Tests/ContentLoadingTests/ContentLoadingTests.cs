@@ -25,6 +25,7 @@ namespace CorgEng.Tests.ContentLoadingTests
         [TestMethod]
         public void TestContentLoading()
         {
+            ConsoleLogger.ExceptionCount = 0;
             EntityLoader.LoadEntities();
             Assert.AreEqual(0, ConsoleLogger.ExceptionCount, "An exception occured during entity loading. See logs for details.");
             //Spawn everything to test spawning
