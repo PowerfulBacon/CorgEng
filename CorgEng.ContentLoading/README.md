@@ -68,14 +68,20 @@ Updates the property of the parent type.
 
 Creates a new object from a specified type. Can be used to create entities if the name attribute is used instead of the type.
 
+An object node can also contain direct values, such as intengers.
+
 #### Attributes:
 
  - name: If set, will locate and spawn the entity with this name.
- - type: If set, will create an object of the specified type.
+ - createdType (Required): If set, will create an object of the specified type.
+ - returnType (Optional):
 
 #### Content:
 
  - Can contain 'Property' nodes.
+ - Can contain direct values
+
+---
 
 ### Instance
 
@@ -124,6 +130,57 @@ An array of complex types:
 
 Defines an element of a collection type.
 Can either be a value type, or a complex type.
+
+---
+
+### Dictionary
+
+Creates a dictionary, which associates keys and values.
+Note that the type of the dictionary can differ to the types created by the 
+Key and Value pairs, as long as the type created by the key/value nodes
+are a child of the corresponding dictionary type.
+
+A dictionary with 'Object' keys can have Int32s inserted as keys.
+
+#### Attributes
+
+ - keyType (Required): The type of the dictionary key.
+ - valueType (Required): The type of the dictionary value.
+
+#### Content
+
+ - Must contain element nodes, which contain key and value nodes.
+
+#### Example
+
+```xml
+<Dictionary id="test_basic_dictionary" keyType="Int32" valueType="Int32">
+    <Element>
+        <Key createdType="Int32">1</Key>
+        <Value createdType="Int32">4</Value>
+    </Element>
+    <Element>
+        <Key createdType="Int32">2</Key>
+        <Value createdType="Int32">5</Value>
+    </Element>
+</Dictionary>
+```
+
+---
+
+### Key
+
+Defines the key of a KeyValuePair represented by an Element.
+
+See object node for more details.
+
+---
+
+### Value
+
+Defines the value of a KeyValuePair represented by an Element.
+
+See object node for more details.
 
 ---
 
