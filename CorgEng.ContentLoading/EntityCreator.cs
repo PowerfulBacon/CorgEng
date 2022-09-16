@@ -37,5 +37,21 @@ namespace CorgEng.ContentLoading
             throw new Exception($"The entity with name {entityName} could not be spawned as it doesn't exist.");
         }
 
+        /// <summary>
+        /// Retrieve an object from the content loading system.
+        /// </summary>
+        /// <param name="objectIdentifier"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public object CreateObject(string objectIdentifier)
+        {
+            if (EntityLoader.LoadedDefinitions.ContainsKey(objectIdentifier))
+            {
+                return EntityLoader.LoadedDefinitions[objectIdentifier].CreateInstance(null, new Dictionary<string, object>());
+            }
+            //Entity not found :(
+            throw new Exception($"The object with name {objectIdentifier} could not be spawned as it doesn't exist.");
+        }
+
     }
 }
