@@ -34,6 +34,7 @@ namespace CorgEng.Tests.NetworkingTests
         }
 
         [TestMethod]
+        [Timeout(10000)]
         public void TestHashing()
         {
             IClient dummyClient = GetDummyClient();
@@ -79,6 +80,7 @@ namespace CorgEng.Tests.NetworkingTests
         }
 
         [TestMethod]
+        [Timeout(10000)]
         public void TestEquality()
         {
             IClient dummyClient = GetDummyClient();
@@ -94,6 +96,7 @@ namespace CorgEng.Tests.NetworkingTests
         }
 
         [TestMethod]
+        [Timeout(10000)]
         public unsafe void TestEnablingFlag()
         {
             IClientAddress flagTest = ClientAddressFactory.CreateAddress(0, GetDummyClient());
@@ -106,6 +109,7 @@ namespace CorgEng.Tests.NetworkingTests
         }
 
         [TestMethod]
+        [Timeout(10000)]
         public unsafe void TestDisablingFlag()
         {
             IClientAddress flagTest = ClientAddressFactory.CreateAddress(0, GetDummyClient());
@@ -119,6 +123,7 @@ namespace CorgEng.Tests.NetworkingTests
         }
 
         [TestMethod]
+        [Timeout(10000)]
         public unsafe void TestAddressGetting()
         {
             Assert.IsNotNull(ClientAddressingTable, "Dependency injection failed");
@@ -163,6 +168,7 @@ namespace CorgEng.Tests.NetworkingTests
         }
 
         [TestMethod]
+        [Timeout(10000)]
         public unsafe void TestEveryone()
         {
             Assert.IsNotNull(ClientAddressingTable, "Dependency injection failed");

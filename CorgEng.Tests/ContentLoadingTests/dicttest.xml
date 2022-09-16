@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Entities>
+
+  <Dictionary id="test_basic_dictionary" keyType="Int32" valueType="Int32">
+    <Element>
+      <Key createdType="Int32">50</Key>
+      <Value createdType="Int32">50</Value>
+    </Element>
+    <Element>
+      <Key createdType="Int32">1562</Key>
+      <Value createdType="Int32">3889</Value>
+    </Element>
+    <Element>
+      <Key createdType="Int32">-5267</Key>
+      <Value createdType="Int32">99</Value>
+    </Element>
+  </Dictionary>
+
+  <Dictionary id="test_supertype_dictionary" keyType="Object" valueType="Int32">
+    <Element>
+      <Key createdType="Int32">50</Key>
+      <Value createdType="Int32">50</Value>
+    </Element>
+    <Element>
+      <Key createdType="Int32">1562</Key>
+      <Value createdType="Int32">3889</Value>
+    </Element>
+    <Element>
+      <Key createdType="Int32">-5267</Key>
+      <Value createdType="Int32">99</Value>
+    </Element>
+  </Dictionary>
+  
+</Entities>
+ 

@@ -56,6 +56,9 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
+    <None Update="ContentLoadingTests\dicttest.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="UserInterfaceTests\UnitTests\Content\UserInterfaceButton.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

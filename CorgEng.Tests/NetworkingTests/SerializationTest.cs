@@ -27,6 +27,7 @@ namespace CorgEng.Tests.NetworkingTests
         private static ILogger Logger;
 
         [TestMethod]
+        [Timeout(10000)]
         public void TestComponentSerialization()
         {
             //Give it a seed, so tests are repeatable
@@ -145,6 +146,7 @@ namespace CorgEng.Tests.NetworkingTests
         }
 
         [TestMethod]
+        [Timeout(10000)]
         public void TestEventSerialization()
         {
             //Give it a seed, so tests are repeatable

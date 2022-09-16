@@ -231,6 +231,9 @@ namespace CorgEng.Core
                     {
                         case "DependencyModules":
                             List<Assembly> loadedAssemblies = new List<Assembly>();
+                            //Add the system assembly
+                            loadedAssemblies.Add(typeof(string).Assembly);
+                            //Add the entry assembly
                             if (Assembly.GetEntryAssembly() != null)
                                 loadedAssemblies.Add(Assembly.GetEntryAssembly());
                             //Unit test support.

@@ -12,7 +12,7 @@ namespace CorgEng.ContentLoading.DefinitionNodes
     {
 
         //Get the type of the array
-        Type arrayType;
+        internal Type arrayType;
 
         public ArrayNode(DefinitionNode parent) : base(parent)
         {
