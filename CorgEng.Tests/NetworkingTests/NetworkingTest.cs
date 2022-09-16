@@ -59,7 +59,7 @@ namespace CorgEng.Tests.NetworkingTests
         }
 
         [TestMethod]
-        //[Timeout(3000)]
+        [Timeout(3000)]
         public void TestNetworkConnection()
         {
             if (TestRunning)
@@ -228,7 +228,7 @@ namespace CorgEng.Tests.NetworkingTests
         /// events will be duplicated. We need to make sure we recieve 2 events.
         /// </summary>
         [TestMethod]
-        //[Timeout(3000)]
+        [Timeout(3000)]
         public void TestGlobalNetworkedEvent()
         {
             if (TestRunning)
