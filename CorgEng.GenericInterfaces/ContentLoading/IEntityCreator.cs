@@ -19,5 +19,12 @@ namespace CorgEng.GenericInterfaces.ContentLoading
         /// <returns></returns>
         IEntity CreateEntity(string entityName);
 
+        /// <summary>
+        /// Create an object with the specified identifier.
+        /// </summary>
+        /// <param name="objectIdentifier">The identifier of the object to create.</param>
+        /// <returns>Returns an object created based on the definition file.</returns>
+        object CreateObject(string objectIdentifier);
+
     }
 }
