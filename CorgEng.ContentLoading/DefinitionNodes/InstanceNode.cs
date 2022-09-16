@@ -33,7 +33,7 @@ namespace CorgEng.ContentLoading.DefinitionNodes
             }
             else
             {
-                return EntityLoader.GetDefinition(referenceName);
+                return EntityLoader.GetDefinition(referenceName).CreateInstance(parent, instanceRefs);
             }
         }
 
