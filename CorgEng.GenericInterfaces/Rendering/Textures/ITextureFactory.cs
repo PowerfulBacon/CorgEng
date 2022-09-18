@@ -14,5 +14,12 @@ namespace CorgEng.GenericInterfaces.Rendering.Textures
 
         ITextureState GetTextureFromIconState(IIcon iconState);
 
+        /// <summary>
+        /// Determins if an icon state has transparency
+        /// </summary>
+        /// <param name="iconState"></param>
+        /// <returns></returns>
+        bool GetIconStateTransparency(IIcon iconState);
+
     }
 }

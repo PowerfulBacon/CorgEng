@@ -1,4 +1,5 @@
-﻿using CorgEng.Core.Dependencies;
+﻿using CorgEng.Core;
+using CorgEng.Core.Dependencies;
 using CorgEng.GenericInterfaces.Logging;
 using CorgEng.GenericInterfaces.Rendering.Textures;
 using System;
@@ -37,6 +38,8 @@ namespace CorgEng.Rendering.Textures
         public int Height { get; private set; }
 
         public uint TextureID { get; private set; }
+
+        private byte[] data;
 
         public unsafe void ReadTexture(string fileName)
         {
@@ -80,7 +83,13 @@ namespace CorgEng.Rendering.Textures
             }
 
             //Read the image data
-            byte[] data = fileContents.Skip(textureDataIndex).ToArray();
+            data = fileContents.Skip(textureDataIndex).ToArray();
+
+            //Unit test headless running support
+            if (!CorgEngMain.IsRendering)
+            {
+                return;
+            }
 
             //Bind the texture
             //Hands the texture data to an openGL buffer to be stored on the GPU
@@ -97,6 +106,22 @@ namespace CorgEng.Rendering.Textures
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
             Log.WriteLine($"Texture {fileName} loaded successfully. (Mode: {compressionMethod}) (Thread: {Thread.CurrentThread.ManagedThreadId}) (Texture uint: {TextureID})", LogType.DEBUG);
+        }
+
+        public bool IsTextureTransparent(ITextureState textureState)
+        {
+            for (int x = (int)(textureState.OffsetX * Width); x < (int)(textureState.OffsetX * Width + textureState.OffsetWidth * Width); x++)
+            {
+                for (int y = (int)(textureState.OffsetY * Height); y < (int)(textureState.OffsetY * Height + textureState.OffsetHeight * Height); y++)
+                {
+                    byte pixelInfo = data[4 * ((Height - y - 1) * Width + x) + 3];
+                    if (pixelInfo != 0x00 && pixelInfo != 0xFF)
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
 
     }

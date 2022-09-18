@@ -19,5 +19,7 @@ namespace CorgEng.GenericInterfaces.Rendering.Textures
 
         float OffsetHeight { get; }
 
+        bool IsTransparentTexture { get; }
+
     }
 }

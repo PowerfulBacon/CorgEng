@@ -30,6 +30,11 @@ namespace CorgEng.Rendering.Textures
             throw new NotImplementedException($"Texture file extension .{fileExtension} is not supported.");
         }
 
+        public bool GetIconStateTransparency(IIcon iconState)
+        {
+            return GetTextureFromIconState(iconState).IsTransparentTexture;
+        }
+
         public ITextureState GetTextureFromIconState(IIcon iconState)
         {
             return TextureCache.GetTexture(iconState.IconName);

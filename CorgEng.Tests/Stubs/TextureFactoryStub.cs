@@ -25,6 +25,11 @@ namespace CorgEng.Tests.Stubs
             throw new NotImplementedException($"Texture file extension .{fileExtension} is not supported.");
         }
 
+        public bool GetIconStateTransparency(IIcon iconState)
+        {
+            return false;
+        }
+
         public ITextureState GetTextureFromIconState(IIcon iconState)
         {
             return null;

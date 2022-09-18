@@ -20,5 +20,11 @@ namespace CorgEng.GenericInterfaces.Rendering.Icons
         /// </summary>
         float Layer { get; set; }
 
+        /// <summary>
+        /// Does this texture have transparency?
+        /// This only accounts for partial transparency (alpha values 1-254)
+        /// </summary>
+        bool HasTransparency { get; }
+
     }
 }

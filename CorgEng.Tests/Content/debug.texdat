@@ -1,0 +1,36 @@
+{
+  "textures": [
+    {
+      "id": "is_transparent",
+      "file": "debug.bmp",
+      "width": 128,
+      "height": 128,
+      "index_x": 0,
+      "index_y": 0
+    },
+    {
+      "id": "is_not_transparent",
+      "file": "debug.bmp",
+      "width": 32,
+      "height": 32,
+      "index_x": 7,
+      "index_y": 7
+    },
+    {
+      "id": "is_not_transparent_two",
+      "file": "debug.bmp",
+      "width": 128,
+      "height": 128,
+      "index_x": 4,
+      "index_y": 0
+    },
+    {
+      "id": "is_transparent_two",
+      "file": "debug.bmp",
+      "width": 64,
+      "height": 64,
+      "index_x": 0,
+      "index_y": 3
+    }
+  ]
+}
