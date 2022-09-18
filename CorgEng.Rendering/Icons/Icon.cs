@@ -1,5 +1,6 @@
 ﻿using CorgEng.Core.Dependencies;
 using CorgEng.GenericInterfaces.Rendering.Icons;
+using CorgEng.GenericInterfaces.Rendering.Textures;
 using CorgEng.GenericInterfaces.Serialization;
 using System;
 using System.Collections.Generic;
@@ -16,9 +17,17 @@ namespace CorgEng.Rendering.Icons
         [UsingDependency]
         private static IAutoSerialiser AutoSerialiser;
 
+        [UsingDependency]
+        private static ITextureFactory TextureFactory;
+
         public string IconName { get; private set; }
 
         public float Layer { get; set; }
+
+        /// <summary>
+        /// Should this icon be rendered on the transparent rendering system?
+        /// </summary>
+        public bool HasTransparency => TextureFactory.GetIconStateTransparency(this);
 
         public Icon(string iconName, float layer)
         {

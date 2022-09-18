@@ -59,6 +59,12 @@
     <None Update="ContentLoadingTests\dicttest.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Content\debug.bmp">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Content\debug.texdat">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="UserInterfaceTests\UnitTests\Content\UserInterfaceButton.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

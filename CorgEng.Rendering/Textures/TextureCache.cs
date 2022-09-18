@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace CorgEng.Rendering.Textures
 {
-    internal static class TextureCache
+    public static class TextureCache
     {
 
         [UsingDependency]
@@ -35,6 +35,11 @@ namespace CorgEng.Rendering.Textures
         /// A store of the loaded texture json data
         /// </summary>
         private static Dictionary<string, TextureJson> TextureJsons = new Dictionary<string, TextureJson>();
+
+        /// <summary>
+        /// Cache of texture states, to optimise expensive is transparent checks
+        /// </summary>
+        private static Dictionary<string, ITextureState> TextureStates = new Dictionary<string, ITextureState>();
 
         /// <summary>
         /// Has loading been completed?
@@ -70,16 +75,22 @@ namespace CorgEng.Rendering.Textures
             //Locate the texture object we need
             if (TextureFileCache.ContainsKey(usingJson.FileName))
             {
+                if (TextureStates.ContainsKey(textureState))
+                {
+                    return TextureStates[textureState];
+                }
                 ITexture texture = TextureFileCache[usingJson.FileName];
                 //Convert 0-width (width) to -1 to 1 (2)
                 float pixelFactorX = 1.0f / texture.Width;
                 float pixelFactorY = 1.0f / texture.Height;
-                return new TextureState(
+                TextureState storedTextureState = new TextureState(
                     texture,
                     usingJson.IndexX * 32 * pixelFactorX,
                     usingJson.IndexY * 32 * pixelFactorY,
                     usingJson.Width * pixelFactorX,
                     usingJson.Height * pixelFactorY);
+                TextureStates.Add(textureState, storedTextureState);
+                return storedTextureState;
             }
             else
             {

@@ -24,5 +24,12 @@ namespace CorgEng.GenericInterfaces.Rendering.Textures
         /// <param name="fileName">The filename of the texture to load</param>
         unsafe void ReadTexture(string fileName);
 
+        /// <summary>
+        /// Determine if a texture state is transparent
+        /// </summary>
+        /// <param name="textureState"></param>
+        /// <returns></returns>
+        bool IsTextureTransparent(ITextureState textureState);
+
     }
 }
