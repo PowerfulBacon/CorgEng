@@ -12,9 +12,9 @@ namespace CorgEng.Rendering.SpriteRendering
     public sealed class SpriteRenderObjectFactory : ISpriteRenderObjectFactory
     {
 
-        public ISpriteRenderObject CreateSpriteRenderObject(uint textureFile, float textureX, float textureY, float textureWidth, float textureHeight)
+        public ISpriteRenderObject CreateSpriteRenderObject(uint textureFile, float textureX, float textureY, float textureWidth, float textureHeight, float layer)
         {
-            return new SpriteRenderObject(textureFile, textureX, textureY, textureWidth, textureHeight);
+            return new SpriteRenderObject(textureFile, textureX, textureY, textureWidth, textureHeight, layer);
         }
 
     }

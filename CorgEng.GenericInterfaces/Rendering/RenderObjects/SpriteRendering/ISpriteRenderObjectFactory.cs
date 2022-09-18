@@ -9,7 +9,7 @@ namespace CorgEng.GenericInterfaces.Rendering.RenderObjects.SpriteRendering
     public interface ISpriteRenderObjectFactory
     {
 
-        ISpriteRenderObject CreateSpriteRenderObject(uint textureFile, float textureX, float textureY, float textureWidth, float textureHeight);
+        ISpriteRenderObject CreateSpriteRenderObject(uint textureFile, float textureX, float textureY, float textureWidth, float textureHeight, float layer);
 
     }
 }

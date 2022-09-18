@@ -5,6 +5,7 @@ layout (location = 1) in vec2 inVertexUV;
 layout (location = 2) in vec3 inMatrixFirst;
 layout (location = 3) in vec3 inMatrixSecond;
 layout (location = 4) in vec4 inTextureData;
+layout (location = 5) in float inLayer;
 
 //UV data
 out vec2 fragVertexUV;
@@ -22,7 +23,7 @@ void main()
 		inMatrixFirst.x, inMatrixSecond.x, 0, 0,
 		inMatrixFirst.y, inMatrixSecond.y, 0, 0,
 		0, 0, 1, 0,
-		inMatrixFirst.z, inMatrixSecond.z, 0, 1
+		inMatrixFirst.z, inMatrixSecond.z, 1-inLayer, 1
 	);
     gl_Position = projectionMatrix * viewMatrix * transformationMatrix * vec4(inVertexPos, 1.0);
     //Output the vertex UV to the fragment shader

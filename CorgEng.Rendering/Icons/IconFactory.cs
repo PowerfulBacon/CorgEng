@@ -12,9 +12,9 @@ namespace CorgEng.Rendering.Icons
     internal class IconFactory : IIconFactory
     {
 
-        public IIcon CreateIcon(string name)
+        public IIcon CreateIcon(string name, float layer)
         {
-            return new Icon(name);
+            return new Icon(name, layer);
         }
 
     }

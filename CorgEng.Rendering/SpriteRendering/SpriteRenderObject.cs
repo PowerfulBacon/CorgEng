@@ -66,12 +66,19 @@ namespace CorgEng.Rendering.SpriteRendering
         }));
 
         /// <summary>
+        /// The rendering layer
+        /// </summary>
+        public IBindableProperty<IVector<float>> IconLayer { get; set; } = new BindableProperty<IVector<float>>(new Vector<float>(0));
+
+        /// <summary>
         /// A hashset containing all overlays that are currently attached to us
         /// </summary>
         private Dictionary<IIcon, ISpriteRenderObject> overlays = new Dictionary<IIcon, ISpriteRenderObject>();
 
-        public SpriteRenderObject(uint textureUint, float textureX, float textureY, float textureWidth, float textureHeight)
+        public SpriteRenderObject(uint textureUint, float textureX, float textureY, float textureWidth, float textureHeight, float layer)
         {
+            //Set the layer
+            IconLayer.Value[0] = layer;
             //When the vector changes, trigger change on the bindable property.
             CombinedTransform.Value.OnChange += (object src, EventArgs arg) => {
                 //Trigger a transform update
@@ -142,7 +149,8 @@ namespace CorgEng.Rendering.SpriteRendering
                 textureState.OffsetX,
                 textureState.OffsetY,
                 textureState.OffsetWidth,
-                textureState.OffsetHeight);
+                textureState.OffsetHeight,
+                IconLayer.Value[0] + 0.0001f);
             //Set it as the container
             spriteRenderObject.Container = this;
             //If we are currently being rendered, render the overlay on the same renderer

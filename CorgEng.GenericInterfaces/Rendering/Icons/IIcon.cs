@@ -10,7 +10,15 @@ namespace CorgEng.GenericInterfaces.Rendering.Icons
     public interface IIcon : ICustomSerialisationBehaviour
     {
 
+        /// <summary>
+        /// The icon name to use. References an icon defined in a .texdef file.
+        /// </summary>
         string IconName { get; }
+
+        /// <summary>
+        /// The layer that the icon should appear on
+        /// </summary>
+        float Layer { get; set; }
 
     }
 }

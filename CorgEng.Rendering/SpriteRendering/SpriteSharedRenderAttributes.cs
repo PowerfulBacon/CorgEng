@@ -21,14 +21,20 @@ namespace CorgEng.Rendering.SpriteRendering
         /// The uint ID of the texture that this sprite uses.
         /// </summary>
         public uint SpriteTextureUint { get; set; }
-        
+
+        /// <summary>
+        /// The layer to be rendered on
+        /// </summary>
+        //public float Layer { get; set; }
+
         public int VertexCount => 6;
 
         public IModel Model => squareModel;
 
-        public SpriteSharedRenderAttributes(uint spriteTextureUint)
+        public SpriteSharedRenderAttributes(uint spriteTextureUint/*, float layer*/)
         {
             SpriteTextureUint = spriteTextureUint;
+            //Layer = layer;
             if (squareModel == null)
                 squareModel = squareModelFactory.CreateModel();
         }
@@ -41,16 +47,13 @@ namespace CorgEng.Rendering.SpriteRendering
         public override bool Equals(object obj)
         {
             return obj is SpriteSharedRenderAttributes attributes &&
-                   SpriteTextureUint == attributes.SpriteTextureUint &&
-                   VertexCount == attributes.VertexCount;
+                   SpriteTextureUint == attributes.SpriteTextureUint; // &&
+                   //Layer == attributes.Layer;
         }
 
         public override int GetHashCode()
         {
-            int hashCode = -1086999075;
-            hashCode = hashCode * -1521134295 + SpriteTextureUint.GetHashCode();
-            hashCode = hashCode * -1521134295 + VertexCount.GetHashCode();
-            return hashCode;
+            return HashCode.Combine(SpriteTextureUint/*, Layer*/);
         }
 
     }

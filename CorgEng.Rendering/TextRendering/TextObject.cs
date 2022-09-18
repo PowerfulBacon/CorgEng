@@ -82,7 +82,8 @@ namespace CorgEng.Rendering.TextRendering
                     (float)fontCharacter.TextureXPosition / fontCharacter.TextureFile.Width,
                     (float)fontCharacter.TextureYPosition / fontCharacter.TextureFile.Height,
                     (float)fontCharacter.TextureWidth / fontCharacter.TextureFile.Width,
-                    (float)fontCharacter.TextureHeight / fontCharacter.TextureFile.Height);
+                    (float)fontCharacter.TextureHeight / fontCharacter.TextureFile.Height,
+                    10);
                 renderObject.CombinedTransform.Value[3, 1] = (float)xPointer + Scale.Value * 4 * fontCharacter.CharacterXOffset / fontCharacter.TextureFile.Width;
                 renderObject.CombinedTransform.Value[3, 2] = (float)yPointer - Scale.Value * 4 * fontCharacter.CharacterYOffset / fontCharacter.TextureFile.Height;
                 renderObject.CombinedTransform.Value[1, 1] = Scale.Value * 8 * fontCharacter.TextureWidth / fontCharacter.TextureFile.Width;

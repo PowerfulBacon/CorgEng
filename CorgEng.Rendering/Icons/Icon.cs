@@ -18,24 +18,29 @@ namespace CorgEng.Rendering.Icons
 
         public string IconName { get; private set; }
 
-        public Icon(string iconName)
+        public float Layer { get; set; }
+
+        public Icon(string iconName, float layer)
         {
             IconName = iconName;
+            Layer = layer;
         }
 
         public void DeserialiseFrom(BinaryReader binaryReader)
         {
             IconName = AutoSerialiser.Deserialize(typeof(string), binaryReader) as string;
+            Layer = (float)AutoSerialiser.Deserialize(typeof(float), binaryReader);
         }
 
         public int GetSerialisationLength()
         {
-            return AutoSerialiser.SerialisationLength(typeof(string), IconName);
+            return AutoSerialiser.SerialisationLength(typeof(string), IconName) + AutoSerialiser.SerialisationLength(typeof(float), Layer);
         }
 
         public void SerialiseInto(BinaryWriter binaryWriter)
         {
             AutoSerialiser.SerializeInto(typeof(string), IconName, binaryWriter);
+            AutoSerialiser.SerializeInto(typeof(float), Layer, binaryWriter);
         }
 
     }
