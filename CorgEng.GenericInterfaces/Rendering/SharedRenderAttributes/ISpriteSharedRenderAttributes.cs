@@ -12,6 +12,8 @@ namespace CorgEng.GenericInterfaces.Rendering.SharedRenderAttributes
 
         uint SpriteTextureUint { get; set; }
 
+        //float Layer { get; set; }
+
         int VertexCount { get; }
 
         IModel Model { get; }

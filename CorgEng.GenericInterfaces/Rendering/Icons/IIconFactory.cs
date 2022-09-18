@@ -9,7 +9,7 @@ namespace CorgEng.GenericInterfaces.Rendering.Icons
     public interface IIconFactory
     {
 
-        IIcon CreateIcon(string name);
+        IIcon CreateIcon(string name, float layer);
 
     }
 }

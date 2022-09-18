@@ -29,17 +29,16 @@ namespace CorgEng.Core.Rendering
             glEnable(GL_CULL_FACE);
             glCullFace(GL_BACK);
             glFrontFace(GL_CW);
-            //Enable depth test -> We use z to represent the layer an object is on
-            glEnable(GL_DEPTH_TEST);
-            //Use the lowest number fragment
-            glDepthFunc(GL_LEQUAL);
             //Enable blending for transparent objects
             glEnable(GL_BLEND);
             glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+            //Use the lowest number fragment
+            glDepthFunc(GL_LEQUAL);
+            //Enable depth test -> We use z to represent the layer an object is on
+            glEnable(GL_DEPTH_TEST);
             //Set a background colour
-            glColorMask(true, true, true, true);
             glClearColor(0, 0, 0, 0);
-            
+
         }
 
         /// <summary>

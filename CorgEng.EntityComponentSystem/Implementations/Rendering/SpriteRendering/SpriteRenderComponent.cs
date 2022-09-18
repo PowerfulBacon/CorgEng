@@ -18,13 +18,26 @@ namespace CorgEng.EntityComponentSystem.Implementations.Rendering.SpriteRenderin
     public class SpriteRenderComponent : Component, IInstantiatable
     {
 
+        /// <summary>
+        /// Cached position of the component, so that if the position gets set before
+        /// we start rendering, we can be rendered in the correct position.
+        /// </summary>
         public IVector<float> CachedPosition { get; set; } = null;
 
+        /// <summary>
+        /// The sprite to be drawn by this component
+        /// </summary>
         [NetworkSerialized]
         public IIcon Sprite { get; set; }
 
+        /// <summary>
+        /// The render object that is drawing this component
+        /// </summary>
         public ISpriteRenderObject SpriteRenderObject { get; internal set; }
 
+        /// <summary>
+        /// The identifier of the sprite renderer to use
+        /// </summary>
         [NetworkSerialized]
         public uint SpriteRendererIdentifier { get; set; }
 

@@ -45,6 +45,11 @@ namespace CorgEng.Core.Rendering
         public uint FrameBufferUint { get; }
 
         /// <summary>
+        /// The uint of the render buffer
+        /// </summary>
+        public uint RenderBufferUint { get; }
+
+        /// <summary>
         /// The uint of our render texture
         /// </summary>
         public uint RenderTextureUint { get; }
@@ -65,6 +70,10 @@ namespace CorgEng.Core.Rendering
         {
             if (!CorgEngMain.IsRendering)
                 return;
+            //Generate a render buff
+            RenderBufferUint = glGenRenderbuffer();
+            glBindRenderbuffer(RenderBufferUint);
+            glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, Width, Height);
             //Generate a frame buffer
             FrameBufferUint = glGenFramebuffer();
             glBindFramebuffer(GL_FRAMEBUFFER, FrameBufferUint);
@@ -78,6 +87,8 @@ namespace CorgEng.Core.Rendering
             //Set the texture parameters
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+            //Bind the render buffer to the framebuffer
+            glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, RenderBufferUint);
             //Bind the framebuffer to the texture
             glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, RenderTextureUint, 0);
             //Check for issues
@@ -85,10 +96,10 @@ namespace CorgEng.Core.Rendering
             {
                 //TODO: Introduce a rendering mode that bypasses framebuffers and just draws directly to the screen.
                 //Slightly broken is better than nothing.
-                Console.WriteLine("WARNING: FRAMEBUFFER ERROR. Your GPU may not support this application!");
+                Logger.WriteLine("WARNING: FRAMEBUFFER ERROR. Your GPU may not support this application!", LogType.ERROR);
             }
             //Log creation
-            Logger?.WriteLine($"Created RenderCore, rendering to framebuffer {FrameBufferUint} outputting texture to {RenderTextureUint}");
+            Logger?.WriteLine($"Created RenderCore, rendering to framebuffer {FrameBufferUint} outputting texture to {RenderTextureUint}", LogType.DEBUG);
         }
 
         public unsafe static void SetupRendering()
@@ -109,6 +120,7 @@ namespace CorgEng.Core.Rendering
                 //Create and bind the vertex buffer
                 vertexBuffer = glGenBuffer();
                 glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+
                 //Put data into the buffer
                 fixed (float* vertexPointer = &quadVertices[0])
                 {

@@ -132,7 +132,11 @@ namespace CorgEng.EntityComponentSystem.Implementations.Rendering.SpriteRenderin
                     newTexture.OffsetX,
                     newTexture.OffsetY,
                     newTexture.OffsetWidth,
-                    newTexture.OffsetHeight);
+                    newTexture.OffsetHeight,
+                    spriteRenderComponent.Sprite.Layer
+                    );
+                //Set the layer
+                spriteRenderComponent.SpriteRenderObject.IconLayer.Value[0] = spriteRenderComponent.Sprite.Layer;
                 if (spriteRenderComponent.CachedPosition != null)
                 {
                     spriteRenderComponent.SpriteRenderObject.CombinedTransform.Value[3, 1] = spriteRenderComponent.CachedPosition.X;

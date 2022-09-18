@@ -47,7 +47,8 @@ namespace CorgEng.Rendering.SpriteRendering
             IBatchElement<SpriteBatch> batchElement = new BatchElement<SpriteBatch>(new IBindableProperty<IVector<float>>[] {
                 spriteRenderObject.CombinedTransformFirstRow,
                 spriteRenderObject.CombinedTransformSecondRow,
-                spriteRenderObject.TextureDetails
+                spriteRenderObject.TextureDetails,
+                spriteRenderObject.IconLayer
             });
             //Remember the batch element we are stored in, so it can be saved
             spriteRenderObject.SetBelongingBatchElement(batchElement);

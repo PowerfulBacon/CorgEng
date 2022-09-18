@@ -26,6 +26,11 @@ namespace CorgEng.GenericInterfaces.Rendering.RenderObjects.SpriteRendering
         IBindableProperty<float> TextureFileWidth { get; set; }
 
         /// <summary>
+        /// The layer that the icon should render on
+        /// </summary>
+        IBindableProperty<IVector<float>> IconLayer { get; set; }
+
+        /// <summary>
         /// If we are an overlay, this is the object we are being rendered inside of.
         /// </summary>
         ISpriteRenderObject Container { get; set; }
