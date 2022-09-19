@@ -88,29 +88,38 @@ namespace CorgEng.Core
         /// </summary>
         public static void Initialize(bool disableRendering = false)
         {
-            //Load priority modules (Logging)
-            PriorityModuleInit();
-            Logger?.WriteLine("Starting CorgEng Application", LogType.DEBUG);
-            if (disableRendering)
+            try
             {
-                //Load non priority modules
+                //Load priority modules (Logging)
+                PriorityModuleInit();
+                Logger?.WriteLine("Starting CorgEng Application", LogType.DEBUG);
+                if (disableRendering)
+                {
+                    //Load non priority modules
+                    ModuleInit();
+                    return;
+                }
+                //Enable rendering functionality
+                IsRendering = true;
+                //Create a new window
+                GameWindow = new CorgEngWindow();
+                GameWindow.Open();
+                Logger?.WriteLine("Successfully created primary window", LogType.DEBUG);
+                //Create the internal render master
+                InternalRenderMaster = new RenderMaster();
+                InternalRenderMaster.Initialize();
+                Logger?.WriteLine("Successfully initialized render master", LogType.DEBUG);
+                //Bind the render master size to the game window size
+                GameWindow.OnWindowResized += InternalRenderMaster.SetWindowRenderSize;
+                //Load non-priority modules
                 ModuleInit();
-                return;
             }
-            //Enable rendering functionality
-            IsRendering = true;
-            //Create a new window
-            GameWindow = new CorgEngWindow();
-            GameWindow.Open();
-            Logger?.WriteLine("Successfully created primary window", LogType.DEBUG);
-            //Create the internal render master
-            InternalRenderMaster = new RenderMaster();
-            InternalRenderMaster.Initialize();
-            Logger?.WriteLine("Successfully initialized render master", LogType.DEBUG);
-            //Bind the render master size to the game window size
-            GameWindow.OnWindowResized += InternalRenderMaster.SetWindowRenderSize;
-            //Load non-priority modules
-            ModuleInit();
+            catch (System.Exception e)
+            {
+                Console.WriteLine("A fatal exception occured during module load. Execution can no longer continue.");
+                Console.WriteLine(e);
+                throw;
+            }
         }
 
         /// <summary>

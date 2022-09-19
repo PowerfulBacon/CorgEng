@@ -20,13 +20,14 @@ using static OpenGL.Gl;
 
 namespace CorgEng.Rendering.SpriteRendering
 {
-    internal sealed class SpriteRenderer : InstancedRenderer<ISpriteSharedRenderAttributes, SpriteBatch>, ISpriteRenderer
+    internal class SpriteRenderer : InstancedRenderer<ISpriteSharedRenderAttributes, SpriteBatch>, ISpriteRenderer
     {
 
         [UsingDependency]
-        private static IShaderFactory ShaderFactory;
+        protected static IShaderFactory ShaderFactory;
 
-        private IShaderSet _shaderSet;
+        protected IShaderSet _shaderSet;
+
         protected override IShaderSet ShaderSet => _shaderSet;
 
         internal SpriteRenderer(uint networkedId) : base(networkedId) { }
