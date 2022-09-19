@@ -32,6 +32,12 @@
     <ProjectReference Include="..\CorgEng.UtilityTypes\CorgEng.UtilityTypes.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <None Update="Content\Shaders\ParallaxShader\ParallaxShader.frag">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Content\Shaders\ParallaxShader\ParallaxShader.vert">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Content\Shaders\SpriteShader\SpriteShader.frag">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
