@@ -58,6 +58,7 @@ namespace CorgEng.UtilityTypes.BindableProperties
             {
                 _value[i] = boundProperties[i].Value;
             }
+            TriggerChanged();
         }
 
         public void TriggerChanged()

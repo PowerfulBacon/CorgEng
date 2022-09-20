@@ -43,13 +43,16 @@ namespace CorgEng.Rendering.Textures
             }
         }
 
-        public TextureState(ITexture textureFile, float offsetX, float offsetY, float offsetWidth, float offsetHeight)
+        public DirectionalModes DirectionalMode { get; }
+
+        public TextureState(ITexture textureFile, float offsetX, float offsetY, float offsetWidth, float offsetHeight, DirectionalModes directionalMode)
         {
             TextureFile = textureFile;
             OffsetX = offsetX;
             OffsetY = offsetY;
             OffsetWidth = offsetWidth;
             OffsetHeight = offsetHeight;
+            DirectionalMode = directionalMode;
         }
     }
 }

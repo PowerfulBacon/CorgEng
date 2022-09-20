@@ -88,7 +88,8 @@ namespace CorgEng.Rendering.Textures
                     usingJson.IndexX * 32 * pixelFactorX,
                     usingJson.IndexY * 32 * pixelFactorY,
                     usingJson.Width * pixelFactorX,
-                    usingJson.Height * pixelFactorY);
+                    usingJson.Height * pixelFactorY,
+                    usingJson.DirectionalModes);
                 TextureStates.Add(textureState, storedTextureState);
                 return storedTextureState;
             }
@@ -111,7 +112,8 @@ namespace CorgEng.Rendering.Textures
                         usingJson.IndexX * 32 * pixelFactorX,
                         usingJson.IndexY * 32 * pixelFactorY,
                         usingJson.Width * pixelFactorX,
-                        usingJson.Height * pixelFactorY);
+                        usingJson.Height * pixelFactorY,
+                        usingJson.DirectionalModes);
                 }
                 catch (Exception e)
                 {
@@ -125,7 +127,7 @@ namespace CorgEng.Rendering.Textures
                     else
                     {
                         //Just die at this point, our error icon doesn't exist.
-                        throw e;
+                        throw new Exception("Failed to load error icon.", e);
                     }
                 }
             }

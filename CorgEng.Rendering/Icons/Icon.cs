@@ -29,6 +29,11 @@ namespace CorgEng.Rendering.Icons
         /// </summary>
         public bool HasTransparency => TextureFactory.GetIconStateTransparency(this);
 
+        /// <summary>
+        /// Directional state
+        /// </summary>
+        public DirectionalState DirectionalState { get; set; } = DirectionalState.NONE;
+
         public Icon(string iconName, float layer)
         {
             IconName = iconName;
@@ -39,17 +44,21 @@ namespace CorgEng.Rendering.Icons
         {
             IconName = AutoSerialiser.Deserialize(typeof(string), binaryReader) as string;
             Layer = (float)AutoSerialiser.Deserialize(typeof(float), binaryReader);
+            DirectionalState = (DirectionalState)AutoSerialiser.Deserialize(typeof(int), binaryReader);
         }
 
         public int GetSerialisationLength()
         {
-            return AutoSerialiser.SerialisationLength(typeof(string), IconName) + AutoSerialiser.SerialisationLength(typeof(float), Layer);
+            return AutoSerialiser.SerialisationLength(typeof(string), IconName)
+                + AutoSerialiser.SerialisationLength(typeof(float), Layer)
+                + AutoSerialiser.SerialisationLength(typeof(int), (int)DirectionalState);
         }
 
         public void SerialiseInto(BinaryWriter binaryWriter)
         {
             AutoSerialiser.SerializeInto(typeof(string), IconName, binaryWriter);
             AutoSerialiser.SerializeInto(typeof(float), Layer, binaryWriter);
+            AutoSerialiser.SerializeInto(typeof(int), (int)DirectionalState, binaryWriter);
         }
 
     }
