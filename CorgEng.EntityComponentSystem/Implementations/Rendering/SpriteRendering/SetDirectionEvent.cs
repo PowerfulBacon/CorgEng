@@ -29,17 +29,17 @@ namespace CorgEng.EntityComponentSystem.Implementations.Rendering.SpriteRenderin
 
         public void Deserialise(BinaryReader reader)
         {
-            throw new NotImplementedException();
+            DirectionalState = (DirectionalState)reader.ReadInt32();
         }
 
         public void Serialise(BinaryWriter writer)
         {
-            throw new NotImplementedException();
+            writer.Write((int)DirectionalState);
         }
 
         public int SerialisedLength()
         {
-            throw new NotImplementedException();
+            return sizeof(int);
         }
 
     }
