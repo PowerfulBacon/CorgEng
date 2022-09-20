@@ -9,6 +9,7 @@ using CorgEng.GenericInterfaces.Logging;
 using CorgEng.GenericInterfaces.Rendering.Renderers.SpriteRendering;
 using CorgEng.GenericInterfaces.Rendering.RenderObjects.SpriteRendering;
 using CorgEng.GenericInterfaces.Rendering.Textures;
+using CorgEng.GenericInterfaces.UtilityTypes;
 using CorgEng.Rendering;
 using System;
 using System.Collections.Generic;
@@ -28,6 +29,9 @@ namespace CorgEng.EntityComponentSystem.Implementations.Rendering.SpriteRenderin
         private static ISpriteRenderObjectFactory SpriteRenderObjectFactory;
 
         [UsingDependency]
+        private static ITextureOffsetCalculator TextureOffsetCalculator;
+
+        [UsingDependency]
         private static ILogger Log;
 
         //Runs only on the client, contains no server-side logic.
@@ -43,6 +47,7 @@ namespace CorgEng.EntityComponentSystem.Implementations.Rendering.SpriteRenderin
             RegisterLocalEvent<SpriteRenderComponent, InitialiseNetworkedEntityEvent>(OnInitialise);
             RegisterLocalEvent<SpriteRenderComponent, AddOverlayEvent>(AddOverlay);
             RegisterLocalEvent<SpriteRenderComponent, RemoveOverlayEvent>(RemoveOverlay);
+            RegisterLocalEvent<SpriteRenderComponent, SetDirectionEvent>(OnSetIconDirection);
         }
 
         private void OnInitialise(IEntity entity, SpriteRenderComponent spriteRenderComponent, InitialiseNetworkedEntityEvent componentAddedEvent)
@@ -118,19 +123,21 @@ namespace CorgEng.EntityComponentSystem.Implementations.Rendering.SpriteRenderin
             ITextureState newTexture = TextureFactory.GetTextureFromIconState(spriteRenderComponent.Sprite);
             if (spriteRenderComponent.SpriteRenderObject != null)
             {
+                IVector<float> offset = TextureOffsetCalculator.GetTextureOffset(newTexture, spriteRenderComponent.Sprite.DirectionalState);
                 spriteRenderComponent.SpriteRenderObject.TextureFile.Value = newTexture.TextureFile.TextureID;
-                spriteRenderComponent.SpriteRenderObject.TextureFileX.Value = newTexture.OffsetX;
-                spriteRenderComponent.SpriteRenderObject.TextureFileY.Value = newTexture.OffsetY;
+                spriteRenderComponent.SpriteRenderObject.TextureFileX.Value = offset.X;
+                spriteRenderComponent.SpriteRenderObject.TextureFileY.Value = offset.Y;
                 spriteRenderComponent.SpriteRenderObject.TextureFileWidth.Value = newTexture.OffsetWidth;
                 spriteRenderComponent.SpriteRenderObject.TextureFileHeight.Value = newTexture.OffsetHeight;
             }
             else
             {
+                IVector<float> offset = TextureOffsetCalculator.GetTextureOffset(newTexture, spriteRenderComponent.Sprite.DirectionalState);
                 //Create teh sprite render boject
                 spriteRenderComponent.SpriteRenderObject = SpriteRenderObjectFactory.CreateSpriteRenderObject(
                     newTexture.TextureFile.TextureID,
-                    newTexture.OffsetX,
-                    newTexture.OffsetY,
+                    offset.X,
+                    offset.Y,
                     newTexture.OffsetWidth,
                     newTexture.OffsetHeight,
                     spriteRenderComponent.Sprite.Layer
@@ -147,6 +154,18 @@ namespace CorgEng.EntityComponentSystem.Implementations.Rendering.SpriteRenderin
                 if (spriteRenderComponent.SpriteRenderer != null)
                     spriteRenderComponent.SpriteRenderer.StartRendering(spriteRenderComponent.SpriteRenderObject);
             }
+        }
+
+        /// <summary>
+        /// Set the icon's direction
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <param name="spriteRenderComponent"></param>
+        /// <param name="setDirectionEvent"></param>
+        private void OnSetIconDirection(IEntity entity, SpriteRenderComponent spriteRenderComponent, SetDirectionEvent setDirectionEvent)
+        {
+            spriteRenderComponent.Sprite.DirectionalState = setDirectionEvent.DirectionalState;
+            UpdateSprite(spriteRenderComponent);
         }
 
         /// <summary>

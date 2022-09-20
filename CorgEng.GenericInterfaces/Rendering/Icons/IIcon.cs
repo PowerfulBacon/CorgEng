@@ -1,4 +1,5 @@
 ﻿using CorgEng.GenericInterfaces.Networking.Serialisation;
+using CorgEng.GenericInterfaces.Rendering.Textures;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,6 +20,11 @@ namespace CorgEng.GenericInterfaces.Rendering.Icons
         /// The layer that the icon should appear on
         /// </summary>
         float Layer { get; set; }
+
+        /// <summary>
+        /// Directional mode of the icon
+        /// </summary>
+        DirectionalState DirectionalState { get; set; }
 
         /// <summary>
         /// Does this texture have transparency?

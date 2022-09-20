@@ -21,5 +21,7 @@ namespace CorgEng.GenericInterfaces.Rendering.Textures
 
         bool IsTransparentTexture { get; }
 
+        DirectionalModes DirectionalMode { get; }
+
     }
 }
