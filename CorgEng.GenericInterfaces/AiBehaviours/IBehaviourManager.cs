@@ -33,6 +33,11 @@ namespace CorgEng.GenericInterfaces.AiBehaviours
         Task Process();
 
         /// <summary>
+        /// The currently performing action
+        /// </summary>
+        IBehaviourAction? CurrentAction { get; set; }
+
+        /// <summary>
         /// Set the memory value
         /// </summary>
         /// <typeparam name="T"></typeparam>

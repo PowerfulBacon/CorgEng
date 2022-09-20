@@ -451,5 +451,16 @@ namespace CorgEng.UtilityTypes.Vectors
                     binaryWriter.Seek(Marshal.SizeOf(value), SeekOrigin.Current);
             }
         }
+
+        public float DistanceTo(IVector<T> other)
+        {
+            Vector<T> otherCopy = new Vector<T>(new T[other.Dimensions]);
+            for (int i = 0; i < other.Dimensions; i++)
+            {
+                otherCopy[i] = other[i];
+            }
+            return (otherCopy - this).Length();
+        }
+
     }
 }
