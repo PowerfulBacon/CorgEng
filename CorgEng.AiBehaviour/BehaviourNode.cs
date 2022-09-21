@@ -1,5 +1,6 @@
 ﻿using CorgEng.Core.Dependencies;
 using CorgEng.GenericInterfaces.AiBehaviours;
+using CorgEng.GenericInterfaces.Logging;
 using CorgEng.GenericInterfaces.UtilityTypes.BinaryLists;
 using System;
 using System.Collections.Generic;
@@ -14,6 +15,9 @@ namespace CorgEng.AiBehaviour
 
         [UsingDependency]
         private static IBinaryListFactory BinaryListFactory;
+
+        [UsingDependency]
+        private static ILogger Logger;
 
         public abstract Task<bool> CanStart(IBehaviourManager manager);
 
@@ -32,9 +36,32 @@ namespace CorgEng.AiBehaviour
             if (!await CanStart(manager))
                 return false;
 
+            Logger?.WriteLine($"Starting {GetType()}");
+
             //Preaction completed
             if (!await PreAction(manager))
                 return false;
+
+            Logger?.WriteLine($"Waiting for action...");
+
+            //Wait until we have completed our current action
+            int delay = 50;
+            while ((manager.CurrentAction?.Completed ?? true) == false && manager.CurrentAction.Failed == false)
+            {
+                await Task.Delay(delay);
+                //Increase delay to lower lag potential
+                delay = Math.Min(delay * 2, 2000);
+            }
+
+            // We failed
+            if (manager.CurrentAction?.Failed ?? false)
+            {
+                Logger?.WriteLine($"Action {manager.CurrentAction.GetType()} failed");
+                return false;
+            }
+
+            manager.CurrentAction = null;
+            Logger?.WriteLine("Action completed");
 
             //Complete subtasks
             foreach (BehaviourNode childNode in Subtasks)
@@ -47,6 +74,8 @@ namespace CorgEng.AiBehaviour
                         return false;
                 }
             }
+
+            Logger?.WriteLine($"Children of {GetType()} completed.");
 
             //Actions completed
             return await PostAction(manager);

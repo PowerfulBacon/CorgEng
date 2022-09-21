@@ -35,6 +35,11 @@ namespace CorgEng.AiBehaviour
         }
 
         /// <summary>
+        /// Currently running action
+        /// </summary>
+        public IBehaviourAction? CurrentAction { get; set; }
+
+        /// <summary>
         /// The behaviour managers permanent memory
         /// </summary>
         private Dictionary<string, object> permanentMemoryStore = new Dictionary<string, object>();

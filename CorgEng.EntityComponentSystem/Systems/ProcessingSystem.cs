@@ -46,6 +46,12 @@ namespace CorgEng.EntityComponentSystem.Systems
         private bool continued = false;
 
         /// <summary>
+        /// Multiplier for delta time, allows to slow or speed up processing
+        /// events, for example if you have time control elements.
+        /// </summary>
+        public static double DeltaTimeMultiplier { get; set; } = 1;
+
+        /// <summary>
         /// Override initial behaviour to also be able to handle processing at regular intervals
         /// </summary>
         protected override void SystemThread()
@@ -73,7 +79,7 @@ namespace CorgEng.EntityComponentSystem.Systems
                     //Do the process
                     try
                     {
-                        currentRun.Current(deltaTime);
+                        currentRun.Current(deltaTime * DeltaTimeMultiplier);
                     }
                     catch (Exception e)
                     {

@@ -23,6 +23,8 @@ namespace CorgEng.GenericInterfaces.UtilityTypes
 
         float Length();
 
+        float DistanceTo(IVector<T> other);
+
         T DotProduct(IVector<T> other);
 
         IVector<T> Copy();
