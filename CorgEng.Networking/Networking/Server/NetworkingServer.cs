@@ -186,7 +186,6 @@ namespace CorgEng.Networking.Networking.Server
                             {
                                 target.SendMessage(udpClient, queuedPacket.Data, queuedPacket.TopPointer);
                             }
-                            Logger?.WriteLine($"Message of size {queuedPacket.TopPointer} sent to clients.", LogType.TEMP);
                         }
                         finally
                         {
@@ -223,7 +222,6 @@ namespace CorgEng.Networking.Networking.Server
                     IPEndPoint remoteEndPoint = new IPEndPoint(IPAddress.Any, port);
                     byte[] incomingData = udpClient.Receive(ref remoteEndPoint);
                     Task.Run(() => ProcessPacket(remoteEndPoint, incomingData));
-                    Logger?.WriteLine($"Message of size {incomingData.Length} recieved from client.", LogType.TEMP);
                 }
                 catch (Exception e)
                 {
