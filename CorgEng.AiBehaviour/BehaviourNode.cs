@@ -36,13 +36,9 @@ namespace CorgEng.AiBehaviour
             if (!await CanStart(manager))
                 return false;
 
-            Logger?.WriteLine($"Starting {GetType()}");
-
             //Preaction completed
             if (!await PreAction(manager))
                 return false;
-
-            Logger?.WriteLine($"Waiting for action...");
 
             //Wait until we have completed our current action
             int delay = 50;
@@ -56,12 +52,10 @@ namespace CorgEng.AiBehaviour
             // We failed
             if (manager.CurrentAction?.Failed ?? false)
             {
-                Logger?.WriteLine($"Action {manager.CurrentAction.GetType()} failed");
                 return false;
             }
 
             manager.CurrentAction = null;
-            Logger?.WriteLine("Action completed");
 
             //Complete subtasks
             foreach (BehaviourNode childNode in Subtasks)
@@ -74,8 +68,6 @@ namespace CorgEng.AiBehaviour
                         return false;
                 }
             }
-
-            Logger?.WriteLine($"Children of {GetType()} completed.");
 
             //Actions completed
             return await PostAction(manager);

@@ -444,7 +444,6 @@ namespace CorgEng.Networking.Networking.Client
                     case PacketHeaders.ENTITY_DATA:
                         IEntity createdEntity = await EntityCommunicator.DeserialiseEntity(data.Skip(start).Take(length).ToArray());
                         EntityManager.RegisterEntity(createdEntity);
-                        Logger.WriteLine($"Created entity with ID {createdEntity.Identifier} and components {string.Join(",", createdEntity.Components)}", LogType.TEMP);
                         return;
                     case PacketHeaders.UPDATE_CLIENT_VIEW:
                         using (MemoryStream memoryStream = new MemoryStream(data))

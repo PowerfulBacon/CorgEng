@@ -14,7 +14,7 @@ namespace CorgEng.World.Components
     public class TrackComponent : Component, IWorldTrackComponent
     {
 
-        public string Key { get; set; }
+        public virtual string Key { get; set; }
 
         /// <summary>
         /// Get the transform linked to this component
