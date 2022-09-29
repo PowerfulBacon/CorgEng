@@ -17,7 +17,7 @@ namespace CorgEng.AiBehaviour
         private static IBinaryListFactory BinaryListFactory;
 
         [UsingDependency]
-        private static ILogger Logger;
+        protected static ILogger Logger;
 
         public abstract Task<bool> CanStart(IBehaviourManager manager);
 
@@ -34,11 +34,17 @@ namespace CorgEng.AiBehaviour
         {
             //If we canno start
             if (!await CanStart(manager))
+            {
+                OnCancel(manager);
                 return false;
+            }
 
             //Preaction completed
             if (!await PreAction(manager))
+            {
+                OnCancel(manager);
                 return false;
+            }
 
             //Wait until we have completed our current action
             int delay = 50;
@@ -46,12 +52,13 @@ namespace CorgEng.AiBehaviour
             {
                 await Task.Delay(delay);
                 //Increase delay to lower lag potential
-                delay = Math.Min(delay * 2, 2000);
+                delay = Math.Min(delay * 2, 1000);
             }
 
             // We failed
             if (manager.CurrentAction?.Failed ?? false)
             {
+                OnCancel(manager);
                 return false;
             }
 
@@ -60,18 +67,32 @@ namespace CorgEng.AiBehaviour
             //Complete subtasks
             foreach (BehaviourNode childNode in Subtasks)
             {
-                //Run the child action
-                if (!await childNode.Action(manager))
+                if (childNode.ContinuationMode == BehaviourContinuationMode.REPEAT_UNTIL_FAIL)
                 {
-                    //If the child node should cancel this task on fail, then cancel
-                    if (childNode.ContinuationMode == BehaviourContinuationMode.CANCEL_ON_FAIL)
-                        return false;
+                    //Repeat this action over and over until it fails
+                    while (await childNode.Action(manager))
+                    { }
+                }
+                else
+                {
+                    //Run the child action
+                    if (!await childNode.Action(manager))
+                    {
+                        //If the child node should cancel this task on fail, then cancel
+                        if (childNode.ContinuationMode == BehaviourContinuationMode.CANCEL_ON_FAIL)
+                        {
+                            OnCancel(manager);
+                            return false;
+                        }
+                    }
                 }
             }
 
             //Actions completed
             return await PostAction(manager);
         }
+
+        public virtual void OnCancel(IBehaviourManager manager) { }
 
         /// <summary>
         /// The action to run before running children nodes

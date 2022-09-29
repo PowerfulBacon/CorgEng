@@ -38,7 +38,9 @@ namespace CorgEng.ContentLoading
             {
                 if (EntityNodesByName.ContainsKey(entityName))
                 {
-                    return EntityNodesByName[entityName].CreateEntity();
+                    IEntity createdEntity = EntityNodesByName[entityName].CreateEntity();
+                    createdEntity.DefinitionName = entityName;
+                    return createdEntity;
                 }
                 //Entity not found :(
                 throw new Exception($"The entity with name {entityName} could not be spawned as it doesn't exist.");

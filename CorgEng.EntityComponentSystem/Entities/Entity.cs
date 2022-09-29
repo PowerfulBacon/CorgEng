@@ -48,6 +48,11 @@ namespace CorgEng.EntityComponentSystem.Entities
         /// </summary>
         internal Dictionary<Type, List<InternalSignalHandleDelegate>> EventListeners { get; set; } = null;
 
+        /// <summary>
+        /// Name of the entity definition
+        /// </summary>
+        public string DefinitionName { get; set; }
+
         public Entity()
         {
             Identifier = EntityManager.GetNewEntityId();
@@ -150,6 +155,11 @@ namespace CorgEng.EntityComponentSystem.Entities
                 }
             }
             return false;
+        }
+
+        public T? FindComponent<T>()
+        {
+            throw new NotImplementedException();
         }
     }
 }
