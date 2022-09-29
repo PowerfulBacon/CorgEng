@@ -59,7 +59,7 @@ namespace CorgEng.Tests.NetworkingTests
         }
 
         [TestMethod]
-        [Timeout(3000)]
+        [Timeout(5000)]
         public void TestNetworkConnection()
         {
             if (TestRunning)
