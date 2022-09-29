@@ -10,8 +10,20 @@ namespace CorgEng.GenericInterfaces.EntityComponentSystem
     public interface IEntity
     {
 
+        /// <summary>
+        /// The name of the definition used to spawn this entity.
+        /// Null if the entity was created without using EntityCreator.
+        /// </summary>
+        string? DefinitionName { get; set; }
+
+        /// <summary>
+        /// A list of all components attached to this entity.
+        /// </summary>
         List<IComponent> Components { get; }
 
+        /// <summary>
+        /// A unique identifier for this entity.
+        /// </summary>
         uint Identifier { get; }
 
         void AddComponent(IComponent component);
@@ -26,6 +38,13 @@ namespace CorgEng.GenericInterfaces.EntityComponentSystem
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
         T GetComponent<T>();
+
+        /// <summary>
+        /// Attempt to find this component, returns null if unfound.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        T? FindComponent<T>();
 
         /// <summary>
         /// Returns true if this object has the requested component type.

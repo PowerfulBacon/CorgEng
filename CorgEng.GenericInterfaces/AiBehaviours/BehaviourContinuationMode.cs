@@ -16,5 +16,9 @@ namespace CorgEng.GenericInterfaces.AiBehaviours
         /// If the task fails, move on to the next action.
         /// </summary>
         CONTINUE_ON_FAIL,
+        /// <summary>
+        /// Repeat this task until it fails, then continue to the next one.
+        /// </summary>
+        REPEAT_UNTIL_FAIL,
     }
 }

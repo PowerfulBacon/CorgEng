@@ -42,6 +42,10 @@ namespace CorgEng.GenericInterfaces.ContentLoading.DefinitionNodes
             base.ParseSelf(node);
             //Get the property that we effect
             TargetProperty = ObjectParent.ObjectType.GetProperty(node.Attributes["name"].Value);
+            if (TargetProperty == null)
+            {
+                throw new ContentLoadException($"Could not locate the property {node.Attributes["name"].Value} o the type {ObjectParent.ObjectType}");
+            }
             //Determine our property value
             ParseValue(node);
         }
