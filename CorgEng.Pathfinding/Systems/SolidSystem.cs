@@ -1,7 +1,10 @@
-﻿using CorgEng.EntityComponentSystem.Events.Events;
+﻿using CorgEng.Core.Dependencies;
+using CorgEng.EntityComponentSystem.Events.Events;
 using CorgEng.EntityComponentSystem.Implementations.Transform;
 using CorgEng.EntityComponentSystem.Systems;
 using CorgEng.GenericInterfaces.EntityComponentSystem;
+using CorgEng.GenericInterfaces.UtilityTypes;
+using CorgEng.GenericInterfaces.World;
 using CorgEng.Pathfinding.Components;
 using CorgEng.Pathfinding.Pathfinding;
 using System;
@@ -14,6 +17,9 @@ namespace CorgEng.Pathfinding.Systems
 {
     internal class SolidSystem : EntitySystem
     {
+
+        [UsingDependency]
+        private static IWorld WorldAccess;
 
         /// <summary>
         /// The world layers
@@ -43,8 +49,9 @@ namespace CorgEng.Pathfinding.Systems
                 WorldLayers.Add(0, new WorldGrid());
             }
             //Get the position
-            int positionX = (int)Math.Round(attachedTransformComponent.Position.X);
-            int positionY = (int)Math.Round(attachedTransformComponent.Position.Y);
+            IVector<int> gridPosition = WorldAccess.GetGridPosition(attachedTransformComponent.Position);
+            int positionX = gridPosition.X;
+            int positionY = gridPosition.Y;
             WorldLayers[0].AddElement(positionX, positionY);
         }
 
@@ -62,17 +69,20 @@ namespace CorgEng.Pathfinding.Systems
                 return;
             }
             //Get the position
-            int positionX = (int)Math.Round(attachedTransformComponent.Position.X);
-            int positionY = (int)Math.Round(attachedTransformComponent.Position.Y);
+            IVector<int> gridPosition = WorldAccess.GetGridPosition(attachedTransformComponent.Position);
+            int positionX = gridPosition.X;
+            int positionY = gridPosition.Y;
             WorldLayers[0].RemoveElement(positionX, positionY);
         }
 
         private void OnEntityMove(IEntity entity, SolidComponent solidComponent, MoveEvent moveEvent)
         {
-            int oldPositionX = (int)Math.Round(moveEvent.OldPosition.X);
-            int oldPositionY = (int)Math.Round(moveEvent.OldPosition.Y);
-            int newPositionX = (int)Math.Round(moveEvent.NewPosition.X);
-            int newPositionY = (int)Math.Round(moveEvent.NewPosition.Y);
+            IVector<int> oldPosition = WorldAccess.GetGridPosition(moveEvent.OldPosition);
+            IVector<int> newPosition = WorldAccess.GetGridPosition(moveEvent.NewPosition);
+            int oldPositionX = oldPosition.X;
+            int oldPositionY = oldPosition.Y;
+            int newPositionX = newPosition.X;
+            int newPositionY = newPosition.Y;
             //Remove from old position :(
             WorldLayers[0].RemoveElement(oldPositionX, oldPositionY);
             //Add to new position :)

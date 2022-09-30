@@ -37,11 +37,11 @@ namespace CorgEng.IconSmoothing.Systems
 
         private void SmoothEntity(IEntity entity, SmoothIconComponent smoothIconComponent, CalculateSmoothEvent calculateSmoothEvent)
         {
-            IVector<float> position = smoothIconComponent.TransformComponent.Position;
-            IVector<int> above = new Vector<int>((int)position.X, (int)position.Y + 1);
-            IVector<int> below = new Vector<int>((int)position.X, (int)position.Y - 1);
-            IVector<int> right = new Vector<int>((int)position.X + 1, (int)position.Y);
-            IVector<int> left = new Vector<int>((int)position.X - 1, (int)position.Y);
+            IVector<int> position = WorldAccess.GetGridPosition(smoothIconComponent.TransformComponent.Position);
+            IVector<int> above = new Vector<int>(position.X, position.Y + 1);
+            IVector<int> below = new Vector<int>(position.X, position.Y - 1);
+            IVector<int> right = new Vector<int>(position.X + 1, position.Y);
+            IVector<int> left = new Vector<int>(position.X - 1, position.Y);
             DirectionalState directionalState = DirectionalState.NONE;
             if (WorldAccess.GetContentsAt(smoothIconComponent.Key, above.X, above.Y, 0)?.Count > 0)
             {
@@ -102,11 +102,11 @@ namespace CorgEng.IconSmoothing.Systems
 
         private void SmoothAround(SmoothIconComponent smoothIconComponent)
         {
-            IVector<float> position = smoothIconComponent.TransformComponent.Position;
-            IVector<int> above = new Vector<int>((int)position.X, (int)position.Y + 1);
-            IVector<int> below = new Vector<int>((int)position.X, (int)position.Y - 1);
-            IVector<int> right = new Vector<int>((int)position.X + 1, (int)position.Y);
-            IVector<int> left = new Vector<int>((int)position.X - 1, (int)position.Y);
+            IVector<int> position = WorldAccess.GetGridPosition(smoothIconComponent.TransformComponent.Position);
+            IVector<int> above = new Vector<int>(position.X, position.Y + 1);
+            IVector<int> below = new Vector<int>(position.X, position.Y - 1);
+            IVector<int> right = new Vector<int>(position.X + 1, position.Y);
+            IVector<int> left = new Vector<int>(position.X - 1, position.Y);
             IEnumerable<IWorldTrackComponent> a = new IWorldTrackComponent[0];
             foreach (IWorldTrackComponent smoothIcon in WorldAccess.GetContentsAt(smoothIconComponent.Key, above.X, above.Y, 0)?.GetContents() ?? a)
             {

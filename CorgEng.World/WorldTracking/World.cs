@@ -3,8 +3,10 @@ using CorgEng.DependencyInjection.Dependencies;
 using CorgEng.EntityComponentSystem.Entities;
 using CorgEng.GenericInterfaces.EntityComponentSystem;
 using CorgEng.GenericInterfaces.Logging;
+using CorgEng.GenericInterfaces.UtilityTypes;
 using CorgEng.GenericInterfaces.UtilityTypes.BinaryLists;
 using CorgEng.GenericInterfaces.World;
+using CorgEng.UtilityTypes.Vectors;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,6 +37,14 @@ namespace CorgEng.World.WorldTracking
             }
         }
 
+        public IVector<int> GetGridPosition(IVector<float> sourcePosition)
+        {
+            return new Vector<int>(
+                (int)Math.Floor(sourcePosition.X),
+                (int)Math.Floor(sourcePosition.Y)
+                );
+        }
+
         public void AddEntity(string trackKey, IWorldTrackComponent trackComponent, double x, double y, int mapLevel)
         {
             //World is pretty important, so single thread it
@@ -54,8 +64,9 @@ namespace CorgEng.World.WorldTracking
                     WorldTiles[trackKey].Add(mapLevel, targetLevel);
                 }
                 //Get the position to affect
-                int xInteger = (int)Math.Floor(x);
-                int yInteger = (int)Math.Floor(y);
+                IVector<int> tilePosition = GetGridPosition(new Vector<float>((float)x, (float)y));
+                int xInteger = tilePosition.X;
+                int yInteger = tilePosition.Y;
                 //Add the entity
                 IContentsHolder worldTile = targetLevel.Get(xInteger, yInteger);
                 if (worldTile == null)
@@ -88,7 +99,8 @@ namespace CorgEng.World.WorldTracking
         {
             if (!WorldTiles.ContainsKey(trackKey))
                 return null;
-            return WorldTiles[trackKey].ElementWithKey(mapLevel)?.Get((int)Math.Floor(x), (int)Math.Floor(y));
+            IVector<int> gridPosition = GetGridPosition(new Vector<float>((float)x, (float)y));
+            return WorldTiles[trackKey].ElementWithKey(mapLevel)?.Get(gridPosition.X, gridPosition.Y);
         }
 
         public IContentsHolder GetContentsAt(double x, double y, int mapLevel)
@@ -108,8 +120,9 @@ namespace CorgEng.World.WorldTracking
                     return;
                 //Find the tile
                 //Get the position to affect
-                int xInteger = (int)Math.Floor(x);
-                int yInteger = (int)Math.Floor(y);
+                IVector<int> tilePosition = GetGridPosition(new Vector<float>((float)x, (float)y));
+                int xInteger = tilePosition.X;
+                int yInteger = tilePosition.Y;
                 //Add the entity
                 IContentsHolder worldTile = targetLevel.Get(xInteger, yInteger);
                 if (worldTile == null)
