@@ -1,6 +1,8 @@
-﻿using CorgEng.GenericInterfaces.Core;
+﻿using CorgEng.Core.Dependencies;
+using CorgEng.GenericInterfaces.Core;
 using CorgEng.GenericInterfaces.Pathfinding;
 using CorgEng.GenericInterfaces.UtilityTypes;
+using CorgEng.GenericInterfaces.World;
 using CorgEng.Pathfinding.Systems;
 using System;
 using System.Collections.Generic;
@@ -13,12 +15,16 @@ namespace CorgEng.Pathfinding.Queryers
     public class WorldPathCellQueryer : IPathCellQueryer
     {
 
+        [UsingDependency]
+        private static IWorld WorldAccess;
+
         public int EnterPositionCost(IVector<float> position, Direction enterDirection)
         {
             //TODO: Multi-z support
             if (SolidSystem.WorldLayers.ContainsKey(0))
             {
-                return SolidSystem.WorldLayers[0].worldGrid.Get((int)Math.Round(position.X), (int)Math.Round(position.Y)) == null ? 1 : 0;
+                IVector<int> gridPosition = WorldAccess.GetGridPosition(position);
+                return SolidSystem.WorldLayers[0].worldGrid.Get(gridPosition.X, gridPosition.Y) == null ? 1 : 0;
             }
             return 1;
         }

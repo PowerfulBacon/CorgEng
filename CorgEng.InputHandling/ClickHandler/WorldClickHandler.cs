@@ -104,9 +104,10 @@ namespace CorgEng.InputHandling.ClickHandler
             }
             //Transform the clicked position into world position
             IVector<float> clickedLocation = CorgEngMain.MainCamera.ScreenToWorldCoordinates(releaseEvent.CursorX * 2 - 1, releaseEvent.CursorY * 2 - 1, windowWidth, windowHeight);
+            IVector<int> clickedGridLocation = World.GetGridPosition(clickedLocation);
             //Locate the world position that the mouse is currently over
-            int clickedTileX = (int)Math.Round(clickedLocation.X);
-            int clickedTileY = (int)Math.Round(clickedLocation.Y);
+            int clickedTileX = clickedGridLocation.X;
+            int clickedTileY = clickedGridLocation.Y;
             //Check what we actually pressed on
             Logger.WriteLine($"{clickedLocation}");
             //Determine our click mode

@@ -1,4 +1,5 @@
 ﻿using CorgEng.GenericInterfaces.EntityComponentSystem;
+using CorgEng.GenericInterfaces.UtilityTypes;
 using CorgEng.GenericInterfaces.UtilityTypes.BinaryLists;
 using System;
 using System.Collections.Generic;
@@ -10,6 +11,16 @@ namespace CorgEng.GenericInterfaces.World
 {
     public interface IWorld
     {
+
+        /// <summary>
+        /// Translate a world position into its respective grid position.
+        /// >0 && <=1 -> 0
+        /// >1 && <=2 -> 1
+        /// etc.
+        /// </summary>
+        /// <param name="sourcePosition">The input position to translate to grid coordinates.</param>
+        /// <returns>Returns the grid coordinates of the provided source position.</returns>
+        IVector<int> GetGridPosition(IVector<float> sourcePosition);
 
         /// <summary>
         /// Adds an entity to the world tracking
