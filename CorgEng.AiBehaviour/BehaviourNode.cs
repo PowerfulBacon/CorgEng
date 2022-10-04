@@ -1,4 +1,6 @@
-﻿using CorgEng.Core.Dependencies;
+﻿#define BEHAVIOUR_DEBUG
+
+using CorgEng.Core.Dependencies;
 using CorgEng.GenericInterfaces.AiBehaviours;
 using CorgEng.GenericInterfaces.Logging;
 using CorgEng.GenericInterfaces.UtilityTypes.BinaryLists;
@@ -32,10 +34,23 @@ namespace CorgEng.AiBehaviour
 
         public async Task<bool> Action(IBehaviourManager manager)
         {
+            return await Action(manager, 0);
+        }
+
+        public async Task<bool> Action(IBehaviourManager manager, int depth = 0)
+        {
+
+#if BEHAVIOUR_DEBUG
+                Logger.WriteLine($"{GetTabs(depth)}Performing action for {GetType()}", LogType.DEBUG);
+#endif
+
             //If we canno start
             if (!await CanStart(manager))
             {
                 OnCancel(manager);
+#if BEHAVIOUR_DEBUG
+                Logger.WriteLine($"{GetTabs(depth)}Could not start {GetType()}", LogType.DEBUG);
+#endif
                 return false;
             }
 
@@ -43,6 +58,9 @@ namespace CorgEng.AiBehaviour
             if (!await PreAction(manager))
             {
                 OnCancel(manager);
+#if BEHAVIOUR_DEBUG
+                Logger.WriteLine($"{GetTabs(depth)}Failed preaction on {GetType()}", LogType.DEBUG);
+#endif
                 return false;
             }
 
@@ -59,6 +77,9 @@ namespace CorgEng.AiBehaviour
             if (manager.CurrentAction?.Failed ?? false)
             {
                 OnCancel(manager);
+#if BEHAVIOUR_DEBUG
+                Logger.WriteLine($"{GetTabs(depth)}Failed current pawn action {GetType()}", LogType.DEBUG);
+#endif
                 return false;
             }
 
@@ -70,27 +91,48 @@ namespace CorgEng.AiBehaviour
                 if (childNode.ContinuationMode == BehaviourContinuationMode.REPEAT_UNTIL_FAIL)
                 {
                     //Repeat this action over and over until it fails
-                    while (await childNode.Action(manager))
-                    { }
+                    while (await childNode.Action(manager, depth + 1))
+                    {
+#if BEHAVIOUR_DEBUG
+                        Logger.WriteLine($"{GetTabs(depth)}Retrying action {childNode.GetType()} (We are {GetType()})", LogType.DEBUG);
+#endif
+                    }
                 }
                 else
                 {
                     //Run the child action
-                    if (!await childNode.Action(manager))
+                    if (!await childNode.Action(manager, depth + 1))
                     {
                         //If the child node should cancel this task on fail, then cancel
                         if (childNode.ContinuationMode == BehaviourContinuationMode.CANCEL_ON_FAIL)
                         {
                             OnCancel(manager);
+#if BEHAVIOUR_DEBUG
+                            Logger.WriteLine($"{GetTabs(depth)}Failed child action {childNode.GetType()} (We are {GetType()})", LogType.DEBUG);
+#endif
                             return false;
                         }
                     }
                 }
             }
-
+#if BEHAVIOUR_DEBUG
+            Logger.WriteLine($"{GetTabs(depth)}Successfully completed action {GetType()}", LogType.DEBUG);
+#endif
             //Actions completed
             return await PostAction(manager);
         }
+
+#if BEHAVIOUR_DEBUG
+        private string GetTabs(int depth)
+        {
+            StringBuilder builder = new StringBuilder();
+            for (int i = 0; i < depth; i++)
+            {
+                builder.Append("\t");
+            }
+            return builder.ToString();
+        }
+#endif
 
         public virtual void OnCancel(IBehaviourManager manager) { }
 

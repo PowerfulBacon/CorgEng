@@ -123,19 +123,27 @@ namespace CorgEng.UtilityTypes.Vectors
             return thisCopy;
         }
 
-        public static bool operator ==(Vector<T> a, Vector<T> b)
+        public static bool operator ==(Vector<T> a, IVector<T> b)
         {
-            if (Equals(a, null) || Equals(b, null)) return Equals(a, b);
-            if (a.Dimensions != b.Dimensions) return false;
-            for (int i = 0; i < a.Dimensions; i++) if (!a[i].Equals(b[i]))return false;
+            if (Equals(a, null) || Equals(b, null))
+                return Equals(a, b);
+            if (a.Dimensions != b.Dimensions)
+                return false;
+            for (int i = 0; i < a.Dimensions; i++)
+                if (!a[i].Equals(b[i]))
+                    return false;
             return true;
         }
 
-        public static bool operator !=(Vector<T> a, Vector<T> b)
+        public static bool operator !=(Vector<T> a, IVector<T> b)
         {
-            if (Equals(a, null) || Equals(b, null)) return !Equals(a, b);
-            if (a.Dimensions != b.Dimensions) return true;
-            for (int i = 0; i < a.Dimensions; i++) if (!a[i].Equals(b[i])) return true;
+            if (Equals(a, null) || Equals(b, null))
+                return !Equals(a, b);
+            if (a.Dimensions != b.Dimensions)
+                return true;
+            for (int i = 0; i < a.Dimensions; i++)
+                if (!a[i].Equals(b[i]))
+                    return true;
             return false;
         }
 
@@ -152,7 +160,7 @@ namespace CorgEng.UtilityTypes.Vectors
         /// <summary>
         /// Adds 2 vectors together
         /// </summary>
-        public static Vector<T> operator +(Vector<T> a, Vector<T> b)
+        public static Vector<T> operator +(Vector<T> a, IVector<T> b)
         {
             //Calculate the resulting dimensions of the new vector
             int resultingDimensions = Math.Max(a.Dimensions, b.Dimensions);
@@ -182,7 +190,7 @@ namespace CorgEng.UtilityTypes.Vectors
         /// <summary>
         /// Takes the difference of 2 vectors
         /// </summary>
-        public static Vector<T> operator -(Vector<T> a, Vector<T> b)
+        public static Vector<T> operator -(Vector<T> a, IVector<T> b)
         {
             //Calculate the resulting dimensions of the new vector
             int resultingDimensions = Math.Max(a.Dimensions, b.Dimensions);
@@ -239,7 +247,7 @@ namespace CorgEng.UtilityTypes.Vectors
         /// <summary>
         /// Calculates the dot product of a and b
         /// </summary>
-        public static Vector<T> operator *(Vector<T> a, Vector<T> b)
+        public static Vector<T> operator *(Vector<T> a, IVector<T> b)
         {
             //Calculate the resulting dimensions of the new vector
             int resultingDimensions = Math.Max(a.Dimensions, b.Dimensions);
@@ -270,7 +278,7 @@ namespace CorgEng.UtilityTypes.Vectors
         /// <summary>
         /// Divides the vector a by the values of the vector b
         /// </summary>
-        public static Vector<T> operator /(Vector<T> a, Vector<T> b)
+        public static Vector<T> operator /(Vector<T> a, IVector<T> b)
         {
             //Calculate the resulting dimensions of the new vector
             int resultingDimensions = Math.Max(a.Dimensions, b.Dimensions);

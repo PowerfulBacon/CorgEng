@@ -26,6 +26,8 @@ namespace CorgEng.World.WorldTracking
 
         object IEnumerator.Current => reference.contentsArray[head];
 
+        private IWorldTrackComponent Previous;
+
         private int head = -1;
 
         public void Dispose()
@@ -37,6 +39,7 @@ namespace CorgEng.World.WorldTracking
         {
             do
             {
+                //Increment the head
                 head++;
                 if (head == reference.nextInsertionPointer || head >= reference.contentsArray.Length)
                     return false;
