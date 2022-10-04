@@ -159,7 +159,16 @@ namespace CorgEng.EntityComponentSystem.Entities
 
         public T? FindComponent<T>()
         {
-            throw new NotImplementedException();
+            //Get derived types too
+            lock (Components)
+            {
+                foreach (IComponent component in Components)
+                {
+                    if (component is T located)
+                        return located;
+                }
+            }
+            return default;
         }
     }
 }

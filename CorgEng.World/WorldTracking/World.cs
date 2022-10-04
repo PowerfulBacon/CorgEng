@@ -8,6 +8,7 @@ using CorgEng.GenericInterfaces.UtilityTypes.BinaryLists;
 using CorgEng.GenericInterfaces.World;
 using CorgEng.UtilityTypes.Vectors;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -54,7 +55,7 @@ namespace CorgEng.World.WorldTracking
                     throw new Exception($"Attempting to insert an entity while it is already in another location");
                 if (!WorldTiles.ContainsKey(trackKey))
                 {
-                    WorldTiles.Add(trackKey, BinaryListFactory.CreateEmpty<IPositionBasedBinaryList<IContentsHolder>>());
+                    WorldTiles.TryAdd(trackKey, BinaryListFactory.CreateEmpty<IPositionBasedBinaryList<IContentsHolder>>());
                 }
                 IPositionBasedBinaryList<IContentsHolder> targetLevel = WorldTiles[trackKey].ElementWithKey(mapLevel);
                 //Get the z-level to affect
@@ -90,17 +91,23 @@ namespace CorgEng.World.WorldTracking
 
         public IPositionBasedBinaryList<IContentsHolder> GetContents(string trackKey, int mapLevel)
         {
-            if (!WorldTiles.ContainsKey(trackKey))
-                return null;
-            return WorldTiles[trackKey].ElementWithKey(mapLevel);
+            lock (this)
+            {
+                if (!WorldTiles.ContainsKey(trackKey))
+                    return null;
+                return WorldTiles[trackKey].ElementWithKey(mapLevel);
+            }
         }
 
         public IContentsHolder GetContentsAt(string trackKey, double x, double y, int mapLevel)
         {
-            if (!WorldTiles.ContainsKey(trackKey))
-                return null;
-            IVector<int> gridPosition = GetGridPosition(new Vector<float>((float)x, (float)y));
-            return WorldTiles[trackKey].ElementWithKey(mapLevel)?.Get(gridPosition.X, gridPosition.Y);
+            lock (this)
+            {
+                if (!WorldTiles.ContainsKey(trackKey))
+                    return null;
+                IVector<int> gridPosition = GetGridPosition(new Vector<float>((float)x, (float)y));
+                return WorldTiles[trackKey].ElementWithKey(mapLevel)?.Get(gridPosition.X, gridPosition.Y);
+            }
         }
 
         public IContentsHolder GetContentsAt(double x, double y, int mapLevel)
