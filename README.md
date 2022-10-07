@@ -60,10 +60,6 @@ internal DependencyImplementation : IDependency
 
 Created dependencies will always be static. If you want an instanced reference, create a factory dependency that can create new instances of the dependency you wish to be instanced.
 
-### Overriding Dependencies (Testing)
-
-//TODO
-
 ## Entity Component System / Signals
 
 ### Systems
@@ -94,6 +90,22 @@ An entity stores components. It has no functionality without its components.
 
 Signals store data and can be raised against an entity.
 When a signal is raised, any systems listening for the signal will be notified and can then perform some action.
+
+## Content Loading
+
+CorgEng has a built in module for loading content dynamically.
+
+### Creating Entities
+
+IEntityCreator provides a method `CreateEntity` that can produce entities defined by dynamic content files. This takes in 2 parameters, the name of the object to be instantiated, and a nullable function that executes events on an entity before initialisation is called. All events in this function should be called synchronously.
+
+```c#
+EntityCreator.CreateEntity(objectToSpawn, (createdEntity) => {
+    IVector<float> vector = CorgEngMain.MainCamera.ScreenToWorldCoordinates(0, 0, 1000, 1000);
+    new SetPositionEvent(new Vector<float>(vector.X, vector.Y)).Raise(createdEntity, true);
+    new SetSpriteRendererEvent(ExampleRenderCore.GetEntityRenderer(createdEntity)).Raise(createdEntity, true);
+});
+```
 
 ## Render Cores
 
