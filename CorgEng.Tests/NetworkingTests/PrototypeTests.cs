@@ -43,6 +43,9 @@ namespace CorgEng.Tests.NetworkingTests
     {
 
         [UsingDependency]
+        private static IEntityFactory EntityFactory;
+
+        [UsingDependency]
         private static IPrototypeManager PrototypeManager;
 
         [UsingDependency]
@@ -75,7 +78,7 @@ namespace CorgEng.Tests.NetworkingTests
                 Thread.Sleep(0);
 
             //Create an entity
-            IEntity entity = new Entity();
+            IEntity entity = EntityFactory.CreateEmptyEntity(null);
             TestComponent testComponent = new TestComponent();
             testComponent.Integer = 59;
             testComponent.Text = "Hello World!";

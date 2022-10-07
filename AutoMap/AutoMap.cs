@@ -3,6 +3,7 @@ using CorgEng.Core;
 using CorgEng.Core.Dependencies;
 using CorgEng.EntityComponentSystem.Entities;
 using CorgEng.EntityComponentSystem.Implementations.Transform;
+using CorgEng.GenericInterfaces.EntityComponentSystem;
 using CorgEng.GenericInterfaces.Rendering.Cameras.Isometric;
 using System;
 using System.Collections.Generic;
@@ -18,6 +19,9 @@ namespace AutoMap
         [UsingDependency]
         private static IIsometricCameraFactory isometricCameraFactory;
 
+        [UsingDependency]
+        private static IEntityFactory EntityFactory;
+
         public static void Main(string[] args)
         {
             //Load the application config
@@ -31,10 +35,11 @@ namespace AutoMap
             IIsometricCamera camera = isometricCameraFactory.CreateCamera();
 
             //Create the entity to hold and move the camera
-            Entity mainCameraEntity = new Entity();
-            mainCameraEntity.AddComponent(new TransformComponent());
-            //mainCameraEntity.AddComponent(new PlayerMovementComponent());
-            //mainCameraEntity.AddComponent(new CameraComponent(camera));
+            EntityFactory.CreateEmptyEntity((mainCameraEntity) => {
+                mainCameraEntity.AddComponent(new TransformComponent());
+                //mainCameraEntity.AddComponent(new PlayerMovementComponent());
+                //mainCameraEntity.AddComponent(new CameraComponent(camera));
+            });
 
             //Set the main camera
             CorgEngMain.SetMainCamera(camera);

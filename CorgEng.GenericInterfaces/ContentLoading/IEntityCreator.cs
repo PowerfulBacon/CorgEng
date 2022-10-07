@@ -1,4 +1,5 @@
 ﻿using CorgEng.GenericInterfaces.EntityComponentSystem;
+using CorgEng.GenericInterfaces.UtilityTypes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,8 +17,8 @@ namespace CorgEng.GenericInterfaces.ContentLoading
         /// Create an entity with the specific one
         /// </summary>
         /// <param name="entityName"></param>
-        /// <returns></returns>
-        IEntity CreateEntity(string entityName);
+        /// <returns>Returns an uninitialised entity.</returns>
+        IEntity CreateEntity(string entityName, Action<IEntity> preInitialisationEvents);
 
         /// <summary>
         /// Create an object with the specified identifier.

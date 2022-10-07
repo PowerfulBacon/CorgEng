@@ -20,7 +20,6 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\CorgEng.ContentLoading\CorgEng.ContentLoading.csproj" />
     <ProjectReference Include="..\CorgEng.Core\CorgEng.Core.csproj" />
     <ProjectReference Include="..\CorgEng.GenericInterfaces\CorgEng.GenericInterfaces.csproj" />
     <ProjectReference Include="..\CorgEng.Rendering\CorgEng.Rendering.csproj" />

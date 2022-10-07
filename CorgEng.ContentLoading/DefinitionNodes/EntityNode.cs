@@ -1,5 +1,7 @@
 ﻿using CorgEng.ContentLoading;
 using CorgEng.Core.Dependencies;
+using CorgEng.EntityComponentSystem.Events;
+using CorgEng.EntityComponentSystem.Events.Events;
 using CorgEng.GenericInterfaces.EntityComponentSystem;
 using System;
 using System.Collections.Generic;
@@ -48,14 +50,19 @@ namespace CorgEng.GenericInterfaces.ContentLoading.DefinitionNodes
         /// Create an entity from this node
         /// </summary>
         /// <returns></returns>
-        public IEntity CreateEntity()
+        public IEntity CreateEntity(Action<IEntity> setupAction)
         {
-            return (IEntity)CreateInstance(null, new Dictionary<string, object>());
+            return (IEntity)CreateInstance(null, new Dictionary<string, object>(), setupAction);
         }
 
         public override object CreateInstance(object parent, Dictionary<string, object> instanceRefs)
         {
-            IEntity createdEntity = EntityFactory.CreateEmptyEntity();
+            return CreateInstance(parent, instanceRefs, null);
+        }
+
+        public object CreateInstance(object parent, Dictionary<string, object> instanceRefs, Action<IEntity> setupAction)
+        {
+            IEntity createdEntity = EntityFactory.CreateUninitialisedEntity();
             //Store the key
             if (Key != null)
             {
@@ -66,6 +73,10 @@ namespace CorgEng.GenericInterfaces.ContentLoading.DefinitionNodes
             {
                 childNode.CreateInstance(createdEntity, instanceRefs);
             }
+            //Run init event
+            setupAction?.Invoke(createdEntity);
+            //Initialise
+            new InitialiseEvent().Raise(createdEntity, true);
             return createdEntity;
         }
 

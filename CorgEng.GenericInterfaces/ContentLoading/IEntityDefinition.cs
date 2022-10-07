@@ -14,7 +14,7 @@ namespace CorgEng.GenericInterfaces.ContentLoading
         /// Create the entity
         /// </summary>
         /// <returns></returns>
-        IEntity CreateEntity();
+        IEntity CreateEntity(Action<IEntity> setupAction);
 
     }
 }

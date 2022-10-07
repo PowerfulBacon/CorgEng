@@ -45,7 +45,7 @@ namespace CorgEng.UserInterface.Components
         /// so we can have a component based user interface model despite
         /// the oversight of not implementing it this way initially
         /// </summary>
-        public IEntity ComponentHolder { get; } = EntityFactory.CreateEmptyEntity();
+        public IEntity ComponentHolder { get; } = EntityFactory.CreateEmptyEntity(null);
 
         /// <summary>
         /// Is this component fullscreen?

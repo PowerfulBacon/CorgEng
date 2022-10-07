@@ -72,6 +72,10 @@ namespace CorgEng.EntityComponentSystem.Entities
         /// </summary>
         internal static void Delete(this IEntity entity)
         {
+            if ((entity.EntityFlags & EntityFlags.DESTROYED) != 0)
+            {
+                throw new Exception("Attempting to delete an already deleted entity.");
+            }
             Interlocked.Increment(ref DeletionCount);
             RemoveEntity(entity);
             //Remove all components
@@ -79,6 +83,8 @@ namespace CorgEng.EntityComponentSystem.Entities
             {
                 entity.RemoveComponent(entity.Components[i], false);
             }
+            //Mark the entity as destroyed
+            entity.EntityFlags |= EntityFlags.DESTROYED;
             //Logger.WriteLine($"Entity deletion triggered. {GarbageCollectionCount}/{DeletionCount}", LogType.TEMP);
         }
 

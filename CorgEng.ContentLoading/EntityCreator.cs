@@ -1,5 +1,7 @@
 ﻿using CorgEng.Core.Dependencies;
 using CorgEng.DependencyInjection.Dependencies;
+using CorgEng.EntityComponentSystem.Events;
+using CorgEng.EntityComponentSystem.Events.Events;
 using CorgEng.GenericInterfaces.ContentLoading;
 using CorgEng.GenericInterfaces.ContentLoading.DefinitionNodes;
 using CorgEng.GenericInterfaces.EntityComponentSystem;
@@ -32,13 +34,13 @@ namespace CorgEng.ContentLoading
         /// <param name="entityName"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public IEntity CreateEntity(string entityName)
+        public IEntity CreateEntity(string entityName, Action<IEntity> preInitialisationEvents)
         {
             try
             {
                 if (EntityNodesByName.ContainsKey(entityName))
                 {
-                    IEntity createdEntity = EntityNodesByName[entityName].CreateEntity();
+                    IEntity createdEntity = EntityNodesByName[entityName].CreateEntity(preInitialisationEvents);
                     createdEntity.DefinitionName = entityName;
                     return createdEntity;
                 }
