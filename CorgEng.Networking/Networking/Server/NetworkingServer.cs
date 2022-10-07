@@ -117,7 +117,7 @@ namespace CorgEng.Networking.Networking.Server
                 //Get the prototype
                 DefaultEntityPrototype = PrototypeManager.GetPrototype(sampleEntity, false);
                 //Delete the entity
-                new DeleteEntityEvent().Raise(sampleEntity);
+                new DeleteEntityEvent().Raise(sampleEntity, true);
             });
         }
 
