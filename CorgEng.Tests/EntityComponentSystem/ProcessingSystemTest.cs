@@ -1,4 +1,5 @@
-﻿using CorgEng.EntityComponentSystem.Components;
+﻿using CorgEng.Core.Dependencies;
+using CorgEng.EntityComponentSystem.Components;
 using CorgEng.EntityComponentSystem.Entities;
 using CorgEng.EntityComponentSystem.Events;
 using CorgEng.EntityComponentSystem.Systems;
@@ -17,6 +18,9 @@ namespace CorgEng.Tests.EntityComponentSystem
     [TestClass]
     public class ProcessingSystemTest
     {
+
+        [UsingDependency]
+        private static IEntityFactory EntityFactory;
 
         private class TestComponent : Component
         {
@@ -51,7 +55,7 @@ namespace CorgEng.Tests.EntityComponentSystem
             TestSystem testSystem = new TestSystem();
             testSystem.SystemSetup();
             //Create an entity to process
-            IEntity testEntity = new Entity();
+            IEntity testEntity = EntityFactory.CreateEmptyEntity(null);
             TestComponent testComponent = new TestComponent();
             testEntity.AddComponent(testComponent);
             //Start processing

@@ -1,41 +1,11 @@
 ﻿using CorgEng.Core;
 using CorgEng.Core.Dependencies;
-using CorgEng.Core.Rendering;
-using CorgEng.DependencyInjection;
-using CorgEng.DependencyInjection.Injection;
-using CorgEng.EntityComponentSystem;
-using CorgEng.EntityComponentSystem.Entities;
-using CorgEng.EntityComponentSystem.Events;
-using CorgEng.EntityComponentSystem.Implementations.Rendering.SpriteRendering;
-using CorgEng.EntityComponentSystem.Implementations.Transform;
-using CorgEng.Example.Common.Components.Camera;
-using CorgEng.Example.Components.PlayerMovement;
 using CorgEng.Example.Modules.CameraScroll;
 using CorgEng.Example.Shared.RenderCores;
-using CorgEng.GenericInterfaces.Font.Fonts;
-using CorgEng.GenericInterfaces.Networking.Networking;
 using CorgEng.GenericInterfaces.Networking.Networking.Client;
-using CorgEng.GenericInterfaces.Networking.Networking.Server;
-using CorgEng.GenericInterfaces.Rendering;
 using CorgEng.GenericInterfaces.Rendering.Cameras.Isometric;
-using CorgEng.GenericInterfaces.Rendering.Renderers.SpriteRendering;
-using CorgEng.GenericInterfaces.Rendering.RenderObjects.SpriteRendering;
-using CorgEng.GenericInterfaces.Rendering.Shaders;
-using CorgEng.GenericInterfaces.Rendering.Text;
-using CorgEng.GenericInterfaces.Rendering.Textures;
-using CorgEng.GenericInterfaces.UserInterface.Components;
-using CorgEng.GenericInterfaces.UserInterface.Generators;
-using CorgEng.UtilityTypes;
-using CorgEng.UtilityTypes.Vectors;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
-using static OpenGL.Gl;
+
 
 namespace CorgEng.Example
 {

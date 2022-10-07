@@ -94,16 +94,16 @@ namespace CorgEng.EntityComponentSystem.Systems
                     }
                 }
                 //Allocate time to processing signal handles
-                Action current;
+                InvokationAction current;
                 while (invokationQueue.TryDequeue(out current))
                 {
                     try
                     {
-                        current();
+                        current.Action();
                     }
                     catch (Exception e)
                     {
-                        Logger?.WriteLine(e, LogType.ERROR);
+                        Logger?.WriteLine($"Event Called From: {current.CallingMemberName}:{current.CallingLineNumber} in {current.CallingFile}\n{e}", LogType.ERROR);
                     }
                 }
                 //If we completed processing, wait for the specified time, or until another signal handler comes in

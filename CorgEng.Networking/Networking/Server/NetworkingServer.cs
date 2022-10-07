@@ -58,6 +58,9 @@ namespace CorgEng.Networking.Networking.Server
         [UsingDependency]
         private static IPrototypeManager PrototypeManager;
 
+        [UsingDependency]
+        private static IEntityFactory EntityFactory;
+
         private static IPrototype DefaultEntityPrototype;
 
         private IPacketQueue PacketQueue;
@@ -108,13 +111,14 @@ namespace CorgEng.Networking.Networking.Server
         public void LoadDefaultPrototype()
         {
             //Set the default prototype
-            IEntity sampleEntity = new Entity();
-            sampleEntity.AddComponent(new NetworkTransformComponent());
-            sampleEntity.AddComponent(new ClientComponent());
-            //Get the prototype
-            DefaultEntityPrototype = PrototypeManager.GetPrototype(sampleEntity, false);
-            //Delete the entity
-            new DeleteEntityEvent().Raise(sampleEntity);
+            EntityFactory.CreateEmptyEntity(sampleEntity => {
+                sampleEntity.AddComponent(new NetworkTransformComponent());
+                sampleEntity.AddComponent(new ClientComponent());
+                //Get the prototype
+                DefaultEntityPrototype = PrototypeManager.GetPrototype(sampleEntity, false);
+                //Delete the entity
+                new DeleteEntityEvent().Raise(sampleEntity, true);
+            });
         }
 
         public void StartHosting(int port)

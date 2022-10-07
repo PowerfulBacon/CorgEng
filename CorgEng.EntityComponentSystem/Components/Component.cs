@@ -55,9 +55,9 @@ namespace CorgEng.EntityComponentSystem.Components
                 }
                 List<SystemEventHandlerDelegate> systemEventHandlers = RegisteredSystemSignalHandlers[key];
                 //Create a lambda function that injects this component and relays it to the system
-                InternalSignalHandleDelegate componentInjectionLambda = (IEntity entity, IEvent signal, bool synchronous) => {
+                InternalSignalHandleDelegate componentInjectionLambda = (IEntity entity, IEvent signal, bool synchronous, string callingFile, string callingMember, int callingLine) => {
                     foreach(SystemEventHandlerDelegate systemEventHandler in systemEventHandlers)
-                        systemEventHandler.Invoke(entity, this, signal, synchronous);
+                        systemEventHandler.Invoke(entity, this, signal, synchronous, callingFile, callingMember, callingLine);
                 };
                 lock (componentInjectionLambdas)
                 {
@@ -71,9 +71,13 @@ namespace CorgEng.EntityComponentSystem.Components
                 else
                     parent.EventListeners.Add(eventType, new List<InternalSignalHandleDelegate>() { componentInjectionLambda });
             }
-            //Send the component added event
-            ComponentAddedEvent componentAddedEvent = new ComponentAddedEvent(this);
-            componentAddedEvent.Raise(parent);
+            //Send component added event if already initialised
+            if ((parent.EntityFlags & EntityFlags.INITIALISED) != 0)
+            {
+                //Send the component added event
+                ComponentAddedEvent componentAddedEvent = new ComponentAddedEvent(this);
+                componentAddedEvent.Raise(parent);
+            }
         }
 
         /// <summary>

@@ -38,7 +38,7 @@ namespace CorgEng.EntityComponentSystem.Systems
         [UsingDependency]
         protected static INetworkConfig NetworkConfig;
 
-        internal delegate void SystemEventHandlerDelegate(IEntity entity, IComponent component, IEvent signal, bool synchronous);
+        internal delegate void SystemEventHandlerDelegate(IEntity entity, IComponent component, IEvent signal, bool synchronous, string file, string member, int lineNumber);
 
         /// <summary>
         /// Matches event and component types to registered signal handlers on systems
@@ -56,12 +56,12 @@ namespace CorgEng.EntityComponentSystem.Systems
         /// A queue of actions that other parts of the code are waiting for the action's completion.
         /// These will be execution before anything in the invokation queue.
         /// </summary>
-        protected readonly ConcurrentQueue<Action> priorityInvokationQueue = new ConcurrentQueue<Action>();
+        protected readonly ConcurrentQueue<InvokationAction> priorityInvokationQueue = new ConcurrentQueue<InvokationAction>();
 
         /// <summary>
         /// The invokation queue. A queue of actions that need to be triggered (Raised events)
         /// </summary>
-        protected readonly ConcurrentQueue<Action> invokationQueue = new ConcurrentQueue<Action>();
+        protected readonly ConcurrentQueue<InvokationAction> invokationQueue = new ConcurrentQueue<InvokationAction>();
 
         /// <summary>
         /// A static list of all entity systems in use
@@ -132,7 +132,7 @@ namespace CorgEng.EntityComponentSystem.Systems
                     waitHandle.WaitOne();
                     isWaiting = false;
                 }
-                Action firstInvokation;
+                InvokationAction firstInvokation;
                 if (priorityInvokationQueue.Count != 0)
                     priorityInvokationQueue.TryDequeue(out firstInvokation);
                 else
@@ -142,11 +142,11 @@ namespace CorgEng.EntityComponentSystem.Systems
                     try
                     {
                         //Invoke the provided action
-                        firstInvokation();
+                        firstInvokation.Action();
                     }
                     catch (Exception e)
                     {
-                        Logger?.WriteLine(e, LogType.ERROR);
+                        Logger?.WriteLine($"Event Called From: {firstInvokation.CallingMemberName}:{firstInvokation.CallingLineNumber} in {firstInvokation.CallingFile}\n{e}", LogType.ERROR);
                     }
                 }
 
@@ -191,11 +191,11 @@ namespace CorgEng.EntityComponentSystem.Systems
             {
                 if (!RegisteredSystemSignalHandlers.ContainsKey(eventComponentPair))
                     RegisteredSystemSignalHandlers.Add(eventComponentPair, new List<SystemEventHandlerDelegate>());
-                SystemEventHandlerDelegate createdEventHandler = (IEntity entity, IComponent component, IEvent signal, bool synchronous) =>
+                SystemEventHandlerDelegate createdEventHandler = (IEntity entity, IComponent component, IEvent signal, bool synchronous, string file, string member, int lineNumber) =>
                 {
-                    ConcurrentQueue<Action> targetQueue = synchronous ? priorityInvokationQueue : invokationQueue;
+                    ConcurrentQueue<InvokationAction> targetQueue = synchronous ? priorityInvokationQueue : invokationQueue;
                     AutoResetEvent synchronousWaitEvent = synchronous ? new AutoResetEvent(false) : null;
-                    targetQueue.Enqueue(() =>
+                    targetQueue.Enqueue(new InvokationAction(() =>
                     {
                         try
                         {
@@ -215,9 +215,9 @@ namespace CorgEng.EntityComponentSystem.Systems
                                 synchronousWaitEvent.Set();
                             }
                         }
-                    });
+                    }, file, member, lineNumber));
                     //Wake up the system if its sleeping
-                    if(isWaiting)
+                    if (isWaiting)
                         waitHandle.Set();
                     //If this event is synchronous, wait for completion
                     if (synchronous)
@@ -305,7 +305,7 @@ namespace CorgEng.EntityComponentSystem.Systems
                     if (!RegisteredSystemSignalHandlers.ContainsKey(eventComponentPair))
                         RegisteredSystemSignalHandlers.Add(eventComponentPair, new List<SystemEventHandlerDelegate>());
                     //Create and return an event handler so that it can be 
-                    createdEventHandler = (IEntity entity, IComponent component, IEvent signal, bool synchronous) =>
+                    createdEventHandler = (IEntity entity, IComponent component, IEvent signal, bool synchronous, string callingFile, string callingMember, int callingLine) =>
                     {
                         //Check if we don't process
                         if (NetworkConfig != null
@@ -313,9 +313,9 @@ namespace CorgEng.EntityComponentSystem.Systems
                                 && ((SystemFlags & EntitySystemFlags.HOST_SYSTEM) == 0 || !NetworkConfig.ProcessServerSystems)
                                 && ((SystemFlags & EntitySystemFlags.CLIENT_SYSTEM) == 0 || !NetworkConfig.ProcessClientSystems))
                             return;
-                        ConcurrentQueue<Action> targetQueue = synchronous ? priorityInvokationQueue : invokationQueue;
+                        ConcurrentQueue<InvokationAction> targetQueue = synchronous ? priorityInvokationQueue : invokationQueue;
                         AutoResetEvent synchronousWaitEvent = synchronous ? new AutoResetEvent(false) : null;
-                        targetQueue.Enqueue(() =>
+                        targetQueue.Enqueue(new InvokationAction(() =>
                         {
                             try
                             {
@@ -329,7 +329,7 @@ namespace CorgEng.EntityComponentSystem.Systems
                                     synchronousWaitEvent.Set();
                                 }
                             }
-                        });
+                        }, callingFile, callingMember, callingLine));
                         if (isWaiting)
                             waitHandle.Set();
                         //If this event is synchronous, wait for completion

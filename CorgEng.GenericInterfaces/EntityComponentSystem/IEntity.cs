@@ -1,4 +1,5 @@
-﻿using CorgEng.GenericInterfaces.UtilityTypes;
+﻿using CorgEng.EntityComponentSystem.Entities;
+using CorgEng.GenericInterfaces.UtilityTypes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,11 +27,16 @@ namespace CorgEng.GenericInterfaces.EntityComponentSystem
         /// </summary>
         uint Identifier { get; }
 
+        /// <summary>
+        /// Flags relating to this entity.
+        /// </summary>
+        EntityFlags EntityFlags { get; set; }
+
         void AddComponent(IComponent component);
 
         void RemoveComponent(IComponent component, bool networked);
 
-        void HandleSignal(IEvent signal, bool synchronous = false);
+        void HandleSignal(IEvent signal, bool synchronous, string callingFile, string callingMember, int callingLine);
 
         /// <summary>
         /// Gets a component of type. This is slow, avoid using it extensively.

@@ -20,6 +20,9 @@ namespace CorgEng.Tests.Performance
     {
 
         [UsingDependency]
+        private static IEntityFactory EntityFactory;
+
+        [UsingDependency]
         private static IPrototypeManager PrototypeManager;
 
         private const int TEST_TIME = 5000;
@@ -31,7 +34,7 @@ namespace CorgEng.Tests.Performance
             Assert.Inconclusive("Test not executed. Please enable PERFORMANCE_TEST define in order to test performance.");
 #endif
             //Create an entity
-            IEntity entity = new Entity();
+            IEntity entity = EntityFactory.CreateEmptyEntity(null);
             TestComponent testComponent = new TestComponent();
             testComponent.Integer = 59;
             testComponent.Text = "Hello World!";
@@ -64,7 +67,7 @@ namespace CorgEng.Tests.Performance
             Assert.Inconclusive("Test not executed. Please enable PERFORMANCE_TEST define in order to test performance.");
 #endif
             //Create an entity
-            IEntity entity = new Entity();
+            IEntity entity = EntityFactory.CreateEmptyEntity(null);
             TestComponent testComponent = new TestComponent();
             testComponent.Integer = 59;
             testComponent.Text = "Hello World!";
@@ -100,7 +103,7 @@ namespace CorgEng.Tests.Performance
 #endif
 
             //Create an entity
-            IEntity entity = new Entity();
+            IEntity entity = EntityFactory.CreateEmptyEntity(null);
             TestComponent testComponent = new TestComponent();
             testComponent.Integer = 59;
             testComponent.Text = "Hello World!";
@@ -137,7 +140,7 @@ namespace CorgEng.Tests.Performance
 #endif
 
             //Create an entity
-            IEntity entity = new Entity();
+            IEntity entity = EntityFactory.CreateEmptyEntity(null);
             TestComponent testComponent = new TestComponent();
             testComponent.Integer = 59;
             testComponent.Text = "Hello World!";

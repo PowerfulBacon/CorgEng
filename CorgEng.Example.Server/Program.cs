@@ -41,6 +41,9 @@ namespace CorgEng.Example.Server
         [UsingDependency]
         private static IPrototypeManager PrototypeManager;
 
+        [UsingDependency]
+        private static IEntityFactory EntityFactory;
+
 #if DEBUG_RENDERING
         [UsingDependency]
         private static IIsometricCameraFactory IsometricCameraFactory;
@@ -71,14 +74,15 @@ namespace CorgEng.Example.Server
             {
                 for (int y = -1; y <= 1; y++)
                 {
-                    IEntity testingEntity = new Entity();
-                    //Add components
-                    testingEntity.AddComponent(new NetworkTransformComponent());
-                    testingEntity.AddComponent(new SpriteRenderComponent());
-                    //Update the entity
-                    new SetPositionEvent(new Vector<float>(x, y)).Raise(testingEntity);
-                    new SetSpriteEvent(IconFactory.CreateIcon("human.ghost", 5)).Raise(testingEntity);
-                    new SetSpriteRendererEvent(1).Raise(testingEntity);
+                    EntityFactory.CreateEmptyEntity(testingEntity => {
+                        //Add components
+                        testingEntity.AddComponent(new NetworkTransformComponent());
+                        testingEntity.AddComponent(new SpriteRenderComponent());
+                        //Update the entity
+                        new SetPositionEvent(new Vector<float>(x, y)).Raise(testingEntity);
+                        new SetSpriteEvent(IconFactory.CreateIcon("human.ghost", 5)).Raise(testingEntity);
+                        new SetSpriteRendererEvent(1).Raise(testingEntity);
+                    });
                 }
             }
             //Set the default player prototype
@@ -103,15 +107,16 @@ namespace CorgEng.Example.Server
 
         private static void SetPlayerPrototype()
         {
-            IEntity playerPrototype = new Entity();
-            playerPrototype.AddComponent(new ClientComponent());
-            playerPrototype.AddComponent(new NetworkTransformComponent());
-            playerPrototype.AddComponent(new SpriteRenderComponent() { Sprite = IconFactory.CreateIcon("human.ghost", 5), SpriteRendererIdentifier = 1 });
-            playerPrototype.AddComponent(new PlayerMovementComponent());
-            playerPrototype.AddComponent(new DeleteableComponent());
-            IPrototype prototype = PrototypeManager.GetPrototype(playerPrototype);
-            NetworkingServer.SetClientPrototype(prototype);
-            new DeleteEntityEvent().Raise(playerPrototype);
+            EntityFactory.CreateEmptyEntity(playerPrototype => {
+                playerPrototype.AddComponent(new ClientComponent());
+                playerPrototype.AddComponent(new NetworkTransformComponent());
+                playerPrototype.AddComponent(new SpriteRenderComponent() { Sprite = IconFactory.CreateIcon("human.ghost", 5), SpriteRendererIdentifier = 1 });
+                playerPrototype.AddComponent(new PlayerMovementComponent());
+                playerPrototype.AddComponent(new DeleteableComponent());
+                IPrototype prototype = PrototypeManager.GetPrototype(playerPrototype);
+                NetworkingServer.SetClientPrototype(prototype);
+                new DeleteEntityEvent().Raise(playerPrototype);
+            });
         }
 
     }

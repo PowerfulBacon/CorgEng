@@ -17,7 +17,7 @@ namespace CorgEng.EntityComponentSystem.Entities
     public class Entity : IEntity
     {
 
-        internal delegate void InternalSignalHandleDelegate(IEntity entity, IEvent signal, bool synchronous);
+        internal delegate void InternalSignalHandleDelegate(IEntity entity, IEvent signal, bool synchronous, string callingFile, string callingMember, int callingLine);
 
         [UsingDependency]
         private static ILogger Logger;
@@ -26,6 +26,11 @@ namespace CorgEng.EntityComponentSystem.Entities
         /// The identifier for the entity. Used to find a specific entity.
         /// </summary>
         public uint Identifier { get; private set; }
+
+        /// <summary>
+        /// The flags relating to this entity. Indicate if it has been initialised, destroyed etc.
+        /// </summary>
+        public EntityFlags EntityFlags { get; set; } = EntityFlags.NONE;
 
         /// <summary>
         /// List of all components attached to this entity
@@ -53,7 +58,7 @@ namespace CorgEng.EntityComponentSystem.Entities
         /// </summary>
         public string DefinitionName { get; set; }
 
-        public Entity()
+        internal Entity()
         {
             Identifier = EntityManager.GetNewEntityId();
             EntityManager.RegisterEntity(this);
@@ -106,7 +111,7 @@ namespace CorgEng.EntityComponentSystem.Entities
         /// Internal method for handling signals.
         /// </summary>
         /// <param name="signal"></param>
-        public void HandleSignal(IEvent signal, bool synchronous = false)
+        public void HandleSignal(IEvent signal, bool synchronous, string callingFile, string callingMember, int callingLine)
         {
             //Verify that this signal is being listened for
             if (EventListeners == null)
@@ -120,7 +125,7 @@ namespace CorgEng.EntityComponentSystem.Entities
             for (int i = signalHandleDelegates.Count - 1; i >= 0; i = Math.Min(i - 1, signalHandleDelegates.Count - 1))
             {
                 InternalSignalHandleDelegate internalSignalHandler = signalHandleDelegates[i];
-                internalSignalHandler.Invoke(this, signal, synchronous);
+                internalSignalHandler.Invoke(this, signal, synchronous, callingFile, callingMember, callingLine);
             }
         }
 

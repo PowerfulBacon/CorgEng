@@ -33,6 +33,9 @@ namespace CorgEng.Tests.NetworkingTests
         [UsingDependency]
         private static ILogger Logger;
 
+        [UsingDependency]
+        private static IEntityFactory EntityFactory;
+
         [TestCleanup]
         public void AfterTest()
         {
@@ -46,7 +49,7 @@ namespace CorgEng.Tests.NetworkingTests
         public void TestEntityCommunication()
         {
             //Alright, connection established. Lets communicate an entity
-            IEntity testEntity = new Entity();
+            IEntity testEntity = EntityFactory.CreateEmptyEntity(null);
             TestComponent testComponent = new TestComponent();
             testComponent.Text = "test";
             testComponent.DontSerialise = 5.31262;

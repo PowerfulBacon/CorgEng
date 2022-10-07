@@ -13,7 +13,13 @@ namespace CorgEng.GenericInterfaces.EntityComponentSystem
         /// Creates an empty entity with no components
         /// </summary>
         /// <returns></returns>
-        IEntity CreateEmptyEntity();
+        IEntity CreateEmptyEntity(Action<IEntity> preInitialisationEvents);
+
+        /// <summary>
+        /// Creates an empty entity with no components
+        /// </summary>
+        /// <returns></returns>
+        IEntity CreateUninitialisedEntity();
 
     }
 }
