@@ -8,6 +8,9 @@ A modularised, ECS-based game engine with high performance, scalability and coll
 
 [CorgEng Documentation Contents Page](https://hackmd.io/UnZmbyzhR3GR7silkiitig)
 
+CorgEng relies heavilly on multi-threading and a good understanding of concurrency is recommened in order to prevent issues arising from concurrent modification.
+The entity component system does a good job at forcing code to work asynchronously, however event handling is performed out of order, so if an event depends on the result of another event, the first event should be executed synchronously. See the ECS section for more details.
+
 ## Example
 
 See CorgEng.Example for examples of how to create CorgEng applications that utilize the important features.
