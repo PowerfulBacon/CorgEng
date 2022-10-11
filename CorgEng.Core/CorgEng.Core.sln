@@ -67,7 +67,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CorgEng.Pathfinding", "..\C
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CorgEng.Claims", "..\CorgEng.Claims\CorgEng.Claims.csproj", "{738F1392-2518-402E-B2BC-E2C531495F81}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CorgEng.IconSmoothing", "..\CorgEng.IconSmoothing\CorgEng.IconSmoothing.csproj", "{04742554-B547-4E2F-9D9E-0241CF2564FE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CorgEng.IconSmoothing", "..\CorgEng.IconSmoothing\CorgEng.IconSmoothing.csproj", "{04742554-B547-4E2F-9D9E-0241CF2564FE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CorgEng.Contents", "..\CorgEng.Contents\CorgEng.Contents.csproj", "{19B883CC-DB8C-47CF-B3EB-957ABEEB58FF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -583,6 +585,26 @@ Global
 		{04742554-B547-4E2F-9D9E-0241CF2564FE}.Release|x64.Build.0 = Release|Any CPU
 		{04742554-B547-4E2F-9D9E-0241CF2564FE}.Release|x86.ActiveCfg = Release|Any CPU
 		{04742554-B547-4E2F-9D9E-0241CF2564FE}.Release|x86.Build.0 = Release|Any CPU
+		{19B883CC-DB8C-47CF-B3EB-957ABEEB58FF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{19B883CC-DB8C-47CF-B3EB-957ABEEB58FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{19B883CC-DB8C-47CF-B3EB-957ABEEB58FF}.Debug|ARM32.ActiveCfg = Debug|Any CPU
+		{19B883CC-DB8C-47CF-B3EB-957ABEEB58FF}.Debug|ARM32.Build.0 = Debug|Any CPU
+		{19B883CC-DB8C-47CF-B3EB-957ABEEB58FF}.Debug|ARM64.ActiveCfg = Debug|Any CPU
+		{19B883CC-DB8C-47CF-B3EB-957ABEEB58FF}.Debug|ARM64.Build.0 = Debug|Any CPU
+		{19B883CC-DB8C-47CF-B3EB-957ABEEB58FF}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{19B883CC-DB8C-47CF-B3EB-957ABEEB58FF}.Debug|x64.Build.0 = Debug|Any CPU
+		{19B883CC-DB8C-47CF-B3EB-957ABEEB58FF}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{19B883CC-DB8C-47CF-B3EB-957ABEEB58FF}.Debug|x86.Build.0 = Debug|Any CPU
+		{19B883CC-DB8C-47CF-B3EB-957ABEEB58FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{19B883CC-DB8C-47CF-B3EB-957ABEEB58FF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{19B883CC-DB8C-47CF-B3EB-957ABEEB58FF}.Release|ARM32.ActiveCfg = Release|Any CPU
+		{19B883CC-DB8C-47CF-B3EB-957ABEEB58FF}.Release|ARM32.Build.0 = Release|Any CPU
+		{19B883CC-DB8C-47CF-B3EB-957ABEEB58FF}.Release|ARM64.ActiveCfg = Release|Any CPU
+		{19B883CC-DB8C-47CF-B3EB-957ABEEB58FF}.Release|ARM64.Build.0 = Release|Any CPU
+		{19B883CC-DB8C-47CF-B3EB-957ABEEB58FF}.Release|x64.ActiveCfg = Release|Any CPU
+		{19B883CC-DB8C-47CF-B3EB-957ABEEB58FF}.Release|x64.Build.0 = Release|Any CPU
+		{19B883CC-DB8C-47CF-B3EB-957ABEEB58FF}.Release|x86.ActiveCfg = Release|Any CPU
+		{19B883CC-DB8C-47CF-B3EB-957ABEEB58FF}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
