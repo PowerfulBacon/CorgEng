@@ -48,7 +48,10 @@ namespace CorgEng.EntityComponentSystem.Implementations.Rendering.SpriteRenderin
             RegisterLocalEvent<SpriteRenderComponent, AddOverlayEvent>(AddOverlay);
             RegisterLocalEvent<SpriteRenderComponent, RemoveOverlayEvent>(RemoveOverlay);
             RegisterLocalEvent<SpriteRenderComponent, SetDirectionEvent>(OnSetIconDirection);
+            RegisterLocalEvent<SpriteRenderComponent, ContentsChangedEvent>(OnContentsChanged);
         }
+
+        #region Component Handling
 
         private void OnInitialise(IEntity entity, SpriteRenderComponent spriteRenderComponent, InitialiseNetworkedEntityEvent componentAddedEvent)
         {
@@ -77,6 +80,10 @@ namespace CorgEng.EntityComponentSystem.Implementations.Rendering.SpriteRenderin
             UpdateSprite(spriteRenderComponent);
         }
 
+        #endregion
+
+        #region Position
+
         /// <summary>
         /// Called when the parent entity is moved.
         /// </summary>
@@ -95,16 +102,20 @@ namespace CorgEng.EntityComponentSystem.Implementations.Rendering.SpriteRenderin
             }
         }
 
+        #endregion
+
+        #region Sprite & Render System
+
         private void OnSetRenderer(IEntity entity, SpriteRenderComponent spriteRenderComponent, SetSpriteRendererEvent setSpriteRenderer)
         {
             //If we are being rendered, stop being rendered
-            if (CorgEngMain.IsRendering && spriteRenderComponent.SpriteRenderer != null && spriteRenderComponent.SpriteRenderObject != null)
-                spriteRenderComponent.SpriteRenderer.StopRendering(spriteRenderComponent.SpriteRenderObject);
+            if (CorgEngMain.IsRendering && spriteRenderComponent.SpriteRenderer != null && spriteRenderComponent.SpriteRenderObject != null && spriteRenderComponent.IsRendering)
+                StopRendering(spriteRenderComponent);
             //Set the sprite renderer
             spriteRenderComponent.SpriteRendererIdentifier = setSpriteRenderer.Target;
             //Start rendering again
-            if (CorgEngMain.IsRendering && spriteRenderComponent.SpriteRenderer != null && spriteRenderComponent.SpriteRenderObject != null)
-                spriteRenderComponent.SpriteRenderer.StartRendering(spriteRenderComponent.SpriteRenderObject);
+            if (CorgEngMain.IsRendering && spriteRenderComponent.SpriteRenderer != null && spriteRenderComponent.SpriteRenderObject != null && spriteRenderComponent.WantsToRender)
+                StartRendering(spriteRenderComponent);
         }
 
         private void OnSetSprite(IEntity entity, SpriteRenderComponent spriteRenderComponent, SetSpriteEvent setSpriteEvent)
@@ -115,6 +126,32 @@ namespace CorgEng.EntityComponentSystem.Implementations.Rendering.SpriteRenderin
             if (!CorgEngMain.IsRendering)
                 return;
             UpdateSprite(spriteRenderComponent);
+        }
+
+        private void StopRendering(SpriteRenderComponent spriteRenderComponent)
+        {
+            //Not rendering already
+            if (!spriteRenderComponent.IsRendering)
+                return;
+            //Start rendering
+            if (spriteRenderComponent.SpriteRenderer != null)
+            {
+                spriteRenderComponent.SpriteRenderer.StopRendering(spriteRenderComponent.SpriteRenderObject);
+                spriteRenderComponent.IsRendering = false;
+            }
+        }
+
+        private void StartRendering(SpriteRenderComponent spriteRenderComponent)
+        {
+            //Not rendering already
+            if (spriteRenderComponent.IsRendering)
+                return;
+            //Start rendering
+            if (spriteRenderComponent.SpriteRenderer != null)
+            {
+                spriteRenderComponent.SpriteRenderer.StartRendering(spriteRenderComponent.SpriteRenderObject);
+                spriteRenderComponent.IsRendering = true;
+            }
         }
 
         private void UpdateSprite(SpriteRenderComponent spriteRenderComponent)
@@ -151,10 +188,14 @@ namespace CorgEng.EntityComponentSystem.Implementations.Rendering.SpriteRenderin
                     spriteRenderComponent.CachedPosition = null;
                 }
                 //Start rendering
-                if (spriteRenderComponent.SpriteRenderer != null)
-                    spriteRenderComponent.SpriteRenderer.StartRendering(spriteRenderComponent.SpriteRenderObject);
+                if (spriteRenderComponent.WantsToRender)
+                    StartRendering(spriteRenderComponent);
             }
         }
+
+        #endregion
+
+        #region Direction
 
         /// <summary>
         /// Set the icon's direction
@@ -167,6 +208,10 @@ namespace CorgEng.EntityComponentSystem.Implementations.Rendering.SpriteRenderin
             spriteRenderComponent.Sprite.DirectionalState = setDirectionEvent.DirectionalState;
             UpdateSprite(spriteRenderComponent);
         }
+
+        #endregion
+
+        #region Overlay Handling
 
         /// <summary>
         /// Adds an overlay to this sprite
@@ -189,6 +234,33 @@ namespace CorgEng.EntityComponentSystem.Implementations.Rendering.SpriteRenderin
         {
             spriteRenderComponent.SpriteRenderObject.RemoveOverlay(removeOverlayEvent.TextureFile);
         }
+
+        #endregion
+
+        #region Contents Handling
+
+        /// <summary>
+        /// Stop rendering if we enter the contents of something.
+        /// Start rendering if we left the contents of something.
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <param name="spriteRenderComponent"></param>
+        /// <param name="contentsChangedEvent"></param>
+        private void OnContentsChanged(IEntity entity, SpriteRenderComponent spriteRenderComponent, ContentsChangedEvent contentsChangedEvent)
+        {
+            if (contentsChangedEvent.NewHolder != null)
+            {
+                spriteRenderComponent.WantsToRender = false;
+                StopRendering(spriteRenderComponent);
+            }
+            else
+            {
+                spriteRenderComponent.WantsToRender = true;
+                StartRendering(spriteRenderComponent);
+            }
+        }
+
+        #endregion
 
     }
 }

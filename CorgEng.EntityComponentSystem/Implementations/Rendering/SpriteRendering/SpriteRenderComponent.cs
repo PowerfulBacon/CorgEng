@@ -41,6 +41,13 @@ namespace CorgEng.EntityComponentSystem.Implementations.Rendering.SpriteRenderin
         [NetworkSerialized]
         public uint SpriteRendererIdentifier { get; set; }
 
+        /// <summary>
+        /// Is the sprite currently being rendered
+        /// </summary>
+        internal bool IsRendering { get; set; } = false;
+
+        internal bool WantsToRender { get; set; } = true;
+
         private uint cachedSpriteRendererIdentifier = 0;
 
         private ISpriteRenderer _spriteRenderer;
