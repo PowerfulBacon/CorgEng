@@ -104,6 +104,11 @@ namespace CorgEng.ContentLoading.DefinitionNodes
                 });
 
             }
+            //1 Child, return value
+            if (PropertyValue != null)
+            {
+                return PropertyValue;
+            }
             if (Children.Count != 1)
             {
                 throw new ContentLoadException("Element node contains invalid children count, it should either contain a single value, or a <Key> and <Value> node.");
@@ -113,15 +118,8 @@ namespace CorgEng.ContentLoading.DefinitionNodes
                 throw new ContentLoadException("Cannot have a key node as a child of an element node.");
             }
             //1 Child, return value
-            if (PropertyValue != null)
-            {
-                return PropertyValue;
-            }
             // Either object or value node
-            else
-            {
-                return Children[0].CreateInstance(null, instanceRefs);
-            }
+            return Children[0].CreateInstance(null, instanceRefs);
         }
 
     }
