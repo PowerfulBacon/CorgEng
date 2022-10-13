@@ -12,9 +12,24 @@ namespace CorgEng.Font.Fonts
     internal class FontFactory : IFontFactory
     {
 
+        private static Dictionary<string, Font> FontCache = new Dictionary<string, Font>();
+
         public IFont GetFont(string typefaceName)
         {
-            return new Font(typefaceName);
+            if (FontCache.ContainsKey(typefaceName))
+            {
+                return FontCache[typefaceName];
+            }
+            lock (FontCache)
+            {
+                if (FontCache.ContainsKey(typefaceName))
+                {
+                    return FontCache[typefaceName];
+                }
+                Font createdFont = new Font(typefaceName);
+                FontCache.Add(typefaceName, createdFont);
+                return createdFont;
+            }
         }
 
     }
