@@ -6,6 +6,7 @@ using CorgEng.EntityComponentSystem.Implementations.Transform;
 using CorgEng.EntityComponentSystem.Systems;
 using CorgEng.GenericInterfaces.EntityComponentSystem;
 using CorgEng.GenericInterfaces.Logging;
+using CorgEng.GenericInterfaces.Rendering.Icons;
 using CorgEng.GenericInterfaces.Rendering.Renderers.SpriteRendering;
 using CorgEng.GenericInterfaces.Rendering.RenderObjects.SpriteRendering;
 using CorgEng.GenericInterfaces.Rendering.Textures;
@@ -61,6 +62,15 @@ namespace CorgEng.EntityComponentSystem.Implementations.Rendering.SpriteRenderin
             spriteRenderComponent.CachedPosition = entity.GetComponent<TransformComponent>().Position.Copy();
             //Update the sprite
             UpdateSprite(spriteRenderComponent);
+            //Apply initial overlays
+            if (spriteRenderComponent.InitialOverlays != null)
+            {
+                foreach (IIcon overlay in spriteRenderComponent.InitialOverlays)
+                {
+                    spriteRenderComponent.SpriteRenderObject.AddOverlay(overlay);
+                }
+                spriteRenderComponent.InitialOverlays = null;
+            }
         }
 
         private void OnEntityDestroyed(IEntity entity, SpriteRenderComponent spriteRenderComponent, DeleteEntityEvent entityDeletedEvent)
@@ -78,6 +88,15 @@ namespace CorgEng.EntityComponentSystem.Implementations.Rendering.SpriteRenderin
             if (!CorgEngMain.IsRendering || spriteRenderComponent.Sprite == null)
                 return;
             UpdateSprite(spriteRenderComponent);
+            //Apply initial overlays
+            if (spriteRenderComponent.InitialOverlays != null)
+            {
+                foreach (IIcon overlay in spriteRenderComponent.InitialOverlays)
+                {
+                    spriteRenderComponent.SpriteRenderObject.AddOverlay(overlay);
+                }
+                spriteRenderComponent.InitialOverlays = null;
+            }
         }
 
         #endregion

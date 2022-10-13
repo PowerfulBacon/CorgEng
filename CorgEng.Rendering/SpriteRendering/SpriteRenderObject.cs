@@ -54,7 +54,32 @@ namespace CorgEng.Rendering.SpriteRendering
 
         public IBindableProperty<IVector<float>> CombinedTransformSecondRow { get; } = new BindableProperty<IVector<float>>(new Vector<float>(0, 1, 0));
 
-        public ISpriteRenderer CurrentRenderer { get; set; }
+        private ISpriteRenderer _currentRenderer;
+        public ISpriteRenderer CurrentRenderer
+        {
+            get => _currentRenderer;
+            set
+            {
+                //Stop rendering overlays
+                if (_currentRenderer != null)
+                {
+                    foreach (ISpriteRenderObject overlayObject in overlays.Values)
+                    {
+                        _currentRenderer.StopRendering(overlayObject);
+                    }
+                }
+                //Set the renderer
+                _currentRenderer = value;
+                //Move all overlays to the new renderer
+                if (_currentRenderer != null)
+                {
+                    foreach (ISpriteRenderObject overlayObject in overlays.Values)
+                    {
+                        _currentRenderer.StartRendering(overlayObject);
+                    }
+                }
+            }
+        }
 
         public ISpriteRenderObject Container { get; set; }
 
@@ -80,14 +105,16 @@ namespace CorgEng.Rendering.SpriteRendering
             //Set the layer
             IconLayer.Value[0] = layer;
             //When the vector changes, trigger change on the bindable property.
-            CombinedTransform.Value.OnChange += (object src, EventArgs arg) => {
+            CombinedTransform.Value.OnChange += (object src, EventArgs arg) =>
+            {
                 //Trigger a transform update
                 CombinedTransform.TriggerChanged();
             };
             //When the value of the combined transform is changed, we need to update our
             //rows, as they are bound to by the renderer which is where the updating needs
             //to be done.
-            CombinedTransform.ValueChanged += (object src, EventArgs arg) => {
+            CombinedTransform.ValueChanged += (object src, EventArgs arg) =>
+            {
                 //Trigger updates to our transform rows
                 CombinedTransformFirstRow.Value.X = CombinedTransform.Value[1, 1];
                 CombinedTransformFirstRow.Value.Y = CombinedTransform.Value[2, 1];
@@ -104,11 +131,13 @@ namespace CorgEng.Rendering.SpriteRendering
                 }
             };
             //When the self transform is updated, the combined transform needs to be updated too
-            SelfTransform.Value.OnChange += (object src, EventArgs arg) => {
+            SelfTransform.Value.OnChange += (object src, EventArgs arg) =>
+            {
                 SelfTransform.TriggerChanged();
             };
             //When the self transform is updated, calculate and apply our combined transform
-            SelfTransform.ValueChanged += (object src, EventArgs args) => {
+            SelfTransform.ValueChanged += (object src, EventArgs args) =>
+            {
                 CombinedTransform.Value = Container != null
                     ? Container.CombinedTransform.Value.Multiply(SelfTransform.Value)
                     : SelfTransform.Value;

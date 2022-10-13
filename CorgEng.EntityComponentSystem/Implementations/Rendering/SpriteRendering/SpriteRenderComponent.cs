@@ -31,6 +31,11 @@ namespace CorgEng.EntityComponentSystem.Implementations.Rendering.SpriteRenderin
         public IIcon Sprite { get; set; }
 
         /// <summary>
+        /// The overlays to apply on boot
+        /// </summary>
+        public IIcon[] InitialOverlays { get; set; }
+
+        /// <summary>
         /// The render object that is drawing this component
         /// </summary>
         public ISpriteRenderObject SpriteRenderObject { get; internal set; }

@@ -64,16 +64,23 @@ namespace CorgEng.ContentLoading.DefinitionNodes
             isDynamic = new bool[node.ChildNodes.Count];
             for (int i = 0; i < node.ChildNodes.Count; i ++)
             {
-                //Parse the static value of the node
-                if (!(node.ChildNodes[i].FirstChild is XmlElement))
+                for (int j = 0; j < node.ChildNodes[i].ChildNodes.Count; j++)
                 {
-                    parameters[i] = TypeDescriptor.GetConverter(methodToCall.GetParameters()[i].ParameterType).ConvertFromString(node.ChildNodes[i].InnerText.Trim());
-                }
-                //Mark the node as dynamic
-                else
-                {
-                    hasDynamicParams = true;
-                    isDynamic[i] = true;
+                    //ignore comments
+                    if (node.ChildNodes[i].ChildNodes[j] is XmlComment)
+                        continue;
+                    //Parse the static value of the node
+                    if (!(node.ChildNodes[i].ChildNodes[j] is XmlElement))
+                    {
+                        parameters[i] = TypeDescriptor.GetConverter(methodToCall.GetParameters()[i].ParameterType).ConvertFromString(node.ChildNodes[i].InnerText.Trim());
+                    }
+                    //Mark the node as dynamic
+                    else
+                    {
+                        hasDynamicParams = true;
+                        isDynamic[i] = true;
+                    }
+                    break;
                 }
             }
         }
