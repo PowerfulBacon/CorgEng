@@ -17,6 +17,11 @@ namespace CorgEng.World.Components
         public virtual string Key { get; set; }
 
         /// <summary>
+        /// Is this thing currently being tracked?
+        /// </summary>
+        public bool isTracking = false;
+
+        /// <summary>
         /// Get the transform linked to this component
         /// </summary>
         private TransformComponent _storedTransform;

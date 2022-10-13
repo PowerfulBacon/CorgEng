@@ -12,6 +12,7 @@
     <OutputPath>bin\x64\Release\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
+    <ProjectReference Include="..\CorgEng.Contents\CorgEng.Contents.csproj" />
     <ProjectReference Include="..\CorgEng.Core\CorgEng.Core.csproj" />
     <ProjectReference Include="..\CorgEng.DependencyInjection\CorgEng.DependencyInjection.csproj" />
     <ProjectReference Include="..\CorgEng.EntityComponentSystem\CorgEng.EntityComponentSystem.csproj" />

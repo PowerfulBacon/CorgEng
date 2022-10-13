@@ -1,4 +1,5 @@
-﻿using CorgEng.Core.Dependencies;
+﻿using CorgEng.Contents.Components;
+using CorgEng.Core.Dependencies;
 using CorgEng.EntityComponentSystem.Entities;
 using CorgEng.EntityComponentSystem.Events.Events;
 using CorgEng.EntityComponentSystem.Implementations.Transform;
@@ -18,13 +19,14 @@ namespace CorgEng.World.EntitySystems
     {
 
         [UsingDependency]
-        private static IWorld WorldAccess;
+        private static IWorld WorldAccess = null!;
 
         public override EntitySystemFlags SystemFlags { get; } = EntitySystemFlags.HOST_SYSTEM;
 
         public override void SystemSetup()
         {
             RegisterLocalEvent<TrackComponent, ComponentAddedEvent>(OnEntityCreated);
+            RegisterLocalEvent<TrackComponent, ContentsChangedEvent>(OnEntityLocationChanged);
             RegisterLocalEvent<TrackComponent, MoveEvent>(OnEntityMoved);
             RegisterLocalEvent<TrackComponent, ComponentRemovedEvent>(OnComponentRemoved);
         }
@@ -40,8 +42,34 @@ namespace CorgEng.World.EntitySystems
         {
             if (componentAddedEvent.Component != trackComponent)
                 return;
+            //Check to ensure that we are not inside something
+            if (trackComponent.Parent.HasComponent<ContainedComponent>())
+                return;
             //Add the entity to the world
             WorldAccess.AddEntity(trackComponent.Key, trackComponent, trackComponent.Transform.Position.X, trackComponent.Transform.Position.Y, 0);
+            trackComponent.isTracking = true;
+        }
+
+        /// <summary>
+        /// When the entity has its location changed, it needs to be freed
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <param name="trackComponent"></param>
+        /// <param name="contentsChangedEvent"></param>
+        private void OnEntityLocationChanged(IEntity entity, TrackComponent trackComponent, ContentsChangedEvent contentsChangedEvent)
+        {
+            if (trackComponent.isTracking && contentsChangedEvent.NewHolder != null)
+            {
+                //Stop tracking
+                trackComponent.isTracking = false;
+                WorldAccess.RemoveEntity(trackComponent.Key, trackComponent, trackComponent.ContentsLocation.X, trackComponent.ContentsLocation.Y, 0);
+            }
+            else if (!trackComponent.isTracking && contentsChangedEvent.NewHolder == null)
+            {
+                //Start tracking
+                trackComponent.isTracking = true;
+                WorldAccess.AddEntity(trackComponent.Key, trackComponent, trackComponent.Transform.Position.X, trackComponent.Transform.Position.Y, 0);
+            }
         }
 
         /// <summary>
@@ -52,6 +80,9 @@ namespace CorgEng.World.EntitySystems
         /// <param name="moveEvent"></param>
         private void OnEntityMoved(IEntity entity, TrackComponent trackComponent, MoveEvent moveEvent)
         {
+            //Not currently tracking, somehow this was called while we were inside somethings contents.
+            if (!trackComponent.isTracking)
+                return;
             WorldAccess.RemoveEntity(trackComponent.Key, trackComponent, trackComponent.ContentsLocation.X, trackComponent.ContentsLocation.Y, 0);
             WorldAccess.AddEntity(trackComponent.Key, trackComponent, moveEvent.NewPosition.X, moveEvent.NewPosition.Y, 0);
         }
@@ -66,7 +97,11 @@ namespace CorgEng.World.EntitySystems
         {
             if (componentRemovedEvent.Component != trackComponent)
                 return;
+            //We were never being tracked due to being inside another entity.
+            if (!trackComponent.isTracking)
+                return;
             WorldAccess.RemoveEntity(trackComponent.Key, trackComponent, trackComponent.ContentsLocation.X, trackComponent.ContentsLocation.Y, 0);
+            trackComponent.isTracking = false;
         }
 
     }
