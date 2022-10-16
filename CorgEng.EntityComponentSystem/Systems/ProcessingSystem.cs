@@ -51,6 +51,11 @@ namespace CorgEng.EntityComponentSystem.Systems
         /// </summary>
         public static double DeltaTimeMultiplier { get; set; } = 1;
 
+        private ConcurrentQueue<InvokationAction> WorkingQueue
+        {
+            get => priorityInvokationQueue.Count > 0 ? priorityInvokationQueue : invokationQueue;
+        }
+
         /// <summary>
         /// Override initial behaviour to also be able to handle processing at regular intervals
         /// </summary>
@@ -86,7 +91,7 @@ namespace CorgEng.EntityComponentSystem.Systems
                         Logger.WriteLine(e, LogType.ERROR);
                     }
                     //Check to see if a new signal that needs to be handled has come in
-                    if (invokationQueue.Count > 0)
+                    if (WorkingQueue.Count > 0)
                     {
                         //We have an invokation to handle, we will continue processing on the next cycle round
                         continued = true;
@@ -95,7 +100,7 @@ namespace CorgEng.EntityComponentSystem.Systems
                 }
                 //Allocate time to processing signal handles
                 InvokationAction current;
-                while (invokationQueue.TryDequeue(out current))
+                while (WorkingQueue.TryDequeue(out current))
                 {
                     try
                     {

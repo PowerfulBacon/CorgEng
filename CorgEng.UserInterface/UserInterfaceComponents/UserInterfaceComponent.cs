@@ -16,6 +16,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static OpenGL.Gl;
 
 namespace CorgEng.UserInterface.Components
 {
@@ -154,7 +155,7 @@ namespace CorgEng.UserInterface.Components
         // Component Rendering Interfaces
         //====================================
 
-        private static void Render(UserInterfaceComponent userInterfaceComponent, uint buffer)
+        private static void Render(UserInterfaceComponent userInterfaceComponent, uint buffer, bool drawOnTop = false)
         {
             //Not initalized yet
             if (!userInterfaceComponent.initialized)
@@ -183,6 +184,10 @@ namespace CorgEng.UserInterface.Components
                     Render(childComponent as UserInterfaceComponent, userInterfaceComponent.FrameBufferUint);
                 }
             }
+            if (drawOnTop)
+            {
+                glEnable(GL_DEPTH_TEST);
+            }
             userInterfaceComponent.DrawToBuffer(
                 buffer,
                 (int)userInterfaceComponent.LeftOffset,
@@ -190,13 +195,17 @@ namespace CorgEng.UserInterface.Components
                 (int)userInterfaceComponent.PixelWidth,
                 (int)userInterfaceComponent.PixelHeight
             );
+            if (drawOnTop)
+            {
+                glDisable(GL_DEPTH_TEST);
+            }
         }
 
         public void DrawToFramebuffer(uint frameBuffer)
         {
             try
             {
-                Render(this, frameBuffer);
+                Render(this, frameBuffer, drawOnTop: true);
             }
             catch (Exception e)
             {
