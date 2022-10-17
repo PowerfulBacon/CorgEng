@@ -6,10 +6,12 @@ layout (location = 2) in vec3 inMatrixFirst;
 layout (location = 3) in vec3 inMatrixSecond;
 layout (location = 4) in vec4 inTextureData;
 layout (location = 5) in float inLayer;
+layout (location = 6) in vec4 inColour;
 
 //UV data
 out vec2 fragVertexUV;
 out vec4 fragTextureData;
+out vec4 fragColour;
 
 // The translation matrix (Model, View)
 //uniform mat4 objectMatrix;
@@ -29,4 +31,5 @@ void main()
     //Output the vertex UV to the fragment shader
     fragVertexUV = inVertexUV;
     fragTextureData = inTextureData;
+	fragColour = inColour;
 }

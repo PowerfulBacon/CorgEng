@@ -96,6 +96,11 @@ namespace CorgEng.Rendering.SpriteRendering
         public IBindableProperty<IVector<float>> IconLayer { get; set; } = new BindableProperty<IVector<float>>(new Vector<float>(0));
 
         /// <summary>
+        /// The RGBA colour to multiply this sprite by.
+        /// </summary>
+        public IBindableProperty<IVector<float>> Colour { get; set; } = new BindableProperty<IVector<float>>(new Vector<float>(1, 1, 1, 1));
+
+        /// <summary>
         /// A hashset containing all overlays that are currently attached to us
         /// </summary>
         private Dictionary<IIcon, ISpriteRenderObject> overlays = new Dictionary<IIcon, ISpriteRenderObject>();
@@ -151,6 +156,15 @@ namespace CorgEng.Rendering.SpriteRendering
             TextureDetails = new BindablePropertyGroup(TextureFileX, TextureFileY, TextureFileWidth, TextureFileHeight);
         }
 
+        public void RedrawFromIcon(IIcon sourceIcon)
+        {
+            //Set the colour
+            Colour.Value = sourceIcon.Colour;
+            //Set the layer
+            IconLayer.Value[0] = sourceIcon.Layer;
+            IconLayer.TriggerChanged();
+        }
+
         private object batchContained;
 
         public IBatchElement<BatchType> GetBelongingBatchElement<BatchType>() where BatchType : IBatch<BatchType>
@@ -180,6 +194,8 @@ namespace CorgEng.Rendering.SpriteRendering
                 textureState.OffsetWidth,
                 textureState.OffsetHeight,
                 IconLayer.Value[0] + 0.0001f);
+            spriteRenderObject.RedrawFromIcon(overlay);
+            overlay.ValueChanged += () => spriteRenderObject.RedrawFromIcon(overlay);
             //Set it as the container
             spriteRenderObject.Container = this;
             //If we are currently being rendered, render the overlay on the same renderer

@@ -1,5 +1,6 @@
 ﻿using CorgEng.GenericInterfaces.Networking.Serialisation;
 using CorgEng.GenericInterfaces.Rendering.Textures;
+using CorgEng.GenericInterfaces.UtilityTypes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +11,11 @@ namespace CorgEng.GenericInterfaces.Rendering.Icons
 {
     public interface IIcon : ICustomSerialisationBehaviour
     {
+
+        /// <summary>
+        /// Called when the value of the icon changes
+        /// </summary>
+        event Action ValueChanged;
 
         /// <summary>
         /// The icon name to use. References an icon defined in a .texdef file.
@@ -25,6 +31,11 @@ namespace CorgEng.GenericInterfaces.Rendering.Icons
         /// Directional mode of the icon
         /// </summary>
         DirectionalState DirectionalState { get; set; }
+
+        /// <summary>
+        /// The colour of this icon
+        /// </summary>
+        IVector<float> Colour { get; set; }
 
         /// <summary>
         /// Does this texture have transparency?

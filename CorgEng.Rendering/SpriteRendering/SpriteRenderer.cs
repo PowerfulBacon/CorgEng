@@ -49,7 +49,8 @@ namespace CorgEng.Rendering.SpriteRendering
                 spriteRenderObject.CombinedTransformFirstRow,
                 spriteRenderObject.CombinedTransformSecondRow,
                 spriteRenderObject.TextureDetails,
-                spriteRenderObject.IconLayer
+                spriteRenderObject.IconLayer,
+                spriteRenderObject.Colour
             });
             //Remember the batch element we are stored in, so it can be saved
             spriteRenderObject.SetBelongingBatchElement(batchElement);

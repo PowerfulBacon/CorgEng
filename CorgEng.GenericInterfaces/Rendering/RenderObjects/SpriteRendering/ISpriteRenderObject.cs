@@ -31,6 +31,12 @@ namespace CorgEng.GenericInterfaces.Rendering.RenderObjects.SpriteRendering
         IBindableProperty<IVector<float>> IconLayer { get; set; }
 
         /// <summary>
+        /// 4 value vector containing an RGBA colour to multiply
+        /// this object by.
+        /// </summary>
+        IBindableProperty<IVector<float>> Colour { get; set; }
+
+        /// <summary>
         /// If we are an overlay, this is the object we are being rendered inside of.
         /// </summary>
         ISpriteRenderObject Container { get; set; }
@@ -55,6 +61,12 @@ namespace CorgEng.GenericInterfaces.Rendering.RenderObjects.SpriteRendering
         /// The texture detail wrapper
         /// </summary>
         IBindablePropertyGroup TextureDetails { get; }
+
+        /// <summary>
+        /// Redraw this sprite from a source icon.
+        /// </summary>
+        /// <param name="sourceIcon"></param>
+        void RedrawFromIcon(IIcon sourceIcon);
 
         /// <summary>
         /// Add an overlay to be rendered on top of this object
