@@ -2,6 +2,8 @@
 using CorgEng.GenericInterfaces.Rendering.Icons;
 using CorgEng.GenericInterfaces.Rendering.Textures;
 using CorgEng.GenericInterfaces.Serialization;
+using CorgEng.GenericInterfaces.UtilityTypes;
+using CorgEng.UtilityTypes.Vectors;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -20,8 +22,19 @@ namespace CorgEng.Rendering.Icons
         [UsingDependency]
         private static ITextureFactory TextureFactory;
 
+        /// <summary>
+        /// Triggered when a value is changed.
+        /// </summary>
+        public event Action ValueChanged;
+
+        /// <summary>
+        /// Name of the icon we are representing
+        /// </summary>
         public string IconName { get; private set; }
 
+        /// <summary>
+        /// The layer to draw this icon on
+        /// </summary>
         public float Layer { get; set; }
 
         /// <summary>
@@ -34,10 +47,18 @@ namespace CorgEng.Rendering.Icons
         /// </summary>
         public DirectionalState DirectionalState { get; set; } = DirectionalState.NONE;
 
+        /// <summary>
+        /// Colour of the icon
+        /// </summary>
+        public IVector<float> Colour { get; set; } = new Vector<float>(1, 1, 1, 1);
+
         public Icon(string iconName, float layer)
         {
             IconName = iconName;
             Layer = layer;
+            Colour.OnChange += (e, args) => {
+                ValueChanged?.Invoke();
+            };
         }
 
         public void DeserialiseFrom(BinaryReader binaryReader)

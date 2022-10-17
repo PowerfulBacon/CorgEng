@@ -52,6 +52,11 @@ namespace CorgEng.GenericInterfaces.ContentLoading.DefinitionNodes
 
         protected void ParseValue(XmlNode node)
         {
+            foreach (XmlNode childNode in node.ChildNodes)
+            {
+                if (childNode is XmlElement)
+                    return;
+            }
             //Is enum
             if (TargetProperty.PropertyType.IsEnum)
             {

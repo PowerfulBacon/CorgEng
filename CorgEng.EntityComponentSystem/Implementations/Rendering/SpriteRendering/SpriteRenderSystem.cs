@@ -198,6 +198,12 @@ namespace CorgEng.EntityComponentSystem.Implementations.Rendering.SpriteRenderin
                     newTexture.OffsetHeight,
                     spriteRenderComponent.Sprite.Layer
                     );
+                //Attach the icon (Check this for icon changes, memory leaks etc.)
+                spriteRenderComponent.Sprite.ValueChanged += () => {
+                    spriteRenderComponent.SpriteRenderObject.RedrawFromIcon(spriteRenderComponent.Sprite);
+                };
+                //Set the colour
+                spriteRenderComponent.SpriteRenderObject.Colour.Value = spriteRenderComponent.Sprite.Colour;
                 //Set the layer
                 spriteRenderComponent.SpriteRenderObject.IconLayer.Value[0] = spriteRenderComponent.Sprite.Layer;
                 if (spriteRenderComponent.CachedPosition != null)

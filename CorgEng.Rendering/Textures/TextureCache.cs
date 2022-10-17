@@ -79,19 +79,26 @@ namespace CorgEng.Rendering.Textures
                 {
                     return TextureStates[textureState];
                 }
-                ITexture texture = TextureFileCache[usingJson.FileName];
-                //Convert 0-width (width) to -1 to 1 (2)
-                float pixelFactorX = 1.0f / texture.Width;
-                float pixelFactorY = 1.0f / texture.Height;
-                TextureState storedTextureState = new TextureState(
-                    texture,
-                    usingJson.IndexX * 32 * pixelFactorX,
-                    usingJson.IndexY * 32 * pixelFactorY,
-                    usingJson.Width * pixelFactorX,
-                    usingJson.Height * pixelFactorY,
-                    usingJson.DirectionalModes);
-                TextureStates.Add(textureState, storedTextureState);
-                return storedTextureState;
+                lock (TextureStates)
+                {
+                    if (TextureStates.ContainsKey(textureState))
+                    {
+                        return TextureStates[textureState];
+                    }
+                    ITexture texture = TextureFileCache[usingJson.FileName];
+                    //Convert 0-width (width) to -1 to 1 (2)
+                    float pixelFactorX = 1.0f / texture.Width;
+                    float pixelFactorY = 1.0f / texture.Height;
+                    TextureState storedTextureState = new TextureState(
+                        texture,
+                        usingJson.IndexX * 32 * pixelFactorX,
+                        usingJson.IndexY * 32 * pixelFactorY,
+                        usingJson.Width * pixelFactorX,
+                        usingJson.Height * pixelFactorY,
+                        usingJson.DirectionalModes);
+                    TextureStates.Add(textureState, storedTextureState);
+                    return storedTextureState;
+                }
             }
             else
             {
