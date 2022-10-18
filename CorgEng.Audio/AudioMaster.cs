@@ -10,7 +10,7 @@ using System.Collections.Generic;
 namespace GJ2022.Audio
 {
     [Dependency]
-    internal unsafe class AudioMaster : IAudioMaster
+    internal static unsafe class AudioMaster
     {
 
         [UsingDependency]
@@ -25,7 +25,7 @@ namespace GJ2022.Audio
 
         public static bool UsingAudio = false;
 
-        public void UpdateListener(float x, float y, float z)
+        public static void UpdateListener(float x, float y, float z)
         {
             if (!UsingAudio)
                 return;
@@ -100,7 +100,7 @@ namespace GJ2022.Audio
         /// Cleanup the audio files
         /// </summary>
         [ModuleTerminate]
-        public void Cleanup()
+        public static void Cleanup()
         {
             if (!UsingAudio)
                 return;
