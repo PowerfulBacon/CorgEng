@@ -29,7 +29,7 @@ namespace CorgEng.IconSmoothing.Systems
 
         public override void SystemSetup()
         {
-            RegisterLocalEvent<SmoothIconComponent, ComponentAddedEvent>(OnEntityCreated);
+            RegisterLocalEvent<SmoothIconComponent, InitialiseEvent>(OnEntityCreated);
             RegisterLocalEvent<SmoothIconComponent, MoveEvent>(OnEntityMoved);
             RegisterLocalEvent<SmoothIconComponent, ComponentRemovedEvent>(OnComponentRemoved);
             RegisterLocalEvent<SmoothIconComponent, CalculateSmoothEvent>(SmoothEntity);
@@ -69,10 +69,8 @@ namespace CorgEng.IconSmoothing.Systems
         /// <param name="entity"></param>
         /// <param name="transformComponent"></param>
         /// <param name="componentAddedEvent"></param>
-        private void OnEntityCreated(IEntity entity, SmoothIconComponent trackComponent, ComponentAddedEvent componentAddedEvent)
+        private void OnEntityCreated(IEntity entity, SmoothIconComponent trackComponent, InitialiseEvent componentAddedEvent)
         {
-            if (componentAddedEvent.Component != trackComponent)
-                return;
             SmoothAround(trackComponent);
         }
 
