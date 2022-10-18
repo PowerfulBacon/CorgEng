@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Silk.NET.OpenAL" Version="2.16.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CorgEng.Core\CorgEng.Core.csproj" />
+    <ProjectReference Include="..\CorgEng.DependencyInjection\CorgEng.DependencyInjection.csproj" />
+    <ProjectReference Include="..\CorgEng.GenericInterfaces\CorgEng.GenericInterfaces.csproj" />
+  </ItemGroup>
+
+</Project>
