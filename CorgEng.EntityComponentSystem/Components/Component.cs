@@ -18,7 +18,7 @@ namespace CorgEng.EntityComponentSystem.Components
     {
 
         [UsingDependency]
-        private static ILogger Logger;
+        private static ILogger Logger = null!;
         
         /// <summary>
         /// The parent of this component
@@ -29,6 +29,7 @@ namespace CorgEng.EntityComponentSystem.Components
 
         public virtual bool IsSynced { get; } = true;
 
+        //TODO: This is very memory expensive as its stored on ALL component instances, when it kind of works per-component.
         private List<InternalSignalHandleDelegate> componentInjectionLambdas = new List<InternalSignalHandleDelegate>();
 
         /// <summary>

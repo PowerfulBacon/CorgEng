@@ -129,7 +129,11 @@ namespace CorgEng.EntityComponentSystem.Systems
                 if (invokationQueue.Count == 0 && priorityInvokationQueue.Count == 0)
                 {
                     isWaiting = true;
-                    waitHandle.WaitOne();
+                    //Protection from concurrency dangers
+                    if (invokationQueue.Count == 0 && priorityInvokationQueue.Count == 0)
+                    {
+                        waitHandle.WaitOne();
+                    }
                     isWaiting = false;
                 }
                 InvokationAction firstInvokation;
