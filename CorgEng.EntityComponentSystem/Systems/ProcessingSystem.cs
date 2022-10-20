@@ -1,5 +1,7 @@
 ﻿using CorgEng.Core;
 using CorgEng.Core.Dependencies;
+using CorgEng.EntityComponentSystem.Events.Events;
+using CorgEng.EntityComponentSystem.Implementations.Deletion;
 using CorgEng.GenericInterfaces.EntityComponentSystem;
 using CorgEng.GenericInterfaces.Logging;
 using System;
@@ -133,6 +135,8 @@ namespace CorgEng.EntityComponentSystem.Systems
             Logger?.WriteLine($"Terminated EntitySystem thread: {this}", LogType.LOG);
         }
 
+        private HashSet<Type> registeredDeletionHandlers = new HashSet<Type>();
+
         /// <summary>
         /// Start processing an event.
         /// This will trigger regular updates at the process interval of this subsystem.
@@ -147,10 +151,24 @@ namespace CorgEng.EntityComponentSystem.Systems
             //Locate the component to fetch for processing (We do fetching here, since it saves time)
             GComponent targetComponent = target.GetComponent<GComponent>();
             //Perform the process
-            processingQueue.TryAdd(target, (deltaTime) => {
-                onProcessTask(target, targetComponent, deltaTime);
-            });
-            Logger.WriteLine($"Started processing entity {target.Identifier}", LogType.TEMP);
+            if (!processingQueue.TryAdd(target, (deltaTime) =>
+                {
+                    onProcessTask(target, targetComponent, deltaTime);
+                }))
+            {
+                throw new Exception("Attempted to begin processing an entity that is already processing on this system. This is not allowed.");
+            }
+            //Check for adding the deletion handler
+            if (!registeredDeletionHandlers.Contains(typeof(GComponent)))
+            {
+                //We need to know when the component is removed from an entity
+                RegisterLocalEvent<GComponent, ComponentRemovedEvent>((entity, component, signal) => {
+                    if (signal.Component.Equals(component))
+                    {
+                        processingQueue.TryRemove(entity, out _);
+                    }
+                });
+            }
         }
 
         /// <summary>
@@ -160,7 +178,6 @@ namespace CorgEng.EntityComponentSystem.Systems
         public void StopProcesing(IEntity target)
         {
             processingQueue.TryRemove(target, out _);
-            Logger.WriteLine($"Stopped processing entity {target.Identifier}", LogType.TEMP);
         }
 
     }
