@@ -23,6 +23,8 @@ namespace CorgEng.UtilityTypes.Batches
         //batchElements[0][2]   //z
         private List<float[][]> batchElements;
 
+        private List<IBatchElement<T>[]> batchElementRefs;
+
         //Count of elements in the batch
         //Represents:
         // - How many items are held by this batch (Counts start from 1)
@@ -42,6 +44,7 @@ namespace CorgEng.UtilityTypes.Batches
             BatchSize = batchSize;
             //Set the default elements of the batch
             batchElements = new List<float[][]>();
+            batchElementRefs = new List<IBatchElement<T>[]>();
         }
 
         /// <summary>
@@ -52,6 +55,7 @@ namespace CorgEng.UtilityTypes.Batches
             lock (this)
             {
                 float[][] newBatchGroup = new float[BatchVectorSizes.Length][];
+                IBatchElement<T>[] batchElementRefGroup = new IBatchElement<T>[BatchSize];
                 for (int i = 0; i < BatchVectorSizes.Length; i++)
                 {
                     //Set each batch group size accordingly
@@ -60,6 +64,7 @@ namespace CorgEng.UtilityTypes.Batches
                     newBatchGroup[i] = new float[BatchSize * BatchVectorSizes[i]];
                 }
                 batchElements.Add(newBatchGroup);
+                batchElementRefs.Add(batchElementRefGroup);
             }
         }
 
@@ -82,6 +87,8 @@ namespace CorgEng.UtilityTypes.Batches
                 int internalGroupIndex = Count % BatchSize;
                 element.ContainingBatch = this;
                 element.BatchPosition = Count;
+                //Store the reference
+                batchElementRefs[batchGroupIndex][internalGroupIndex] = element;
                 //Perform batch insertion
                 for (int i = 0; i < BatchVectorSizes.Length; i++)
                 {
@@ -120,6 +127,11 @@ namespace CorgEng.UtilityTypes.Batches
                         }
                     }
                 }
+                //Update the reference
+                batchElementRefs[currentBatchGroup][element.BatchPosition % BatchSize]
+                    = batchElementRefs[lastBatchGroup][(Count - 1) % BatchSize];
+                batchElementRefs[lastBatchGroup][(Count - 1) % BatchSize].BatchPosition = currentBatchGroup * BatchSize + (element.BatchPosition % BatchSize);
+                batchElementRefs[lastBatchGroup][(Count - 1) % BatchSize] = null;
                 //Decrement the count
                 Count--;
                 //Remove the last batch if it is now empty

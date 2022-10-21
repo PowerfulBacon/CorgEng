@@ -34,7 +34,13 @@ namespace CorgEng.GenericInterfaces.EntityComponentSystem
 
         void AddComponent(IComponent component);
 
-        void RemoveComponent(IComponent component, bool networked);
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="component"></param>
+        /// <param name="networked"></param>
+        /// <param name="silent">If set to true, will not raise component removed events.</param>
+        void RemoveComponent(IComponent component, bool networked, bool silent = false);
 
         void HandleSignal(IEvent signal, bool synchronous, string callingFile, string callingMember, int callingLine);
 

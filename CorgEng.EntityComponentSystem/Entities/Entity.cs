@@ -98,11 +98,11 @@ namespace CorgEng.EntityComponentSystem.Entities
         /// Remove a component from the specified entity.
         /// </summary>
         /// <param name="component">The reference to the component to remove</param>
-        public void RemoveComponent(IComponent component, bool networked)
+        public void RemoveComponent(IComponent component, bool networked, bool silent = false)
         {
             lock (Components)
             {
-                component.OnComponentRemoved(this);
+                component.OnComponentRemoved(this, silent);
                 Components.Remove(component);
             }
         }
