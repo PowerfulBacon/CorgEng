@@ -78,10 +78,17 @@ namespace CorgEng.EntityComponentSystem.Entities
             }
             Interlocked.Increment(ref DeletionCount);
             RemoveEntity(entity);
+            //Send component removed signals to all
+            //Signals are sent synchronously, shouldn't slow down too much since deletion
+            //is on its own thread.
+            for (int i = entity.Components.Count - 1; i >= 0; i--)
+            {
+                new ComponentRemovedEvent(entity.Components[i]).Raise(entity, true);
+            }
             //Remove all components
             for (int i = entity.Components.Count - 1; i >= 0; i--)
             {
-                entity.RemoveComponent(entity.Components[i], false);
+                entity.RemoveComponent(entity.Components[i], false, true);
             }
             //Mark the entity as destroyed
             entity.EntityFlags |= EntityFlags.DESTROYED;

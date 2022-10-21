@@ -37,6 +37,8 @@ namespace CorgEng.IconSmoothing.Systems
 
         private void SmoothEntity(IEntity entity, SmoothIconComponent smoothIconComponent, CalculateSmoothEvent calculateSmoothEvent)
         {
+            if ((entity.EntityFlags & EntityComponentSystem.Entities.EntityFlags.DESTROYED) != 0)
+                return;
             IVector<int> position = WorldAccess.GetGridPosition(smoothIconComponent.TransformComponent.Position);
             IVector<int> above = new Vector<int>(position.X, position.Y + 1);
             IVector<int> below = new Vector<int>(position.X, position.Y - 1);

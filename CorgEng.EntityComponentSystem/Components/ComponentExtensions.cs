@@ -81,11 +81,14 @@ namespace CorgEng.EntityComponentSystem.Components
         /// Cleanup registered signals and remove any static references to the entity.
         /// Allow for safe garbage collection
         /// </summary>
-        internal static void OnComponentRemoved(this IComponent component, Entity parent)
+        internal static void OnComponentRemoved(this IComponent component, Entity parent, bool silent)
         {
             component.Parent = null;
             //Raise component removed event.
-            new ComponentRemovedEvent(component).Raise(parent);
+            if (!silent)
+            {
+                new ComponentRemovedEvent(component).Raise(parent);
+            }
             //Check if we have any registered signals
             if (!EventManager.RegisteredEvents.ContainsKey(component.GetType()))
                 return;
