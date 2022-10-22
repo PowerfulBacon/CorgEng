@@ -11,7 +11,9 @@ namespace CorgEng.UtilityTypes.Batches
         where T : Batch<T>
     {
 
-        public const int DEFAULT_BATCH_SIZE = 25000;
+        public const int DEFAULT_BATCH_SIZE
+            = 25000;
+//          = 100;
 
         //Groupings of elements within this batch
         public abstract int[] BatchVectorSizes { get; }
@@ -172,7 +174,7 @@ namespace CorgEng.UtilityTypes.Batches
         /// </summary>
         private int GetArrayGroupIndex(int batchIndex, int groupIndex)
         {
-            return batchIndex / (BatchVectorSizes[groupIndex] * BatchSize);
+            return batchIndex / BatchSize;
         }
 
         public IEnumerator<IBatchElement<T>> GetEnumerator()
