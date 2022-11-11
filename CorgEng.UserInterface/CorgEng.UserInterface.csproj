@@ -29,6 +29,12 @@
     <None Update="Content\Shaders\BoxShader\BoxShader.vert">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Content\Shaders\UIIconShader\UIIconShader.frag">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Content\Shaders\UIIconShader\UIIconShader.vert">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Content\Shaders\UserInterfaceShader\UserInterfaceShader.frag">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
