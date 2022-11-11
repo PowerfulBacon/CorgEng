@@ -26,6 +26,15 @@ namespace CorgEng.World.WorldTracking
         [UsingDependency]
         private static IBinaryListFactory BinaryListFactory;
 
+        private static IPositionBasedBinaryList<IContentsHolder> _empty;
+        private static IPositionBasedBinaryList<IContentsHolder> Empty
+        {
+            get
+            {
+                return _empty ?? (_empty = PositionBasedBinaryListFactory.CreateEmpty<IContentsHolder>());
+            }
+        }
+
         private IDictionary<string, IBinaryList<IPositionBasedBinaryList<IContentsHolder>>> _worldtiles;
 
         private IDictionary<string, IBinaryList<IPositionBasedBinaryList<IContentsHolder>>> WorldTiles
@@ -94,7 +103,7 @@ namespace CorgEng.World.WorldTracking
             lock (this)
             {
                 if (!WorldTiles.ContainsKey(trackKey))
-                    return null;
+                    return Empty;
                 return WorldTiles[trackKey].ElementWithKey(mapLevel);
             }
         }

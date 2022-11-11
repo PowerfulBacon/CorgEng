@@ -29,5 +29,11 @@ namespace CorgEng.GenericInterfaces.UtilityTypes
 
         IVector<T> Copy();
 
+        /// <summary>
+        /// Copy the vector and convert it to a G type
+        /// </summary>
+        IVector<G> CastCopy<G>()
+            where G : unmanaged;
+
     }
 }

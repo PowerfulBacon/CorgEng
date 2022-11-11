@@ -15,6 +15,8 @@ namespace GJ2022.DmiIconConversionUtility
 
         byte[] bytes;
 
+        private bool normalise = true;
+
         /// <summary>
         /// Run the conversion utility
         /// </summary>
@@ -135,10 +137,27 @@ namespace GJ2022.DmiIconConversionUtility
                         else
                         {
                             int i = 4 * (x + (newHeight - y - 1) * texture.width);
-                            createdBitmapFile.WriteByte(texture.data[i + 2]);
-                            createdBitmapFile.WriteByte(texture.data[i + 1]);
-                            createdBitmapFile.WriteByte(texture.data[i + 0]);
-                            createdBitmapFile.WriteByte(texture.data[i + 3]);
+                            byte red = texture.data[i + 2];
+                            byte green = texture.data[i + 1];
+                            byte blue = texture.data[i + 0];
+                            byte alpha = texture.data[i + 3];
+                            if (normalise)
+                            {
+                                double r = red / 256.0;
+                                double g = green / 256.0;
+                                double b = blue / 256.0;
+                                double length = r + g + b;
+                                if (length > 0)
+                                {
+                                    red = (byte)(int)(red / length);
+                                    green = (byte)(int)(green / length);
+                                    blue = (byte)(int)(blue / length);
+                                }
+                            }
+                            createdBitmapFile.WriteByte(red);
+                            createdBitmapFile.WriteByte(green);
+                            createdBitmapFile.WriteByte(blue);
+                            createdBitmapFile.WriteByte(alpha);
                         }
                     }
                 }
