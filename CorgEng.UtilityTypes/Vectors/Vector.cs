@@ -362,7 +362,7 @@ namespace CorgEng.UtilityTypes.Vectors
             int hashCode = -1466858141;
             foreach (T value in Values)
             {
-                hashCode = unchecked(hashCode * 17 + (int)(object)value);
+                hashCode = unchecked(hashCode * 17 + (int)(dynamic)value);
             }
             hashCode = hashCode * -1521134295 + Dimensions.GetHashCode();
             return hashCode;
