@@ -41,6 +41,8 @@ namespace CorgEng.UserInterface.Components
                     return new UserInterfaceDropdown(parent, anchorDetails, arguments);
                 case "TextComponent":
                     return new UserInterfaceText(parent, anchorDetails, arguments);
+                case "IconComponent":
+                    return new UserInterfaceIcon(parent, anchorDetails, arguments);
                 default:
                     throw new NotImplementedException($"The component {componentType} is not recognised.");
             }
