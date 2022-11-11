@@ -322,12 +322,12 @@ namespace CorgEng.UtilityTypes.Vectors
         /// <summary>
         /// Casting
         /// </summary>
-        public static implicit operator Vector<int>(Vector<T> a) => Convert<int>(a);
-        public static implicit operator Vector<float>(Vector<T> a) => Convert<float>(a);
-        public static implicit operator Vector<double>(Vector<T> a) => Convert<double>(a);
-        public static implicit operator Vector<long>(Vector<T> a) => Convert<long>(a);
+        public static implicit operator Vector<int>(Vector<T> a) => ChangeType<int>(a);
+        public static implicit operator Vector<float>(Vector<T> a) => ChangeType<float>(a);
+        public static implicit operator Vector<double>(Vector<T> a) => ChangeType<double>(a);
+        public static implicit operator Vector<long>(Vector<T> a) => ChangeType<long>(a);
 
-        private static Vector<L> Convert<L>(Vector<T> a)
+        private static Vector<L> ChangeType<L>(Vector<T> a)
             where L : unmanaged
         {
             //Create the new vector
@@ -344,7 +344,7 @@ namespace CorgEng.UtilityTypes.Vectors
         /// </summary>
         public float Length()
         {
-            return (float)Math.Sqrt((dynamic)DotProduct(this, this));
+            return (float)Math.Sqrt((float)(object)DotProduct(this, this));
         }
 
         public override string ToString()
@@ -360,9 +360,9 @@ namespace CorgEng.UtilityTypes.Vectors
         public override int GetHashCode()
         {
             int hashCode = -1466858141;
-            foreach (dynamic value in Values)
+            foreach (T value in Values)
             {
-                hashCode = unchecked(hashCode * 17 + (int)value);
+                hashCode = unchecked(hashCode * 17 + (int)(object)value);
             }
             hashCode = hashCode * -1521134295 + Dimensions.GetHashCode();
             return hashCode;
@@ -468,6 +468,17 @@ namespace CorgEng.UtilityTypes.Vectors
                 otherCopy[i] = other[i];
             }
             return (otherCopy - this).Length();
+        }
+
+        public IVector<G> CastCopy<G>()
+            where G : unmanaged
+        {
+            G[] valuesCopy = new G[Dimensions];
+            for (int i = 0; i < Dimensions; i++)
+            {
+                valuesCopy[i] = (G)(object)this[i];
+            }
+            return new Vector<G>(valuesCopy);
         }
 
     }

@@ -64,26 +64,10 @@ namespace CorgEng.AiBehaviour
                 return false;
             }
 
-            //Wait until we have completed our current action
-            int delay = 50;
-            while ((manager.CurrentAction?.Completed ?? true) == false && manager.CurrentAction.Failed == false)
+            if (!await AwaitAction(manager, depth))
             {
-                await Task.Delay(delay);
-                //Increase delay to lower lag potential
-                delay = Math.Min(delay * 2, 1000);
-            }
-
-            // We failed
-            if (manager.CurrentAction?.Failed ?? false)
-            {
-                OnCancel(manager);
-#if BEHAVIOUR_DEBUG
-                Logger.WriteLine($"{GetTabs(depth)}Failed current pawn action {GetType()}", LogType.DEBUG);
-#endif
                 return false;
             }
-
-            manager.CurrentAction = null;
 
             //Complete subtasks
             foreach (BehaviourNode childNode in Subtasks)
@@ -118,8 +102,14 @@ namespace CorgEng.AiBehaviour
 #if BEHAVIOUR_DEBUG
             Logger.WriteLine($"{GetTabs(depth)}Successfully completed action {GetType()}", LogType.DEBUG);
 #endif
-            //Actions completed
-            return await PostAction(manager);
+            //Perform post action thinking
+            if (!await PostAction(manager))
+            {
+                return false;
+            }
+
+            //If we have an action, wait for its completion
+            return await AwaitAction(manager, depth);
         }
 
 #if BEHAVIOUR_DEBUG
@@ -133,6 +123,41 @@ namespace CorgEng.AiBehaviour
             return builder.ToString();
         }
 #endif
+
+        /// <summary>
+        /// Await for our current action to have completed processing
+        /// </summary>
+        /// <param name="manager"></param>
+        /// <param name="depth"></param>
+        /// <returns></returns>
+        private async Task<bool> AwaitAction(IBehaviourManager manager, int depth)
+        {
+            //Wait until we have completed our current action
+            int delay = 50;
+            while ((manager.CurrentAction?.Completed ?? true) == false && manager.CurrentAction.Failed == false)
+            {
+                await Task.Delay(delay);
+                //Increase delay to lower lag potential
+                delay = Math.Min(delay * 2, 1000);
+            }
+
+            // We failed
+            if (manager.CurrentAction?.Failed ?? false)
+            {
+                OnCancel(manager);
+                //Cancel that action
+                manager.CurrentAction = null;
+#if BEHAVIOUR_DEBUG
+                Logger.WriteLine($"{GetTabs(depth)}Failed current pawn action {GetType()}", LogType.DEBUG);
+#endif
+                return false;
+            }
+
+            //Cancel that actino
+            manager.CurrentAction = null;
+
+            return true;
+        }
 
         public virtual void OnCancel(IBehaviourManager manager) { }
 
