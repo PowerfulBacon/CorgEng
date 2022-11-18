@@ -19,13 +19,14 @@ namespace CorgEng.GenericInterfaces.UserInterface.Components
 
         /// <summary>
         /// The anchor data for this component.
+        /// Setting this anchor should dynamically update the UI component.
         /// </summary>
-        IAnchor Anchor { get; }
+        IAnchor Anchor { get; set; }
 
         /// <summary>
         /// The parent user interface component
         /// </summary>
-        IUserInterfaceComponent Parent { get; }
+        IUserInterfaceComponent Parent { get; set; }
 
         /// <summary>
         /// An entity to hold the components for this interface component,
@@ -140,6 +141,13 @@ namespace CorgEng.GenericInterfaces.UserInterface.Components
         /// <param name="y"></param>
         /// <returns></returns>
         IUserInterfaceComponent Screencast(int relativeX, int relativeY);
+
+        /// <summary>
+        /// Add a new argument to the component with the specified value.
+        /// </summary>
+        /// <param name="argumentName"></param>
+        /// <param name="argumentValue"></param>
+        void AddArgument(string argumentName, string argumentValue);
 
     }
 }

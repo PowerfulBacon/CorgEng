@@ -66,7 +66,7 @@ namespace CorgEng.EntityComponentSystem.Systems
         /// <summary>
         /// A static list of all entity systems in use
         /// </summary>
-        private static List<EntitySystem> EntitySystems = new List<EntitySystem>();
+        private static ConcurrentDictionary<Type, EntitySystem> EntitySystems = new ConcurrentDictionary<Type, EntitySystem>();
 
         /// <summary>
         /// The flags of this system
@@ -106,9 +106,19 @@ namespace CorgEng.EntityComponentSystem.Systems
                 Logger?.WriteLine($"Initializing {type}...", LogType.LOG);
                 EntitySystem createdSystem = (EntitySystem)type.GetConstructor(BindingFlags.Public | BindingFlags.Instance, null, CallingConventions.HasThis, new Type[0], null).Invoke(new object[0]);
                 createdSystem.SystemSetup();
-                EntitySystems.Add(createdSystem);
+                EntitySystems.TryAdd(createdSystem.GetType(), createdSystem);
             });
             Logger?.WriteLine($"Successfully created and setup all systems!", LogType.LOG);
+        }
+
+        /// <summary>
+        /// Gets a specific entity system
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public static T GetSingleton<T>()
+        {
+            return (T)(object)EntitySystems[typeof(T)];
         }
 
         [ModuleTerminate]

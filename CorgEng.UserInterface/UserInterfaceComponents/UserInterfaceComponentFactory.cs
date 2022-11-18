@@ -16,39 +16,55 @@ namespace CorgEng.UserInterface.Components
 
         private static Dictionary<string, string> Empty { get; } = new Dictionary<string, string>();
 
-        public IUserInterfaceComponent CreateGenericUserInterfaceComponent(IUserInterfaceComponent parent, IAnchor anchorDetails)
+        public IUserInterfaceComponent CreateGenericUserInterfaceComponent(IUserInterfaceComponent parent, IAnchor anchorDetails, Action<IUserInterfaceComponent> preInitialiseAction)
         {
-            return new UserInterfaceComponent(parent, anchorDetails, Empty);
+            UserInterfaceComponent createdComponent = new UserInterfaceComponent(parent, anchorDetails, Empty);
+            preInitialiseAction?.Invoke(createdComponent);
+            createdComponent.Initialize();
+            return createdComponent;
         }
 
-        public IUserInterfaceComponent CreateGenericUserInterfaceComponent(IAnchor anchorDetails)
+        public IUserInterfaceComponent CreateGenericUserInterfaceComponent(IAnchor anchorDetails, Action<IUserInterfaceComponent> preInitialiseAction)
         {
-            return new UserInterfaceComponent(anchorDetails, Empty);
+            UserInterfaceComponent createdComponent = new UserInterfaceComponent(anchorDetails, Empty);
+            preInitialiseAction?.Invoke(createdComponent);
+            createdComponent.Initialize();
+            return createdComponent;
         }
 
-        public IUserInterfaceComponent CreateUserInterfaceComponent(string componentType, IUserInterfaceComponent parent, IAnchor anchorDetails, IDictionary<string, string> arguments)
+        public IUserInterfaceComponent CreateUserInterfaceComponent(string componentType, IUserInterfaceComponent parent, IAnchor anchorDetails, IDictionary<string, string> arguments, Action<IUserInterfaceComponent> preInitialiseAction)
         {
+            UserInterfaceComponent createdComponent;
             switch (componentType)
             {
                 case "BoxComponent":
-                    return new UserInterfaceBox(parent, anchorDetails, arguments);
+                    createdComponent = new UserInterfaceBox(parent, anchorDetails, arguments);
+                    break;
                 case "UserInterface":
                 case "UserInterfaceComponent":
-                    return new UserInterfaceComponent(parent, anchorDetails, arguments);
+                    createdComponent = new UserInterfaceComponent(parent, anchorDetails, arguments);
+                    break;
                 case "UserInterfaceButton":
-                    return new UserInterfaceButton(parent, anchorDetails, arguments);
+                    createdComponent = new UserInterfaceButton(parent, anchorDetails, arguments);
+                    break;
                 case "DropdownComponent":
-                    return new UserInterfaceDropdown(parent, anchorDetails, arguments);
+                    createdComponent = new UserInterfaceDropdown(parent, anchorDetails, arguments);
+                    break;
                 case "TextComponent":
-                    return new UserInterfaceText(parent, anchorDetails, arguments);
+                    createdComponent = new UserInterfaceText(parent, anchorDetails, arguments);
+                    break;
                 case "IconComponent":
-                    return new UserInterfaceIcon(parent, anchorDetails, arguments);
+                    createdComponent = new UserInterfaceIcon(parent, anchorDetails, arguments);
+                    break;
                 default:
                     throw new NotImplementedException($"The component {componentType} is not recognised.");
             }
+            preInitialiseAction?.Invoke(createdComponent);
+            createdComponent.Initialize();
+            return createdComponent;
         }
 
-        public IUserInterfaceComponent CreateUserInterfaceComponent(string componentType, IAnchor anchorDetails, IDictionary<string, string> arguments)
+        public IUserInterfaceComponent CreateUserInterfaceComponent(string componentType, IAnchor anchorDetails, IDictionary<string, string> arguments, Action<IUserInterfaceComponent> preInitialiseAction)
         {
             throw new NotImplementedException();
         }
