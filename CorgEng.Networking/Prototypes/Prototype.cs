@@ -46,6 +46,9 @@ namespace CorgEng.Networking.Prototypes
         {
             foreach (IComponent component in entity.Components)
             {
+                //Skip deletable component
+                if (component is DeleteableComponent)
+                    continue;
                 Dictionary<PropertyInfo, object> propertyVariableInformation = new Dictionary<PropertyInfo, object>();
                 //Load the property information
                 foreach ((bool, PropertyInfo) propertyInfo in ComponentExtensions.propertyInfoCache[component.GetType()])
@@ -109,6 +112,8 @@ namespace CorgEng.Networking.Prototypes
                         Type type = VersionGenerator.GetTypeFromNetworkedIdentifier(componentTypeIdentifier);
                         if (prototypeComponents.ContainsKey(type))
                         {
+                            //TODO: I just found this conditional with a semicolon in it, I have no idea what it does or what it is meant to do to be honest
+                            //I think it was a temporary thing to catch error cases?
                             ;
                         }
                         //Add the component to the property
