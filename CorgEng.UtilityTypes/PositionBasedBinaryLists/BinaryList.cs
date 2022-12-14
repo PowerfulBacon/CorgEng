@@ -52,7 +52,7 @@ namespace CorgEng.UtilityTypes.PositionBasedBinaryLists
             if (start >= end)
             {
                 //Check if the midpoint is too small or too large
-                BinaryListElement<T> convergedPoint = binaryListElements.ElementAt(midPoint);
+                BinaryListElement<T> convergedPoint = binaryListElements[midPoint];
                 if (convergedPoint.key > key)
                     binaryListElements.Insert(midPoint, new BinaryListElement<T>(key, toAdd));
                 else
@@ -60,7 +60,7 @@ namespace CorgEng.UtilityTypes.PositionBasedBinaryLists
                 return -1;
             }
             //Locate the element at the midpoint
-            BinaryListElement<T> current = binaryListElements.ElementAt(midPoint);
+            BinaryListElement<T> current = binaryListElements[midPoint];
             //Perform next search
             if (current.key > key)
                 return Add(key, toAdd, start, Math.Max(midPoint - 1, 0));
@@ -80,7 +80,7 @@ namespace CorgEng.UtilityTypes.PositionBasedBinaryLists
         {
             if (index < 0 || index >= binaryListElements.Count)
                 return default(T);
-            return binaryListElements.ElementAt(index).value;
+            return binaryListElements[index].value;
         }
 
         public T ElementWithKey(int key)
@@ -89,7 +89,7 @@ namespace CorgEng.UtilityTypes.PositionBasedBinaryLists
             if (index == -1)
                 return default;
             else
-                return binaryListElements.ElementAt(index).value;
+                return binaryListElements[index].value;
         }
 
         private int IndexOf(int i, int start = 0, int _end = -1)
@@ -102,7 +102,7 @@ namespace CorgEng.UtilityTypes.PositionBasedBinaryLists
             //Get the midpoint
             int midPoint = (start + end) / 2;
             //Locate the element at the midpoint
-            BinaryListElement<T> located = binaryListElements.ElementAt(midPoint);
+            BinaryListElement<T> located = binaryListElements[midPoint];
             //Perform checks
             if (located.key == i)
                 return midPoint;
@@ -127,7 +127,7 @@ namespace CorgEng.UtilityTypes.PositionBasedBinaryLists
             //Get the midpoint
             int midPoint = (start + end) / 2;
             //Locate the element at the midpoint
-            BinaryListElement<T> located = binaryListElements.ElementAt(midPoint);
+            BinaryListElement<T> located = binaryListElements[midPoint];
             //Perform checks
             if (located.key >= min && located.key <= max && (conditionalCheck?.Invoke(located.value) ?? true))
                 return true;
