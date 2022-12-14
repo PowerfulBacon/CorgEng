@@ -46,9 +46,6 @@ namespace CorgEng.UserInterface.UserInterfaceComponents
             try
             {
                 userInterfaceIconRenderObject = new UserInterfaceIconRenderObject(TextureFactory.GetTextureFromIconState(IconFactory.CreateIcon(arguments["icon"], 0)));
-                //Start rendering
-                if (CorgEngMain.IsRendering)
-                    userInterfaceIconRenderer.StartRendering(userInterfaceIconRenderObject);
             }
             catch (Exception e)
             {
@@ -58,10 +55,14 @@ namespace CorgEng.UserInterface.UserInterfaceComponents
 
         public override void Initialize()
         {
+            base.Initialize();
             if (!CorgEngMain.IsRendering)
                 return;
             userInterfaceIconRenderer = new UserInterfaceIconRenderer();
             userInterfaceIconRenderer.Initialize();
+            //Start rendering
+            if (CorgEngMain.IsRendering)
+                userInterfaceIconRenderer.StartRendering(userInterfaceIconRenderObject);
         }
 
         public override void PerformRender()

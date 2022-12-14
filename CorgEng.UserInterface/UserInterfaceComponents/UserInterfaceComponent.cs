@@ -34,12 +34,51 @@ namespace CorgEng.UserInterface.Components
         /// <summary>
         /// The anchor details for this component
         /// </summary>
-        public IAnchor Anchor { get; }
-
+        private IAnchor _anchor;
+        public IAnchor Anchor
+        {
+            get
+            {
+                return _anchor;
+            }
+            set
+            {
+                _anchor = value;
+                // Give warnings if the anchor units are mismatched.
+                // Mismatched anchor units could result in the right position being
+                // further left than the left position.
+                if (_anchor.LeftDetails.AnchorUnits != _anchor.RightDetails.AnchorUnits)
+                    Logger?.WriteLine($"User interface component's left anchor's units ({_anchor.LeftDetails.AnchorUnits}) " +
+                        $"does not match the component's right anchor's units ({_anchor.RightDetails.AnchorUnits}). " +
+                        $"This may result in unexpected behaviour in regards to scaling UI components.", LogType.WARNING);
+                if (_anchor.TopDetails.AnchorUnits != _anchor.BottomDetails.AnchorUnits)
+                    Logger?.WriteLine($"User interface component's top anchor's units ({_anchor.TopDetails.AnchorUnits}) " +
+                        $"does not match the component's bottom anchor's units ({_anchor.BottomDetails.AnchorUnits}). " +
+                        $"This may result in unexpected behaviour in regards to scaling UI components.", LogType.WARNING);
+                //Check for other maximum size limits, maximum size isn't supported.
+                if (_anchor.LeftDetails.AnchorSide == AnchorDirections.RIGHT && _anchor.RightDetails.AnchorSide == AnchorDirections.LEFT)
+                    Logger?.WriteLine($"User interface component's left anchor is right, and the right anchor is left. This will result in a maximum size which isn't supported.", LogType.WARNING);
+                if (_anchor.BottomDetails.AnchorSide == AnchorDirections.TOP && _anchor.TopDetails.AnchorSide == AnchorDirections.BOTTOM)
+                    Logger?.WriteLine($"User interface component's bottom anchor is top, and the top anchor is bottom. This will result in a maximum size which isn't supported.", LogType.WARNING);
+                //Calculate minimum scales
+                CalculateMinimumScales();
+                //Trigger resize
+                //Recalculate minimum UI scale
+                GetTopLevelParent(this).CalculateMinimumScales();
+                //Recalculate child component's scale
+                //TODO: This didnt work
+                //foreach (IUserInterfaceComponent child in Children)
+                //{
+                //    OnParentResized();
+                //}
+                //Check for expansion
+                CheckExpansion(this);
+            }
+        }
         /// <summary>
         /// The parent component for this user interface component
         /// </summary>
-        public IUserInterfaceComponent Parent { get; }
+        public IUserInterfaceComponent Parent { get; set; }
 
         /// <summary>
         /// An entity to hold the components for this interface component,
@@ -126,29 +165,79 @@ namespace CorgEng.UserInterface.Components
         public UserInterfaceComponent(IAnchor anchorDetails, IDictionary<string, string> arguments)
         {
             Parameters = arguments;
+            RegisterArguments();
+            ParseArguments(arguments);
             // Set the anchor details
             Anchor = anchorDetails;
-            // Give warnings if the anchor units are mismatched.
-            // Mismatched anchor units could result in the right position being
-            // further left than the left position.
-            if (Anchor.LeftDetails.AnchorUnits != Anchor.RightDetails.AnchorUnits)
-                Logger?.WriteLine($"User interface component's left anchor's units ({Anchor.LeftDetails.AnchorUnits}) " +
-                    $"does not match the component's right anchor's units ({Anchor.RightDetails.AnchorUnits}). " +
-                    $"This may result in unexpected behaviour in regards to scaling UI components.", LogType.WARNING);
-            if (Anchor.TopDetails.AnchorUnits != Anchor.BottomDetails.AnchorUnits)
-                Logger?.WriteLine($"User interface component's top anchor's units ({Anchor.TopDetails.AnchorUnits}) " +
-                    $"does not match the component's bottom anchor's units ({Anchor.BottomDetails.AnchorUnits}). " +
-                    $"This may result in unexpected behaviour in regards to scaling UI components.", LogType.WARNING);
-            //Check for other maximum size limits, maximum size isn't supported.
-            if (Anchor.LeftDetails.AnchorSide == AnchorDirections.RIGHT && Anchor.RightDetails.AnchorSide == AnchorDirections.LEFT)
-                Logger?.WriteLine($"User interface component's left anchor is right, and the right anchor is left. This will result in a maximum size which isn't supported.", LogType.WARNING);
-            if (Anchor.BottomDetails.AnchorSide == AnchorDirections.TOP && Anchor.TopDetails.AnchorSide == AnchorDirections.BOTTOM)
-                Logger?.WriteLine($"User interface component's bottom anchor is top, and the top anchor is bottom. This will result in a maximum size which isn't supported.", LogType.WARNING);
-            //Calculate minimum scales
-            CalculateMinimumScales();
-            //Render core init
-            Initialize();
-            initialized = true;
+        }
+
+        //====================================
+        // Argument Parsing
+        //====================================
+
+        private Dictionary<string, Action<string>> argumentHandlers = new Dictionary<string, Action<string>>();
+
+        protected void AddArgument(string argumentName, Action<string> argumentHandler)
+        {
+            argumentHandlers.Add(argumentName, argumentHandler);
+        }
+
+        /// <summary>
+        /// Add a new argument to the component with the specified value.
+        /// </summary>
+        /// <param name="argumentName"></param>
+        /// <param name="argumentValue"></param>
+        public void AddArgument(string argumentName, string argumentValue)
+        {
+            Parameters.Add(argumentName, argumentValue);
+            if (argumentHandlers.ContainsKey(argumentName))
+            {
+                argumentHandlers[argumentName].Invoke(argumentValue);
+            }
+        }
+
+        private string? initialiseCallbackFunction = null;
+
+        /// <summary>
+        /// Register arguments. Provide default arguments
+        /// </summary>
+        /// <exception cref="Exception"></exception>
+        protected virtual void RegisterArguments()
+        {
+            //Add onInitialise code block
+            AddArgument("onInitialise", methodName =>
+            {
+                if (!UserInterfaceModule.KeyMethods.ContainsKey(methodName))
+                {
+                    throw new Exception($"No static method with the key '{methodName}' exists.");
+                }
+                //Immediately call the function
+                initialiseCallbackFunction = methodName;
+            });
+            //Add the onClick thing
+            AddArgument("onClick", methodName =>
+            {
+                if (!UserInterfaceModule.KeyMethods.ContainsKey(methodName))
+                {
+                    throw new Exception($"No static method with the key '{methodName}' exists.");
+                }
+                ComponentHolder.AddComponent(new UserInterfaceClickerComponent(UserInterfaceModule.KeyMethods[methodName], this));
+            });
+        }
+
+        private void ParseArguments(IDictionary<string, string> arguments)
+        {
+            foreach (KeyValuePair<string, string> argument in arguments)
+            {
+                if (argumentHandlers.ContainsKey(argument.Key))
+                {
+                    argumentHandlers[argument.Key].Invoke(argument.Value);
+                }
+                else
+                {
+                    Logger.WriteLine($"A user interface component added the parameter '{argument.Key}'='{argument.Value}', but it was not handled by the component of type {GetType()}.", LogType.WARNING);
+                }
+            }
         }
 
         //====================================
@@ -226,6 +315,7 @@ namespace CorgEng.UserInterface.Components
                 //Recalculate minimum UI scale
                 GetTopLevelParent(this).CalculateMinimumScales();
                 //Recalculate child component's scale
+                userInterfaceComponent.Parent = this;
                 userInterfaceComponent.OnParentResized();
                 //Check for expansion
                 CheckExpansion(this);
@@ -439,7 +529,14 @@ namespace CorgEng.UserInterface.Components
         }
 
         public override void Initialize()
-        { }
+        {
+            if (initialiseCallbackFunction != null)
+            {
+                UserInterfaceModule.KeyMethods[initialiseCallbackFunction].Invoke(null, new object[] { this });
+                initialiseCallbackFunction = null;
+            }
+            initialized = true;
+        }
 
         public override void PerformRender()
         { }

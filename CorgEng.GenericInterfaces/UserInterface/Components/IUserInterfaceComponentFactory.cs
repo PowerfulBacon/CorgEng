@@ -16,7 +16,7 @@ namespace CorgEng.GenericInterfaces.UserInterface.Components
         /// <param name="parent">The parent of this component.</param>
         /// <param name="anchorDetails">The anchor of this component. Defines where the user interface component will be rendered relative to the parent.</param>
         /// <returns>The created blank user interface component.</returns>
-        IUserInterfaceComponent CreateGenericUserInterfaceComponent(IUserInterfaceComponent parent, IAnchor anchorDetails);
+        IUserInterfaceComponent CreateGenericUserInterfaceComponent(IUserInterfaceComponent parent, IAnchor anchorDetails, Action<IUserInterfaceComponent> preInitialiseAction);
 
         /// <summary>
         /// Creates a generic user interface component with no parent.
@@ -24,7 +24,7 @@ namespace CorgEng.GenericInterfaces.UserInterface.Components
         /// </summary>
         /// <param name="anchorDetails">The anchor details of this component.</param>
         /// <returns>The created blank user interface component.</returns>
-        IUserInterfaceComponent CreateGenericUserInterfaceComponent(IAnchor anchorDetails);
+        IUserInterfaceComponent CreateGenericUserInterfaceComponent(IAnchor anchorDetails, Action<IUserInterfaceComponent> preInitialiseAction);
 
         /// <summary>
         /// 
@@ -34,7 +34,7 @@ namespace CorgEng.GenericInterfaces.UserInterface.Components
         /// <param name="anchorDetails"></param>
         /// <param name="arguments"></param>
         /// <returns></returns>
-        IUserInterfaceComponent CreateUserInterfaceComponent(string componentType, IUserInterfaceComponent parent, IAnchor anchorDetails, IDictionary<string, string> arguments);
+        IUserInterfaceComponent CreateUserInterfaceComponent(string componentType, IUserInterfaceComponent parent, IAnchor anchorDetails, IDictionary<string, string> arguments, Action<IUserInterfaceComponent> preInitialiseAction);
 
         /// <summary>
         /// 
@@ -43,7 +43,7 @@ namespace CorgEng.GenericInterfaces.UserInterface.Components
         /// <param name="anchorDetails"></param>
         /// <param name="arguments"></param>
         /// <returns></returns>
-        IUserInterfaceComponent CreateUserInterfaceComponent(string componentType, IAnchor anchorDetails, IDictionary<string, string> arguments);
+        IUserInterfaceComponent CreateUserInterfaceComponent(string componentType, IAnchor anchorDetails, IDictionary<string, string> arguments, Action<IUserInterfaceComponent> preInitialiseAction);
 
     }
 }

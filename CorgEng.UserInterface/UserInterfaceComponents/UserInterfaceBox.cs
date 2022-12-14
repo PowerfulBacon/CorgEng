@@ -49,29 +49,20 @@ namespace CorgEng.UserInterface.Components
         {
             //Parse
             Style.ParseSettings(arguments);
-            //Start rendering
-            if (CorgEngMain.IsRendering)
-                userInterfaceBoxRenderer.StartRendering(boxRenderObject);
-            //Add on components
-            if (arguments.ContainsKey("onClick"))
-            {
-                string methodName = arguments["onClick"];
-                if (!UserInterfaceModule.KeyMethods.ContainsKey(methodName))
-                {
-                    throw new Exception($"No static method with the key '{methodName}' exists.");
-                }
-                ComponentHolder.AddComponent(new UserInterfaceClickerComponent(UserInterfaceModule.KeyMethods[methodName], this));
-            }
         }
 
         private UserInterfaceBoxRenderer userInterfaceBoxRenderer;
 
         public override void Initialize()
         {
+            base.Initialize();
             if (!CorgEngMain.IsRendering)
                 return;
             userInterfaceBoxRenderer = new UserInterfaceBoxRenderer();
             userInterfaceBoxRenderer.Initialize();
+            //Start rendering
+            if (CorgEngMain.IsRendering)
+                userInterfaceBoxRenderer.StartRendering(boxRenderObject);
         }
 
         public override void PerformRender()

@@ -62,14 +62,17 @@ namespace CorgEng.UserInterface.Generators
                         GetAnchorDetails(node, AnchorDirections.TOP),
                         GetAnchorDetails(node, AnchorDirections.BOTTOM)
                     ),
-                    parameters
+                    parameters,
+                    //Pre initialise function
+                    currentElement => {
+                        //Parse children
+                        foreach (XElement childElement in node.Elements())
+                        {
+                            //Children are automatically added when created with a parent
+                            LoadFromXmlComponent(childElement, currentElement);
+                        }
+                    }
                     );
-                //Parse children
-                foreach (XElement childElement in node.Elements())
-                {
-                    //Children are automatically added when created with a parent
-                    LoadFromXmlComponent(childElement, currentElement);
-                }
                 //Return the current one
                 return currentElement;
             }
