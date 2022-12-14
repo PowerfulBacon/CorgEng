@@ -1,6 +1,7 @@
 ﻿using CorgEng.DependencyInjection.Dependencies;
 using CorgEng.GenericInterfaces.Networking.Serialisation;
 using CorgEng.GenericInterfaces.Serialization;
+using CorgEng.Networking.VersionSync;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -20,7 +21,15 @@ namespace CorgEng.Networking.Serialization
             //Set the value based on the property type
             if (typeof(ICustomSerialisationBehaviour).IsAssignableFrom(deserialisationType))
             {
-                ICustomSerialisationBehaviour createdObject = (ICustomSerialisationBehaviour)FormatterServices.GetUninitializedObject(deserialisationType);
+                Type type = VersionGenerator.GetTypeFromNetworkedIdentifier(binaryReader.ReadUInt16());
+                //Generic types need additional handling in order to determine the contained generic type
+                if (type.IsGenericType)
+                {
+                    //Doesn't allow for embedded generic types, would be easy to implement with a recursive function however
+                    Type genericType = VersionGenerator.GetTypeFromNetworkedIdentifier(binaryReader.ReadUInt16()); ;
+                    type = type.MakeGenericType(genericType);
+                }
+                ICustomSerialisationBehaviour createdObject = (ICustomSerialisationBehaviour)FormatterServices.GetUninitializedObject(type);
                 createdObject.DeserialiseFrom(binaryReader);
                 return createdObject;
             }
@@ -70,7 +79,8 @@ namespace CorgEng.Networking.Serialization
             }
             if (value is ICustomSerialisationBehaviour serialisationBehaviour)
             {
-                return serialisationBehaviour.GetSerialisationLength();
+                int genericSize = value.GetType().IsGenericType ? Marshal.SizeOf(value.GetType().GetGenericArguments()[0]) : 0;
+                return sizeof(ushort) + genericSize + serialisationBehaviour.GetSerialisationLength();
             }
             if (type.IsPrimitive)
             {
@@ -86,6 +96,12 @@ namespace CorgEng.Networking.Serialization
                 Type objectType = type;
                 if (typeof(ICustomSerialisationBehaviour).IsAssignableFrom(objectType))
                 {
+                    binaryWriter.Write(VersionGenerator.GetNetworkedIdentifier(value.GetType()));
+                    if (value.GetType().IsGenericType)
+                    {
+                        //TODO: Add embedded recursive types and multiple recursive type arguments.
+                        binaryWriter.Write(VersionGenerator.GetNetworkedIdentifier(value.GetType().GenericTypeArguments[0]));
+                    }
                     ((ICustomSerialisationBehaviour)value).SerialiseInto(binaryWriter);
                 }
                 else if (objectType == typeof(string))

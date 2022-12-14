@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CorgEng.GenericInterfaces.Networking.VersionSync;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -7,7 +8,8 @@ using System.Threading.Tasks;
 
 namespace CorgEng.GenericInterfaces.Networking.Serialisation
 {
-    public interface ICustomSerialisationBehaviour
+    //Anything being serialised probably needs to be version synced
+    public interface ICustomSerialisationBehaviour : IVersionSynced
     {
 
         /// <summary>

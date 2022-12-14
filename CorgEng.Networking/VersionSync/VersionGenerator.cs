@@ -21,6 +21,27 @@ namespace CorgEng.Networking.VersionSync
         private static ILogger Logger;
 
         /// <summary>
+        /// Allows for getting a version type for these, when used with generic
+        /// types.
+        /// The generic type will need to implement a deserialiser as they do not
+        /// implement ICustomSerialisationBehaviour.
+        /// </summary>
+        private static Type[] SyncedBaseTypes = new Type[] {
+            typeof(byte),
+            typeof(char),
+            typeof(int),
+            typeof(float),
+            typeof(double),
+            typeof(long),
+            typeof(short),
+            typeof(ushort),
+            typeof(uint),
+            typeof(ulong),
+            typeof(decimal),
+            typeof(string)
+        };
+
+        /// <summary>
         /// A dictionary containing the networked Event IDs by type.
         /// </summary>
         private static Dictionary<Type, ushort> networkedTypeIds = new Dictionary<Type, ushort>();
@@ -39,12 +60,12 @@ namespace CorgEng.Networking.VersionSync
         {
             //Use reflection to collect all event types
             //Sort the types alphabetically (They need to be sorted to be deterministic)
-            IVersionSynced e;
             IOrderedEnumerable<Type> LocatedTypes = CorgEngMain.LoadedAssemblyModules
                 .SelectMany(assembly => assembly.GetTypes()
                 .Where(t => !t.IsAbstract &&
                         typeof(IVersionSynced).IsAssignableFrom(t)
                     ))
+                .Union(SyncedBaseTypes)
                 .OrderBy(networkedType =>
                 {
                     //return 0;
@@ -69,7 +90,8 @@ namespace CorgEng.Networking.VersionSync
         public static ushort GetNetworkedIdentifier(this Type type)
         {
             ushort output;
-            networkedTypeIds.TryGetValue(type, out output);
+            if (!networkedTypeIds.TryGetValue(type.IsGenericType ? type.GetGenericTypeDefinition() : type, out output))
+                throw new Exception($"Failed to get networked identifier for type {type}, the type does not implement IVersionSynced.");
             return output;
         }
 

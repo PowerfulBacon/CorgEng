@@ -99,7 +99,7 @@ namespace CorgEng.Networking.EntitySystems
                         continue;
                     //Get a list of all entities that need to be sent
                     //Painfully expensive
-                    foreach (IEntity entityToTransmit in contentsHolder.GetContents())
+                    foreach (IEntity entityToTransmit in contentsHolder.GetContents().Select(x => x.Parent))
                     {
                         EntityCommunicator.CommunicateEntity(entityToTransmit, clientComponent.AttachedClient);
                     }

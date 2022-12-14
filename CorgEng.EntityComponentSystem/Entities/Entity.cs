@@ -89,6 +89,13 @@ namespace CorgEng.EntityComponentSystem.Entities
         {
             lock (Components)
             {
+#if DEBUG
+                foreach (Component ecomp in Components)
+                {
+                    if (ecomp.GetType() == component.GetType())
+                        throw new Exception("Component added twice");
+                }
+#endif
                 Components.Add(component);
                 component.OnComponentAdded(this);
             }
