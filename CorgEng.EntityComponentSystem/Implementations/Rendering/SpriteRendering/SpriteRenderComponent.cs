@@ -25,6 +25,11 @@ namespace CorgEng.EntityComponentSystem.Implementations.Rendering.SpriteRenderin
         public IVector<float> CachedPosition { get; set; } = null;
 
         /// <summary>
+        /// Same as above but for rotation
+        /// </summary>
+        public IVector<float> CachedRotation { get; set; } = null!;
+
+        /// <summary>
         /// The sprite to be drawn by this component
         /// </summary>
         [NetworkSerialized]
