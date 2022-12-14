@@ -8,20 +8,27 @@ using CorgEng.EntityComponentSystem.Events.Events;
 using CorgEng.EntityComponentSystem.Implementations.Deletion;
 using CorgEng.EntityComponentSystem.Implementations.Rendering.SpriteRendering;
 using CorgEng.EntityComponentSystem.Implementations.Transform;
+using CorgEng.EntityComponentSystem.Systems;
+using CorgEng.Example.Common.Components.Camera;
 using CorgEng.Example.Components.PlayerMovement;
+using CorgEng.Example.Shared.Components.Gravity;
+using CorgEng.Example.Shared.Components.SandFactory;
 using CorgEng.Example.Shared.RenderCores;
 using CorgEng.GenericInterfaces.EntityComponentSystem;
 using CorgEng.GenericInterfaces.Logging;
+using CorgEng.GenericInterfaces.Networking.Config;
 using CorgEng.GenericInterfaces.Networking.Networking.Server;
 using CorgEng.GenericInterfaces.Networking.PrototypeManager;
 using CorgEng.GenericInterfaces.Rendering.Cameras.Isometric;
 using CorgEng.GenericInterfaces.Rendering.Icons;
 using CorgEng.InputHandling.Events;
 using CorgEng.Networking.Components;
+using CorgEng.Pathfinding.Components;
 using CorgEng.UtilityTypes.Vectors;
 using GLFW;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -52,6 +59,10 @@ namespace CorgEng.Example.Server
         [UsingDependency]
         private static IIconFactory IconFactory;
 
+
+        [UsingDependency]
+        private static INetworkConfig NetworkConfig;
+
         static void Main(string[] args)
         {
             //Load the application config
@@ -65,26 +76,35 @@ namespace CorgEng.Example.Server
 
             ExampleRenderCore erc = new ExampleRenderCore();
             CorgEngMain.SetRenderCore(erc);
-            IIsometricCamera camera = IsometricCameraFactory.CreateCamera();
-            CorgEngMain.SetMainCamera(camera);
+            EntityFactory.CreateEmptyEntity(entity => {
+                IIsometricCamera camera = IsometricCameraFactory.CreateCamera();
+                camera.Width = 30;
+                camera.Height = 30;
+                entity.AddComponent(new TransformComponent());
+                entity.AddComponent(new PlayerMovementComponent());
+                entity.AddComponent(new CameraComponent(camera));
+                CorgEngMain.SetMainCamera(camera);
+                new SetPositionEvent(new Vector<float>(500, -15)).Raise(entity);
+            });
+
+            //Debug
+            NetworkConfig.ProcessClientSystems = true;
 #endif
 
+            BuildWorld();
+
             //Create a testing entity
-            for (int x = -1; x <= 1; x++)
-            {
-                for (int y = -1; y <= 1; y++)
-                {
-                    EntityFactory.CreateEmptyEntity(testingEntity => {
-                        //Add components
-                        testingEntity.AddComponent(new NetworkTransformComponent());
-                        testingEntity.AddComponent(new SpriteRenderComponent());
-                        //Update the entity
-                        new SetPositionEvent(new Vector<float>(x, y)).Raise(testingEntity);
-                        new SetSpriteEvent(IconFactory.CreateIcon("human.ghost", 5)).Raise(testingEntity);
-                        new SetSpriteRendererEvent(1).Raise(testingEntity);
-                    });
-                }
-            }
+            EntityFactory.CreateEmptyEntity(testingEntity => {
+                //Add components
+                testingEntity.AddComponent(new NetworkTransformComponent());
+                testingEntity.AddComponent(new SpriteRenderComponent());
+                testingEntity.AddComponent(new SandFactoryComponent());
+                //Update the entity
+                new SetPositionEvent(new Vector<float>(500, 0)).Raise(testingEntity);
+                new SetSpriteEvent(IconFactory.CreateIcon("sand", 5)).Raise(testingEntity);
+                new SetSpriteRendererEvent(1).Raise(testingEntity);
+            });
+
             //Set the default player prototype
             SetPlayerPrototype();
             //Start networking server
@@ -105,6 +125,55 @@ namespace CorgEng.Example.Server
 #endif
         }
 
+        /// <summary>
+        /// Build the world
+        /// </summary>
+        private static void BuildWorld()
+        {
+            //Parse input
+            File.ReadAllLines("Content/world.txt")
+                .Select(x => x.Split(" -> ")
+                    .Select(x =>
+                    {
+                        string[] splitInput = x.Split(",");
+                        return (int.Parse(splitInput[0]), int.Parse(splitInput[1]));
+                    }))
+                .ToList()
+                .ForEach(X => {
+                    (int, int)? previous = null;
+                    X.ToList().ForEach(x =>
+                    {
+                        if (previous == null)
+                        {
+                            previous = x;
+                            return;
+                        }
+                        //Draw a line
+                        int start_x = previous.Value.Item1;
+                        int start_y = previous.Value.Item2;
+                        int end_x = x.Item1;
+                        int end_y = x.Item2;
+                        for (int xv = Math.Min(start_x, end_x); xv <= Math.Max(start_x, end_x); xv++)
+                        {
+                            for (int yv = Math.Min(start_y, end_y); yv <= Math.Max(start_y, end_y); yv++)
+                            {
+                                EntityFactory.CreateEmptyEntity(testingEntity => {
+                                    //Add components
+                                    testingEntity.AddComponent(new NetworkTransformComponent());
+                                    testingEntity.AddComponent(new SpriteRenderComponent());
+                                    testingEntity.AddComponent(new SolidComponent());
+                                    //Update the entity
+                                    new SetPositionEvent(new Vector<float>(xv, -yv)).Raise(testingEntity);
+                                    new SetSpriteEvent(IconFactory.CreateIcon("rock", 5)).Raise(testingEntity);
+                                    new SetSpriteRendererEvent(1).Raise(testingEntity);
+                                });
+                            }
+                        }
+                        previous = x;
+                    });
+                });
+        }
+
         private static void SetPlayerPrototype()
         {
             EntityFactory.CreateEmptyEntity(playerPrototype => {
@@ -112,7 +181,6 @@ namespace CorgEng.Example.Server
                 playerPrototype.AddComponent(new NetworkTransformComponent());
                 playerPrototype.AddComponent(new SpriteRenderComponent() { Sprite = IconFactory.CreateIcon("human.ghost", 5), SpriteRendererIdentifier = 1 });
                 playerPrototype.AddComponent(new PlayerMovementComponent());
-                playerPrototype.AddComponent(new DeleteableComponent());
                 IPrototype prototype = PrototypeManager.GetPrototype(playerPrototype);
                 NetworkingServer.SetClientPrototype(prototype);
                 new DeleteEntityEvent().Raise(playerPrototype);
