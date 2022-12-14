@@ -43,12 +43,14 @@ namespace CorgEng.Tests.UserInterfaceTests.UnitTests
             //Create a root component
             //(0, 0) -> (1000, 1000)
             IUserInterfaceComponent parentUserInterfaceComponent = UserInterfaceComponentFactory.CreateGenericUserInterfaceComponent(
+                null,
                 AnchorFactory.CreateAnchor(
                     AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.LEFT, AnchorUnits.PIXELS, 0),
                     AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.RIGHT, AnchorUnits.PIXELS, 0),
                     AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.TOP, AnchorUnits.PIXELS, 0),
                     AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.BOTTOM, AnchorUnits.PIXELS, 0)
-                )
+                ),
+                null
             );
             parentUserInterfaceComponent.SetWidth(1000, 1000);
             //Add a child component which can scale but starts with no height
@@ -60,7 +62,8 @@ namespace CorgEng.Tests.UserInterfaceTests.UnitTests
                     AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.RIGHT, AnchorUnits.PERCENTAGE, 10, true),
                     AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.TOP, AnchorUnits.PERCENTAGE, 10, true),
                     AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.BOTTOM, AnchorUnits.PERCENTAGE, 10)
-                )
+                ),
+                null
             );
             //Add a child component to that which has a huge scale
             //(100, 400) -> (900, 900)
@@ -71,7 +74,8 @@ namespace CorgEng.Tests.UserInterfaceTests.UnitTests
                     AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.RIGHT, AnchorUnits.PIXELS, 0, true),
                     AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.TOP, AnchorUnits.PIXELS, 0, true),
                     AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.TOP, AnchorUnits.PIXELS, 500, true)
-                )
+                ),
+                null
             );
             //Rayquery the top level component
             switch (target)

@@ -31,6 +31,11 @@ namespace CorgEng.UserInterface.UserInterfaceComponents
 
         private UserInterfaceIconRenderer userInterfaceIconRenderer;
 
+        /// <summary>
+        /// Not included in screencasting for now
+        /// </summary>
+        protected override bool ScreencastInclude { get; } = false;
+
         public UserInterfaceIcon(IAnchor anchorDetails, IDictionary<string, string> arguments) : base(anchorDetails, arguments)
         {
             Init(arguments);
