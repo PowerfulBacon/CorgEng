@@ -45,6 +45,7 @@ namespace CorgEng.EntityComponentSystem.Implementations.Rendering.SpriteRenderin
             RegisterLocalEvent<SpriteRenderComponent, DeleteEntityEvent>(OnEntityDestroyed);
             RegisterLocalEvent<SpriteRenderComponent, ComponentAddedEvent>(OnComponentAdded);
             RegisterLocalEvent<SpriteRenderComponent, MoveEvent>(OnEntityMoved);
+            RegisterLocalEvent<SpriteRenderComponent, RotationEvent>(OnEntityRotated);
             RegisterLocalEvent<SpriteRenderComponent, InitialiseNetworkedEntityEvent>(OnInitialise);
             RegisterLocalEvent<SpriteRenderComponent, AddOverlayEvent>(AddOverlay);
             RegisterLocalEvent<SpriteRenderComponent, RemoveOverlayEvent>(RemoveOverlay);
@@ -101,7 +102,7 @@ namespace CorgEng.EntityComponentSystem.Implementations.Rendering.SpriteRenderin
 
         #endregion
 
-        #region Position
+        #region Transformations
 
         /// <summary>
         /// Called when the parent entity is moved.
@@ -118,6 +119,29 @@ namespace CorgEng.EntityComponentSystem.Implementations.Rendering.SpriteRenderin
             {
                 spriteRenderComponent.SpriteRenderObject.CombinedTransform.Value[3, 1] = moveEvent.NewPosition.X;
                 spriteRenderComponent.SpriteRenderObject.CombinedTransform.Value[3, 2] = moveEvent.NewPosition.Y;
+            }
+        }
+
+        /// <summary>
+        /// Called when
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <param name="spriteRenderComponent"></param>
+        /// <param name="rotationEvent"></param>
+        private void OnEntityRotated(IEntity entity, SpriteRenderComponent spriteRenderComponent, RotationEvent rotationEvent)
+        {
+            if (!CorgEngMain.IsRendering)
+                return;
+            if (spriteRenderComponent.SpriteRenderObject == null)
+            {
+                spriteRenderComponent.CachedRotation = rotationEvent.NewRotation.Copy();
+            }
+            else
+            {
+                spriteRenderComponent.SpriteRenderObject.CombinedTransform.Value[1, 1] = (float)Math.Cos(rotationEvent.NewRotation[0]);
+                spriteRenderComponent.SpriteRenderObject.CombinedTransform.Value[1, 2] = (float)-Math.Sin(rotationEvent.NewRotation[0]);
+                spriteRenderComponent.SpriteRenderObject.CombinedTransform.Value[2, 1] = (float)Math.Sin(rotationEvent.NewRotation[0]);
+                spriteRenderComponent.SpriteRenderObject.CombinedTransform.Value[2, 2] = (float)Math.Cos(rotationEvent.NewRotation[0]);
             }
         }
 
@@ -211,6 +235,14 @@ namespace CorgEng.EntityComponentSystem.Implementations.Rendering.SpriteRenderin
                     spriteRenderComponent.SpriteRenderObject.CombinedTransform.Value[3, 1] = spriteRenderComponent.CachedPosition.X;
                     spriteRenderComponent.SpriteRenderObject.CombinedTransform.Value[3, 2] = spriteRenderComponent.CachedPosition.Y;
                     spriteRenderComponent.CachedPosition = null;
+                }
+                if (spriteRenderComponent.CachedRotation != null)
+                {
+                    spriteRenderComponent.SpriteRenderObject.CombinedTransform.Value[1, 1] = (float)Math.Cos(spriteRenderComponent.CachedRotation[0]);
+                    spriteRenderComponent.SpriteRenderObject.CombinedTransform.Value[1, 2] = (float)-Math.Sin(spriteRenderComponent.CachedRotation[0]);
+                    spriteRenderComponent.SpriteRenderObject.CombinedTransform.Value[2, 1] = (float)Math.Sin(spriteRenderComponent.CachedRotation[0]);
+                    spriteRenderComponent.SpriteRenderObject.CombinedTransform.Value[2, 2] = (float)Math.Cos(spriteRenderComponent.CachedRotation[0]);
+                    spriteRenderComponent.CachedRotation = null;
                 }
                 //Start rendering
                 if (spriteRenderComponent.WantsToRender)
