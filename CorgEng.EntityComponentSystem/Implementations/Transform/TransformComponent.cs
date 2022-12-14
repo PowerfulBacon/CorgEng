@@ -30,6 +30,12 @@ namespace CorgEng.EntityComponentSystem.Implementations.Transform
         [NetworkSerialized(prototypeInclude = false)]
         public Vector<float> Position { get; internal set; } = new Vector<float>(0, 0);
 
+        /// <summary>
+        /// Rotation property of this transform
+        /// </summary>
+        [NetworkSerialized(prototypeInclude = false)]
+        public Vector<float> Rotation { get; internal set; } = new Vector<float>(0);
+
         public override TransformComponent Transform => this;
 
     }

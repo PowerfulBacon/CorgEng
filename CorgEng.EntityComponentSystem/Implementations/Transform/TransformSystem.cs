@@ -26,6 +26,22 @@ namespace CorgEng.EntityComponentSystem.Implementations.Transform
         {
             RegisterLocalEvent<TransformComponent, SetPositionEvent>(SetEntityPosition);
             RegisterLocalEvent<TransformComponent, TranslateEvent>(TranslateEntity);
+            RegisterLocalEvent<TransformComponent, SetRotationEvent>(SetEntityRotation);
+        }
+
+        /// <summary>
+        /// Set an entity's rotation to some value
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <param name="transform"></param>
+        /// <param name="setRotationEvent"></param>
+        private void SetEntityRotation(IEntity entity, TransformComponent transform, SetRotationEvent setRotationEvent)
+        {
+            RotationEvent rotationEvent = new RotationEvent(transform.Rotation, setRotationEvent.NewRotation);
+            //Update the rotation of the transform component
+            transform.Rotation = setRotationEvent.NewRotation;
+            //Raise a rotationEvent
+            rotationEvent.Raise(entity);
         }
 
         private void TranslateEntity(IEntity entity, TransformComponent transform, TranslateEvent translationEvent)
