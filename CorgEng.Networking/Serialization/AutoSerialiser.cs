@@ -79,7 +79,7 @@ namespace CorgEng.Networking.Serialization
             }
             if (value is ICustomSerialisationBehaviour serialisationBehaviour)
             {
-                int genericSize = value.GetType().IsGenericType ? Marshal.SizeOf(value.GetType().GetGenericArguments()[0]) : 0;
+                int genericSize = value.GetType().IsGenericType ? sizeof(ushort) : 0;
                 return sizeof(ushort) + genericSize + serialisationBehaviour.GetSerialisationLength();
             }
             if (type.IsPrimitive)

@@ -66,13 +66,15 @@ namespace CorgEng.Rendering.Icons
             IconName = AutoSerialiser.Deserialize(typeof(string), binaryReader) as string;
             Layer = (float)AutoSerialiser.Deserialize(typeof(float), binaryReader);
             DirectionalState = (DirectionalState)AutoSerialiser.Deserialize(typeof(int), binaryReader);
+            Colour = (IVector<float>)AutoSerialiser.Deserialize(typeof(Vector<float>), binaryReader);
         }
 
         public int GetSerialisationLength()
         {
             return AutoSerialiser.SerialisationLength(typeof(string), IconName)
                 + AutoSerialiser.SerialisationLength(typeof(float), Layer)
-                + AutoSerialiser.SerialisationLength(typeof(int), (int)DirectionalState);
+                + AutoSerialiser.SerialisationLength(typeof(int), (int)DirectionalState)
+                + AutoSerialiser.SerialisationLength(typeof(Vector<float>), Colour);
         }
 
         public void SerialiseInto(BinaryWriter binaryWriter)
@@ -80,6 +82,7 @@ namespace CorgEng.Rendering.Icons
             AutoSerialiser.SerializeInto(typeof(string), IconName, binaryWriter);
             AutoSerialiser.SerializeInto(typeof(float), Layer, binaryWriter);
             AutoSerialiser.SerializeInto(typeof(int), (int)DirectionalState, binaryWriter);
+            AutoSerialiser.SerializeInto(typeof(Vector<float>), Colour, binaryWriter);
         }
 
     }
