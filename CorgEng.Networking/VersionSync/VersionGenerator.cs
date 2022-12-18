@@ -98,7 +98,8 @@ namespace CorgEng.Networking.VersionSync
         public static ushort GetNetworkedIdentifier(this IVersionSynced versionSyncedType)
         {
             ushort output;
-            networkedTypeIds.TryGetValue(versionSyncedType.GetType(), out output);
+            if (!networkedTypeIds.TryGetValue(versionSyncedType.GetType(), out output))
+                throw new Exception($"Failed to get networked identifier for version synced class {versionSyncedType.GetType()}.");
             return output;
         }
 
