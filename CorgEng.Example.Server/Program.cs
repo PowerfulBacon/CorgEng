@@ -84,7 +84,7 @@ namespace CorgEng.Example.Server
                 entity.AddComponent(new PlayerMovementComponent());
                 entity.AddComponent(new CameraComponent(camera));
                 CorgEngMain.SetMainCamera(camera);
-                new SetPositionEvent(new Vector<float>(500, -15)).Raise(entity);
+                new SetPositionEvent(new Vector<float>(500 + offset_x, -15 + offset_y)).Raise(entity);
             });
 
             //Debug
@@ -92,18 +92,6 @@ namespace CorgEng.Example.Server
 #endif
 
             BuildWorld();
-
-            //Create a testing entity
-            EntityFactory.CreateEmptyEntity(testingEntity => {
-                //Add components
-                testingEntity.AddComponent(new NetworkTransformComponent());
-                testingEntity.AddComponent(new SpriteRenderComponent());
-                testingEntity.AddComponent(new SandFactoryComponent());
-                //Update the entity
-                new SetPositionEvent(new Vector<float>(500, 0)).Raise(testingEntity);
-                new SetSpriteEvent(IconFactory.CreateIcon("sand", 5)).Raise(testingEntity);
-                new SetSpriteRendererEvent(1).Raise(testingEntity);
-            });
 
             //Set the default player prototype
             SetPlayerPrototype();
@@ -124,6 +112,10 @@ namespace CorgEng.Example.Server
             }
 #endif
         }
+
+
+        private static int offset_x = -500;
+        private static int offset_y = 0;
 
         /// <summary>
         /// Build the world
@@ -163,7 +155,7 @@ namespace CorgEng.Example.Server
                                     testingEntity.AddComponent(new SpriteRenderComponent());
                                     testingEntity.AddComponent(new SolidComponent());
                                     //Update the entity
-                                    new SetPositionEvent(new Vector<float>(xv, -yv)).Raise(testingEntity);
+                                    new SetPositionEvent(new Vector<float>(xv + offset_x, -yv + offset_y)).Raise(testingEntity);
                                     new SetSpriteEvent(IconFactory.CreateIcon("rock", 5)).Raise(testingEntity);
                                     new SetSpriteRendererEvent(1).Raise(testingEntity);
                                 });
@@ -172,6 +164,18 @@ namespace CorgEng.Example.Server
                         previous = x;
                     });
                 });
+
+            //Create a testing entity
+            EntityFactory.CreateEmptyEntity(testingEntity => {
+                //Add components
+                testingEntity.AddComponent(new NetworkTransformComponent());
+                testingEntity.AddComponent(new SpriteRenderComponent());
+                testingEntity.AddComponent(new SandFactoryComponent());
+                //Update the entity
+                new SetPositionEvent(new Vector<float>(500 + offset_x, offset_y)).Raise(testingEntity);
+                new SetSpriteEvent(IconFactory.CreateIcon("sand", 5)).Raise(testingEntity);
+                new SetSpriteRendererEvent(1).Raise(testingEntity);
+            });
         }
 
         private static void SetPlayerPrototype()

@@ -40,7 +40,7 @@ namespace CorgEng.Tests.Performance
                 RegisterGlobalEvent<TestEvent>(HandleEvent);
             }
 
-            private void HandleEvent(TestEvent testEvent)
+            public void HandleEvent(TestEvent testEvent)
             {
                 EventsHandled++;
                 if (!Running)
@@ -104,6 +104,38 @@ namespace CorgEng.Tests.Performance
                 {
                     //Perform a run
                     new TestEvent().RaiseGlobally(true);
+                    //Run completed
+                    runs++;
+                }
+            });
+            thread.Start();
+            Thread.Sleep(TEST_TIME);
+            Running = false;
+            //Kill the system to flush the queue
+            testEntitySystem.Kill();
+            //Process results
+            Assert.Inconclusive($"Fired {runs} events, handled {EventsHandled} events. Handling rate: {(double)TEST_TIME / EventsHandled}ms per event (Avg) ; {EventsHandled / (TEST_TIME / 1000f)}/s");
+        }
+
+        [TestMethod]
+        public void TestMethodCallingPerformance()
+        {
+#if !PERFORMANCE_TEST
+            Assert.Inconclusive("Test not executed. Please enable PERFORMANCE_TEST define in order to test performance.");
+#endif
+            EventsHandled = 0;
+            LateHandles = 0;
+            TestEntitySystem testEntitySystem = new TestEntitySystem();
+            testEntitySystem.SystemSetup();
+
+            //Perform the tests
+            Running = true;
+            int runs = 0;
+            Thread thread = new Thread(() => {
+                while (Running)
+                {
+                    //Perform a run
+                    testEntitySystem.HandleEvent(new TestEvent());
                     //Run completed
                     runs++;
                 }

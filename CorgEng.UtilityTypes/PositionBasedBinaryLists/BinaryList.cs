@@ -18,127 +18,160 @@ namespace CorgEng.UtilityTypes.PositionBasedBinaryLists
 
         public T TakeFirst()
         {
-            T taken = binaryListElements.First().value;
-            binaryListElements.RemoveAt(0);
-            return taken;
+            lock (binaryListElements)
+            {
+                T taken = binaryListElements.First().value;
+                binaryListElements.RemoveAt(0);
+                return taken;
+            }
         }
 
         public T First()
         {
-            return binaryListElements.First().value;
+            lock (binaryListElements)
+            {
+                return binaryListElements.First().value;
+            }
         }
 
         public int Length()
         {
-            return binaryListElements.Count;
+            lock (binaryListElements)
+            {
+                return binaryListElements.Count;
+            }
         }
 
         public int Add(int key, T toAdd, int start = 0, int _end = -1)
         {
-            //No elements, just add
-            if (binaryListElements.Count == 0)
+            lock (binaryListElements)
             {
-                binaryListElements.Add(new BinaryListElement<T>(key, toAdd));
-                return -1;
-            }
-            //We need to locate the point which is less than the key, and where the key is less than the next value
-            //f(i) < key < f(i + 1)
-            int end = _end;
-            if (end == -1)
-                end = binaryListElements.Count - 1;
-            //Get the midpoint
-            int midPoint = (start + end) / 2;
-            //Midpoint has converted
-            if (start >= end)
-            {
-                //Check if the midpoint is too small or too large
-                BinaryListElement<T> convergedPoint = binaryListElements[midPoint];
-                if (convergedPoint.key > key)
-                    binaryListElements.Insert(midPoint, new BinaryListElement<T>(key, toAdd));
+                //No elements, just add
+                if (binaryListElements.Count == 0)
+                {
+                    binaryListElements.Add(new BinaryListElement<T>(key, toAdd));
+                    return -1;
+                }
+                //We need to locate the point which is less than the key, and where the key is less than the next value
+                //f(i) < key < f(i + 1)
+                int end = _end;
+                if (end == -1)
+                    end = binaryListElements.Count - 1;
+                //Get the midpoint
+                int midPoint = (start + end) / 2;
+                //Midpoint has converted
+                if (start >= end)
+                {
+                    //Check if the midpoint is too small or too large
+                    BinaryListElement<T> convergedPoint = binaryListElements[midPoint];
+                    if (convergedPoint.key > key)
+                        binaryListElements.Insert(midPoint, new BinaryListElement<T>(key, toAdd));
+                    else
+                        binaryListElements.Insert(midPoint + 1, new BinaryListElement<T>(key, toAdd));
+                    return -1;
+                }
+                //Locate the element at the midpoint
+                BinaryListElement<T> current = binaryListElements[midPoint];
+                //Perform next search
+                if (current.key > key)
+                    return Add(key, toAdd, start, Math.Max(midPoint - 1, 0));
                 else
-                    binaryListElements.Insert(midPoint + 1, new BinaryListElement<T>(key, toAdd));
-                return -1;
+                    return Add(key, toAdd, midPoint + 1, end);
             }
-            //Locate the element at the midpoint
-            BinaryListElement<T> current = binaryListElements[midPoint];
-            //Perform next search
-            if (current.key > key)
-                return Add(key, toAdd, start, Math.Max(midPoint - 1, 0));
-            else
-                return Add(key, toAdd, midPoint + 1, end);
         }
 
         public void Remove(int key)
         {
-            int elementIndex = IndexOf(key);
-            if (elementIndex == -1)
-                return;
-            binaryListElements.RemoveAt(elementIndex);
+            lock (binaryListElements)
+            {
+                int elementIndex = IndexOf(key);
+                if (elementIndex == -1)
+                    return;
+                binaryListElements.RemoveAt(elementIndex);
+            }
         }
 
         public T _ElementAt(int index)
         {
-            if (index < 0 || index >= binaryListElements.Count)
-                return default(T);
-            return binaryListElements[index].value;
+            lock (binaryListElements)
+            {
+                if (index < 0 || index >= binaryListElements.Count)
+                    return default(T);
+                return binaryListElements[index].value;
+            }
         }
 
         public T ElementWithKey(int key)
         {
-            int index = IndexOf(key);
-            if (index == -1)
-                return default;
-            else
-                return binaryListElements[index].value;
+            lock (binaryListElements)
+            {
+                int index = IndexOf(key);
+                if (index == -1)
+                    return default;
+                else
+                    return binaryListElements[index].value;
+            }
         }
 
         private int IndexOf(int i, int start = 0, int _end = -1)
         {
-            if (binaryListElements.Count == 0)
-                return -1;
-            int end = _end;
-            if (end == -1)
-                end = binaryListElements.Count - 1;
-            //Get the midpoint
-            int midPoint = (start + end) / 2;
-            //Locate the element at the midpoint
-            BinaryListElement<T> located = binaryListElements[midPoint];
-            //Perform checks
-            if (located.key == i)
-                return midPoint;
-            //Check if we exhausted the list
-            if (start >= end)
-                return -1;
-            //Perform next search
-            if (located.key > i)
-                return IndexOf(i, start, Math.Max(midPoint - 1, 0));
-            else
-                return IndexOf(i, midPoint + 1, end);
+            lock (binaryListElements)
+            {
+                if (binaryListElements.Count == 0)
+                    return -1;
+                int end = _end;
+                if (end == -1)
+                    end = binaryListElements.Count - 1;
+                //Get the midpoint
+                int midPoint = (start + end) / 2;
+                //We went outside the valid range
+                if (midPoint > binaryListElements.Count || midPoint < 0)
+                    return -1;
+                //Locate the element at the midpoint
+                BinaryListElement<T> located = binaryListElements[midPoint];
+                //Perform checks
+                if (located.key == i)
+                    return midPoint;
+                //Check if we exhausted the list
+                if (start >= end)
+                    return -1;
+                //Perform next search
+                if (located.key > i)
+                    return IndexOf(i, start, Math.Max(midPoint - 1, 0));
+                else
+                    return IndexOf(i, midPoint + 1, end);
+            }
         }
 
         public bool ElementsInRange(int min, int max, int start = 0, int _end = -1, BinaryListValidityCheckDelegate<T> conditionalCheck = null)
         {
-            //Check the X-Axis
-            if (binaryListElements.Count == 0)
-                return false;
-            int end = _end;
-            if (end == -1)
-                end = binaryListElements.Count - 1;
-            //Get the midpoint
-            int midPoint = (start + end) / 2;
-            //Locate the element at the midpoint
-            BinaryListElement<T> located = binaryListElements[midPoint];
-            //Perform checks
-            if (located.key >= min && located.key <= max && (conditionalCheck?.Invoke(located.value) ?? true))
-                return true;
-            //Check if we exhausted the list
-            if (start >= end)
-                return false;
-            //Perform next search
-            if (located.key > max)
-                return ElementsInRange(min, max, start, Math.Max(midPoint - 1, 0));
-            else
-                return ElementsInRange(min, max, midPoint + 1, end);
+            lock (binaryListElements)
+            {
+                //Check the X-Axis
+                if (binaryListElements.Count == 0)
+                    return false;
+                int end = _end;
+                if (end == -1)
+                    end = binaryListElements.Count - 1;
+                //Get the midpoint
+                int midPoint = (start + end) / 2;
+                //We went outside the valid range
+                if (midPoint > binaryListElements.Count || midPoint < 0)
+                    return false;
+                //Locate the element at the midpoint
+                BinaryListElement<T> located = binaryListElements[midPoint];
+                //Perform checks
+                if (located.key >= min && located.key <= max && (conditionalCheck?.Invoke(located.value) ?? true))
+                    return true;
+                //Check if we exhausted the list
+                if (start >= end)
+                    return false;
+                //Perform next search
+                if (located.key > max)
+                    return ElementsInRange(min, max, start, Math.Max(midPoint - 1, 0));
+                else
+                    return ElementsInRange(min, max, midPoint + 1, end);
+            }
         }
 
         public IEnumerator<T> GetEnumerator()

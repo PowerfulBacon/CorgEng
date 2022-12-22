@@ -1,4 +1,5 @@
-﻿using CorgEng.Core.Modules;
+﻿using CorgEng.Core;
+using CorgEng.Core.Modules;
 using CorgEng.DependencyInjection.Dependencies;
 using CorgEng.GenericInterfaces.Rendering.Models;
 using System;
@@ -36,6 +37,8 @@ namespace CorgEng.Rendering.Models
         [ModuleLoad(mainThread = true)]
         private static void CreateSquareModel()
         {
+            if (!CorgEngMain.IsRendering)
+                return;
             model = new Model();
             model.GenerateBuffers(vertices, uvs);
         }

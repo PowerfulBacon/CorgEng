@@ -61,6 +61,8 @@ namespace CorgEng.Rendering.TextRendering
             Scale.ValueChanged += Draw;
         }
 
+        private List<ISpriteRenderObject> _drawCache = new List<ISpriteRenderObject>();
+
         /// <summary>
         /// Draw the text object, clearing this text object if it was already being drawn.
         /// </summary>
@@ -69,6 +71,9 @@ namespace CorgEng.Rendering.TextRendering
             //Setup the pointers for where we should be drawing the characters
             double xPointer = ScreenPositionProperty.Value.X;
             double yPointer = ScreenPositionProperty.Value.Y + (Scale.Value * font.Base / font.FontHeight);
+            //Disable the draw cache
+            _drawCache.ForEach(x => spriteRenderer.StopRendering(x));
+            _drawCache.Clear();
             //Get each character in the text property that needs rendering
             foreach (char textCharcter in TextProperty.Value)
             {
@@ -90,8 +95,9 @@ namespace CorgEng.Rendering.TextRendering
                 renderObject.CombinedTransform.Value[2, 2] = Scale.Value * 8 * fontCharacter.TextureHeight / fontCharacter.TextureFile.Height;
                 //Start rendering the character
                 spriteRenderer.StartRendering(renderObject);
+                _drawCache.Add(renderObject);
                 //Move forward the pointers (Account for the font width)
-                xPointer += fontCharacter.CharacterXAdvance / (double)font.FontWidth * 8 * Scale.Value;
+                xPointer += (fontCharacter.CharacterXAdvance / (double)font.FontWidth) * 8 * Scale.Value;
                 //xPointer += 1;
             }
         }

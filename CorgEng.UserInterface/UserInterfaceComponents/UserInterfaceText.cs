@@ -42,6 +42,8 @@ namespace CorgEng.UserInterface.UserInterfaceComponents
 
         public string Text { get; private set; } = "";
 
+        private IFont font;
+
         public UserInterfaceText(IAnchor anchorDetails, IDictionary<string, string> arguments) : base(anchorDetails, arguments)
         {
             Setup(arguments);
@@ -63,7 +65,7 @@ namespace CorgEng.UserInterface.UserInterfaceComponents
             string typeface;
             arguments.TryGetValue("font", out typeface);
             //Create / Get the font
-            IFont font = FontFactory.GetFont(typeface ?? "CourierCode");
+            font = FontFactory.GetFont(typeface ?? "CourierCode");
             //Create a text object
             string text = arguments["text"];
             internalTextObject = TextObjectFactory.CreateTextObject(spriteRenderer, font, text);
@@ -77,9 +79,12 @@ namespace CorgEng.UserInterface.UserInterfaceComponents
             if (!ready)
                 return;
             IsometricCamera.X = 0.8f;
+            //float textWidth = (float)font.MeasureTextWidth(Text, 1);
+            //internalTextObject.Scale.Value = Math.Min((Width * 0.003f) / textWidth, Height * 0.003f);          //TODO: This creates tons of objects and spams the GC
             IsometricCamera.Width = Width * 0.003f;
             IsometricCamera.Height = Height * 0.003f;
             spriteRenderer.Render(IsometricCamera);
         }
+
     }
 }

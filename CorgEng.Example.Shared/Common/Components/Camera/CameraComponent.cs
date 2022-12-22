@@ -12,7 +12,11 @@ namespace CorgEng.Example.Common.Components.Camera
     public class CameraComponent : Component
     {
 
+
+
         public IIsometricCamera Camera { get; internal set; }
+
+        public override bool IsSynced => false;
 
         public CameraComponent()
         { }

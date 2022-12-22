@@ -30,5 +30,11 @@ namespace CorgEng.GenericInterfaces.Font.Fonts
         /// </summary>
         int Base { get; }
 
+        /// <summary>
+        /// Determine the width of the provided block of text
+        /// </summary>
+        /// <returns>The width of the string provided</returns>
+        double MeasureTextWidth(string text, float scale);
+
     }
 }

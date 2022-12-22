@@ -227,6 +227,7 @@ namespace CorgEng.EntityComponentSystem.Systems
                             if (synchronous)
                             {
                                 synchronousWaitEvent.Set();
+                                Thread.Yield();
                             }
                         }
                     }, file, member, lineNumber));
