@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace CorgEng.InputHandling.Events
 {
+    [Obsolete("Standard input events have been replaced with an improved input handling system with rebindable events. See IInputHandler.")]
     public class MousePressEvent : IEvent
     {
 

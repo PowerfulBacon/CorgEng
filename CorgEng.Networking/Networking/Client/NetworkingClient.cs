@@ -260,6 +260,7 @@ namespace CorgEng.Networking.Networking.Client
                         {
                             PacketQueue.ReleaseLock();
                         }
+                        Logger.WriteLine($"Sent packets to the server", LogType.TEMP);
                     }
                     //Wait for variable time to maintain the tick rate
                     stopwatch.Stop();

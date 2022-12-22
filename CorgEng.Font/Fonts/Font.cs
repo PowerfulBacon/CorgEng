@@ -124,5 +124,10 @@ namespace CorgEng.Font.Fonts
             return fontCharacters[code];
         }
 
+        public double MeasureTextWidth(string text, float scale)
+        {
+            return text.Sum(x => (GetCharacter(x).CharacterXAdvance / (double)FontWidth) * 8 * scale);
+        }
+
     }
 }

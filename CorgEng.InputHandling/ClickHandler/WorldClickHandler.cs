@@ -47,7 +47,7 @@ namespace CorgEng.InputHandling.ClickHandler
 
         public override void SystemSetup()
         {
-            selectorOverlay = IconFactory.CreateIcon("selector", 10000);
+            selectorOverlay = IconFactory.CreateIcon("selector", 100);
             RegisterLocalEvent<SelectedComponent, ComponentAddedEvent>(OnComponentAdded);
             RegisterLocalEvent<SelectedComponent, ComponentRemovedEvent>(OnComponentRemoved);
         }

@@ -144,11 +144,11 @@ namespace CorgEng.Networking.Prototypes
             }
         }
 
-        public async Task<IPrototype> GetPrototype(uint prototypeIdentifier)
+        public Task<IPrototype> GetPrototype(uint prototypeIdentifier)
         {
             if (PrototypeLookup.ContainsKey(prototypeIdentifier))
             {
-                return PrototypeLookup[prototypeIdentifier];
+                return Task.FromResult(PrototypeLookup[prototypeIdentifier]);
             }
             IPrototype located = null;
             bool successStateAchieved = false;
@@ -174,13 +174,13 @@ namespace CorgEng.Networking.Prototypes
             //Wait until we recieve the requested prototype. Send the request every 100ms until we get a result
             //TODO: After 2 seconds, timeout and disconnect from the server
             int attemptsRemaining = 20;
-            while (await Task.Run(() => waitEvent.WaitOne(100)) && attemptsRemaining-- > 0)
+            while (waitEvent.WaitOne(100) && attemptsRemaining-- > 0)
             {
                 //We were successful
                 if (successStateAchieved)
                 {
                     Logger.WriteLine($"Prototype {prototypeIdentifier} successfully retrieved from server!", LogType.DEBUG);
-                    return located;
+                    return Task.FromResult(located);
                 }
                 //Re-request
                 Logger.WriteLine($"Requesting prototype {prototypeIdentifier} from server...", LogType.DEBUG);
