@@ -108,6 +108,10 @@ namespace CorgEng.EntityComponentSystem.Systems
                 createdSystem.SystemSetup();
                 EntitySystems.TryAdd(createdSystem.GetType(), createdSystem);
             });
+            //Trigger the event when this is all done and loaded
+            CorgEngMain.OnReadyEvents += () => {
+                new GameReadyEvent().RaiseGlobally();
+            };
             Logger?.WriteLine($"Successfully created and setup all systems!", LogType.LOG);
         }
 

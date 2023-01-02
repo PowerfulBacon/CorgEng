@@ -1,4 +1,5 @@
 ﻿using CorgEng.Constants;
+using CorgEng.Core;
 using CorgEng.Core.Dependencies;
 using CorgEng.GenericInterfaces.Logging;
 using CorgEng.GenericInterfaces.Rendering;
@@ -166,8 +167,8 @@ namespace CorgEng.Rendering
         protected unsafe virtual void BindUniformVariables(ICamera camera)
         {
             //Bind the main camera
-            glUniformMatrix4fv(viewMatrixUniformLocation, 1, false, camera.GetViewMatrix(1920, 1080).GetPointer());
-            glUniformMatrix4fv(projectionMatrixUniformLocation, 1, false, camera.GetProjectionMatrix(1920, 1080).GetPointer());
+            glUniformMatrix4fv(viewMatrixUniformLocation, 1, false, camera.GetViewMatrix(CorgEngMain.GameWindow.Width, CorgEngMain.GameWindow.Height).GetPointer());
+            glUniformMatrix4fv(projectionMatrixUniformLocation, 1, false, camera.GetProjectionMatrix(CorgEngMain.GameWindow.Width, CorgEngMain.GameWindow.Height).GetPointer());
         }
 
         /// <summary>

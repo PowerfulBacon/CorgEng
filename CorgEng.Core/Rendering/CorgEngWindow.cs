@@ -81,8 +81,8 @@ namespace CorgEng.Core.Rendering
         private void WindowResizeHandler(IntPtr window, int width, int height)
         {
             //Update the render core
-            //Width = width;
-            //Height = height;
+            Width = width;
+            Height = height;
             OnWindowResized?.Invoke(width, height);
         }
 

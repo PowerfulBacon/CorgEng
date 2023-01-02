@@ -4,8 +4,10 @@ using CorgEng.Core.Dependencies;
 using CorgEng.EntityComponentSystem.Events;
 using CorgEng.EntityComponentSystem.Events.Events;
 using CorgEng.EntityComponentSystem.Implementations.Rendering.SpriteRendering;
+using CorgEng.EntityComponentSystem.Implementations.Transform;
 using CorgEng.EntityComponentSystem.Systems;
 using CorgEng.GenericInterfaces.EntityComponentSystem;
+using CorgEng.GenericInterfaces.InputHandler;
 using CorgEng.GenericInterfaces.Logging;
 using CorgEng.GenericInterfaces.Rendering.Icons;
 using CorgEng.GenericInterfaces.UtilityTypes;
@@ -33,6 +35,12 @@ namespace CorgEng.InputHandling.ClickHandler
 
         [UsingDependency]
         private static IIconFactory IconFactory;
+
+        [UsingDependency]
+        private static IEntityFactory EntityFactory;
+
+        [UsingDependency]
+        private static IInputHandler InputHandler;
 
         //Track the last clicked location for cyclical selection of entities
         private static int lastClickedX = 0;
@@ -114,7 +122,7 @@ namespace CorgEng.InputHandling.ClickHandler
             //If we clicked on a different tile, reset the last contents index
             if (lastClickedX != clickedTileX || lastClickedY != clickedTileY || contentEnumerator == null)
             {
-                contentEnumerator = World.GetContentsAt(clickedTileX, clickedTileY, TemporaryMapLayers.DEFAULT_MAP_LAYER)?.GetContents().GetEnumerator();
+                contentEnumerator = World.GetContentsAt(SelectableComponent.TRACK_KEY, clickedTileX, clickedTileY, TemporaryMapLayers.DEFAULT_MAP_LAYER)?.GetContents().GetEnumerator();
                 lastClickedX = clickedTileX;
                 lastClickedY = clickedTileY;
             }

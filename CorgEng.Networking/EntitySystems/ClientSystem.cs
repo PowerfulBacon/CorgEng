@@ -194,9 +194,9 @@ namespace CorgEng.Networking.EntitySystems
                         continue;
                     //Get a list of all entities that need to be sent
                     //Painfully expensive
-                    foreach (IEntity entityToTransmit in contentsHolder.GetContents())
+                    foreach (IWorldTrackComponent entityToTransmit in contentsHolder.GetContents())
                     {
-                        EntityCommunicator.CommunicateEntity(entityToTransmit, clientComponent.AttachedClient);
+                        EntityCommunicator.CommunicateEntity(entityToTransmit.Parent, clientComponent.AttachedClient);
                     }
                 }
             }

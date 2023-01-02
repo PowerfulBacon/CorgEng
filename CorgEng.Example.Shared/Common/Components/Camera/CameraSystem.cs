@@ -1,9 +1,11 @@
-﻿using CorgEng.EntityComponentSystem.Entities;
+﻿using CorgEng.Core;
+using CorgEng.EntityComponentSystem.Entities;
 using CorgEng.EntityComponentSystem.Events;
 using CorgEng.EntityComponentSystem.Events.Events;
 using CorgEng.EntityComponentSystem.Implementations.Transform;
 using CorgEng.EntityComponentSystem.Systems;
 using CorgEng.GenericInterfaces.EntityComponentSystem;
+using CorgEng.GenericInterfaces.Rendering.Cameras.Isometric;
 using CorgEng.InputHandling.Events;
 using System;
 using System.Collections.Generic;
@@ -28,6 +30,10 @@ namespace CorgEng.Example.Common.Components.Camera
             RegisterLocalEvent<CameraComponent, ComponentRemovedEvent>(OnComponentRemoved);
             RegisterGlobalEvent<MouseScrollEvent>(OnMouseScroll);
             RegisterLocalEvent<CameraComponent, MouseScrollEvent>(OnMouseScrolled);
+            RegisterLocalEvent<CameraComponent, InitialiseNetworkedEntityEvent>((entity, component, signal) => {
+                if (component.Camera == null)
+                    component.Camera = CorgEngMain.MainCamera as IIsometricCamera;
+            });
         }
 
         private void OnCameraMoved(IEntity entity, CameraComponent cameraComponent, MoveEvent moveEvent)

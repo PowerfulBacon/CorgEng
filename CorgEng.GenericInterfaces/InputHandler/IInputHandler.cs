@@ -105,5 +105,12 @@ namespace CorgEng.GenericInterfaces.InputHandler
         /// <param name="priority"></param>
         void AddMouseScrollAction(string actionKey, Func<double, double, bool> actionDelegate, int priority);
 
+        /// <summary>
+        /// Get the cursor position
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        void GetCursorPosition(out double x, out double y);
+
     }
 }

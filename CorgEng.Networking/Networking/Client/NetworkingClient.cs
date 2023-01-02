@@ -15,9 +15,12 @@ using CorgEng.GenericInterfaces.Networking.Packets;
 using CorgEng.GenericInterfaces.Networking.Packets.PacketQueues;
 using CorgEng.GenericInterfaces.Networking.PrototypeManager;
 using CorgEng.GenericInterfaces.Rendering;
+using CorgEng.Networking.EntitySystems;
+using CorgEng.Networking.Events;
 using CorgEng.Networking.Networking.Server;
 using CorgEng.Networking.VersionSync;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -185,6 +188,10 @@ namespace CorgEng.Networking.Networking.Client
                             Thread networkingThread = new Thread(() => NetworkListenerThread(udpClient));
                             networkingThread.Name = $"Client Listener thread ({address}:{port})";
                             networkingThread.Start();
+                            //Start the packet queue thread
+                            Thread packetProcessingThread = new Thread(ProcessQueueThread);
+                            packetProcessingThread.Name = $"Packet processing thread ({port})";
+                            packetProcessingThread.Start();
                             //Start the sender thread
                             Thread senderThread = new Thread(() => NetworkSenderThread(udpClient));
                             senderThread.Name = $"Client Sender thread ({address}:{port})";
@@ -281,6 +288,8 @@ namespace CorgEng.Networking.Networking.Client
             shutdownCountdown.Signal();
         }
 
+        private ConcurrentQueue<(IPEndPoint, byte[])> packetQueue = new ConcurrentQueue<(IPEndPoint, byte[])>();
+
         /// <summary>
         /// The networking thread
         /// </summary>
@@ -293,10 +302,10 @@ namespace CorgEng.Networking.Networking.Client
                 try
                 {
                     //Wait until we are woken up
-                    IPEndPoint remoteEndPointer = new IPEndPoint(IPAddress.Any, port);
-                    byte[] incomingData = udpClient.Receive(ref remoteEndPointer);
+                    IPEndPoint remoteEndPoint = new IPEndPoint(IPAddress.Any, port);
+                    byte[] incomingData = udpClient.Receive(ref remoteEndPoint);
                     //Handle incomming data
-                    Task.Run(() => ProcessPacket(remoteEndPointer, incomingData));
+                    packetQueue.Enqueue((remoteEndPoint, incomingData));
                 }
                 catch (Exception e)
                 {
@@ -308,7 +317,37 @@ namespace CorgEng.Networking.Networking.Client
             shutdownCountdown.Signal();
         }
 
-        private async Task ProcessPacket(IPEndPoint sender, byte[] data)
+        private void ProcessQueueThread()
+        {
+            Logger?.WriteLine($"Packet queue processor thread started.", LogType.MESSAGE);
+            while (running)
+            {
+                //Nothing to process
+                if (packetQueue.Count == 0)
+                {
+                    Thread.Yield();
+                    continue;
+                }
+                //Stuff to do
+                try
+                {
+                    //Recieve messages
+                    (IPEndPoint, byte[]) packet;
+                    if (packetQueue.TryDequeue(out packet))
+                    {
+                        ProcessPacket(packet.Item1, packet.Item2);
+                    }
+                }
+                catch (Exception e)
+                {
+                    Logger?.WriteLine($"Critical exception on processing thread: {e}", LogType.ERROR);
+                }
+            }
+            //Log shutdown
+            Logger?.WriteLine($"Packet queue processor thread stopped.", LogType.MESSAGE);
+        }
+
+        private void ProcessPacket(IPEndPoint sender, byte[] data)
         {
             try
             {
@@ -332,7 +371,7 @@ namespace CorgEng.Networking.Networking.Client
                     //Read the packet header
                     PacketHeaders packetHeader = (PacketHeaders)BitConverter.ToInt32(data, originalPoint + 0x02);
                     //Get the data and pass it on
-                    await HandleMessage(sender, packetHeader, data, originalPoint + 0x06, packetSize);
+                    HandleMessage(sender, packetHeader, data, originalPoint + 0x06, packetSize);
                 }
             }
             catch (Exception e)
@@ -344,7 +383,7 @@ namespace CorgEng.Networking.Networking.Client
         /// <summary>
         /// Handle an incoming message
         /// </summary>
-        private async Task HandleMessage(IPEndPoint sender, PacketHeaders header, byte[] data, int start, int length)
+        private void HandleMessage(IPEndPoint sender, PacketHeaders header, byte[] data, int start, int length)
         {
             //Process messages
             if (!connected)
@@ -384,6 +423,7 @@ namespace CorgEng.Networking.Networking.Client
             }
             else
             {
+                //Logger?.WriteLine($"Receieved client message: {header} from {sender.Address}", LogType.LOG);
                 //Handle connected packets
                 NetworkMessageReceived?.Invoke(header, data, start, length);
                 //Handle the event
@@ -405,12 +445,20 @@ namespace CorgEng.Networking.Networking.Client
                                     IEntity entityTarget = EntityManager.GetEntity(entityIdentifier);
                                     if (entityTarget == null)
                                     {
-                                        Logger?.WriteLine($"Unable to locate entity with ID {entityIdentifier} to raise local event on.", LogType.DEBUG);
+                                        //Queue the event to fire when the entity is created
+                                        DelayedEventSystem.AddDelayedEvent(entityIdentifier, (entityTarget) => {
+                                            //Get the event that was raised
+                                            INetworkedEvent raisedEvent = VersionGenerator.CreateTypeFromIdentifier<INetworkedEvent>(networkedIdentifier);
+                                            Logger.WriteLine($"local event raised of type {raisedEvent.GetType()} raised against entity {entityIdentifier}");
+                                            //Deserialize the event
+                                            raisedEvent.Deserialise(reader);
+                                            raisedEvent.Raise(entityTarget);
+                                        });
                                         return;
                                     }
                                     //Get the event that was raised
                                     INetworkedEvent raisedEvent = VersionGenerator.CreateTypeFromIdentifier<INetworkedEvent>(networkedIdentifier);
-                                    Logger.WriteLine($"local event raised of type {raisedEvent.GetType()}");
+                                    Logger.WriteLine($"local event raised of type {raisedEvent.GetType()} raised against entity {entityIdentifier}");
                                     //Deserialize the event
                                     raisedEvent.Deserialise(reader);
                                     raisedEvent.Raise(entityTarget);
@@ -443,8 +491,11 @@ namespace CorgEng.Networking.Networking.Client
                         PrototypeManager.GetPrototype(data.Skip(start).Take(length).ToArray());
                         return;
                     case PacketHeaders.ENTITY_DATA:
-                        IEntity createdEntity = await EntityCommunicator.DeserialiseEntity(data.Skip(start).Take(length).ToArray());
-                        EntityManager.RegisterEntity(createdEntity);
+                        Task.Run(async () =>
+                        {
+                            IEntity createdEntity = await EntityCommunicator.DeserialiseEntity(data.Skip(start).Take(length).ToArray());
+                            EntityManager.RegisterEntity(createdEntity);
+                        });
                         return;
                     case PacketHeaders.UPDATE_CLIENT_VIEW:
                         using (MemoryStream memoryStream = new MemoryStream(data))
