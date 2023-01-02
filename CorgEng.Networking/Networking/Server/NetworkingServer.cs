@@ -19,6 +19,7 @@ using CorgEng.Networking.Components;
 using CorgEng.Networking.Events;
 using CorgEng.Networking.VersionSync;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -151,6 +152,10 @@ namespace CorgEng.Networking.Networking.Server
             Thread serverThread = new Thread(NetworkListenerThread);
             serverThread.Name = $"Networking Listener ({port})";
             serverThread.Start();
+            //Start the packet queue thread
+            Thread packetProcessingThread = new Thread(ProcessQueueThread);
+            packetProcessingThread.Name = $"Packet processing thread ({port})";
+            packetProcessingThread.Start();
             //Start the transmission thread
             Thread transmissionThread = new Thread(NetworkSenderThread);
             transmissionThread.Name = $"Networking Transmitter ({port})";
@@ -215,6 +220,8 @@ namespace CorgEng.Networking.Networking.Server
             shutdownCountdown.Signal();
         }
 
+        private ConcurrentQueue<(IPEndPoint, byte[])> packetQueue = new ConcurrentQueue<(IPEndPoint, byte[])>();
+
         private void NetworkListenerThread()
         {
             Logger?.WriteLine($"Server listening thread started on port {port}.", LogType.MESSAGE);
@@ -225,7 +232,7 @@ namespace CorgEng.Networking.Networking.Server
                     //Recieve messages
                     IPEndPoint remoteEndPoint = new IPEndPoint(IPAddress.Any, port);
                     byte[] incomingData = udpClient.Receive(ref remoteEndPoint);
-                    Task.Run(() => ProcessPacket(remoteEndPoint, incomingData));
+                    packetQueue.Enqueue((remoteEndPoint, incomingData));
                 }
                 catch (Exception e)
                 {
@@ -235,6 +242,36 @@ namespace CorgEng.Networking.Networking.Server
             //Log shutdown
             Logger?.WriteLine($"Networking server shut down.", LogType.MESSAGE);
             shutdownCountdown.Signal();
+        }
+
+        private void ProcessQueueThread()
+        {
+            Logger?.WriteLine($"Server packet queue processor thread started.", LogType.MESSAGE);
+            while (running)
+            {
+                //Nothing to process
+                if (packetQueue.Count == 0)
+                {
+                    Thread.Yield();
+                    continue;
+                }
+                //Stuff to do
+                try
+                {
+                    //Recieve messages
+                    (IPEndPoint, byte[]) packet;
+                    if (packetQueue.TryDequeue(out packet))
+                    {
+                        ProcessPacket(packet.Item1, packet.Item2);
+                    }
+                }
+                catch (Exception e)
+                {
+                    Logger?.WriteLine($"Critical exception on server: {e}", LogType.ERROR);
+                }
+            }
+            //Log shutdown
+            Logger?.WriteLine($"Networking server packet queue processor thread stopped.", LogType.MESSAGE);
         }
 
         private void ProcessPacket(IPEndPoint sender, byte[] data)
@@ -267,6 +304,7 @@ namespace CorgEng.Networking.Networking.Server
         {
             try
             {
+                //Logger?.WriteLine($"Receieved server message: {header} from {sender.Address}", LogType.LOG);
                 //Check the message header
                 //Process messages
                 if (connectedClients.ContainsKey(sender.Address))

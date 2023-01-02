@@ -106,7 +106,7 @@ namespace CorgEng.InputHandling
                 foreach (Func<double, double, double, bool> actionFunction in actionFunctions.Values)
                 {
                     //Call the function
-                    if (actionFunction(CorgEngMain.DeltaTime, x, y))
+                    if (actionFunction(CorgEngMain.DeltaTime, x / CorgEngMain.GameWindow.Width, y / CorgEngMain.GameWindow.Height))
                         break;
                 }
             }
@@ -118,6 +118,7 @@ namespace CorgEng.InputHandling
         {
             try
             {
+                string action;
                 double x;
                 double y;
                 int width;
@@ -130,6 +131,18 @@ namespace CorgEng.InputHandling
                         MousePressEvent mousePressEvent = new MousePressEvent(x / width, y / height, button, modifiers);
                         mousePressEvent.RaiseGlobally();
                         mouseDownAt = CorgEngMain.Time;
+                        //Trigger the action
+                        if (!boundMouseActions.TryGetValue(button, out action))
+                            return;
+                        SortedList<int, Func<bool>> actionFunctions;
+                        if (!buttonDownActions.TryGetValue(action, out actionFunctions))
+                            return;
+                        foreach (Func<bool> actionFunction in actionFunctions.Values)
+                        {
+                            //Call the function
+                            if (actionFunction())
+                                break;
+                        }
                         return;
                     case InputState.Release:
                         MouseReleaseEvent mouseReleaseEvent = new MouseReleaseEvent(x / width, y / height, button, modifiers);
@@ -145,6 +158,18 @@ namespace CorgEng.InputHandling
                         if (!mouseReleaseEvent.Handled && mouseReleaseEvent.MouseButton == MouseButton.Left)
                         {
                             WorldClickHandler.HandleWorldClick(mouseReleaseEvent, CorgEngMain.GameWindow.Width, CorgEngMain.GameWindow.Height);
+                        }
+                        //Trigger the action
+                        if (!boundMouseActions.TryGetValue(button, out action))
+                            return;
+                        SortedList<int, Func<double, bool>> releaseActions;
+                        if (!buttonUpActions.TryGetValue(action, out releaseActions))
+                            return;
+                        foreach (Func<double, bool> actionFunction in releaseActions.Values)
+                        {
+                            //Call the function
+                            if (actionFunction(mouseReleaseEvent.HeldTime))
+                                break;
                         }
                         return;
                 }
@@ -296,6 +321,11 @@ namespace CorgEng.InputHandling
             if (!scrollActions.ContainsKey(actionKey))
                 scrollActions.Add(actionKey, new SortedList<int, Func<double, double, bool>>());
             scrollActions[actionKey].Add(priority, actionDelegate);
+        }
+
+        public void GetCursorPosition(out double x, out double y)
+        {
+            Glfw.GetCursorPosition(window, out x, out y);
         }
     }
 }

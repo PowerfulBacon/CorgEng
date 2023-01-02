@@ -43,8 +43,8 @@ namespace CorgEng.UserInterface.Popups
             set => AttachedComponent.Anchor = AnchorFactory.CreateAnchor(
                 AttachedComponent.Anchor.LeftDetails,
                 AttachedComponent.Anchor.RightDetails,
-                AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.BOTTOM, AnchorUnits.PIXELS, value, true),
-                AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.BOTTOM, AnchorUnits.PIXELS, value + Height, true)
+                AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.TOP, AnchorUnits.PIXELS, value + Height, true),
+                AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.TOP, AnchorUnits.PIXELS, value, true)
                 );
         }
 
@@ -65,7 +65,7 @@ namespace CorgEng.UserInterface.Popups
             set => AttachedComponent.Anchor = AnchorFactory.CreateAnchor(
                 AttachedComponent.Anchor.LeftDetails,
                 AttachedComponent.Anchor.RightDetails,
-                AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.BOTTOM, AnchorUnits.PIXELS, AttachedComponent.Anchor.BottomDetails.AnchorOffset + value, true),
+                AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.TOP, AnchorUnits.PIXELS, AttachedComponent.Anchor.BottomDetails.AnchorOffset + value, true),
                 AttachedComponent.Anchor.BottomDetails
                 );
         }
@@ -77,7 +77,8 @@ namespace CorgEng.UserInterface.Popups
 
         public void ClosePopup()
         {
-            throw new NotImplementedException();
+            //Remove this
+            AttachedComponent.Parent.RemoveChild(AttachedComponent);
         }
     }
 }

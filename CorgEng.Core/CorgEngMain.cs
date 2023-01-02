@@ -77,6 +77,8 @@ namespace CorgEng.Core
 
         public static bool IsRendering { get; private set; } = false;
 
+        public static event Action OnReadyEvents = null;
+
         /// <summary>
         /// List of actions queued to be execuetd on the main thread
         /// </summary>
@@ -123,6 +125,15 @@ namespace CorgEng.Core
         }
 
         /// <summary>
+        /// Called when everything is full intialised
+        /// </summary>
+        private static void Ready()
+        {
+            OnReadyEvents?.Invoke();
+            OnReadyEvents = null;
+        }
+
+        /// <summary>
         /// Transfers control of the main thread to the internal
         /// CorgEng rendering pipeline.
         /// </summary>
@@ -132,6 +143,8 @@ namespace CorgEng.Core
             int i = 0;
             double total = 0;
 #endif
+            //Call the ready callbacks
+            Ready();
             //While the window shouldn't close
             while (!GameWindow.ShouldClose())
             {

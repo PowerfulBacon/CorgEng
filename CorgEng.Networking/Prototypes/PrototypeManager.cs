@@ -136,6 +136,7 @@ namespace CorgEng.Networking.Prototypes
 
         public void AddPrototype(IPrototype prototype)
         {
+            Logger.WriteLine($"Prototype {prototype.Identifier} created successfully.", LogType.DEBUG);
             PrototypeLookup.AddOrUpdate(prototype.Identifier, prototype, (key, value) => prototype);
             //Call the prototype added trigger
             foreach (KeyValuePair<Action<IPrototype>, bool> prototypeAddCallback in prototypeAddCallbacks)
@@ -173,8 +174,8 @@ namespace CorgEng.Networking.Prototypes
             Logger.WriteLine($"Requesting prototype {prototypeIdentifier} from server...", LogType.DEBUG);
             //Wait until we recieve the requested prototype. Send the request every 100ms until we get a result
             //TODO: After 2 seconds, timeout and disconnect from the server
-            int attemptsRemaining = 20;
-            while (waitEvent.WaitOne(100) && attemptsRemaining-- > 0)
+            int attemptsRemaining = 10;
+            while (waitEvent.WaitOne(500) && attemptsRemaining-- > 0)
             {
                 //We were successful
                 if (successStateAchieved)
@@ -189,8 +190,8 @@ namespace CorgEng.Networking.Prototypes
                     BitConverter.GetBytes(prototypeIdentifier)
                     ));
             }
-            Logger.WriteLine("Failed to fetch prototype from server after 2 seconds.", LogType.WARNING);
-            throw new Exception("Failed to fetch prototype from server, server is not responding.");
+            Logger.WriteLine($"Failed to fetch prototype {prototypeIdentifier} from server after 10 attempts.", LogType.WARNING);
+            throw new Exception($"Failed to fetch prototype {prototypeIdentifier} from server, server is not responding.");
         }
 
         /// <summary>
