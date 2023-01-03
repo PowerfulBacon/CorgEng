@@ -189,7 +189,10 @@ namespace CorgEng.UserInterface.Components
         /// <param name="argumentValue"></param>
         public void AddArgument(string argumentName, string argumentValue)
         {
-            Parameters.Add(argumentName, argumentValue);
+            if (Parameters.ContainsKey(argumentName))
+                Parameters[argumentName] = argumentValue;
+            else
+                Parameters.Add(argumentName, argumentValue);
             if (argumentHandlers.ContainsKey(argumentName))
             {
                 argumentHandlers[argumentName].Invoke(argumentValue);
@@ -221,6 +224,8 @@ namespace CorgEng.UserInterface.Components
                 {
                     throw new Exception($"No static method with the key '{methodName}' exists.");
                 }
+                if (ComponentHolder.TryGetComponent(out UserInterfaceClickerComponent clickerComponent))
+                    ComponentHolder.RemoveComponent(clickerComponent, false);
                 ComponentHolder.AddComponent(new UserInterfaceClickerComponent(UserInterfaceModule.KeyMethods[methodName], this));
             });
         }
@@ -517,7 +522,6 @@ namespace CorgEng.UserInterface.Components
             PixelHeight = Math.Max(MinimumPixelHeight, height);
             //Update our render core size
             Resize((int)PixelWidth, (int)PixelHeight);
-            Logger?.WriteLine($"Reszied UI Element {uniqueId} to {PixelWidth}x{PixelHeight} at ({LeftOffset}, {BottomOffset})", LogType.DEBUG);
             //Update child components
             lock (lockObject)
             {

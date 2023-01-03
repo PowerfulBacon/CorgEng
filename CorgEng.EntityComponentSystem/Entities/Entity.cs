@@ -182,5 +182,24 @@ namespace CorgEng.EntityComponentSystem.Entities
             }
             return default;
         }
+
+        public bool TryGetComponent<T>(out T component)
+        {
+            //Get derived types too
+            lock (Components)
+            {
+                foreach (IComponent _component in Components)
+                {
+                    if (_component is T componentAsT)
+                    {
+                        component = componentAsT;
+                        return true;
+                    }
+                }
+            }
+            component = default(T);
+            return false;
+        }
+
     }
 }
