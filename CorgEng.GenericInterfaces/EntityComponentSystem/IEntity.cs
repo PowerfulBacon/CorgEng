@@ -52,6 +52,14 @@ namespace CorgEng.GenericInterfaces.EntityComponentSystem
         T GetComponent<T>();
 
         /// <summary>
+        /// Try and get a component
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="component"></param>
+        /// <returns></returns>
+        bool TryGetComponent<T>(out T component);
+
+        /// <summary>
         /// Attempt to find this component, returns null if unfound.
         /// </summary>
         /// <typeparam name="T"></typeparam>

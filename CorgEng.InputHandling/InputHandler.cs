@@ -129,6 +129,11 @@ namespace CorgEng.InputHandling
                 {
                     case InputState.Press:
                         MousePressEvent mousePressEvent = new MousePressEvent(x / width, y / height, button, modifiers);
+                        //Raise click events against the user interface (TODO: Add in event priorities)
+                        if (UserInterfaceClickHook?.TestUserInterfaceHook(x / width, y / height, button, modifiers) ?? false)
+                        {
+                            return;
+                        }
                         mousePressEvent.RaiseGlobally();
                         mouseDownAt = CorgEngMain.Time;
                         //Trigger the action
@@ -147,17 +152,12 @@ namespace CorgEng.InputHandling
                     case InputState.Release:
                         MouseReleaseEvent mouseReleaseEvent = new MouseReleaseEvent(x / width, y / height, button, modifiers);
                         mouseReleaseEvent.HeldTime = CorgEngMain.Time - mouseDownAt;
-                        //Raise click events against the user interface (TODO: Add in event priorities)
-                        if (UserInterfaceClickHook?.TestUserInterfaceHook(x / width, y / height, button, modifiers) ?? false)
-                        {
-                            return;
-                        }
                         //Raise synchronously, so we can determine if the event was handled
                         mouseReleaseEvent.RaiseGlobally(true);
                         //Handle world clicks
                         if (!mouseReleaseEvent.Handled && mouseReleaseEvent.MouseButton == MouseButton.Left)
                         {
-                            WorldClickHandler.HandleWorldClick(mouseReleaseEvent, CorgEngMain.GameWindow.Width, CorgEngMain.GameWindow.Height);
+                            SelectableSystem.HandleWorldClick(mouseReleaseEvent, CorgEngMain.GameWindow.Width, CorgEngMain.GameWindow.Height);
                         }
                         //Trigger the action
                         if (!boundMouseActions.TryGetValue(button, out action))

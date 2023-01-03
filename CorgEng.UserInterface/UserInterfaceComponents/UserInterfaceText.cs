@@ -72,6 +72,10 @@ namespace CorgEng.UserInterface.UserInterfaceComponents
             internalTextObject.StartRendering();
             Text = text;
             ready = true;
+            //Allow the text to be changed
+            AddArgument("text", text => {
+                internalTextObject.TextProperty.Value = text;
+            });
         }
 
         public override void PerformRender()

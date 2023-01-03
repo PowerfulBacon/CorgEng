@@ -24,7 +24,7 @@ using System.Threading.Tasks;
 namespace CorgEng.InputHandling.ClickHandler
 {
 
-    internal class WorldClickHandler : EntitySystem
+    public class SelectableSystem : EntitySystem
     {
 
         [UsingDependency]
@@ -51,7 +51,7 @@ namespace CorgEng.InputHandling.ClickHandler
 
         private static IIcon selectorOverlay;
         private static SelectedComponent currentSelectedComponent;
-        private static IEntity selectedEntity;
+        public static IEntity SelectedEntity { get; private set; }
 
         public override void SystemSetup()
         {
@@ -64,15 +64,15 @@ namespace CorgEng.InputHandling.ClickHandler
         {
             if (componentAddedEvent.Component != selectedComponent)
                 return;
-            if (selectedEntity == entity)
+            if (SelectedEntity == entity)
                 return;
             //Unselect the existing entity
-            if (selectedEntity != null)
+            if (SelectedEntity != null)
             {
-                selectedEntity.RemoveComponent(currentSelectedComponent, false);
+                SelectedEntity.RemoveComponent(currentSelectedComponent, false);
             }
             //Select this one
-            selectedEntity = entity;
+            SelectedEntity = entity;
             currentSelectedComponent = selectedComponent;
             //Call selection event
             new EntitySelectedEvent().Raise(entity);
@@ -88,9 +88,9 @@ namespace CorgEng.InputHandling.ClickHandler
             new EntityDeselectedEvent().Raise(entity);
             new RemoveOverlayEvent(selectorOverlay).Raise(entity);
             //Deselect
-            if (selectedEntity == entity)
+            if (SelectedEntity == entity)
             {
-                selectedEntity = null;
+                SelectedEntity = null;
                 currentSelectedComponent = null;
             }
         }
@@ -106,9 +106,9 @@ namespace CorgEng.InputHandling.ClickHandler
         /// </summary>
         public static void HandleWorldClick(MouseReleaseEvent releaseEvent, float windowWidth, float windowHeight)
         {
-            if (selectedEntity != null)
+            if (SelectedEntity != null)
             {
-                selectedEntity.RemoveComponent(currentSelectedComponent, false);
+                SelectedEntity.RemoveComponent(currentSelectedComponent, false);
             }
             //Transform the clicked position into world position
             IVector<float> clickedLocation = CorgEngMain.MainCamera.ScreenToWorldCoordinates(releaseEvent.CursorX * 2 - 1, releaseEvent.CursorY * 2 - 1, windowWidth, windowHeight);
