@@ -145,6 +145,8 @@ namespace CorgEng.Core
 #endif
             //Call the ready callbacks
             Ready();
+            //Use the FPS cap
+            Glfw.SwapInterval(1);
             //While the window shouldn't close
             while (!GameWindow.ShouldClose())
             {
