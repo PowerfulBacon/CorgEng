@@ -7,6 +7,7 @@ using CorgEng.EntityComponentSystem.Systems;
 using CorgEng.Example.Shared.Components.Gravity;
 using CorgEng.GenericInterfaces.EntityComponentSystem;
 using CorgEng.GenericInterfaces.Rendering.Icons;
+using CorgEng.Lighting.Components;
 using CorgEng.Networking.Components;
 using CorgEng.Pathfinding.Components;
 using CorgEng.UtilityTypes.Vectors;

@@ -578,5 +578,23 @@ namespace CorgEng.UserInterface.Components
         {
             UserInterfaceClickHook.ScreencastingComopnents.Remove(this);
         }
+
+        private Dictionary<string, object> dataStore = new Dictionary<string, object>();
+
+        public void AddData(string dataName, object dataValue)
+        {
+            dataStore.Add(dataName, dataValue);
+        }
+
+        public void ClearData(string dataName)
+        {
+            if (dataStore.ContainsKey(dataName))
+                dataStore.Remove(dataName);
+        }
+
+        public object GetData(string dataName)
+        {
+            return dataStore[dataName];
+        }
     }
 }

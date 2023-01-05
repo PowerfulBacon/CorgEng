@@ -7,6 +7,7 @@
     <Module>CorgEng.Example.Shared</Module>
     <Module>CorgEng.Font</Module>
     <Module>CorgEng.InputHandling</Module>
+    <Module>CorgEng.Lighting</Module>
     <Module>CorgEng.Logging</Module>
     <Module>CorgEng.Networking</Module>
     <Module>CorgEng.Pathfinding</Module>

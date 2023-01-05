@@ -9,6 +9,7 @@ using CorgEng.GenericInterfaces.Rendering.Text;
 using CorgEng.GenericInterfaces.Rendering.Textures;
 using CorgEng.GenericInterfaces.UserInterface.Components;
 using CorgEng.GenericInterfaces.UserInterface.Generators;
+using CorgEng.Lighting.RenderCores;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -49,11 +50,14 @@ namespace CorgEng.Example.Shared.RenderCores
             IFont font = FontFactory.GetFont("CourierCode");
             ITextObject textObject = TextObjectFactory.CreateTextObject(spriteRenderer, font, "CorgEng.Font");
             textObject.StartRendering();
+            
         }
 
         public override void PerformRender()
         {
             spriteRenderer?.Render(CorgEngMain.MainCamera);
+            LightingRenderCore.Singleton.DoRender();
+            LightingRenderCore.Singleton.DrawToBuffer(FrameBufferUint, 0, 0, Width, Height);
         }
     }
 }
