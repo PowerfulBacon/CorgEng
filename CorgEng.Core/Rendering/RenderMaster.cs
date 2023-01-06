@@ -31,10 +31,10 @@ namespace CorgEng.Core.Rendering
             glFrontFace(GL_CW);
             //Enable blending for transparent objects
             glEnable(GL_BLEND);
-            //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-            glBlendEquationSeparate(GL_FUNC_ADD, GL_FUNC_ADD);
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+            //glBlendEquationSeparate(GL_FUNC_ADD, GL_FUNC_ADD);
             //Colour = (alpha*S) + (1-alpha) * d
-            glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO);
+            //glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO);
             //glBlendFunc(GL_DST_COLOR, GL_ZERO);
             //Colour = D*S + 0*D
             //Alpha = 1*S + 0*D
@@ -44,7 +44,7 @@ namespace CorgEng.Core.Rendering
             //Use the lowest number fragment
             glDepthFunc(GL_LEQUAL);
             //Set a background colour
-            glClearColor(0, 0, 0, 1.0f);
+            glClearColor(0, 0, 0, 0);
 
         }
 

@@ -2,6 +2,7 @@
 using CorgEng.GenericInterfaces.Core;
 using CorgEng.GenericInterfaces.Logging;
 using CorgEng.GenericInterfaces.Rendering.Shaders;
+using CorgEng.GenericInterfaces.UtilityTypes;
 using System;
 using static OpenGL.Gl;
 
@@ -16,6 +17,9 @@ namespace CorgEng.Core.Rendering
         //Fetch shader loading from some dependency somewhere
         [UsingDependency]
         private static IShaderFactory ShaderFactory;
+
+        [UsingDependency]
+        protected static IColourFactory ColourFactory;
 
         private static float[] quadVertices = {
             1, 1, 0,
@@ -58,6 +62,7 @@ namespace CorgEng.Core.Rendering
 
         public int Height { get; internal set; } = 1080;
 
+        private static IColour _currentBackColour;
         private static DepthModes _currentDepthMode = DepthModes.KEEP_DEPTH;
         private static RenderModes _currentBlendMode = RenderModes.DEFAULT;
 
@@ -76,6 +81,8 @@ namespace CorgEng.Core.Rendering
         /// Ignoring depth causes the render core to overlay on whatever it is being drawn on.
         /// </summary>
         public virtual DepthModes DepthMode { get; } = DepthModes.KEEP_DEPTH;
+
+        public virtual IColour BackColour { get; } = ColourFactory.GetColour(0, 0, 0, 0);
 
         public unsafe RenderCore()
         {
@@ -163,9 +170,13 @@ namespace CorgEng.Core.Rendering
         public void DoRender()
         {
             RenderModes prev = SwitchBlendMode(BlendMode);
+            DepthModes prevDepth = SwitchDepthMode(DepthMode);
+            IColour prevColour = SwitchBackColour(BackColour);
             PreRender();
             PerformRender();
             SwitchBlendMode(prev);
+            SwitchDepthMode(prevDepth);
+            SwitchBackColour(prevColour);
         }
 
         protected static RenderModes SwitchBlendMode(RenderModes newMode)
@@ -207,6 +218,16 @@ namespace CorgEng.Core.Rendering
             return prevMode;
         }
 
+        protected static IColour SwitchBackColour(IColour newColour)
+        {
+            if (newColour == null || newColour.Equals(_currentBackColour))
+                return newColour;
+            IColour prevCol = _currentBackColour;
+            _currentBackColour = newColour;
+            glClearColor(newColour.Red, newColour.Green, newColour.Blue, newColour.Alpha);
+            return prevCol;
+        }
+
         /// <summary>
         /// Called when the render core is initialized
         /// </summary>
@@ -246,6 +267,7 @@ namespace CorgEng.Core.Rendering
             //Setup blending
             RenderModes prevRender = SwitchBlendMode(DrawMode);
             DepthModes prevBlend = SwitchDepthMode(DepthMode);
+            IColour prevColour = SwitchBackColour(BackColour);
 
             //Set the using program to our program uint
             glUseProgram(programUint);
@@ -274,6 +296,7 @@ namespace CorgEng.Core.Rendering
 
             SwitchBlendMode(prevRender);
             SwitchDepthMode(prevBlend);
+            SwitchBackColour(prevColour);
         }
     }
 }

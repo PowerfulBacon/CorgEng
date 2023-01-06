@@ -2,6 +2,7 @@
 using CorgEng.Core.Dependencies;
 using CorgEng.Core.Rendering;
 using CorgEng.GenericInterfaces.Rendering.Renderers.SpriteRendering;
+using CorgEng.GenericInterfaces.UtilityTypes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -37,6 +38,8 @@ namespace CorgEng.Lighting.RenderCores
         public override DepthModes DepthMode => DepthModes.IGNORE_DEPTH;
 
         public ISpriteRenderer lightRenderer = null!;
+
+        public override IColour BackColour => ColourFactory.GetColour(0, 0, 0, 1);
 
         public override void Initialize()
         {
