@@ -22,6 +22,7 @@ namespace AutoMap
         [UsingDependency]
         private static IEntityFactory EntityFactory;
 
+        [STAThread]
         public static void Main(string[] args)
         {
             //Load the application config

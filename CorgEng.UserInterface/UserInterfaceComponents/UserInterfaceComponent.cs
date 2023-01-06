@@ -555,7 +555,7 @@ namespace CorgEng.UserInterface.Components
             //Screencast children first (Children are above us)
             lock (lockObject)
             {
-                foreach (IUserInterfaceComponent childComponent in Children)
+                foreach (IUserInterfaceComponent childComponent in Children.Reverse<IUserInterfaceComponent>())
                 {
                     //Determine new relative positions
                     int newRelativeX = relativeX - (int)childComponent.LeftOffset;

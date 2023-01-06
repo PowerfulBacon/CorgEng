@@ -1,0 +1,57 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<UserInterface>
+  <!--The atom browser (left)-->
+  <BoxComponent
+    leftAnchor="left:0"
+    rightAnchor="left:300"
+    topAnchor="top:0"
+    bottomAnchor="bottom:0"
+    borderWidth="3"
+    fillColour="#6e91b5"
+    borderColour="#436689"
+    opacity="0.98" >
+  </BoxComponent>
+
+  <!--The top bar with the options-->
+  <BoxComponent
+    leftAnchor="left:0"
+    rightAnchor="right:0"
+    topAnchor="top:0"
+    bottomAnchor="top:40"
+    borderWidth="0"
+    fillColour="#436689"
+    borderColour="#436689" >
+  </BoxComponent>
+
+  <DropdownComponent
+    leftAnchor="left:0"
+    rightAnchor="right:0"
+    topAnchor="top:0"
+    bottomAnchor="bottom:0">
+    <BoxComponent
+      leftAnchor="left:0%"
+      rightAnchor="left:20%"
+      topAnchor="top:0"
+      bottomAnchor="top:40"
+      borderWidth="3"
+      fillColour="#25496D"
+      borderColour="#25496D"
+      opacity="0.98"
+      onClick="Openmap">
+      <IconComponent
+        leftAnchor="left:5"
+        rightAnchor="left:55"
+        topAnchor="top:5"
+        bottomAnchor="bottom:5"
+        icon="error">
+      </IconComponent>
+      <TextComponent
+        leftAnchor="left:70"
+        rightAnchor="right:0"
+        topAnchor="top:0"
+        bottomAnchor="bottom:0"
+        text="Open Map"/>
+    </BoxComponent>
+
+  </DropdownComponent>
+</UserInterface>

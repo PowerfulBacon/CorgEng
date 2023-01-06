@@ -43,8 +43,8 @@ namespace CorgEng.UserInterface.Popups
             set => AttachedComponent.Anchor = AnchorFactory.CreateAnchor(
                 AttachedComponent.Anchor.LeftDetails,
                 AttachedComponent.Anchor.RightDetails,
-                AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.TOP, AnchorUnits.PIXELS, value + Height, true),
-                AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.TOP, AnchorUnits.PIXELS, value, true)
+                AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.TOP, AnchorUnits.PIXELS, value, true),
+                AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.TOP, AnchorUnits.PIXELS, value + Height, true)
                 );
         }
 
@@ -65,8 +65,8 @@ namespace CorgEng.UserInterface.Popups
             set => AttachedComponent.Anchor = AnchorFactory.CreateAnchor(
                 AttachedComponent.Anchor.LeftDetails,
                 AttachedComponent.Anchor.RightDetails,
-                AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.TOP, AnchorUnits.PIXELS, AttachedComponent.Anchor.BottomDetails.AnchorOffset + value, true),
-                AttachedComponent.Anchor.BottomDetails
+                AttachedComponent.Anchor.TopDetails,
+                AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.TOP, AnchorUnits.PIXELS, AttachedComponent.Anchor.TopDetails.AnchorOffset + value, true)
                 );
         }
         public PopupWindow(IUserInterfaceComponent containedComponent)

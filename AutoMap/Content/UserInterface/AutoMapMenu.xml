@@ -1,0 +1,56 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<BoxComponent
+  leftAnchor="left:0"
+  rightAnchor="right:0"
+  topAnchor="top:0"
+  bottomAnchor="bottom:0"
+  borderWidth="3"
+  fillColour="#6e91b5"
+  borderColour="#436689"
+  opacity="0.98" >
+
+  <TextComponent
+    leftAnchor="left:0"
+    rightAnchor="right:0"
+    topAnchor="top:0"
+    bottomAnchor="top:60"
+    text="AutoMap"/>
+
+  <BoxComponent
+    leftAnchor="left:20"
+    rightAnchor="right:20"
+    topAnchor="top:120"
+    bottomAnchor="top:180"
+    borderWidth="3"
+    fillColour="#3778bc"
+    borderColour="#436689"
+    opacity="0.98"
+    onClick="LoadEnvironment">
+    <TextComponent
+      leftAnchor="left:0"
+      rightAnchor="right:0"
+      topAnchor="top:0"
+      bottomAnchor="bottom:0"
+      text="Load Environment"/>
+  </BoxComponent>
+
+
+  <BoxComponent
+    leftAnchor="left:20"
+    rightAnchor="right:20"
+    topAnchor="top:200"
+    bottomAnchor="top:260"
+    borderWidth="3"
+    fillColour="#3778bc"
+    borderColour="#436689"
+    opacity="0.98"
+    onClick="Quit">
+    <TextComponent
+      leftAnchor="left:0"
+      rightAnchor="right:0"
+      topAnchor="top:0"
+      bottomAnchor="bottom:0"
+      text="Quit"/>
+  </BoxComponent>
+
+</BoxComponent>

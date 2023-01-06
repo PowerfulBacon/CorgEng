@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<BoxComponent
+  leftAnchor="left:0"
+  rightAnchor="right:0"
+  topAnchor="top:0"
+  bottomAnchor="bottom:0"
+  borderWidth="3"
+  fillColour="#6e91b5"
+  borderColour="#436689"
+  opacity="0.98" >
+
+  <TextComponent
+    leftAnchor="left:0"
+    rightAnchor="right:0"
+    topAnchor="top:0"
+    bottomAnchor="top:60"
+    text="Loading..."/>
+
+  <BoxComponent
+    leftAnchor="left:20"
+    rightAnchor="right:20"
+    topAnchor="top:120"
+    bottomAnchor="top:180"
+    borderWidth="3"
+    fillColour="#818B95"
+    borderColour="#436689"
+    opacity="0.98">
+    <BoxComponent
+      leftAnchor="left:0"
+      rightAnchor="right:50"
+      topAnchor="top:0"
+      bottomAnchor="top:0"
+      borderWidth="3"
+      fillColour="#7fb7f2"
+      borderColour="#436689"
+      opacity="0.98">
+    </BoxComponent>
+  </BoxComponent>
+
+</BoxComponent>

@@ -47,6 +47,11 @@ namespace CorgEng.Core.Rendering
             Glfw.WindowHint(Hint.Resizable, true);
         }
 
+        public void Close()
+        {
+            Glfw.SetWindowShouldClose(glWindowInstance, true);
+        }
+
         public bool ShouldClose()
         {
             return Glfw.WindowShouldClose(glWindowInstance);

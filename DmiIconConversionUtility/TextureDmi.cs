@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 
 namespace GJ2022.DmiIconConversionUtility
 {
-    class TextureDmi
+    public class TextureDmi
     {
 
         //Scale of the texture in the loaded image
