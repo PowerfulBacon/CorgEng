@@ -118,7 +118,44 @@ EntityCreator.CreateEntity(objectToSpawn, (createdEntity) => {
 
 ## Render Cores
 
-Render Cores are the way that CorgEng handles rendering. A render core is a framebuffer that can be bound and drawn to. It has a width and height that can be dynamically modified.
+Render Cores are the way that CorgEng handles rendering. A render core is a screen that can have objects drawn to it before being drawn to the main display. It has a width and height that can be dynamically modified.
 To display a render core, you can render it to any other render core or the main screen.
 CorgEng will automatically draw the main render core to the screen every frame.
 This allows for the simple application of post-processing effects and culling which will be useful for parts of the game such as UI.
+
+It is important to note that despite being a screen, depth information is retained. This means that if you draw 2 render cores onto the main screen or another render core, by default the depth of the objects inside both render cores will be preserved. If you want a render core to overlay itself onto another and ignore depth information, then `DepthMode` can be changed.
+
+Render cores have some settings on them which can be changed in order to change how they render things being drawn on them.
+
+### DrawMode
+
+Describes how the render core should be rendered when drawn to another frame buffer.
+
+|Option|Description|
+|-|-|
+|DEFAULT|The render core will be drawn normally.|
+|MULTIPLY|The render core will multiply whatever it is being drawn on top of by its own pixels.|
+|ADDITIVE|The render core will be drawn by adding the render core's pixels with the pixels of the framebuffer being drawn to.|
+
+### BlendMode
+
+Describes how objects drawn onto the render core should blend together.
+
+|Option|Description|
+|-|-|
+|DEFAULT|The objects drawn to the render core will be drawn normally.|
+|MULTIPLY|The objects drawn to the render core will be drawn multiplicatively.|
+|ADDITIVE|The objects drawn to the render core will be drawn by adding together the pixel values at each location.|
+
+### DepthMode
+
+Describes how the render core should handle depth information.
+
+|Option|Description|
+|-|-|
+|KEEP_DEPTH|The render core will maintain depth information, if a render core is drawn on top of another render core then its objects may be drawn behind the objects of the first render core.|
+|IGNORE_DEPTH|The render core will be overlayed when drawn. If a render core is drawn on top of another render core, then objects in the second core will always be drawn on top of objects in the first core.|
+
+### BackColour
+
+The background colour of the render core. Fully transparent black by default.
