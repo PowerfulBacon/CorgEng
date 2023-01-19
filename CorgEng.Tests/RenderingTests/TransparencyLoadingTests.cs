@@ -27,10 +27,10 @@ namespace CorgEng.Tests.RenderingTests
         [Timeout(10000)]
         public void TestTransparencyLoading()
         {
-            Assert.IsTrue(IconFactory.CreateIcon("is_transparent", 0).HasTransparency);
-            Assert.IsTrue(IconFactory.CreateIcon("is_transparent_two", 0).HasTransparency);
-            Assert.IsFalse(IconFactory.CreateIcon("is_not_transparent", 0).HasTransparency);
-            Assert.IsFalse(IconFactory.CreateIcon("is_not_transparent_two", 0).HasTransparency);
+            Assert.IsTrue(IconFactory.CreateIcon("is_transparent", 0, 0).HasTransparency);
+            Assert.IsTrue(IconFactory.CreateIcon("is_transparent_two", 0, 0).HasTransparency);
+            Assert.IsFalse(IconFactory.CreateIcon("is_not_transparent", 0, 0).HasTransparency);
+            Assert.IsFalse(IconFactory.CreateIcon("is_not_transparent_two", 0, 0).HasTransparency);
         }
 
     }
