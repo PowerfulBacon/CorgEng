@@ -3,11 +3,6 @@ using CorgEng.Core.Dependencies;
 using CorgEng.Core.Rendering;
 using CorgEng.GenericInterfaces.Rendering.Renderers.SpriteRendering;
 using CorgEng.GenericInterfaces.UtilityTypes;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using static OpenGL.Gl;
 
 namespace CorgEng.Lighting.RenderCores
