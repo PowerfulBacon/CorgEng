@@ -18,6 +18,12 @@ using static OpenGL.Gl;
 namespace CorgEng.Rendering
 {
 
+    internal static class InstancedRendererDependencyHolder
+    {
+        [UsingDependency]
+        internal static ILogger Logger;
+    }
+
     public abstract class InstancedRenderer<TSharedRenderAttributes, TBatch> : IRenderer
         where TSharedRenderAttributes : ISharedRenderAttributes
         where TBatch : IBatch<TBatch>, new()
@@ -46,8 +52,9 @@ namespace CorgEng.Rendering
             //Set the network identifier
             NetworkIdentifier = networkIdentifier;
             //Do the renderer lookup
-            if (networkIdentifier != NetworkedRenderingConstants.NETWORK_RENDERING_ID_LOCAL)
+            if (networkIdentifier != RenderingConstants.NETWORK_RENDERING_ID_LOCAL)
             {
+                InstancedRendererDependencyHolder.Logger.WriteLine($"Added renderer on plane ID {networkIdentifier}", LogType.DEBUG);
                 RendererLookup.AddRenderer(this);
             }
         }

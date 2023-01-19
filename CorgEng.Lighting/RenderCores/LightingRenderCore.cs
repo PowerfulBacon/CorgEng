@@ -15,6 +15,8 @@ namespace CorgEng.Lighting.RenderCores
     public class LightingRenderCore : RenderCore
     {
 
+        public const int LIGHTING_PLANE = 10;
+
         [UsingDependency]
         private static ISpriteRendererFactory SpriteRendererFactory = default!;
 
@@ -43,7 +45,7 @@ namespace CorgEng.Lighting.RenderCores
 
         public override void Initialize()
         {
-            lightRenderer = SpriteRendererFactory.CreateSpriteRenderer(0);
+            lightRenderer = SpriteRendererFactory.CreateSpriteRenderer(LIGHTING_PLANE);
             lightRenderer.Initialize();
         }
 

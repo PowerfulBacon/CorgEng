@@ -60,24 +60,8 @@ namespace CorgEng.Rendering.SpriteRendering
             get => _currentRenderer;
             set
             {
-                //Stop rendering overlays
-                if (_currentRenderer != null)
-                {
-                    foreach (ISpriteRenderObject overlayObject in overlays.Values)
-                    {
-                        _currentRenderer.StopRendering(overlayObject);
-                    }
-                }
                 //Set the renderer
                 _currentRenderer = value;
-                //Move all overlays to the new renderer
-                if (_currentRenderer != null)
-                {
-                    foreach (ISpriteRenderObject overlayObject in overlays.Values)
-                    {
-                        _currentRenderer.StartRendering(overlayObject);
-                    }
-                }
             }
         }
 
@@ -163,6 +147,14 @@ namespace CorgEng.Rendering.SpriteRendering
             //Set the layer
             IconLayer.Value[0] = sourceIcon.Layer;
             IconLayer.TriggerChanged();
+            // Change the renderer if required
+            if (CurrentRenderer != sourceIcon.Renderer)
+            {
+                //Stop drawing
+                CurrentRenderer?.StopRendering(this);
+                //Start drawing
+                sourceIcon.Renderer?.StartRendering(this);
+            }
         }
 
         private object batchContained;
@@ -184,6 +176,8 @@ namespace CorgEng.Rendering.SpriteRendering
 
         public void AddOverlay(IIcon overlay)
         {
+            if (overlay.Renderer == null)
+                throw new ArgumentNullException("An icon will a null renderer was added as an overlay.");
             //Get the texture details
             ITextureState textureState = TextureFactory.GetTextureFromIconState(overlay);
             //Get the sprite render object
@@ -199,7 +193,7 @@ namespace CorgEng.Rendering.SpriteRendering
             //Set it as the container
             spriteRenderObject.Container = this;
             //If we are currently being rendered, render the overlay on the same renderer
-            CurrentRenderer?.StartRendering(spriteRenderObject);
+            //overlay.Renderer?.StartRendering(spriteRenderObject);
             //Copy across the transform
             spriteRenderObject.SelfTransform.Value = Matrix.Identity[3];
             //Add the overlay
@@ -212,7 +206,7 @@ namespace CorgEng.Rendering.SpriteRendering
         public void RemoveOverlay(IIcon overlay)
         {
             //Stop rendering the overlay
-            CurrentRenderer?.StopRendering(overlays[overlay]);
+            overlay.Renderer?.StopRendering(overlays[overlay]);
             //Remove the overlay
             overlays.Remove(overlay);
         }

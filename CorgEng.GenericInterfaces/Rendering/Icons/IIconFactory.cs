@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CorgEng.GenericInterfaces.Rendering.Renderers.SpriteRendering;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,7 +10,7 @@ namespace CorgEng.GenericInterfaces.Rendering.Icons
     public interface IIconFactory
     {
 
-        IIcon CreateIcon(string name, float layer);
+        IIcon CreateIcon(string name, float layer, uint plane);
 
     }
 }
