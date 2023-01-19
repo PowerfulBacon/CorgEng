@@ -7,6 +7,8 @@ using CorgEng.GenericInterfaces.ContentLoading;
 using CorgEng.GenericInterfaces.Rendering.Icons;
 using CorgEng.Lighting.Components;
 using CorgEng.Lighting.RenderCores;
+using CorgEng.UtilityTypes.Matrices;
+using CorgEng.UtilityTypes.Vectors;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,6 +34,12 @@ namespace CorgEng.Lighting.Systems
             RegisterLocalEvent<LightingComponent, InitialiseEvent>((entity, lightingComponent, signal) => {
                 //Create an overlay lighting icon.
                 IIcon createdIcon = IconFactory.CreateIcon("light_mask", 100, LightingRenderCore.LIGHTING_PLANE);
+                createdIcon.Transform = new Matrix(new float[,]
+                    {
+                        { 8, 0, 0 },
+                        { 0, 8, 0 },
+                        { 0, 0, 1 },
+                    });
                 //Apply the overlay to the entity
                 new AddOverlayEvent(createdIcon).Raise(entity);
             });

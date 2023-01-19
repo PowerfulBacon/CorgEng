@@ -195,7 +195,7 @@ namespace CorgEng.Rendering.SpriteRendering
             //If we are currently being rendered, render the overlay on the same renderer
             //overlay.Renderer?.StartRendering(spriteRenderObject);
             //Copy across the transform
-            spriteRenderObject.SelfTransform.Value = Matrix.Identity[3];
+            spriteRenderObject.SelfTransform.Value = overlay.Transform;
             //Add the overlay
             overlays.Add(
                 overlay,

@@ -41,7 +41,7 @@ namespace CorgEng.Lighting.RenderCores
 
         public ISpriteRenderer lightRenderer = null!;
 
-        public override IColour BackColour => ColourFactory.GetColour(0, 0, 0, 1);
+        public override IColour BackColour => ColourFactory.GetColour(0.4f, 0.4f, 0.4f, 1);
 
         public override void Initialize()
         {

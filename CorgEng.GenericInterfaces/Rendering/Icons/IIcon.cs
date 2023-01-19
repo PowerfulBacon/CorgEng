@@ -55,5 +55,10 @@ namespace CorgEng.GenericInterfaces.Rendering.Icons
         /// </summary>
         ISpriteRenderer Renderer { get; }
 
+        /// <summary>
+        /// The transform that will be applied to this icon.
+        /// </summary>
+        IMatrix Transform { get; set; }
+
     }
 }

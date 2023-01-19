@@ -4,6 +4,7 @@ using CorgEng.GenericInterfaces.Rendering.Renderers.SpriteRendering;
 using CorgEng.GenericInterfaces.Rendering.Textures;
 using CorgEng.GenericInterfaces.Serialization;
 using CorgEng.GenericInterfaces.UtilityTypes;
+using CorgEng.UtilityTypes.Matrices;
 using CorgEng.UtilityTypes.Vectors;
 using System;
 using System.IO;
@@ -86,6 +87,20 @@ namespace CorgEng.Rendering.Icons
                 if (_cachedRenderer == null)
                     _cachedRenderer = RendererLookup.GetRendererByIdentifier<ISpriteRenderer>(Plane);
                 return _cachedRenderer;
+            }
+        }
+
+        /// <summary>
+        /// The transform of the icon
+        /// </summary>
+        private IMatrix _transform = Matrix.Identity[3];
+        public IMatrix Transform
+        {
+            get => _transform;
+            set
+            {
+                _transform = value;
+                ValueChanged?.Invoke();
             }
         }
 
