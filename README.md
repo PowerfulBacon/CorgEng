@@ -159,3 +159,8 @@ Describes how the render core should handle depth information.
 ### BackColour
 
 The background colour of the render core. Fully transparent black by default.
+
+### Screenshots
+
+![image](https://user-images.githubusercontent.com/26465327/213481696-4fcd4d85-3e0e-4a67-a788-9eb015e8d272.png)
+Lighting Example.
