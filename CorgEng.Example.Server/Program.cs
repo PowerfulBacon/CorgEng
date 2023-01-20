@@ -156,7 +156,7 @@ namespace CorgEng.Example.Server
                                     testingEntity.AddComponent(new SolidComponent());
                                     //Update the entity
                                     new SetPositionEvent(new Vector<float>(xv + offset_x, -yv + offset_y)).Raise(testingEntity);
-                                    new SetSpriteEvent(IconFactory.CreateIcon("rock", 5)).Raise(testingEntity);
+                                    new SetSpriteEvent(IconFactory.CreateIcon("rock", 5, Constants.RenderingConstants.DEFAULT_RENDERER_PLANE)).Raise(testingEntity);
                                     new SetSpriteRendererEvent(1).Raise(testingEntity);
                                 });
                             }
@@ -173,7 +173,7 @@ namespace CorgEng.Example.Server
                 testingEntity.AddComponent(new SandFactoryComponent());
                 //Update the entity
                 new SetPositionEvent(new Vector<float>(500 + offset_x, offset_y)).Raise(testingEntity);
-                new SetSpriteEvent(IconFactory.CreateIcon("sand", 5)).Raise(testingEntity);
+                new SetSpriteEvent(IconFactory.CreateIcon("sand", 5, Constants.RenderingConstants.DEFAULT_RENDERER_PLANE)).Raise(testingEntity);
                 new SetSpriteRendererEvent(1).Raise(testingEntity);
             });
         }
@@ -183,7 +183,7 @@ namespace CorgEng.Example.Server
             EntityFactory.CreateEmptyEntity(playerPrototype => {
                 playerPrototype.AddComponent(new ClientComponent());
                 playerPrototype.AddComponent(new NetworkTransformComponent());
-                playerPrototype.AddComponent(new SpriteRenderComponent() { Sprite = IconFactory.CreateIcon("human.ghost", 5), SpriteRendererIdentifier = 1 });
+                playerPrototype.AddComponent(new SpriteRenderComponent() { Sprite = IconFactory.CreateIcon("human.ghost", 5, Constants.RenderingConstants.DEFAULT_RENDERER_PLANE), SpriteRendererIdentifier = 1 });
                 playerPrototype.AddComponent(new PlayerMovementComponent());
                 IPrototype prototype = PrototypeManager.GetPrototype(playerPrototype);
                 NetworkingServer.SetClientPrototype(prototype);
