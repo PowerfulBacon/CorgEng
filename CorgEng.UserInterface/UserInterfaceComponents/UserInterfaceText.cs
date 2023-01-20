@@ -59,7 +59,7 @@ namespace CorgEng.UserInterface.UserInterfaceComponents
             //Create the camera
             IsometricCamera = IsometricCameraFactory.CreateCamera();
             //Create the renderer (Local, since UI)
-            spriteRenderer = SpriteRendererFactory.CreateSpriteRenderer(Constants.NetworkedRenderingConstants.NETWORK_RENDERING_ID_LOCAL);
+            spriteRenderer = SpriteRendererFactory.CreateSpriteRenderer(Constants.RenderingConstants.NETWORK_RENDERING_ID_LOCAL);
             spriteRenderer.Initialize();
             //Get the font to use
             string typeface;

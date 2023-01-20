@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CorgEng.Core\CorgEng.Core.csproj" />
+    <ProjectReference Include="..\CorgEng.EntityComponentSystem\CorgEng.EntityComponentSystem.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Content\lighting_masks.bmp">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Content\lighting_masks.texdat">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>

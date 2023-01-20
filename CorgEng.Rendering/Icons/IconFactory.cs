@@ -1,5 +1,6 @@
 ﻿using CorgEng.DependencyInjection.Dependencies;
 using CorgEng.GenericInterfaces.Rendering.Icons;
+using CorgEng.GenericInterfaces.Rendering.Renderers.SpriteRendering;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,9 +13,9 @@ namespace CorgEng.Rendering.Icons
     internal class IconFactory : IIconFactory
     {
 
-        public IIcon CreateIcon(string name, float layer)
+        public IIcon CreateIcon(string name, float layer, uint plane)
         {
-            return new Icon(name, layer);
+            return new Icon(name, layer, plane);
         }
 
     }

@@ -1,4 +1,5 @@
 ﻿using CorgEng.GenericInterfaces.Networking.Serialisation;
+using CorgEng.GenericInterfaces.Rendering.Renderers.SpriteRendering;
 using CorgEng.GenericInterfaces.Rendering.Textures;
 using CorgEng.GenericInterfaces.UtilityTypes;
 using System;
@@ -42,6 +43,22 @@ namespace CorgEng.GenericInterfaces.Rendering.Icons
         /// This only accounts for partial transparency (alpha values 1-254)
         /// </summary>
         bool HasTransparency { get; }
+
+        /// <summary>
+        /// The plane that this icon should be renderer on.
+        /// </summary>
+        uint Plane { get; set; }
+
+        /// <summary>
+        /// The renderer being used to render this icon.
+        /// Will be whichever one is attached to the icon's plane.
+        /// </summary>
+        ISpriteRenderer Renderer { get; }
+
+        /// <summary>
+        /// The transform that will be applied to this icon.
+        /// </summary>
+        IMatrix Transform { get; set; }
 
     }
 }

@@ -1,0 +1,12 @@
+﻿{
+    "textures": [
+      {
+        "id": "light_mask",
+        "file": "lighting_masks.bmp",
+        "width": 1024,
+        "height": 1024,
+        "index_x": 0,
+        "index_y": 0
+      }
+	]
+}

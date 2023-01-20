@@ -32,6 +32,13 @@ namespace CorgEng.Core.Rendering
             //Enable blending for transparent objects
             glEnable(GL_BLEND);
             glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+            //glBlendEquationSeparate(GL_FUNC_ADD, GL_FUNC_ADD);
+            //Colour = (alpha*S) + (1-alpha) * d
+            //glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO);
+            //glBlendFunc(GL_DST_COLOR, GL_ZERO);
+            //Colour = D*S + 0*D
+            //Alpha = 1*S + 0*D
+            //glBlendFuncSeparate(GL_DST_COLOR, GL_ZERO, GL_ONE, GL_ZERO);
             //Enable depth test -> We use z to represent the layer an object is on
             glEnable(GL_DEPTH_TEST);
             //Use the lowest number fragment

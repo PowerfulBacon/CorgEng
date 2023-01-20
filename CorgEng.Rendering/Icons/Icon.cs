@@ -1,15 +1,13 @@
 ﻿using CorgEng.Core.Dependencies;
 using CorgEng.GenericInterfaces.Rendering.Icons;
+using CorgEng.GenericInterfaces.Rendering.Renderers.SpriteRendering;
 using CorgEng.GenericInterfaces.Rendering.Textures;
 using CorgEng.GenericInterfaces.Serialization;
 using CorgEng.GenericInterfaces.UtilityTypes;
+using CorgEng.UtilityTypes.Matrices;
 using CorgEng.UtilityTypes.Vectors;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CorgEng.Rendering.Icons
 {
@@ -33,9 +31,20 @@ namespace CorgEng.Rendering.Icons
         public string IconName { get; private set; }
 
         /// <summary>
-        /// The layer to draw this icon on
+        /// The layer to draw this icon on. When updated, will trigger the ValueChanged
+        /// callback.
         /// </summary>
-        public float Layer { get; set; }
+        private float layer;
+
+        public float Layer
+        {
+            get => layer;
+            set
+            {
+                layer = value;
+                ValueChanged?.Invoke();
+            }
+        }
 
         /// <summary>
         /// Should this icon be rendered on the transparent rendering system?
@@ -52,11 +61,56 @@ namespace CorgEng.Rendering.Icons
         /// </summary>
         public IVector<float> Colour { get; set; } = new Vector<float>(1, 1, 1, 1);
 
-        public Icon(string iconName, float layer)
+        /// <summary>
+        /// The renderer that should be used in order to render this icon.
+        /// Will trigger ValueChanged when updated.
+        /// </summary>
+        private uint plane;
+        public uint Plane
+        {
+            get => plane;
+            set
+            {
+                plane = value;
+                //Clear the cached renderer, it is no longer used.
+                _cachedRenderer = null;
+                ValueChanged?.Invoke();
+            }
+        }
+
+        private ISpriteRenderer _cachedRenderer;
+
+        public ISpriteRenderer Renderer
+        {
+            get
+            {
+                if (_cachedRenderer == null)
+                    _cachedRenderer = RendererLookup.GetRendererByIdentifier<ISpriteRenderer>(Plane);
+                return _cachedRenderer;
+            }
+        }
+
+        /// <summary>
+        /// The transform of the icon
+        /// </summary>
+        private IMatrix _transform = Matrix.Identity[3];
+        public IMatrix Transform
+        {
+            get => _transform;
+            set
+            {
+                _transform = value;
+                ValueChanged?.Invoke();
+            }
+        }
+
+        public Icon(string iconName, float layer, uint plane)
         {
             IconName = iconName;
             Layer = layer;
-            Colour.OnChange += (e, args) => {
+            Plane = plane;
+            Colour.OnChange += (e, args) =>
+            {
                 ValueChanged?.Invoke();
             };
         }

@@ -149,5 +149,25 @@ namespace CorgEng.GenericInterfaces.UserInterface.Components
         /// <param name="argumentValue"></param>
         void AddArgument(string argumentName, string argumentValue);
 
+        /// <summary>
+        /// Store an object in the user interface component
+        /// </summary>
+        /// <param name="dataName"></param>
+        /// <param name="dataValue"></param>
+        void AddData(string dataName, object dataValue);
+
+        /// <summary>
+        /// Unstore an object from the user interface component
+        /// </summary>
+        /// <param name="dataName"></param>
+        void ClearData(string dataName);
+
+        /// <summary>
+        /// Get some stored data from the user interface component
+        /// </summary>
+        /// <param name="dataName"></param>
+        /// <returns></returns>
+        object GetData(string dataName);
+
     }
 }

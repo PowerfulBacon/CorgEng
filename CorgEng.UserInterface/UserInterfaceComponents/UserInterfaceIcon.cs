@@ -1,4 +1,5 @@
-﻿using CorgEng.Core;
+﻿using CorgEng.Constants;
+using CorgEng.Core;
 using CorgEng.Core.Dependencies;
 using CorgEng.GenericInterfaces.Logging;
 using CorgEng.GenericInterfaces.Rendering.Icons;
@@ -50,7 +51,7 @@ namespace CorgEng.UserInterface.UserInterfaceComponents
         {
             try
             {
-                userInterfaceIconRenderObject = new UserInterfaceIconRenderObject(TextureFactory.GetTextureFromIconState(IconFactory.CreateIcon(arguments["icon"], 0)));
+                userInterfaceIconRenderObject = new UserInterfaceIconRenderObject(TextureFactory.GetTextureFromIconState(IconFactory.CreateIcon(arguments["icon"], 0, RenderingConstants.DEFAULT_RENDERER_PLANE)));
             }
             catch (Exception e)
             {

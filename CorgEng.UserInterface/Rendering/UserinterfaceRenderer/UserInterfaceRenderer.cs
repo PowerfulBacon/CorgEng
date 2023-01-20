@@ -58,7 +58,7 @@ namespace CorgEng.UserInterface.Rendering.UserinterfaceRenderer
         }
 
         //Only render UI components locally
-        public uint NetworkIdentifier => NetworkedRenderingConstants.NETWORK_RENDERING_ID_LOCAL;
+        public uint NetworkIdentifier => RenderingConstants.NETWORK_RENDERING_ID_LOCAL;
 
         //The things we are rendering
         private ConcurrentDictionary<IRenderObjectType, bool> renderSet = new ConcurrentDictionary<IRenderObjectType, bool>();

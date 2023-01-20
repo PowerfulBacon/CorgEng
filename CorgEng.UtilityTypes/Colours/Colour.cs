@@ -51,5 +51,13 @@ namespace CorgEng.UtilityTypes.Colours
             return c;
         }
 
+        public override bool Equals(object obj)
+        {
+            return obj is Colour colour &&
+                   Red == colour.Red &&
+                   Green == colour.Green &&
+                   Blue == colour.Blue &&
+                   Alpha == colour.Alpha;
+        }
     }
 }

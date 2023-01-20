@@ -16,6 +16,7 @@
     <ProjectReference Include="..\CorgEng.EntityComponentSystem\CorgEng.EntityComponentSystem.csproj" />
     <ProjectReference Include="..\CorgEng.GenericInterfaces\CorgEng.GenericInterfaces.csproj" />
     <ProjectReference Include="..\CorgEng.InputHandling\CorgEng.InputHandling.csproj" />
+    <ProjectReference Include="..\CorgEng.Lighting\CorgEng.Lighting.csproj" />
     <ProjectReference Include="..\CorgEng.Networking\CorgEng.Networking.csproj" />
     <ProjectReference Include="..\CorgEng.Pathfinding\CorgEng.Pathfinding.csproj" />
     <ProjectReference Include="..\CorgEng.UtilityTypes\CorgEng.UtilityTypes.csproj" />

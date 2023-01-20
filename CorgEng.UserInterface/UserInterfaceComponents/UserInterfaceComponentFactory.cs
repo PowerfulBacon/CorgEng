@@ -66,7 +66,7 @@ namespace CorgEng.UserInterface.Components
 
         public IUserInterfaceComponent CreateUserInterfaceComponent(string componentType, IAnchor anchorDetails, IDictionary<string, string> arguments, Action<IUserInterfaceComponent> preInitialiseAction)
         {
-            throw new NotImplementedException();
+            return CreateUserInterfaceComponent(componentType, null, anchorDetails, arguments, preInitialiseAction);
         }
     }
 }

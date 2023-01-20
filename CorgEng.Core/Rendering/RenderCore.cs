@@ -2,6 +2,7 @@
 using CorgEng.GenericInterfaces.Core;
 using CorgEng.GenericInterfaces.Logging;
 using CorgEng.GenericInterfaces.Rendering.Shaders;
+using CorgEng.GenericInterfaces.UtilityTypes;
 using System;
 using static OpenGL.Gl;
 
@@ -16,6 +17,9 @@ namespace CorgEng.Core.Rendering
         //Fetch shader loading from some dependency somewhere
         [UsingDependency]
         private static IShaderFactory ShaderFactory;
+
+        [UsingDependency]
+        protected static IColourFactory ColourFactory;
 
         private static float[] quadVertices = {
             1, 1, 0,
@@ -58,13 +62,27 @@ namespace CorgEng.Core.Rendering
 
         public int Height { get; internal set; } = 1080;
 
-        private static int CurrentBlendSource = GL_SRC_ALPHA;
+        private static IColour _currentBackColour;
+        private static DepthModes _currentDepthMode = DepthModes.KEEP_DEPTH;
+        private static RenderModes _currentBlendMode = RenderModes.DEFAULT;
 
-        private static int CurrentBlendDestination = GL_ONE_MINUS_SRC_ALPHA;
+        /// <summary>
+        /// The render mode to use when drawing this render core to the framebuffer.
+        /// </summary>
+        public virtual RenderModes DrawMode { get; } = RenderModes.DEFAULT;
 
-        public virtual int BlendSource { get; } = GL_SRC_ALPHA;
+        /// <summary>
+        /// The render mode to use when rendering elements on to the render core.
+        /// </summary>
+        public virtual RenderModes BlendMode { get; } = RenderModes.DEFAULT;
 
-        public virtual int BlendDestination { get; } = GL_ONE_MINUS_SRC_ALPHA;
+        /// <summary>
+        /// Should we keep depth?
+        /// Ignoring depth causes the render core to overlay on whatever it is being drawn on.
+        /// </summary>
+        public virtual DepthModes DepthMode { get; } = DepthModes.KEEP_DEPTH;
+
+        public virtual IColour BackColour { get; } = ColourFactory.GetColour(0, 0, 0, 0);
 
         public unsafe RenderCore()
         {
@@ -87,7 +105,7 @@ namespace CorgEng.Core.Rendering
             //Set the texture parameters
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-            //Bind the render buffer to the framebuffer
+            //Bind the render depth buffer to the framebuffer
             glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, RenderBufferUint);
             //Bind the framebuffer to the texture
             glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, RenderTextureUint, 0);
@@ -151,8 +169,63 @@ namespace CorgEng.Core.Rendering
         /// </summary>
         public void DoRender()
         {
+            RenderModes prev = SwitchBlendMode(BlendMode);
+            DepthModes prevDepth = SwitchDepthMode(DepthMode);
+            IColour prevColour = SwitchBackColour(BackColour);
             PreRender();
             PerformRender();
+            SwitchBlendMode(prev);
+            SwitchDepthMode(prevDepth);
+            SwitchBackColour(prevColour);
+        }
+
+        protected static RenderModes SwitchBlendMode(RenderModes newMode)
+        {
+            if (newMode == _currentBlendMode)
+                return newMode;
+            RenderModes prevMode = _currentBlendMode;
+            _currentBlendMode = newMode;
+            switch (_currentBlendMode)
+            {
+                case RenderModes.DEFAULT:
+                    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+                    break;
+                case RenderModes.MULTIPLY:
+                    glBlendFunc(GL_DST_COLOR, GL_ZERO);
+                    break;
+                case RenderModes.ADDITIVE:
+                    glBlendFunc(GL_ONE, GL_ONE);
+                    break;
+            }
+            return prevMode;
+        }
+
+        protected static DepthModes SwitchDepthMode(DepthModes newMode)
+        {
+            if (newMode == _currentDepthMode)
+                return newMode;
+            DepthModes prevMode = _currentDepthMode;
+            _currentDepthMode = newMode;
+            switch (_currentDepthMode)
+            {
+                case DepthModes.KEEP_DEPTH:
+                    glDepthFunc(GL_LEQUAL);
+                    break;
+                case DepthModes.IGNORE_DEPTH:
+                    glDepthFunc(GL_ALWAYS);
+                    break;
+            }
+            return prevMode;
+        }
+
+        protected static IColour SwitchBackColour(IColour newColour)
+        {
+            if (newColour == null || newColour.Equals(_currentBackColour))
+                return newColour;
+            IColour prevCol = _currentBackColour;
+            _currentBackColour = newColour;
+            glClearColor(newColour.Red, newColour.Green, newColour.Blue, newColour.Alpha);
+            return prevCol;
         }
 
         /// <summary>
@@ -192,12 +265,9 @@ namespace CorgEng.Core.Rendering
             glViewport(drawX, drawY, bufferWidth, bufferHeight);
 
             //Setup blending
-            if (CurrentBlendDestination != BlendDestination || CurrentBlendSource != BlendSource)
-            {
-                glBlendFunc(BlendSource, BlendDestination);
-                CurrentBlendDestination = BlendDestination;
-                CurrentBlendSource = BlendSource;
-            }
+            RenderModes prevRender = SwitchBlendMode(DrawMode);
+            DepthModes prevBlend = SwitchDepthMode(DepthMode);
+            IColour prevColour = SwitchBackColour(BackColour);
 
             //Set the using program to our program uint
             glUseProgram(programUint);
@@ -223,6 +293,10 @@ namespace CorgEng.Core.Rendering
             glDrawArrays(GL_TRIANGLES, 0, 6);
             //Disable the vertex attrib array
             glDisableVertexAttribArray(0);
+
+            SwitchBlendMode(prevRender);
+            SwitchDepthMode(prevBlend);
+            SwitchBackColour(prevColour);
         }
     }
 }

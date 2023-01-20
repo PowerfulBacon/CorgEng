@@ -71,7 +71,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CorgEng.IconSmoothing", "..
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CorgEng.Contents", "..\CorgEng.Contents\CorgEng.Contents.csproj", "{19B883CC-DB8C-47CF-B3EB-957ABEEB58FF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CorgEng.Audio", "..\CorgEng.Audio\CorgEng.Audio.csproj", "{A3A2F6CE-48F5-4682-A333-C4030AF9E5FC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CorgEng.Audio", "..\CorgEng.Audio\CorgEng.Audio.csproj", "{A3A2F6CE-48F5-4682-A333-C4030AF9E5FC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CorgEng.Lighting", "..\CorgEng.Lighting\CorgEng.Lighting.csproj", "{174672C0-E0DF-44A5-8313-5DAD603E9EF9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -627,6 +629,26 @@ Global
 		{A3A2F6CE-48F5-4682-A333-C4030AF9E5FC}.Release|x64.Build.0 = Release|Any CPU
 		{A3A2F6CE-48F5-4682-A333-C4030AF9E5FC}.Release|x86.ActiveCfg = Release|Any CPU
 		{A3A2F6CE-48F5-4682-A333-C4030AF9E5FC}.Release|x86.Build.0 = Release|Any CPU
+		{174672C0-E0DF-44A5-8313-5DAD603E9EF9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{174672C0-E0DF-44A5-8313-5DAD603E9EF9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{174672C0-E0DF-44A5-8313-5DAD603E9EF9}.Debug|ARM32.ActiveCfg = Debug|Any CPU
+		{174672C0-E0DF-44A5-8313-5DAD603E9EF9}.Debug|ARM32.Build.0 = Debug|Any CPU
+		{174672C0-E0DF-44A5-8313-5DAD603E9EF9}.Debug|ARM64.ActiveCfg = Debug|Any CPU
+		{174672C0-E0DF-44A5-8313-5DAD603E9EF9}.Debug|ARM64.Build.0 = Debug|Any CPU
+		{174672C0-E0DF-44A5-8313-5DAD603E9EF9}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{174672C0-E0DF-44A5-8313-5DAD603E9EF9}.Debug|x64.Build.0 = Debug|Any CPU
+		{174672C0-E0DF-44A5-8313-5DAD603E9EF9}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{174672C0-E0DF-44A5-8313-5DAD603E9EF9}.Debug|x86.Build.0 = Debug|Any CPU
+		{174672C0-E0DF-44A5-8313-5DAD603E9EF9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{174672C0-E0DF-44A5-8313-5DAD603E9EF9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{174672C0-E0DF-44A5-8313-5DAD603E9EF9}.Release|ARM32.ActiveCfg = Release|Any CPU
+		{174672C0-E0DF-44A5-8313-5DAD603E9EF9}.Release|ARM32.Build.0 = Release|Any CPU
+		{174672C0-E0DF-44A5-8313-5DAD603E9EF9}.Release|ARM64.ActiveCfg = Release|Any CPU
+		{174672C0-E0DF-44A5-8313-5DAD603E9EF9}.Release|ARM64.Build.0 = Release|Any CPU
+		{174672C0-E0DF-44A5-8313-5DAD603E9EF9}.Release|x64.ActiveCfg = Release|Any CPU
+		{174672C0-E0DF-44A5-8313-5DAD603E9EF9}.Release|x64.Build.0 = Release|Any CPU
+		{174672C0-E0DF-44A5-8313-5DAD603E9EF9}.Release|x86.ActiveCfg = Release|Any CPU
+		{174672C0-E0DF-44A5-8313-5DAD603E9EF9}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

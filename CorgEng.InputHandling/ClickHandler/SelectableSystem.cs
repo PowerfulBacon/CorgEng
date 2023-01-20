@@ -28,19 +28,16 @@ namespace CorgEng.InputHandling.ClickHandler
     {
 
         [UsingDependency]
-        private static ILogger Logger;
+        private static IWorld World = default!;
 
         [UsingDependency]
-        private static IWorld World;
+        private static IIconFactory IconFactory = default!;
 
         [UsingDependency]
-        private static IIconFactory IconFactory;
+        private static IEntityFactory EntityFactory = default!;
 
         [UsingDependency]
-        private static IEntityFactory EntityFactory;
-
-        [UsingDependency]
-        private static IInputHandler InputHandler;
+        private static IInputHandler InputHandler = default!;
 
         //Track the last clicked location for cyclical selection of entities
         private static int lastClickedX = 0;
@@ -55,7 +52,7 @@ namespace CorgEng.InputHandling.ClickHandler
 
         public override void SystemSetup()
         {
-            selectorOverlay = IconFactory.CreateIcon("selector", 100);
+            selectorOverlay = IconFactory.CreateIcon("selector", 100, 1);
             RegisterLocalEvent<SelectedComponent, ComponentAddedEvent>(OnComponentAdded);
             RegisterLocalEvent<SelectedComponent, ComponentRemovedEvent>(OnComponentRemoved);
         }

@@ -14,9 +14,14 @@ namespace CorgEng.AiBehaviour
     internal class BehaviourManager : IBehaviourManager
     {
 
+        //Are we currently processing? Prevents AIs from having multiple AI trees thinking
+        //since they run asynchronously.
         public bool Thinking { get; set; }
 
+        //Cached transform attached to the behaviour manager
         private TransformComponent _transform;
+
+
         public IVector<float> Position => _transform.Position;
 
         /// <summary>
@@ -67,7 +72,7 @@ namespace CorgEng.AiBehaviour
         {
             //Start thinking
             Thinking = true;
-            //Process the root
+            //Process the root9
             await root.Action(this);
             //Flush the temporary memory store
             memStore.Clear();

@@ -7,6 +7,7 @@ using CorgEng.EntityComponentSystem.Systems;
 using CorgEng.Example.Shared.Components.Gravity;
 using CorgEng.GenericInterfaces.EntityComponentSystem;
 using CorgEng.GenericInterfaces.Rendering.Icons;
+using CorgEng.Lighting.Components;
 using CorgEng.Networking.Components;
 using CorgEng.Pathfinding.Components;
 using CorgEng.UtilityTypes.Vectors;
@@ -44,7 +45,7 @@ namespace CorgEng.Example.Shared.Components.SandFactory
                         entity.AddComponent(new SolidComponent());
                         //Update the entity
                         new SetPositionEvent(new Vector<float>(transform.Position.X, transform.Position.Y)).Raise(entity);
-                        new SetSpriteEvent(IconFactory.CreateIcon("sand", 5)).Raise(entity);
+                        new SetSpriteEvent(IconFactory.CreateIcon("sand", 5, Constants.RenderingConstants.DEFAULT_RENDERER_PLANE)).Raise(entity);
                         new SetSpriteRendererEvent(1).Raise(entity);
                     });
                 });

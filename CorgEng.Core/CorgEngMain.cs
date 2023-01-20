@@ -157,7 +157,14 @@ namespace CorgEng.Core
                     Action action;
                     while (queuedActions.TryDequeue(out action))
                     {
-                        action.Invoke();
+                        try
+                        {
+                            action.Invoke();
+                        }
+                        catch (System.Exception e)
+                        {
+                            Logger.WriteLine($"Exception invoked from deferred action: {e}", LogType.ERROR);
+                        }
                     }
                 }
                 //Swap the framebuffers
