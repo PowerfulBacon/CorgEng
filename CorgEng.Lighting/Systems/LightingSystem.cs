@@ -36,10 +36,11 @@ namespace CorgEng.Lighting.Systems
                 IIcon createdIcon = IconFactory.CreateIcon("light_mask", 100, LightingRenderCore.LIGHTING_PLANE);
                 createdIcon.Transform = new Matrix(new float[,]
                     {
-                        { 8, 0, 0 },
-                        { 0, 8, 0 },
+                        { lightingComponent.Radius, 0, 0 },
+                        { 0, lightingComponent.Radius, 0 },
                         { 0, 0, 1 },
                     });
+                createdIcon.Colour = new Vector<float>(252/255f, 220/255f, 164/255f, 1.0f);
                 //Apply the overlay to the entity
                 new AddOverlayEvent(createdIcon).Raise(entity);
             });

@@ -11,7 +11,7 @@ namespace CorgEng.Lighting.Components
     public class LightingComponent : Component
     {
 
-        
+        public float Radius { get; set; } = 8;
 
     }
 }
