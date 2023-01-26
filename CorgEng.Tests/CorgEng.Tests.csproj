@@ -31,6 +31,7 @@
     <ProjectReference Include="..\CorgEng.Logging\CorgEng.Logging.csproj" />
     <ProjectReference Include="..\CorgEng.Networking\CorgEng.Networking.csproj" />
     <ProjectReference Include="..\CorgEng.Pathfinding\CorgEng.Pathfinding.csproj" />
+    <ProjectReference Include="..\CorgEng.Physics\CorgEng.Physics.csproj" />
     <ProjectReference Include="..\CorgEng.Rendering\CorgEng.Rendering.csproj" />
     <ProjectReference Include="..\CorgEng.UserInterface\CorgEng.UserInterface.csproj" />
     <ProjectReference Include="..\CorgEng.UtilityTypes\CorgEng.UtilityTypes.csproj" />

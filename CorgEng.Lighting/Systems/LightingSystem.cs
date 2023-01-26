@@ -26,7 +26,7 @@ namespace CorgEng.Lighting.Systems
         [UsingDependency]
         private static IEntityCreator EntityCreator = default!;
 
-        public override EntitySystemFlags SystemFlags => throw new NotImplementedException();
+        public override EntitySystemFlags SystemFlags => EntitySystemFlags.CLIENT_SYSTEM;
 
         public override void SystemSetup()
         {

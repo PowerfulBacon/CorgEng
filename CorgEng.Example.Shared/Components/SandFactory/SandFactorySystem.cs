@@ -43,6 +43,7 @@ namespace CorgEng.Example.Shared.Components.SandFactory
                         entity.AddComponent(new SpriteRenderComponent());
                         entity.AddComponent(new SandComponent());
                         entity.AddComponent(new SolidComponent());
+                        entity.AddComponent(new LightingComponent());
                         //Update the entity
                         new SetPositionEvent(new Vector<float>(transform.Position.X, transform.Position.Y)).Raise(entity);
                         new SetSpriteEvent(IconFactory.CreateIcon("sand", 5, Constants.RenderingConstants.DEFAULT_RENDERER_PLANE)).Raise(entity);
