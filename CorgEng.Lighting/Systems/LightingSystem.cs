@@ -40,7 +40,7 @@ namespace CorgEng.Lighting.Systems
                         { 0, lightingComponent.Radius, 0 },
                         { 0, 0, 1 },
                     });
-                createdIcon.Colour = new Vector<float>(252/255f, 220/255f, 164/255f, 1.0f);
+                createdIcon.Colour = lightingComponent.Colour.ToVector();
                 //Apply the overlay to the entity
                 new AddOverlayEvent(createdIcon).Raise(entity);
             });

@@ -12,9 +12,7 @@ namespace CorgEng.Networking.Clients
     {
 
         //Prevent GC
-        private byte[] byteArray;
-
-        public unsafe byte* AddressPointer { get; private set; }
+        public byte[] ByteArray { get; private set; }
 
         public int AddressBytes { get; private set; }
 
@@ -28,13 +26,9 @@ namespace CorgEng.Networking.Clients
             if (client != null)
                 clients.Add(client);
 
-            byteArray = new byte[bytesRequired];
-            fixed (byte* bytePointer = byteArray)
-            {
-                AddressPointer = bytePointer;
-            }
+            ByteArray = new byte[bytesRequired];
             if(clientIndex != 0)
-                AddressPointer[bytesRequired - 1] = (byte)Math.Pow(2, ((clientIndex - 1) % 8));
+                ByteArray[bytesRequired - 1] = (byte)Math.Pow(2, ((clientIndex - 1) % 8));
         }
 
         public unsafe override bool Equals(object obj)
@@ -44,8 +38,8 @@ namespace CorgEng.Networking.Clients
                 //Ensure the bytes are all the same
                 for (int i = 0; i < Math.Max(AddressBytes, clientAddress.AddressBytes); i++)
                 {
-                    byte firstByte = i < AddressBytes ? AddressPointer[i] : (byte)0;
-                    byte secondByte = i < clientAddress.AddressBytes ? clientAddress.AddressPointer[i] : (byte)0;
+                    byte firstByte = i < AddressBytes ? ByteArray[i] : (byte)0;
+                    byte secondByte = i < clientAddress.AddressBytes ? clientAddress.ByteArray[i] : (byte)0;
                     if (firstByte != secondByte)
                         return false;
                 }
@@ -62,7 +56,7 @@ namespace CorgEng.Networking.Clients
             int hashCode = -1466858141;
             for (int i = 0; i < AddressBytes; i++)
             {
-                hashCode = unchecked(hashCode * 17 + byteArray[i]);
+                hashCode = unchecked(hashCode * 17 + ByteArray[i]);
             }
             return hashCode;
         }
@@ -71,10 +65,10 @@ namespace CorgEng.Networking.Clients
         {
             for (int i = 0; i < searchingFor.AddressBytes; i++)
             {
-                byte searchingForByte = searchingFor.AddressPointer[i];
+                byte searchingForByte = searchingFor.ByteArray[i];
                 if (i >= AddressBytes && searchingForByte > 0)
                     return false;
-                if ((AddressPointer[i] & searchingForByte) != searchingForByte)
+                if ((ByteArray[i] & searchingForByte) != searchingForByte)
                     return false;
             }
             return true;
@@ -89,19 +83,15 @@ namespace CorgEng.Networking.Clients
                 //Allocate new memory
                 AddressBytes = enablingFlag.AddressBytes;
                 //Store temporarilly for copying across
-                byte[] temp = byteArray;
+                byte[] temp = ByteArray;
                 //Create a new byte array
-                byteArray = new byte[AddressBytes];
-                temp.CopyTo(byteArray, 0);
-                fixed (byte* bytePointer = byteArray)
-                {
-                    AddressPointer = bytePointer;
-                }
+                ByteArray = new byte[AddressBytes];
+                temp.CopyTo(ByteArray, 0);
             }
             //Enable the flags
             for (int i = 0; i < AddressBytes; i++)
             {
-                AddressPointer[i] |= enablingFlag.AddressPointer[i];
+                ByteArray[i] |= enablingFlag.ByteArray[i];
             }
             //Add all clients
             clients.AddRange(enablingFlag.GetClients());
@@ -112,7 +102,7 @@ namespace CorgEng.Networking.Clients
             //Locate and disable the specified flag
             for (int i = 0; i < Math.Min(AddressBytes, disablingFlag.AddressBytes); i++)
             {
-                AddressPointer[i] &= (byte)~disablingFlag.AddressPointer[i];
+                ByteArray[i] &= (byte)~disablingFlag.ByteArray[i];
             }
             //Remove all clients
             foreach (IClient client in disablingFlag.GetClients())

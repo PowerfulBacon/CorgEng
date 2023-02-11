@@ -12,7 +12,7 @@ namespace CorgEng.GenericInterfaces.Networking.Clients
     public unsafe interface IClientAddress
     {
 
-        byte* AddressPointer { get; }
+        byte[] ByteArray { get; }
 
         int AddressBytes { get; }
 

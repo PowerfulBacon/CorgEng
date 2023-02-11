@@ -108,6 +108,10 @@ namespace CorgEng.Networking.Networking.Server
         /// </summary>
         public int TickRate { get; set; } = 32;
 
+        private volatile EventWaitHandle messageReadyWaitHandle = new EventWaitHandle(false, EventResetMode.AutoReset);
+
+        private volatile bool threadWaiting = false;
+
         [ModuleLoad]
         public void LoadDefaultPrototype()
         {
@@ -233,6 +237,8 @@ namespace CorgEng.Networking.Networking.Server
                     IPEndPoint remoteEndPoint = new IPEndPoint(IPAddress.Any, port);
                     byte[] incomingData = udpClient.Receive(ref remoteEndPoint);
                     packetQueue.Enqueue((remoteEndPoint, incomingData));
+                    if (threadWaiting)
+                        messageReadyWaitHandle.Set();
                 }
                 catch (Exception e)
                 {
@@ -252,8 +258,9 @@ namespace CorgEng.Networking.Networking.Server
                 //Nothing to process
                 if (packetQueue.Count == 0)
                 {
-                    Thread.Yield();
-                    continue;
+                    threadWaiting = true;
+                    messageReadyWaitHandle.WaitOne();
+                    threadWaiting = false;
                 }
                 //Stuff to do
                 try
@@ -416,6 +423,8 @@ namespace CorgEng.Networking.Networking.Server
         public void QueueMessage(IClientAddress targets, INetworkMessage message)
         {
             PacketQueue.QueueMessage(targets, message);
+            if (threadWaiting)
+                messageReadyWaitHandle.Set();
         }
 
         public void Cleanup()
@@ -427,6 +436,7 @@ namespace CorgEng.Networking.Networking.Server
             udpClient?.Dispose();
             udpClient = null;
             PacketQueue = null;
+            threadWaiting = false;
             ClientAddressingTable = null;
             connectedClients = new Dictionary<IPAddress, IClient>();
             NetworkMessageReceived = null;

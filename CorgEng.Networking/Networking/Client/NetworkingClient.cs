@@ -443,24 +443,20 @@ namespace CorgEng.Networking.Networking.Client
                                     //Read the target entity
                                     uint entityIdentifier = reader.ReadUInt32();
                                     IEntity entityTarget = EntityManager.GetEntity(entityIdentifier);
+                                    //Get the event that was raised
+                                    INetworkedEvent raisedEvent = VersionGenerator.CreateTypeFromIdentifier<INetworkedEvent>(networkedIdentifier);
+                                    //Deserialize the event
+                                    raisedEvent.Deserialise(reader);
                                     if (entityTarget == null)
                                     {
                                         //Queue the event to fire when the entity is created
                                         DelayedEventSystem.AddDelayedEvent(entityIdentifier, (entityTarget) => {
-                                            //Get the event that was raised
-                                            INetworkedEvent raisedEvent = VersionGenerator.CreateTypeFromIdentifier<INetworkedEvent>(networkedIdentifier);
                                             Logger.WriteLine($"local event raised of type {raisedEvent.GetType()} raised against entity {entityIdentifier}");
-                                            //Deserialize the event
-                                            raisedEvent.Deserialise(reader);
                                             raisedEvent.Raise(entityTarget);
                                         });
                                         return;
                                     }
-                                    //Get the event that was raised
-                                    INetworkedEvent raisedEvent = VersionGenerator.CreateTypeFromIdentifier<INetworkedEvent>(networkedIdentifier);
                                     Logger.WriteLine($"local event raised of type {raisedEvent.GetType()} raised against entity {entityIdentifier}");
-                                    //Deserialize the event
-                                    raisedEvent.Deserialise(reader);
                                     raisedEvent.Raise(entityTarget);
                                 }
                             }

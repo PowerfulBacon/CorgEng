@@ -4,9 +4,11 @@
     <Module>CorgEng.ContentLoading</Module>
     <Module>CorgEng.DependencyInjection</Module>
     <Module>CorgEng.EntityComponentSystem</Module>
+    <Module>CorgEng.EntityQuery</Module>
     <Module>CorgEng.Example.Shared</Module>
     <Module>CorgEng.Font</Module>
     <Module>CorgEng.InputHandling</Module>
+    <Module>CorgEng.Lighting</Module>
     <Module>CorgEng.Logging</Module>
     <Module>CorgEng.Networking</Module>
     <Module>CorgEng.Pathfinding</Module>

@@ -8,6 +8,7 @@ using CorgEng.GenericInterfaces.Networking.Packets;
 using CorgEng.GenericInterfaces.Networking.PrototypeManager;
 using CorgEng.GenericInterfaces.UtilityTypes.BinaryLists;
 using CorgEng.Networking.Components;
+using CorgEng.Networking.Exceptions;
 using CorgEng.Networking.VersionSync;
 using CorgEng.UtilityTypes.Trees;
 using System;
@@ -174,8 +175,8 @@ namespace CorgEng.Networking.Prototypes
             Logger.WriteLine($"Requesting prototype {prototypeIdentifier} from server...", LogType.DEBUG);
             //Wait until we recieve the requested prototype. Send the request every 100ms until we get a result
             //TODO: After 2 seconds, timeout and disconnect from the server
-            int attemptsRemaining = 10;
-            while (waitEvent.WaitOne(500) && attemptsRemaining-- > 0)
+            int attemptsRemaining = 20;
+            while (waitEvent.WaitOne(150) && attemptsRemaining-- > 0)
             {
                 //We were successful
                 if (successStateAchieved)
@@ -191,7 +192,7 @@ namespace CorgEng.Networking.Prototypes
                     ));
             }
             Logger.WriteLine($"Failed to fetch prototype {prototypeIdentifier} from server after 10 attempts.", LogType.WARNING);
-            throw new Exception($"Failed to fetch prototype {prototypeIdentifier} from server, server is not responding.");
+            throw new NetworkingException($"Failed to fetch prototype {prototypeIdentifier} from server, server is not responding.");
         }
 
         /// <summary>

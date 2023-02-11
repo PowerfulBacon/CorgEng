@@ -82,6 +82,12 @@ namespace CorgEng.Core.Rendering
         /// </summary>
         public virtual DepthModes DepthMode { get; } = DepthModes.KEEP_DEPTH;
 
+        /// <summary>
+        /// The path of the shaders to use.
+        /// Only accessed during initialisation.
+        /// </summary>
+        public virtual string ShaderPath => "CoreShader";
+
         public virtual IColour BackColour { get; } = ColourFactory.GetColour(0, 0, 0, 0);
 
         public unsafe RenderCore()

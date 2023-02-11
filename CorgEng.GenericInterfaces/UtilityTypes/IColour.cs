@@ -33,5 +33,11 @@ namespace CorgEng.GenericInterfaces.UtilityTypes
         /// </summary>
         public float Alpha { get; set; }
 
+        /// <summary>
+        /// Convert it to a vector for some reason
+        /// </summary>
+        /// <returns></returns>
+        public IVector<float> ToVector();
+
     }
 }
