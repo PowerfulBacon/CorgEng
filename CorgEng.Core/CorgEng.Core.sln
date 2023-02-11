@@ -75,7 +75,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CorgEng.Audio", "..\CorgEng
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CorgEng.Lighting", "..\CorgEng.Lighting\CorgEng.Lighting.csproj", "{174672C0-E0DF-44A5-8313-5DAD603E9EF9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CorgEng.Physics", "..\CorgEng.Physics\CorgEng.Physics.csproj", "{13D7D168-96A5-4309-A58A-DA08EF7A4CC0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CorgEng.Physics", "..\CorgEng.Physics\CorgEng.Physics.csproj", "{13D7D168-96A5-4309-A58A-DA08EF7A4CC0}"
+EndProject
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
