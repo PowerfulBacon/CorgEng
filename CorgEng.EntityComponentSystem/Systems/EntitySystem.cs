@@ -90,8 +90,8 @@ namespace CorgEng.EntityComponentSystem.Systems
 
         public EntitySystem()
         {
-            Thread task = new Thread(SystemThread);
-            task.Name = $"{this} thread";
+            Task task = new Task(SystemThread);
+            //task.Name = $"{this} thread";
             task.Start();
             //Register the global signal to handle closing the game
             RegisterGlobalEvent((GameClosedEvent e) => { });

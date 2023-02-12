@@ -267,7 +267,7 @@ namespace CorgEng.Networking.Networking.Client
                         {
                             PacketQueue.ReleaseLock();
                         }
-                        Logger.WriteLine($"Sent packets to the server", LogType.TEMP);
+                        //Logger.WriteLine($"Sent packets to the server", LogType.TEMP);
                     }
                     //Wait for variable time to maintain the tick rate
                     stopwatch.Stop();
@@ -451,12 +451,12 @@ namespace CorgEng.Networking.Networking.Client
                                     {
                                         //Queue the event to fire when the entity is created
                                         DelayedEventSystem.AddDelayedEvent(entityIdentifier, (entityTarget) => {
-                                            Logger.WriteLine($"local event raised of type {raisedEvent.GetType()} raised against entity {entityIdentifier}");
+                                            Logger.WriteLine($"local event raised of type {raisedEvent.GetType()} raised against entity {entityIdentifier}", LogType.NETWORK_LOG);
                                             raisedEvent.Raise(entityTarget);
                                         });
                                         return;
                                     }
-                                    Logger.WriteLine($"local event raised of type {raisedEvent.GetType()} raised against entity {entityIdentifier}");
+                                    Logger.WriteLine($"local event raised of type {raisedEvent.GetType()} raised against entity {entityIdentifier}", LogType.NETWORK_LOG);
                                     raisedEvent.Raise(entityTarget);
                                 }
                             }

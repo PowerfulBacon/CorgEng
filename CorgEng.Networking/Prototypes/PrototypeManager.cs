@@ -137,7 +137,7 @@ namespace CorgEng.Networking.Prototypes
 
         public void AddPrototype(IPrototype prototype)
         {
-            Logger.WriteLine($"Prototype {prototype.Identifier} created successfully.", LogType.DEBUG);
+            Logger.WriteLine($"Prototype {prototype.Identifier} created successfully.", LogType.NETWORK_LOG);
             PrototypeLookup.AddOrUpdate(prototype.Identifier, prototype, (key, value) => prototype);
             //Call the prototype added trigger
             foreach (KeyValuePair<Action<IPrototype>, bool> prototypeAddCallback in prototypeAddCallbacks)
@@ -172,7 +172,7 @@ namespace CorgEng.Networking.Prototypes
                 PacketHeaders.REQUEST_PROTOTYPE,
                 BitConverter.GetBytes(prototypeIdentifier)
                 ));
-            Logger.WriteLine($"Requesting prototype {prototypeIdentifier} from server...", LogType.DEBUG);
+            Logger.WriteLine($"Requesting prototype {prototypeIdentifier} from server...", LogType.NETWORK_LOG);
             //Wait until we recieve the requested prototype. Send the request every 100ms until we get a result
             //TODO: After 2 seconds, timeout and disconnect from the server
             int attemptsRemaining = 20;
@@ -181,11 +181,11 @@ namespace CorgEng.Networking.Prototypes
                 //We were successful
                 if (successStateAchieved)
                 {
-                    Logger.WriteLine($"Prototype {prototypeIdentifier} successfully retrieved from server!", LogType.DEBUG);
+                    Logger.WriteLine($"Prototype {prototypeIdentifier} successfully retrieved from server!", LogType.NETWORK_LOG);
                     return Task.FromResult(located);
                 }
                 //Re-request
-                Logger.WriteLine($"Requesting prototype {prototypeIdentifier} from server...", LogType.DEBUG);
+                Logger.WriteLine($"Requesting prototype {prototypeIdentifier} from server...", LogType.NETWORK_LOG);
                 ClientCommunicator?.SendToServer(NetworkMessageFactory.CreateMessage(
                     PacketHeaders.REQUEST_PROTOTYPE,
                     BitConverter.GetBytes(prototypeIdentifier)

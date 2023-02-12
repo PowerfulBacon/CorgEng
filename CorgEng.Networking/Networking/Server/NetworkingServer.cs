@@ -348,7 +348,7 @@ namespace CorgEng.Networking.Networking.Server
                                         ushort networkedIdentifier = reader.ReadUInt16();
                                         //Get the event that was raised
                                         INetworkedEvent raisedEvent = VersionGenerator.CreateTypeFromIdentifier<INetworkedEvent>(networkedIdentifier);
-                                        Logger.WriteLine($"global event raised of type {raisedEvent.GetType()}");
+                                        Logger.WriteLine($"global event raised of type {raisedEvent.GetType()}", LogType.NETWORK_LOG);
                                         //Deserialize the event
                                         raisedEvent.Deserialise(reader);
                                         raisedEvent.RaiseGlobally(false);
@@ -396,7 +396,7 @@ namespace CorgEng.Networking.Networking.Server
             int clientVersionID = BitConverter.ToInt32(data, start);
             if (clientVersionID != VersionGenerator.NetworkVersion)
             {
-                Logger?.WriteLine($"Incoming client has incorrect version ID: {clientVersionID}, expected: {VersionGenerator.NetworkVersion}");
+                Logger?.WriteLine($"Incoming client has incorrect version ID: {clientVersionID}, expected: {VersionGenerator.NetworkVersion}", LogType.NETWORK_LOG);
                 //Create rejection packet
                 QueueMessage(
                     ClientAddressingTable.GetFlagRepresentation(connectedClients[sender.Address]),

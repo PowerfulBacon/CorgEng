@@ -105,7 +105,7 @@ namespace CorgEng.Tests.NetworkingTests
             //Enable the flag
             flagTest.EnableFlag(clientAddress1);
             flagTest.EnableFlag(clientAddress3);
-            Assert.AreEqual(0b00000101, flagTest.AddressPointer[0]);
+            Assert.AreEqual(0b00000101, flagTest.ByteArray[0]);
         }
 
         [TestMethod]
@@ -119,7 +119,7 @@ namespace CorgEng.Tests.NetworkingTests
             flagTest.EnableFlag(clientAddress1);
             flagTest.EnableFlag(clientAddress3);
             flagTest.DisableFlag(ClientAddressFactory.CreateAddress(1, GetDummyClient()));
-            Assert.AreEqual(0b00000100, flagTest.AddressPointer[0]);
+            Assert.AreEqual(0b00000100, flagTest.ByteArray[0]);
         }
 
         [TestMethod]
@@ -131,40 +131,40 @@ namespace CorgEng.Tests.NetworkingTests
             IClientAddress clientAddress;
             clientAddress = ClientAddressingTable.AddClient(GetDummyClient());
             //Check the expected value
-            Assert.AreEqual(0b00000001, clientAddress.AddressPointer[0]);
-            Assert.AreEqual(0b00000000, clientAddress.AddressPointer[1]);
+            Assert.AreEqual(0b00000001, clientAddress.ByteArray[0]);
+            Assert.AreEqual(0b00000000, clientAddress.ByteArray[1]);
             clientAddress = ClientAddressingTable.AddClient(GetDummyClient());
             //Check the expected value
-            Assert.AreEqual(0b00000010, clientAddress.AddressPointer[0]);
-            Assert.AreEqual(0b00000000, clientAddress.AddressPointer[1]);
+            Assert.AreEqual(0b00000010, clientAddress.ByteArray[0]);
+            Assert.AreEqual(0b00000000, clientAddress.ByteArray[1]);
             clientAddress = ClientAddressingTable.AddClient(GetDummyClient());
             //Check the expected value
-            Assert.AreEqual(0b00000100, clientAddress.AddressPointer[0]);
-            Assert.AreEqual(0b00000000, clientAddress.AddressPointer[1]);
+            Assert.AreEqual(0b00000100, clientAddress.ByteArray[0]);
+            Assert.AreEqual(0b00000000, clientAddress.ByteArray[1]);
             clientAddress = ClientAddressingTable.AddClient(GetDummyClient());
             //Check the expected value
-            Assert.AreEqual(0b00001000, clientAddress.AddressPointer[0]);
-            Assert.AreEqual(0b00000000, clientAddress.AddressPointer[1]);
+            Assert.AreEqual(0b00001000, clientAddress.ByteArray[0]);
+            Assert.AreEqual(0b00000000, clientAddress.ByteArray[1]);
             clientAddress = ClientAddressingTable.AddClient(GetDummyClient());
             //Check the expected value
-            Assert.AreEqual(0b00010000, clientAddress.AddressPointer[0]);
-            Assert.AreEqual(0b00000000, clientAddress.AddressPointer[1]);
+            Assert.AreEqual(0b00010000, clientAddress.ByteArray[0]);
+            Assert.AreEqual(0b00000000, clientAddress.ByteArray[1]);
             clientAddress = ClientAddressingTable.AddClient(GetDummyClient());
             //Check the expected value
-            Assert.AreEqual(0b00100000, clientAddress.AddressPointer[0]);
-            Assert.AreEqual(0b00000000, clientAddress.AddressPointer[1]);
+            Assert.AreEqual(0b00100000, clientAddress.ByteArray[0]);
+            Assert.AreEqual(0b00000000, clientAddress.ByteArray[1]);
             clientAddress = ClientAddressingTable.AddClient(GetDummyClient());
             //Check the expected value
-            Assert.AreEqual(0b01000000, clientAddress.AddressPointer[0]);
-            Assert.AreEqual(0b00000000, clientAddress.AddressPointer[1]);
+            Assert.AreEqual(0b01000000, clientAddress.ByteArray[0]);
+            Assert.AreEqual(0b00000000, clientAddress.ByteArray[1]);
             clientAddress = ClientAddressingTable.AddClient(GetDummyClient());
             //Check the expected value
-            Assert.AreEqual(0b10000000, clientAddress.AddressPointer[0]);
-            Assert.AreEqual(0b00000000, clientAddress.AddressPointer[1]);
+            Assert.AreEqual(0b10000000, clientAddress.ByteArray[0]);
+            Assert.AreEqual(0b00000000, clientAddress.ByteArray[1]);
             clientAddress = ClientAddressingTable.AddClient(GetDummyClient());
             //Check the expected value
-            Assert.AreEqual(0b00000000, clientAddress.AddressPointer[0]);
-            Assert.AreEqual(0b00000001, clientAddress.AddressPointer[1]);
+            Assert.AreEqual(0b00000000, clientAddress.ByteArray[0]);
+            Assert.AreEqual(0b00000001, clientAddress.ByteArray[1]);
         }
 
         [TestMethod]
@@ -183,8 +183,8 @@ namespace CorgEng.Tests.NetworkingTests
             ClientAddressingTable.AddClient(GetDummyClient());
             ClientAddressingTable.AddClient(GetDummyClient());
             //Check the everyone address
-            Assert.AreEqual(0b11111111, ClientAddressingTable.GetEveryone().AddressPointer[0]);
-            Assert.AreEqual(0b00000001, ClientAddressingTable.GetEveryone().AddressPointer[1]);
+            Assert.AreEqual(0b11111111, ClientAddressingTable.GetEveryone().ByteArray[0]);
+            Assert.AreEqual(0b00000001, ClientAddressingTable.GetEveryone().ByteArray[1]);
         }
 
         private IClient GetDummyClient()
