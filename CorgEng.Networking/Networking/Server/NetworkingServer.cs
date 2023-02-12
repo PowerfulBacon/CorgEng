@@ -298,8 +298,8 @@ namespace CorgEng.Networking.Networking.Server
                     PacketHeaders packetHeader = (PacketHeaders)BitConverter.ToInt32(data, originalPoint + 0x02);
                     //Get the data and pass it on
                     HandleMessage(sender, packetHeader, data, originalPoint + 0x06, packetSize);
-
                 }
+                Logger.WriteMetric("packet_size", data.Length.ToString());
             }
             catch (Exception e)
             {
@@ -311,6 +311,7 @@ namespace CorgEng.Networking.Networking.Server
         {
             try
             {
+                Logger.WriteMetric("message_size", length.ToString());
                 //Logger?.WriteLine($"Receieved server message: {header} from {sender.Address}", LogType.LOG);
                 //Check the message header
                 //Process messages
@@ -323,6 +324,7 @@ namespace CorgEng.Networking.Networking.Server
                         case PacketHeaders.REQUEST_PROTOTYPE:
                             //Get the prototype identifier
                             uint prototypeIdentifier = BitConverter.ToUInt32(data, start);
+                            Logger.WriteMetric("networked_prototype_requested", prototypeIdentifier.ToString());
                             //Locate the prototype that is being requested
                             IPrototype prototypeRequested = PrototypeManager.GetLocalProtoype(prototypeIdentifier);
                             //We don't have that, ignore the request
@@ -348,7 +350,7 @@ namespace CorgEng.Networking.Networking.Server
                                         ushort networkedIdentifier = reader.ReadUInt16();
                                         //Get the event that was raised
                                         INetworkedEvent raisedEvent = VersionGenerator.CreateTypeFromIdentifier<INetworkedEvent>(networkedIdentifier);
-                                        Logger.WriteLine($"global event raised of type {raisedEvent.GetType()}", LogType.NETWORK_LOG);
+                                        Logger.WriteMetric("networked_global_event", raisedEvent.GetType().ToString());
                                         //Deserialize the event
                                         raisedEvent.Deserialise(reader);
                                         raisedEvent.RaiseGlobally(false);

@@ -17,6 +17,7 @@ namespace CorgEng.Logging
         private static object consoleLock = new object();
 
         private static LogType ConsoleLogFlags = LogType.LOG_ALL & ~(LogType.DEBUG_EVERYTHING | LogType.NETWORK_LOG);
+
         private static LogType LogFlags = LogType.LOG_ALL & ~(LogType.DEBUG_EVERYTHING | LogType.DEBUG);
         //private static LogType LogFlags = LogType.LOG_ALL;
 
@@ -25,18 +26,22 @@ namespace CorgEng.Logging
         private static volatile bool _isFileWriting = false;
 
         private static ConcurrentQueue<string> _logWritingQueue = new ConcurrentQueue<string>();
+        private static ConcurrentQueue<string> _metricWritingQueue = new ConcurrentQueue<string>();
 
         private static object _logWritingLock = new object();
 
         public static string LogPath { get; set; } = $"Logs";
+
         public static string LogFile { get; set; } = $"LogOutput_{AppDomain.CurrentDomain.FriendlyName}.txt";
+        public static string MetricFile { get; set; } = $"Metrics_{AppDomain.CurrentDomain.FriendlyName}.csv";
 
         private static StreamWriter _logFile;
+        private static StreamWriter _csvFile;
 
         private static bool _fileWritingDisabled = false;
 
         //TODO: Make this a system
-        public void WriteLine(object message, LogType logType = LogType.MESSAGE)
+        public void WriteLine(object message, LogType logType)
         {
             if (message is Exception)
                 ExceptionCount++;
@@ -58,11 +63,16 @@ namespace CorgEng.Logging
             }
             if ((logType & LogFlags) == logType)
                 return;
+            if (_fileWritingDisabled)
+                return;
+            _logWritingQueue.Enqueue($"{logText} {message ?? null}");
+            StartLogWritingQueue();
+        }
+
+        private void StartLogWritingQueue()
+        {
             lock (_logWritingLock)
             {
-                if (_fileWritingDisabled)
-                    return;
-                _logWritingQueue.Enqueue($"{logText} {message ?? null}");
                 if (!_isFileWriting)
                 {
                     _isFileWriting = true;
@@ -72,6 +82,8 @@ namespace CorgEng.Logging
                         {
                             Directory.CreateDirectory(LogPath);
                             _logFile = new StreamWriter(File.Create($"{LogPath}/{LogFile}"));
+                            _csvFile = new StreamWriter(File.Create($"{LogPath}/{MetricFile}"));
+                            _csvFile.WriteLine("metric_name, timestamp, metric_value");
                         }
                         catch (Exception e)
                         {
@@ -87,11 +99,18 @@ namespace CorgEng.Logging
                         {
                             lock (_logWritingLock)
                             {
+                                bool passed = false;
                                 if (_logWritingQueue.TryDequeue(out string line))
                                 {
                                     _logFile.WriteLine(line);
+                                    passed = true;
                                 }
-                                else
+                                if (_metricWritingQueue.TryDequeue(out string metric))
+                                {
+                                    _csvFile.WriteLine(metric);
+                                    passed = true;
+                                }
+                                if (!passed)
                                 {
                                     _isFileWriting = false;
                                     break;
@@ -137,5 +156,12 @@ namespace CorgEng.Logging
             }
         }
 
+        public void WriteMetric(string metricName, string metricValue)
+        {
+            if (_fileWritingDisabled)
+                return;
+            _metricWritingQueue.Enqueue($"{metricName}, {Core.CorgEngMain.Time}, {metricValue}");
+            StartLogWritingQueue();
+        }
     }
 }

@@ -195,7 +195,7 @@ namespace CorgEng.Rendering.Textures
                     }
                     else
                     {
-                        Log?.WriteLine(e.StackTrace);
+                        Log?.WriteLine(e.StackTrace, LogType.ERROR);
                         LoadingComplete = true;
                         throw;
                     }

@@ -373,6 +373,7 @@ namespace CorgEng.Networking.Networking.Client
                     //Get the data and pass it on
                     HandleMessage(sender, packetHeader, data, originalPoint + 0x06, packetSize);
                 }
+                Logger.WriteMetric("packet_size", data.Length.ToString());
             }
             catch (Exception e)
             {
@@ -385,6 +386,7 @@ namespace CorgEng.Networking.Networking.Client
         /// </summary>
         private void HandleMessage(IPEndPoint sender, PacketHeaders header, byte[] data, int start, int length)
         {
+            Logger.WriteMetric("message_size", length.ToString());
             //Process messages
             if (!connected)
             {
@@ -451,12 +453,12 @@ namespace CorgEng.Networking.Networking.Client
                                     {
                                         //Queue the event to fire when the entity is created
                                         DelayedEventSystem.AddDelayedEvent(entityIdentifier, (entityTarget) => {
-                                            Logger.WriteLine($"local event raised of type {raisedEvent.GetType()} raised against entity {entityIdentifier}", LogType.NETWORK_LOG);
+                                            Logger.WriteMetric("networked_local_event", raisedEvent.GetType().ToString());
                                             raisedEvent.Raise(entityTarget);
                                         });
                                         return;
                                     }
-                                    Logger.WriteLine($"local event raised of type {raisedEvent.GetType()} raised against entity {entityIdentifier}", LogType.NETWORK_LOG);
+                                    Logger.WriteMetric("networked_local_event", raisedEvent.GetType().ToString());
                                     raisedEvent.Raise(entityTarget);
                                 }
                             }
@@ -475,7 +477,7 @@ namespace CorgEng.Networking.Networking.Client
                                     ushort networkedIdentifier = reader.ReadUInt16();
                                     //Get the event that was raised
                                     INetworkedEvent raisedEvent = VersionGenerator.CreateTypeFromIdentifier<INetworkedEvent>(networkedIdentifier);
-                                    Logger.WriteLine($"global event raised of type {raisedEvent.GetType()}");
+                                    Logger.WriteMetric("networked_global_event", raisedEvent.GetType().ToString());
                                     //Deserialize the event
                                     raisedEvent.Deserialise(reader);
                                     raisedEvent.RaiseGlobally(false);
