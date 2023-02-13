@@ -312,6 +312,7 @@ namespace CorgEng.Networking.Networking.Server
             try
             {
                 Logger.WriteMetric("message_size", length.ToString());
+                Logger.WriteMetric("message_header", header.ToString());
                 //Logger?.WriteLine($"Receieved server message: {header} from {sender.Address}", LogType.LOG);
                 //Check the message header
                 //Process messages

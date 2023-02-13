@@ -130,6 +130,19 @@ namespace CorgEng.Networking.Networking.Client
             {
                 throw new Exception("Cannot connect to server, we are already connected!");
             }
+            if (OnConnectionFailed == null)
+            {
+                float closureAttempts = 0;
+                OnConnectionFailed = (failureAddress, reason, message) => {
+                    Logger.WriteLine($"Failed to connect to {failureAddress}.\n{reason}\n{message}", LogType.WARNING);
+                    if (closureAttempts < 5)
+                    {
+                        Logger.WriteLine($"Attempting connection {closureAttempts}/5", LogType.WARNING);
+                        closureAttempts++;
+                        AttemptConnection(address, port, timeout);
+                    }
+                };
+            }
             //Enable networking
             NetworkConfig.NetworkingActive = true;
             //Format the IP address
@@ -359,6 +372,7 @@ namespace CorgEng.Networking.Networking.Client
                 {
                     return;
                 }
+                Logger.WriteMetric("packet_size", data.Length.ToString());
                 //Convert the packet into the individual messages
                 int messagePointer = 0;
                 while (messagePointer < data.Length)
@@ -373,7 +387,6 @@ namespace CorgEng.Networking.Networking.Client
                     //Get the data and pass it on
                     HandleMessage(sender, packetHeader, data, originalPoint + 0x06, packetSize);
                 }
-                Logger.WriteMetric("packet_size", data.Length.ToString());
             }
             catch (Exception e)
             {
@@ -387,6 +400,7 @@ namespace CorgEng.Networking.Networking.Client
         private void HandleMessage(IPEndPoint sender, PacketHeaders header, byte[] data, int start, int length)
         {
             Logger.WriteMetric("message_size", length.ToString());
+            Logger.WriteMetric("message_header", header.ToString());
             //Process messages
             if (!connected)
             {
@@ -451,9 +465,10 @@ namespace CorgEng.Networking.Networking.Client
                                     raisedEvent.Deserialise(reader);
                                     if (entityTarget == null)
                                     {
+                                        Logger.WriteMetric("delayed_event_target", entityIdentifier.ToString());
                                         //Queue the event to fire when the entity is created
                                         DelayedEventSystem.AddDelayedEvent(entityIdentifier, (entityTarget) => {
-                                            Logger.WriteMetric("networked_local_event", raisedEvent.GetType().ToString());
+                                            Logger.WriteMetric("networked_local_event_delayed", raisedEvent.GetType().ToString());
                                             raisedEvent.Raise(entityTarget);
                                         });
                                         return;
@@ -536,7 +551,7 @@ namespace CorgEng.Networking.Networking.Client
             connected = false;
             connecting = false;
             NetworkMessageReceived = null;
-            OnConnectionFailed = null;
+            //OnConnectionFailed = null;
             OnConnectionSuccess = null;
             NetworkConfig.ProcessClientSystems = false;
             if (!NetworkConfig.ProcessServerSystems)
