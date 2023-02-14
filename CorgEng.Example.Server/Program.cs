@@ -11,6 +11,7 @@ using CorgEng.EntityComponentSystem.Implementations.Transform;
 using CorgEng.EntityComponentSystem.Systems;
 using CorgEng.Example.Common.Components.Camera;
 using CorgEng.Example.Components.PlayerMovement;
+using CorgEng.Example.Shared.Components.FollowMouseComponent;
 using CorgEng.Example.Shared.Components.Gravity;
 using CorgEng.Example.Shared.Components.SandFactory;
 using CorgEng.Example.Shared.RenderCores;
@@ -22,6 +23,7 @@ using CorgEng.GenericInterfaces.Networking.PrototypeManager;
 using CorgEng.GenericInterfaces.Rendering.Cameras.Isometric;
 using CorgEng.GenericInterfaces.Rendering.Icons;
 using CorgEng.InputHandling.Events;
+using CorgEng.Lighting.Components;
 using CorgEng.Networking.Components;
 using CorgEng.Pathfinding.Components;
 using CorgEng.UtilityTypes.Vectors;
@@ -85,6 +87,16 @@ namespace CorgEng.Example.Server
                 entity.AddComponent(new CameraComponent(camera));
                 CorgEngMain.SetMainCamera(camera);
                 new SetPositionEvent(new Vector<float>(500 + offset_x, -15 + offset_y)).Raise(entity);
+            });
+
+            // Create a lighting debugger
+            EntityFactory.CreateEmptyEntity(entity => {
+                entity.AddComponent(new TransformComponent());
+                entity.AddComponent(new FollowCursorComponent());
+                entity.AddComponent(new SpriteRenderComponent());
+                entity.AddComponent(new LightingComponent());
+                new SetSpriteEvent(IconFactory.CreateIcon("rock", 5, Constants.RenderingConstants.DEFAULT_RENDERER_PLANE)).Raise(entity);
+                new SetSpriteRendererEvent(1).Raise(entity);
             });
 
             //Debug

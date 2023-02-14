@@ -92,6 +92,7 @@ namespace CorgEng.DependencyInjection.Injection
             {
                 try
                 {
+                    // Perform injection
                     object injectedValue = null;
                     if (memberInfo is PropertyInfo property)
                     {

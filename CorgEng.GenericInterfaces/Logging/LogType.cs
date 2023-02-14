@@ -13,5 +13,6 @@ namespace CorgEng.GenericInterfaces.Logging
         WARNING = 1 << 4,    //Warning messages such as invalid configs or something
         ERROR = 1 << 5,      //Error messages for exceptions
         TEMP = 1 << 6,       //Temp message for debugging, super obvious and easy to remove
+        NETWORK_LOG = 1 << 7,   //A networking log
     }
 }

@@ -19,5 +19,8 @@ namespace CorgEng.EntityComponentSystem.Implementations.Transform
             NewPosition = newPosition;
         }
 
+        public SetPositionEvent()
+        {
+        }
     }
 }

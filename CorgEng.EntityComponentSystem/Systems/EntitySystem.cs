@@ -78,11 +78,21 @@ namespace CorgEng.EntityComponentSystem.Systems
         /// </summary>
         protected bool assassinated = false;
 
+        /// <summary>
+        /// has setup been completed?
+        /// </summary>
+        public static bool SetupCompleted = false;
+
+        /// <summary>
+        /// Actions to run after setup
+        /// </summary>
+        public static event Action postSetupAction;
+
         public EntitySystem()
         {
-            Thread thread = new Thread(SystemThread);
-            thread.Name = $"{this} thread";
-            thread.Start();
+            Task task = new Task(SystemThread);
+            //task.Name = $"{this} thread";
+            task.Start();
             //Register the global signal to handle closing the game
             RegisterGlobalEvent((GameClosedEvent e) => { });
         }
@@ -102,12 +112,21 @@ namespace CorgEng.EntityComponentSystem.Systems
             IEnumerable<Type> locatedSystems = CorgEngMain.LoadedAssemblyModules
                 .SelectMany(assembly => assembly.GetTypes()
                 .Where(type => typeof(EntitySystem).IsAssignableFrom(type) && !type.IsAbstract));
-            Parallel.ForEach(locatedSystems, (type) => {
-                Logger?.WriteLine($"Initializing {type}...", LogType.LOG);
-                EntitySystem createdSystem = (EntitySystem)type.GetConstructor(BindingFlags.Public | BindingFlags.Instance, null, CallingConventions.HasThis, new Type[0], null).Invoke(new object[0]);
-                createdSystem.SystemSetup();
-                EntitySystems.TryAdd(createdSystem.GetType(), createdSystem);
-            });
+            locatedSystems.Select((type) =>
+                {
+                    Logger?.WriteLine($"Initializing {type}...", LogType.LOG);
+                    EntitySystem createdSystem = (EntitySystem)type.GetConstructor(BindingFlags.Public | BindingFlags.Instance, null, CallingConventions.HasThis, new Type[0], null).Invoke(new object[0]);
+                    EntitySystems.TryAdd(createdSystem.GetType(), createdSystem);
+                    return createdSystem;
+                })
+                // Very important that we fully resolve the enumerator and don't evaluate it lazilly
+                .ToList()
+                // Now do the foreach after they have all been created
+                .ForEach(entitySystem => entitySystem.SystemSetup());
+            SetupCompleted = true;
+            // Run post-setup actions
+            postSetupAction?.Invoke();
+            postSetupAction = null;
             //Trigger the event when this is all done and loaded
             CorgEngMain.OnReadyEvents += () => {
                 new GameReadyEvent().RaiseGlobally();
@@ -339,6 +358,10 @@ namespace CorgEng.EntityComponentSystem.Systems
                             try
                             {
                                 eventHandler(entity, (GComponent)component, (GEvent)signal);
+                            }
+                            catch (Exception e)
+                            {
+                                throw new Exception($"An exception occurred handling the signal type {typeof(GEvent)} registered on component {typeof(GComponent)} at system {GetType()}.", e);
                             }
                             finally
                             {

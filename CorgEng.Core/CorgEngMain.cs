@@ -358,7 +358,7 @@ namespace CorgEng.Core
                     && !MethodInfo.GetCustomAttribute<ModuleLoadAttribute>().mainThread)
                 {
                     MethodInfo.Invoke(null, new object[] { });
-                    Logger?.WriteLine($"Successfully loaded module {MethodInfo.DeclaringType.Name}");
+                    Logger?.WriteLine($"Successfully loaded module {MethodInfo.DeclaringType.Name}", LogType.LOG);
                 }
             });
             foreach (MethodInfo methodToInvoke in ModuleLoadAttributes)

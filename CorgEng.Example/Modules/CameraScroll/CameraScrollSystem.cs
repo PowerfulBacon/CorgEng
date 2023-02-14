@@ -19,7 +19,7 @@ namespace CorgEng.Example.Modules.CameraScroll
 
         public override void SystemSetup()
         {
-            RegisterGlobalEvent<MouseScrollEvent>(OnMouseScroll);
+            //RegisterGlobalEvent<MouseScrollEvent>(OnMouseScroll);
         }
 
         private void OnMouseScroll(MouseScrollEvent mouseScrollEvent)

@@ -95,5 +95,10 @@ namespace CorgEng.EntityComponentSystem.Entities
             //Logger.WriteLine($"Entity deletion triggered. {GarbageCollectionCount}/{DeletionCount}", LogType.TEMP);
         }
 
+        public static IEntity[] GetEntityArrayUnsafe()
+        {
+            return entityList;
+        }
+
     }
 }

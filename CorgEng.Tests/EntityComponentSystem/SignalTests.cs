@@ -132,7 +132,7 @@ namespace CorgEng.Tests.EntityComponentSystem
         {
             if (entitySystem == null)
             {
-                Logger?.WriteLine("Setting up test");
+                Logger?.WriteLine("Setting up test", LogType.LOG);
                 entitySystem = new TestEntitySystem();
                 entitySystem.SystemSetup();
             }
@@ -152,7 +152,7 @@ namespace CorgEng.Tests.EntityComponentSystem
         public void TestComponentRemoval()
         {
             Assert.AreEqual(0, handlesReceieved, "INCORRECT TEST CONFIGURATION");
-            Logger?.WriteLine($"Current thread: {Thread.CurrentThread.ManagedThreadId}. TestID: {currentTestId}");
+            Logger?.WriteLine($"Current thread: {Thread.CurrentThread.ManagedThreadId}. TestID: {currentTestId}", LogType.LOG);
             //Create a test entity
             IEntity testEntity = EntityFactory.CreateEmptyEntity(null);
             //Add a test component
@@ -173,7 +173,7 @@ namespace CorgEng.Tests.EntityComponentSystem
         {
             Assert.AreEqual(0, handlesReceieved, "INCORRECT TEST CONFIGURATION");
             Assert.AreEqual(0, secondaryHandlesReceieved, "INCORRECT TEST CONFIGURATION");
-            Logger?.WriteLine($"Current thread: {Thread.CurrentThread.ManagedThreadId}. TestID: {currentTestId}");
+            Logger?.WriteLine($"Current thread: {Thread.CurrentThread.ManagedThreadId}. TestID: {currentTestId}", LogType.LOG);
             //Create a test entity
             IEntity testEntity = EntityFactory.CreateEmptyEntity(null);
             //Add a test component
@@ -198,7 +198,7 @@ namespace CorgEng.Tests.EntityComponentSystem
         public void TestSignalHandling()
         {
             Assert.AreEqual(0, handlesReceieved, "INCORRECT TEST CONFIGURATION");
-            Logger?.WriteLine($"Current thread: {Thread.CurrentThread.ManagedThreadId}. TestID: {currentTestId}");
+            Logger?.WriteLine($"Current thread: {Thread.CurrentThread.ManagedThreadId}. TestID: {currentTestId}", LogType.LOG);
             //Create a test entity
             IEntity testEntity = EntityFactory.CreateEmptyEntity(null);
             //Add a test component
@@ -210,18 +210,18 @@ namespace CorgEng.Tests.EntityComponentSystem
             new TestEvent().Raise(testEntity);
             while (handlesReceieved != 1)
                 Thread.Sleep(1);
-            Logger?.WriteLine("Passed 1");
+            Logger?.WriteLine("Passed 1", LogType.LOG);
             new TestEvent().Raise(testEntity);
             while (handlesReceieved != 2)
                 Thread.Sleep(1);
-            Logger?.WriteLine("Passed 2");
+            Logger?.WriteLine("Passed 2", LogType.LOG);
             new OtherEvent().Raise(testEntity);
             Thread.Sleep(50);  //Sleep to account for multi-threading
             Assert.AreEqual(2, handlesReceieved);
             new TestEvent().Raise(testEntity);
             while (handlesReceieved != 3)
                 Thread.Sleep(1);
-            Logger?.WriteLine("Passed 3");
+            Logger?.WriteLine("Passed 3", LogType.LOG);
         }
 
         [TestMethod]
@@ -229,7 +229,7 @@ namespace CorgEng.Tests.EntityComponentSystem
         public void TestGlobalSignalHandling()
         {
             Assert.IsFalse(passedGlobalTest, "INCORRECT TEST CONFIGURATION");
-            Logger?.WriteLine($"Current thread: {Thread.CurrentThread.ManagedThreadId}. TestID: {currentTestId}");
+            Logger?.WriteLine($"Current thread: {Thread.CurrentThread.ManagedThreadId}. TestID: {currentTestId}", LogType.LOG);
             new OtherEvent().RaiseGlobally();
             Thread.Sleep(50);
             Assert.IsFalse(passedGlobalTest);
@@ -243,7 +243,7 @@ namespace CorgEng.Tests.EntityComponentSystem
         public void TestMultipleSignalHandling()
         {
             Assert.AreEqual(0, handlesReceieved, "INCORRECT TEST CONFIGURATION");
-            Logger?.WriteLine($"Current thread: {Thread.CurrentThread.ManagedThreadId}. TestID: {currentTestId}");
+            Logger?.WriteLine($"Current thread: {Thread.CurrentThread.ManagedThreadId}. TestID: {currentTestId}", LogType.LOG);
             //Create a test entity
             IEntity testEntity = EntityFactory.CreateEmptyEntity(null);
             //Add a test component
@@ -264,7 +264,7 @@ namespace CorgEng.Tests.EntityComponentSystem
         public void TestSynchronousSignalHandling()
         {
             Assert.AreEqual(0, handlesReceieved, "INCORRECT TEST CONFIGURATION");
-            Logger?.WriteLine($"Current thread: {Thread.CurrentThread.ManagedThreadId}. TestID: {currentTestId}");
+            Logger?.WriteLine($"Current thread: {Thread.CurrentThread.ManagedThreadId}. TestID: {currentTestId}", LogType.LOG);
             //Create a test entity
             IEntity testEntity = EntityFactory.CreateEmptyEntity(null);
             //Add a test component
@@ -288,7 +288,7 @@ namespace CorgEng.Tests.EntityComponentSystem
         public void TestUnregisteringSignals()
         {
             Assert.AreEqual(0, handlesReceieved, "INCORRECT TEST CONFIGURATION");
-            Logger?.WriteLine($"Current thread: {Thread.CurrentThread.ManagedThreadId}. TestID: {currentTestId}");
+            Logger?.WriteLine($"Current thread: {Thread.CurrentThread.ManagedThreadId}. TestID: {currentTestId}", LogType.LOG);
             //Create a test entity
             IEntity testEntity = EntityFactory.CreateEmptyEntity(null);
             //Add a test component

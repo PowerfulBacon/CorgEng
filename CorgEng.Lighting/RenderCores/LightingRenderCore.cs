@@ -28,6 +28,15 @@ namespace CorgEng.Lighting.RenderCores
             }
         }
 
+        public static void Resolve()
+        {
+            if (_singleton == null)
+            {
+                _singleton = new LightingRenderCore();
+                _singleton.Initialize();
+            }
+        }
+
         public override RenderModes DrawMode => RenderModes.MULTIPLY;
 
         public override RenderModes BlendMode => RenderModes.ADDITIVE;

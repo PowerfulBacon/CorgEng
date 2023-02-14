@@ -32,6 +32,7 @@ using System.Threading.Tasks;
 
 namespace CorgEng.Networking.Networking.Server
 {
+
     [Dependency]
     internal class NetworkingServer : INetworkingServer
     {
@@ -84,7 +85,7 @@ namespace CorgEng.Networking.Networking.Server
         /// <summary>
         /// A dictionary containing all connected clients
         /// </summary>
-        private Dictionary<IPAddress, IClient> connectedClients = new Dictionary<IPAddress, IClient>();
+        internal Dictionary<IPAddress, IClient> connectedClients = new Dictionary<IPAddress, IClient>();
 
         public event NetworkMessageRecieved NetworkMessageReceived;
 
@@ -107,6 +108,10 @@ namespace CorgEng.Networking.Networking.Server
         /// Set the server transmission tick rate
         /// </summary>
         public int TickRate { get; set; } = 32;
+
+        private volatile EventWaitHandle messageReadyWaitHandle = new EventWaitHandle(false, EventResetMode.AutoReset);
+
+        private volatile bool threadWaiting = false;
 
         [ModuleLoad]
         public void LoadDefaultPrototype()
@@ -233,6 +238,8 @@ namespace CorgEng.Networking.Networking.Server
                     IPEndPoint remoteEndPoint = new IPEndPoint(IPAddress.Any, port);
                     byte[] incomingData = udpClient.Receive(ref remoteEndPoint);
                     packetQueue.Enqueue((remoteEndPoint, incomingData));
+                    if (threadWaiting)
+                        messageReadyWaitHandle.Set();
                 }
                 catch (Exception e)
                 {
@@ -252,8 +259,9 @@ namespace CorgEng.Networking.Networking.Server
                 //Nothing to process
                 if (packetQueue.Count == 0)
                 {
-                    Thread.Yield();
-                    continue;
+                    threadWaiting = true;
+                    messageReadyWaitHandle.WaitOne();
+                    threadWaiting = false;
                 }
                 //Stuff to do
                 try
@@ -291,8 +299,8 @@ namespace CorgEng.Networking.Networking.Server
                     PacketHeaders packetHeader = (PacketHeaders)BitConverter.ToInt32(data, originalPoint + 0x02);
                     //Get the data and pass it on
                     HandleMessage(sender, packetHeader, data, originalPoint + 0x06, packetSize);
-
                 }
+                Logger.WriteMetric("packet_size", data.Length.ToString());
             }
             catch (Exception e)
             {
@@ -304,6 +312,8 @@ namespace CorgEng.Networking.Networking.Server
         {
             try
             {
+                Logger.WriteMetric("message_size", length.ToString());
+                Logger.WriteMetric("message_header", header.ToString());
                 //Logger?.WriteLine($"Receieved server message: {header} from {sender.Address}", LogType.LOG);
                 //Check the message header
                 //Process messages
@@ -316,6 +326,7 @@ namespace CorgEng.Networking.Networking.Server
                         case PacketHeaders.REQUEST_PROTOTYPE:
                             //Get the prototype identifier
                             uint prototypeIdentifier = BitConverter.ToUInt32(data, start);
+                            Logger.WriteMetric("networked_prototype_requested", prototypeIdentifier.ToString());
                             //Locate the prototype that is being requested
                             IPrototype prototypeRequested = PrototypeManager.GetLocalProtoype(prototypeIdentifier);
                             //We don't have that, ignore the request
@@ -341,7 +352,7 @@ namespace CorgEng.Networking.Networking.Server
                                         ushort networkedIdentifier = reader.ReadUInt16();
                                         //Get the event that was raised
                                         INetworkedEvent raisedEvent = VersionGenerator.CreateTypeFromIdentifier<INetworkedEvent>(networkedIdentifier);
-                                        Logger.WriteLine($"global event raised of type {raisedEvent.GetType()}");
+                                        Logger.WriteMetric("networked_global_event", raisedEvent.ToString());
                                         //Deserialize the event
                                         raisedEvent.Deserialise(reader);
                                         raisedEvent.RaiseGlobally(false);
@@ -389,7 +400,7 @@ namespace CorgEng.Networking.Networking.Server
             int clientVersionID = BitConverter.ToInt32(data, start);
             if (clientVersionID != VersionGenerator.NetworkVersion)
             {
-                Logger?.WriteLine($"Incoming client has incorrect version ID: {clientVersionID}, expected: {VersionGenerator.NetworkVersion}");
+                Logger?.WriteLine($"Incoming client has incorrect version ID: {clientVersionID}, expected: {VersionGenerator.NetworkVersion}", LogType.NETWORK_LOG);
                 //Create rejection packet
                 QueueMessage(
                     ClientAddressingTable.GetFlagRepresentation(connectedClients[sender.Address]),
@@ -416,6 +427,8 @@ namespace CorgEng.Networking.Networking.Server
         public void QueueMessage(IClientAddress targets, INetworkMessage message)
         {
             PacketQueue.QueueMessage(targets, message);
+            if (threadWaiting)
+                messageReadyWaitHandle.Set();
         }
 
         public void Cleanup()
@@ -427,6 +440,7 @@ namespace CorgEng.Networking.Networking.Server
             udpClient?.Dispose();
             udpClient = null;
             PacketQueue = null;
+            threadWaiting = false;
             ClientAddressingTable = null;
             connectedClients = new Dictionary<IPAddress, IClient>();
             NetworkMessageReceived = null;

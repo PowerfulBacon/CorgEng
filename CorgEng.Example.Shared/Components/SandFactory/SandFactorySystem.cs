@@ -10,6 +10,7 @@ using CorgEng.GenericInterfaces.Rendering.Icons;
 using CorgEng.Lighting.Components;
 using CorgEng.Networking.Components;
 using CorgEng.Pathfinding.Components;
+using CorgEng.UtilityTypes.Colours;
 using CorgEng.UtilityTypes.Vectors;
 using System;
 using System.Collections.Generic;
@@ -28,9 +29,11 @@ namespace CorgEng.Example.Shared.Components.SandFactory
         [UsingDependency]
         private static IIconFactory IconFactory = default!;
 
+        private static Random DebugRandom = new Random();
+
         public override EntitySystemFlags SystemFlags => EntitySystemFlags.HOST_SYSTEM;
 
-        protected override int ProcessDelay => 50;
+        protected override int ProcessDelay => 2000;
 
         public override void SystemSetup()
         {
@@ -43,6 +46,9 @@ namespace CorgEng.Example.Shared.Components.SandFactory
                         entity.AddComponent(new SpriteRenderComponent());
                         entity.AddComponent(new SandComponent());
                         entity.AddComponent(new SolidComponent());
+                        entity.AddComponent(new LightingComponent() {
+                            Colour = new Colour(DebugRandom.NextSingle(), DebugRandom.NextSingle(), DebugRandom.NextSingle(), DebugRandom.NextSingle()),
+                        });
                         //Update the entity
                         new SetPositionEvent(new Vector<float>(transform.Position.X, transform.Position.Y)).Raise(entity);
                         new SetSpriteEvent(IconFactory.CreateIcon("sand", 5, Constants.RenderingConstants.DEFAULT_RENDERER_PLANE)).Raise(entity);

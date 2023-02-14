@@ -130,6 +130,19 @@ namespace CorgEng.Networking.Networking.Client
             {
                 throw new Exception("Cannot connect to server, we are already connected!");
             }
+            if (OnConnectionFailed == null)
+            {
+                float closureAttempts = 0;
+                OnConnectionFailed = (failureAddress, reason, message) => {
+                    Logger.WriteLine($"Failed to connect to {failureAddress}.\n{reason}\n{message}", LogType.WARNING);
+                    if (closureAttempts < 5)
+                    {
+                        Logger.WriteLine($"Attempting connection {closureAttempts}/5", LogType.WARNING);
+                        closureAttempts++;
+                        AttemptConnection(address, port, timeout);
+                    }
+                };
+            }
             //Enable networking
             NetworkConfig.NetworkingActive = true;
             //Format the IP address
@@ -267,7 +280,7 @@ namespace CorgEng.Networking.Networking.Client
                         {
                             PacketQueue.ReleaseLock();
                         }
-                        Logger.WriteLine($"Sent packets to the server", LogType.TEMP);
+                        //Logger.WriteLine($"Sent packets to the server", LogType.TEMP);
                     }
                     //Wait for variable time to maintain the tick rate
                     stopwatch.Stop();
@@ -359,6 +372,7 @@ namespace CorgEng.Networking.Networking.Client
                 {
                     return;
                 }
+                Logger.WriteMetric("packet_size", data.Length.ToString());
                 //Convert the packet into the individual messages
                 int messagePointer = 0;
                 while (messagePointer < data.Length)
@@ -385,6 +399,8 @@ namespace CorgEng.Networking.Networking.Client
         /// </summary>
         private void HandleMessage(IPEndPoint sender, PacketHeaders header, byte[] data, int start, int length)
         {
+            Logger.WriteMetric("message_size", length.ToString());
+            Logger.WriteMetric("message_header", header.ToString());
             //Process messages
             if (!connected)
             {
@@ -443,24 +459,23 @@ namespace CorgEng.Networking.Networking.Client
                                     //Read the target entity
                                     uint entityIdentifier = reader.ReadUInt32();
                                     IEntity entityTarget = EntityManager.GetEntity(entityIdentifier);
-                                    if (entityTarget == null)
-                                    {
-                                        //Queue the event to fire when the entity is created
-                                        DelayedEventSystem.AddDelayedEvent(entityIdentifier, (entityTarget) => {
-                                            //Get the event that was raised
-                                            INetworkedEvent raisedEvent = VersionGenerator.CreateTypeFromIdentifier<INetworkedEvent>(networkedIdentifier);
-                                            Logger.WriteLine($"local event raised of type {raisedEvent.GetType()} raised against entity {entityIdentifier}");
-                                            //Deserialize the event
-                                            raisedEvent.Deserialise(reader);
-                                            raisedEvent.Raise(entityTarget);
-                                        });
-                                        return;
-                                    }
                                     //Get the event that was raised
                                     INetworkedEvent raisedEvent = VersionGenerator.CreateTypeFromIdentifier<INetworkedEvent>(networkedIdentifier);
-                                    Logger.WriteLine($"local event raised of type {raisedEvent.GetType()} raised against entity {entityIdentifier}");
                                     //Deserialize the event
                                     raisedEvent.Deserialise(reader);
+                                    if (entityTarget == null)
+                                    {
+                                        Logger.WriteMetric("delayed_event_target", entityIdentifier.ToString());
+                                        //Queue the event to fire when the entity is created
+                                        DelayedEventSystem.AddDelayedEvent(entityIdentifier, (entityTarget) => {
+                                            Logger.WriteMetric("networked_local_event_delayed", raisedEvent.ToString());
+                                            raisedEvent.Raise(entityTarget);
+                                        });
+                                        // Request info about this entity
+
+                                        return;
+                                    }
+                                    Logger.WriteMetric("networked_local_event", raisedEvent.ToString());
                                     raisedEvent.Raise(entityTarget);
                                 }
                             }
@@ -479,7 +494,7 @@ namespace CorgEng.Networking.Networking.Client
                                     ushort networkedIdentifier = reader.ReadUInt16();
                                     //Get the event that was raised
                                     INetworkedEvent raisedEvent = VersionGenerator.CreateTypeFromIdentifier<INetworkedEvent>(networkedIdentifier);
-                                    Logger.WriteLine($"global event raised of type {raisedEvent.GetType()}");
+                                    Logger.WriteMetric("networked_global_event", raisedEvent.GetType().ToString());
                                     //Deserialize the event
                                     raisedEvent.Deserialise(reader);
                                     raisedEvent.RaiseGlobally(false);
@@ -538,7 +553,7 @@ namespace CorgEng.Networking.Networking.Client
             connected = false;
             connecting = false;
             NetworkMessageReceived = null;
-            OnConnectionFailed = null;
+            //OnConnectionFailed = null;
             OnConnectionSuccess = null;
             NetworkConfig.ProcessClientSystems = false;
             if (!NetworkConfig.ProcessServerSystems)

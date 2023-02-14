@@ -38,7 +38,7 @@ namespace CorgEng.EntityComponentSystem.Events
             [CallerMemberName] string callingMember = "",
             [CallerLineNumber] int callingLine = 0)
         {
-            Logger.WriteLine($"Event raised {signal}", LogType.DEBUG_EVERYTHING);
+            Logger.WriteMetric("event_raised", signal.ToString());
             //Handle the signal
             target.HandleSignal(signal, synchronous, callingFile, callingMember, callingLine);
         }
@@ -54,7 +54,7 @@ namespace CorgEng.EntityComponentSystem.Events
             [CallerMemberName] string callingMember = "",
             [CallerLineNumber] int callingLine = 0)
         {
-            Logger.WriteLine($"Networked event raised {signal}", LogType.DEBUG_EVERYTHING);
+            Logger.WriteMetric("event_raised", signal.ToString());
             //Handle the signal
             target.HandleSignal(signal, synchronous, callingFile, callingMember, callingLine);
             //Inform the entity that networked event was raised
@@ -74,7 +74,7 @@ namespace CorgEng.EntityComponentSystem.Events
             [CallerMemberName] string callingMember = "",
             [CallerLineNumber] int callingLine = 0)
         {
-            Logger.WriteLine($"Event raised {signal}", LogType.DEBUG_EVERYTHING);
+            Logger.WriteMetric("global_event_raised", signal.ToString());
             //Check if we have any registered signals
             if (!EventManager.RegisteredEvents.ContainsKey(typeof(GlobalEventComponent)))
                 return;
@@ -100,7 +100,7 @@ namespace CorgEng.EntityComponentSystem.Events
             [CallerMemberName] string callingMember = "",
             [CallerLineNumber] int callingLine = 0)
         {
-            Logger.WriteLine($"Network event raised {signal}", LogType.DEBUG_EVERYTHING);
+            Logger.WriteMetric("global_event_raised", signal.ToString());
             //Check if we have any registered signals
             if (!EventManager.RegisteredEvents.ContainsKey(typeof(GlobalEventComponent)))
                 return;

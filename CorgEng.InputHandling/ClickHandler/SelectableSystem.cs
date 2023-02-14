@@ -113,8 +113,6 @@ namespace CorgEng.InputHandling.ClickHandler
             //Locate the world position that the mouse is currently over
             int clickedTileX = clickedGridLocation.X;
             int clickedTileY = clickedGridLocation.Y;
-            //Check what we actually pressed on
-            Logger.WriteLine($"{clickedLocation}");
             //Determine our click mode
             //If we clicked on a different tile, reset the last contents index
             if (lastClickedX != clickedTileX || lastClickedY != clickedTileY || contentEnumerator == null)
@@ -140,7 +138,6 @@ namespace CorgEng.InputHandling.ClickHandler
             }
             //Select the element (TODO: SelectableComponent)
             contentEnumerator.Current.Parent.AddComponent(new SelectedComponent());
-            Logger.WriteLine($"({releaseEvent.CursorX * 2 - 1}, {releaseEvent.CursorY * 2 - 1}), {clickedLocation} Selected Entity: {contentEnumerator.Current.Parent}");
         }
     }
 }

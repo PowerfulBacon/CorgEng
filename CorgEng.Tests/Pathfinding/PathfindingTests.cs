@@ -56,7 +56,7 @@ namespace CorgEng.Tests.Pathfinding
                 );
             IPath foundPath = await Pathfinder.GetPath(pathfindingRequest);
             Assert.IsNotNull(foundPath);
-            Logger.WriteLine(foundPath);
+            Logger.WriteLine(foundPath, LogType.LOG);
         }
 
         [TestMethod]
@@ -74,7 +74,7 @@ namespace CorgEng.Tests.Pathfinding
                 );
             IPath foundPath = await Pathfinder.GetPath(pathfindingRequest);
             Assert.IsNotNull(foundPath);
-            Logger.WriteLine(foundPath);
+            Logger.WriteLine(foundPath, LogType.LOG);
         }
 
         private class PathfindingWallTestQueryer : IPathCellQueryer
@@ -102,7 +102,7 @@ namespace CorgEng.Tests.Pathfinding
                 );
             IPath foundPath = await Pathfinder.GetPath(pathfindingRequest);
             Assert.IsNotNull(foundPath);
-            Logger.WriteLine(foundPath);
+            Logger.WriteLine(foundPath, LogType.LOG);
         }
 
         [TestMethod]
@@ -120,7 +120,7 @@ namespace CorgEng.Tests.Pathfinding
                 );
             IPath foundPath = await Pathfinder.GetPath(pathfindingRequest);
             Assert.IsNotNull(foundPath);
-            Logger.WriteLine(foundPath);
+            Logger.WriteLine(foundPath, LogType.LOG);
         }
 
     }

@@ -1,4 +1,5 @@
 ﻿using CorgEng.GenericInterfaces.UtilityTypes;
+using CorgEng.UtilityTypes.Vectors;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -58,6 +59,16 @@ namespace CorgEng.UtilityTypes.Colours
                    Green == colour.Green &&
                    Blue == colour.Blue &&
                    Alpha == colour.Alpha;
+        }
+
+        public IVector<float> ToVector()
+        {
+            return new Vector<float>(
+                Red,
+                Green,
+                Blue,
+                Alpha
+                );
         }
     }
 }

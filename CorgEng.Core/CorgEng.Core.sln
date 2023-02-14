@@ -73,7 +73,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CorgEng.Contents", "..\Corg
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CorgEng.Audio", "..\CorgEng.Audio\CorgEng.Audio.csproj", "{A3A2F6CE-48F5-4682-A333-C4030AF9E5FC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CorgEng.Lighting", "..\CorgEng.Lighting\CorgEng.Lighting.csproj", "{174672C0-E0DF-44A5-8313-5DAD603E9EF9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CorgEng.Lighting", "..\CorgEng.Lighting\CorgEng.Lighting.csproj", "{174672C0-E0DF-44A5-8313-5DAD603E9EF9}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CorgEng.EntityQuery", "..\CorgEng.EntityQuery\CorgEng.EntityQuery.csproj", "{CD4E414F-536D-454B-8423-9631952EF705}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -649,6 +651,26 @@ Global
 		{174672C0-E0DF-44A5-8313-5DAD603E9EF9}.Release|x64.Build.0 = Release|Any CPU
 		{174672C0-E0DF-44A5-8313-5DAD603E9EF9}.Release|x86.ActiveCfg = Release|Any CPU
 		{174672C0-E0DF-44A5-8313-5DAD603E9EF9}.Release|x86.Build.0 = Release|Any CPU
+		{CD4E414F-536D-454B-8423-9631952EF705}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CD4E414F-536D-454B-8423-9631952EF705}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CD4E414F-536D-454B-8423-9631952EF705}.Debug|ARM32.ActiveCfg = Debug|Any CPU
+		{CD4E414F-536D-454B-8423-9631952EF705}.Debug|ARM32.Build.0 = Debug|Any CPU
+		{CD4E414F-536D-454B-8423-9631952EF705}.Debug|ARM64.ActiveCfg = Debug|Any CPU
+		{CD4E414F-536D-454B-8423-9631952EF705}.Debug|ARM64.Build.0 = Debug|Any CPU
+		{CD4E414F-536D-454B-8423-9631952EF705}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{CD4E414F-536D-454B-8423-9631952EF705}.Debug|x64.Build.0 = Debug|Any CPU
+		{CD4E414F-536D-454B-8423-9631952EF705}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{CD4E414F-536D-454B-8423-9631952EF705}.Debug|x86.Build.0 = Debug|Any CPU
+		{CD4E414F-536D-454B-8423-9631952EF705}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CD4E414F-536D-454B-8423-9631952EF705}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CD4E414F-536D-454B-8423-9631952EF705}.Release|ARM32.ActiveCfg = Release|Any CPU
+		{CD4E414F-536D-454B-8423-9631952EF705}.Release|ARM32.Build.0 = Release|Any CPU
+		{CD4E414F-536D-454B-8423-9631952EF705}.Release|ARM64.ActiveCfg = Release|Any CPU
+		{CD4E414F-536D-454B-8423-9631952EF705}.Release|ARM64.Build.0 = Release|Any CPU
+		{CD4E414F-536D-454B-8423-9631952EF705}.Release|x64.ActiveCfg = Release|Any CPU
+		{CD4E414F-536D-454B-8423-9631952EF705}.Release|x64.Build.0 = Release|Any CPU
+		{CD4E414F-536D-454B-8423-9631952EF705}.Release|x86.ActiveCfg = Release|Any CPU
+		{CD4E414F-536D-454B-8423-9631952EF705}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

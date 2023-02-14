@@ -44,13 +44,15 @@ namespace CorgEng.Example.Shared.RenderCores
         {
 
             spriteRenderer = SpriteRendererFactory.CreateSpriteRenderer(1);
-
             spriteRenderer?.Initialize();
 
             IFont font = FontFactory.GetFont("CourierCode");
             ITextObject textObject = TextObjectFactory.CreateTextObject(spriteRenderer, font, "CorgEng.Font");
             textObject.StartRendering();
-            
+
+            LightingRenderCore.Resolve();
+
+
         }
 
         public override void PerformRender()

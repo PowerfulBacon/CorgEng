@@ -44,7 +44,7 @@ namespace CorgEng.Tests.NetworkingTests
                 {
                     if (type.IsAbstract)
                     {
-                        Logger?.WriteLine($"Skipped {type.Name} (Abstract component)");
+                        Logger?.WriteLine($"Skipped {type.Name} (Abstract component)", LogType.DEBUG);
                         continue;
                     }
                     Component instantiatedComponent = (Component)FormatterServices.GetUninitializedObject(type);
@@ -136,7 +136,7 @@ namespace CorgEng.Tests.NetworkingTests
                     {
                         Assert.AreEqual(property.GetValue(instantiatedComponent), property.GetValue(deserializedType), $"Deconversion failed on component of type {type} and variable {property.Name}");
                     }
-                    Logger?.WriteLine($"{type.Name} passed");
+                    Logger?.WriteLine($"{type.Name} passed", LogType.LOG);
                 }
                 catch (Exception e) when (!(e is AssertFailedException) && !(e is AssertInconclusiveException))
                 {
@@ -163,7 +163,7 @@ namespace CorgEng.Tests.NetworkingTests
                 {
                     if (type.IsAbstract)
                     {
-                        Logger?.WriteLine($"Skipped {type.Name} (Abstract event)");
+                        Logger?.WriteLine($"Skipped {type.Name} (Abstract event)", LogType.LOG);
                         continue;
                     }
                     INetworkedEvent instantiatedEvent = (INetworkedEvent)FormatterServices.GetUninitializedObject(type);
@@ -252,7 +252,7 @@ namespace CorgEng.Tests.NetworkingTests
                     {
                         Assert.AreEqual(property.GetValue(instantiatedEvent), property.GetValue(deserializedType), $"Deconversion failed on event of type {type} and variable {property.Name}");
                     }
-                    Logger?.WriteLine($"{type.Name} passed");
+                    Logger?.WriteLine($"{type.Name} passed", LogType.LOG);
                 }
                 catch (Exception e) when (!(e is AssertFailedException) && !(e is AssertInconclusiveException))
                 {

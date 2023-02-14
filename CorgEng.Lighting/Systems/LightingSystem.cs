@@ -26,7 +26,7 @@ namespace CorgEng.Lighting.Systems
         [UsingDependency]
         private static IEntityCreator EntityCreator = default!;
 
-        public override EntitySystemFlags SystemFlags => throw new NotImplementedException();
+        public override EntitySystemFlags SystemFlags => EntitySystemFlags.CLIENT_SYSTEM;
 
         public override void SystemSetup()
         {
@@ -40,7 +40,7 @@ namespace CorgEng.Lighting.Systems
                         { 0, lightingComponent.Radius, 0 },
                         { 0, 0, 1 },
                     });
-                createdIcon.Colour = new Vector<float>(252/255f, 220/255f, 164/255f, 1.0f);
+                createdIcon.Colour = lightingComponent.Colour.ToVector();
                 //Apply the overlay to the entity
                 new AddOverlayEvent(createdIcon).Raise(entity);
             });
