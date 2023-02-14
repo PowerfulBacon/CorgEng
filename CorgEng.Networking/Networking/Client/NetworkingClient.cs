@@ -468,12 +468,14 @@ namespace CorgEng.Networking.Networking.Client
                                         Logger.WriteMetric("delayed_event_target", entityIdentifier.ToString());
                                         //Queue the event to fire when the entity is created
                                         DelayedEventSystem.AddDelayedEvent(entityIdentifier, (entityTarget) => {
-                                            Logger.WriteMetric("networked_local_event_delayed", raisedEvent.GetType().ToString());
+                                            Logger.WriteMetric("networked_local_event_delayed", raisedEvent.ToString());
                                             raisedEvent.Raise(entityTarget);
                                         });
+                                        // Request info about this entity
+
                                         return;
                                     }
-                                    Logger.WriteMetric("networked_local_event", raisedEvent.GetType().ToString());
+                                    Logger.WriteMetric("networked_local_event", raisedEvent.ToString());
                                     raisedEvent.Raise(entityTarget);
                                 }
                             }

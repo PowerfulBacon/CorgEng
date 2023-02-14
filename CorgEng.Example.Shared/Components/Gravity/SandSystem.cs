@@ -23,7 +23,7 @@ namespace CorgEng.Example.Shared.Components.Gravity
 
         public override EntitySystemFlags SystemFlags => EntitySystemFlags.HOST_SYSTEM;
 
-        protected override int ProcessDelay => 20;
+        protected override int ProcessDelay => 100;
 
         /// <summary>
         /// What we use to query if the tile is solid

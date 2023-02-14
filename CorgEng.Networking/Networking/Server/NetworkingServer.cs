@@ -32,6 +32,7 @@ using System.Threading.Tasks;
 
 namespace CorgEng.Networking.Networking.Server
 {
+
     [Dependency]
     internal class NetworkingServer : INetworkingServer
     {
@@ -84,7 +85,7 @@ namespace CorgEng.Networking.Networking.Server
         /// <summary>
         /// A dictionary containing all connected clients
         /// </summary>
-        private Dictionary<IPAddress, IClient> connectedClients = new Dictionary<IPAddress, IClient>();
+        internal Dictionary<IPAddress, IClient> connectedClients = new Dictionary<IPAddress, IClient>();
 
         public event NetworkMessageRecieved NetworkMessageReceived;
 
@@ -351,7 +352,7 @@ namespace CorgEng.Networking.Networking.Server
                                         ushort networkedIdentifier = reader.ReadUInt16();
                                         //Get the event that was raised
                                         INetworkedEvent raisedEvent = VersionGenerator.CreateTypeFromIdentifier<INetworkedEvent>(networkedIdentifier);
-                                        Logger.WriteMetric("networked_global_event", raisedEvent.GetType().ToString());
+                                        Logger.WriteMetric("networked_global_event", raisedEvent.ToString());
                                         //Deserialize the event
                                         raisedEvent.Deserialise(reader);
                                         raisedEvent.RaiseGlobally(false);

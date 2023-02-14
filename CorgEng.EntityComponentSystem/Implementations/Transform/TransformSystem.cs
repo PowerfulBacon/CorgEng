@@ -17,7 +17,7 @@ namespace CorgEng.EntityComponentSystem.Implementations.Transform
     {
 
         //Runs only on the server, triggers MoveEvents from position change events.
-        public override EntitySystemFlags SystemFlags { get; } = EntitySystemFlags.HOST_SYSTEM;
+        public override EntitySystemFlags SystemFlags { get; } = EntitySystemFlags.HOST_SYSTEM | EntitySystemFlags.CLIENT_SYSTEM;
 
         [UsingDependency]
         private static ILogger Logger;
@@ -27,6 +27,9 @@ namespace CorgEng.EntityComponentSystem.Implementations.Transform
             RegisterLocalEvent<TransformComponent, SetPositionEvent>(SetEntityPosition);
             RegisterLocalEvent<TransformComponent, TranslateEvent>(TranslateEntity);
             RegisterLocalEvent<TransformComponent, SetRotationEvent>(SetEntityRotation);
+            RegisterLocalEvent<TransformComponent, MoveEvent>((e, c, s) => {
+                c.Position = s.NewPosition;
+            });
         }
 
         /// <summary>

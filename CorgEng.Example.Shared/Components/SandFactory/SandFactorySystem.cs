@@ -33,7 +33,7 @@ namespace CorgEng.Example.Shared.Components.SandFactory
 
         public override EntitySystemFlags SystemFlags => EntitySystemFlags.HOST_SYSTEM;
 
-        protected override int ProcessDelay => 50;
+        protected override int ProcessDelay => 2000;
 
         public override void SystemSetup()
         {

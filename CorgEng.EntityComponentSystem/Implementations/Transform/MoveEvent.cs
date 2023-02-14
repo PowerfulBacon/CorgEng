@@ -45,5 +45,10 @@ namespace CorgEng.EntityComponentSystem.Implementations.Transform
         {
             return sizeof(float) * 6;
         }
+
+        public override string ToString()
+        {
+            return $"MoveEvent({OldPosition}->{NewPosition})";
+        }
     }
 }

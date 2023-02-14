@@ -5,11 +5,14 @@ using CorgEng.EntityComponentSystem.Events.Events;
 using CorgEng.EntityComponentSystem.Implementations.Transform;
 using CorgEng.EntityComponentSystem.Systems;
 using CorgEng.GenericInterfaces.EntityComponentSystem;
+using CorgEng.GenericInterfaces.Networking.Clients;
 using CorgEng.GenericInterfaces.Networking.Config;
 using CorgEng.GenericInterfaces.Networking.Networking;
 using CorgEng.GenericInterfaces.Networking.Networking.Client;
+using CorgEng.GenericInterfaces.Networking.Networking.Server;
 using CorgEng.GenericInterfaces.Networking.Packets;
 using CorgEng.Networking.Components;
+using CorgEng.Networking.Networking.Server;
 using CorgEng.Networking.VersionSync;
 using CorgEng.UtilityTypes.Vectors;
 using System;
@@ -36,12 +39,22 @@ namespace CorgEng.Networking.EntitySystems
         [UsingDependency]
         private static INetworkMessageFactory NetworkMessageFactory;
 
+        [UsingDependency]
+        private static IEntityCommunicator EntityCommunicator;
+
+        [UsingDependency]
+        private static INetworkingServer NetworkingServer;
+
         public override EntitySystemFlags SystemFlags { get; } = EntitySystemFlags.HOST_SYSTEM | EntitySystemFlags.CLIENT_SYSTEM;
 
         public override void SystemSetup()
         {
             RegisterLocalEvent<NetworkTransformComponent, ComponentAddedEvent>(OnComponentAdded);
             RegisterLocalEvent<NetworkTransformComponent, NetworkedEventRaisedEvent>(OnNetworkedEventRaised);
+            RegisterLocalEvent<NetworkTransformComponent, InitialiseEvent>((e, c, s) => {
+                foreach (IClient client in ((NetworkingServer)NetworkingServer).connectedClients.Values)
+                    EntityCommunicator.CommunicateEntity(e, client);
+            });
             RegisterGlobalEvent<NetworkedEventRaisedEvent>(OnGlobalNetworkedEventRaised);
         }
 
