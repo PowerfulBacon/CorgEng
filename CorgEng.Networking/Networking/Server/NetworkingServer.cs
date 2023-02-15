@@ -152,6 +152,7 @@ namespace CorgEng.Networking.Networking.Server
             //Start the server (Doesn't connect to anything, just listens)
             udpClient = new UdpClient(port);
             //Start running the serve
+            Logger.WriteLine($"UDP Server has buffer size of {udpClient.Client.ReceiveBufferSize}", LogType.DEBUG);
             running = true;
             //Start the networking thread
             Thread serverThread = new Thread(NetworkListenerThread);
@@ -286,8 +287,9 @@ namespace CorgEng.Networking.Networking.Server
         {
             try
             {
+                bool needsAcknowledgement = true;
                 //Convert the packet into the individual messages
-                int messagePointer = 0;
+                int messagePointer = 8;
                 while (messagePointer < data.Length)
                 {
                     int originalPoint = messagePointer;
@@ -299,6 +301,15 @@ namespace CorgEng.Networking.Networking.Server
                     PacketHeaders packetHeader = (PacketHeaders)BitConverter.ToInt32(data, originalPoint + 0x02);
                     //Get the data and pass it on
                     HandleMessage(sender, packetHeader, data, originalPoint + 0x06, packetSize);
+                    if (needsAcknowledgement && packetHeader != PacketHeaders.ACKNOWLEDGE_PACKET && connectedClients.ContainsKey(sender.Address))
+                    {
+                        // Send the acknowledgement request
+                        // Read the packet ID
+                        double packetId = BitConverter.ToInt64(data, 0);
+                        // Tell the server that we recieved the packet
+                        QueueMessage(ClientAddressingTable.GetFlagRepresentation(connectedClients[sender.Address]), NetworkMessageFactory.CreateMessage(PacketHeaders.ACKNOWLEDGE_PACKET, BitConverter.GetBytes(packetId)));
+                        needsAcknowledgement = false;
+                    }
                 }
                 Logger.WriteMetric("packet_size", data.Length.ToString());
             }
