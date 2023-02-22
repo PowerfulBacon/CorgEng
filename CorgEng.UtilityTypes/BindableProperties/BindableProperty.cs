@@ -11,7 +11,7 @@ namespace CorgEng.UtilityTypes.BindableProperties
         {
             get => _value;
             set {
-                if (value == null && typeof(T).GetGenericTypeDefinition() != typeof(Nullable<>))
+                if (value == null && (!typeof(T).IsGenericType || typeof(T).GetGenericTypeDefinition() != typeof(Nullable<>)))
                     throw new ArgumentNullException("Attempting to set a bindable property of non-nullable type to null.");
                 _value = value;
                 TriggerChanged();

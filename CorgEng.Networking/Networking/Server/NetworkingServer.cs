@@ -1,4 +1,5 @@
-﻿using CorgEng.Core.Dependencies;
+﻿using CorgEng.Core;
+using CorgEng.Core.Dependencies;
 using CorgEng.Core.Modules;
 using CorgEng.DependencyInjection.Dependencies;
 using CorgEng.EntityComponentSystem.Entities;
@@ -63,6 +64,9 @@ namespace CorgEng.Networking.Networking.Server
         [UsingDependency]
         private static IEntityFactory EntityFactory;
 
+        [UsingDependency]
+        private static IQueuedPacketFactory QueuedPacketFactory = null!;
+
         private static IPrototype DefaultEntityPrototype;
 
         private IPacketQueue PacketQueue;
@@ -112,6 +116,12 @@ namespace CorgEng.Networking.Networking.Server
         private volatile EventWaitHandle messageReadyWaitHandle = new EventWaitHandle(false, EventResetMode.AutoReset);
 
         private volatile bool threadWaiting = false;
+
+        private double lastPingAt = 0;
+
+#if DEBUG
+        private Random random = new Random();
+#endif
 
         [ModuleLoad]
         public void LoadDefaultPrototype()
@@ -206,6 +216,17 @@ namespace CorgEng.Networking.Networking.Server
                         {
                             PacketQueue.ReleaseLock();
                         }
+                    }
+                    // Perform ping if we need
+                    if (CorgEngMain.Time > lastPingAt + 10)
+                    {
+                        INetworkMessage networkMessage = NetworkMessageFactory.CreateMessage(PacketHeaders.PING_REQUEST, BitConverter.GetBytes(CorgEngMain.Time));
+                        IQueuedPacket packet = QueuedPacketFactory.CreatePacket(null, networkMessage.GetBytes());
+                        foreach (IClient client in connectedClients.Values)
+                        {
+                            client.SendMessage(udpClient, packet.Data, packet.TopPointer);
+                        }
+                        lastPingAt = CorgEngMain.Time;
                     }
                     //Wait for variable time to maintain the tick rate
                     stopwatch.Stop();
@@ -323,15 +344,17 @@ namespace CorgEng.Networking.Networking.Server
         {
             try
             {
+#if DEBUG
+                if (random.NextDouble() * 100 < NetworkConfig.PacketDropProbability)
+                    return;
+#endif
                 Logger.WriteMetric("message_size", length.ToString());
                 Logger.WriteMetric("message_header", header.ToString());
                 //Logger?.WriteLine($"Receieved server message: {header} from {sender.Address}", LogType.LOG);
                 //Check the message header
                 //Process messages
-                if (connectedClients.ContainsKey(sender.Address))
+                if (connectedClients.TryGetValue(sender.Address, out IClient client))
                 {
-                    //The client this message is coming from
-                    IClient client = connectedClients[sender.Address];
                     switch (header)
                     {
                         case PacketHeaders.REQUEST_PROTOTYPE:
@@ -371,6 +394,16 @@ namespace CorgEng.Networking.Networking.Server
                                 }
                                 return;
                             }
+                        case PacketHeaders.PING_RESPONSE:
+                            {
+                                double sentAt = BitConverter.ToDouble(data, start);
+                                client.RoundTripPing = CorgEngMain.Time - sentAt;
+                                Logger.WriteLine($"Recieved ping from {sender.Address}:{sender.Port} ({client.Username})\nSent at:\t\t{sentAt}s\nRecieved at:\t\t{CorgEngMain.Time}s\nRound trip time:\t{CorgEngMain.Time - sentAt}s", LogType.TEMP);
+                                return;
+                            }
+                        case PacketHeaders.ACKNOWLEDGE_PACKET:
+                            // Do nothing
+                            return;
 #if DEBUG
                         default:
                             Logger?.WriteLine($"Unhandled header: {header}", LogType.WARNING);

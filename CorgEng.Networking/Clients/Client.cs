@@ -21,6 +21,12 @@ namespace CorgEng.Networking.Clients
 
         public IEntity AttachedEntity { get; set; }
 
+        public double RoundTripPing { get; set; }
+
+        public int PingsMissed { get; set; }
+        public int PacketsSent { get; set; }
+        public int PacketsDropped { get; set; }
+
         public Client(string username, IPEndPoint clientEndPoint)
         {
             Username = username;

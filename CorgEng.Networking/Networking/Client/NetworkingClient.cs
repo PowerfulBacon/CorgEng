@@ -124,11 +124,16 @@ namespace CorgEng.Networking.Networking.Client
         /// <summary>
         /// The queue of packets that we have sent, so that we can check after some time
         /// that the packet actually arrived like intended.
+        /// A priority queue sorted in order of when the packet will timeout.
         /// </summary>
-        public IBinaryList<IQueuedPacket> packetConfirmationQueue;
+        public PriorityQueue<IQueuedPacket, double> packetConfirmationQueue = new PriorityQueue<IQueuedPacket, double>();
 
         [UsingDependency]
-        private IQueuedPacketFactory QueuedPacketFactory = null!;
+        private static IQueuedPacketFactory QueuedPacketFactory = null!;
+
+#if DEBUG
+        private static Random random = new Random();
+#endif
 
         /// <summary>
         /// Attempt connection to a network address
@@ -300,6 +305,14 @@ namespace CorgEng.Networking.Networking.Client
                         }
                         //Logger.WriteLine($"Sent packets to the server", LogType.TEMP);
                     }
+                    // Check the packet confirmation queue, to see if we need to resent things
+                    while (packetConfirmationQueue.TryPeek(out var queuedPacket, out double resendTime) && resendTime > CorgEngMain.Time)
+                    {
+                        // Remove the packet
+                        packetConfirmationQueue.Dequeue();
+                        // Resend the packet
+
+                    }
                     //Wait for variable time to maintain the tick rate
                     stopwatch.Stop();
                     double elapsedMilliseconds = stopwatch.ElapsedMilliseconds;
@@ -327,7 +340,9 @@ namespace CorgEng.Networking.Networking.Client
         private void OnPacketSent(IQueuedPacket sentPacket)
         {
             sentPacket.SentAt = CorgEngMain.Time;
-            packetConfirmationQueue.Add(sentPacket.PacketIdentifier, sentPacket);
+            //TODO: Implement ping (For now allow 100ms before a packet is resent. Should be probably around 20-50% the return time ping.)
+            packetConfirmationQueue.Enqueue(sentPacket, sentPacket.SentAt + 0.1);
+            //packetConfirmationQueue.Add(sentPacket.PacketIdentifier, sentPacket);
         }
 
         private ConcurrentQueue<(IPEndPoint, byte[])> packetQueue = new ConcurrentQueue<(IPEndPoint, byte[])>();
@@ -393,6 +408,10 @@ namespace CorgEng.Networking.Networking.Client
         {
             try
             {
+#if DEBUG
+                if (random.NextDouble() * 100 < NetworkConfig.PacketDropProbability)
+                    return;
+#endif
                 //Ignore messages from people we weren't connecting to.
                 //All communications must go through the server.
                 //This is for security reasons, so a hacked client can't tell other players
@@ -577,15 +596,14 @@ namespace CorgEng.Networking.Networking.Client
                         // Send back the packet immediately, without waiting for the server to reach the next net tick
                         // We trust the server to be correct, so don't ignore pings if they are being spammed unlike the server.
                         double sentAt = BitConverter.ToDouble(data, start);
-                        byte[] packetData = new byte[12];
-                        BitConverter.GetBytes((int)PacketHeaders.PING_RESPONSE).CopyTo(packetData, 0);
-                        BitConverter.GetBytes(sentAt).CopyTo(packetData, 4);
-                        udpClient.Send(packetData);
+                        INetworkMessage networkMessage = NetworkMessageFactory.CreateMessage(PacketHeaders.PING_RESPONSE, BitConverter.GetBytes(sentAt));
+                        IQueuedPacket packet = QueuedPacketFactory.CreatePacket(null, networkMessage.GetBytes());
+                        udpClient.Send(packet.Data, packet.TopPointer);
                         return;
                     case PacketHeaders.ACKNOWLEDGE_PACKET:
                         long packetIdentifier = BitConverter.ToInt64(data, start);
                         //TODO Allow for binary lists to contain long identifiers, 2^64 values instead of 2^31
-                        packetConfirmationQueue.Remove((int)packetIdentifier);
+                        //packetConfirmationQueue.Remove((int)packetIdentifier);
                         return;
 #if DEBUG
                     default:

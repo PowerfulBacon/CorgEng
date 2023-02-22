@@ -19,5 +19,13 @@ namespace CorgEng.GenericInterfaces.Networking.Config
 
         int PacketMaxSizeBytes { set; get; }
 
+#if DEBUG
+        /// <summary>
+        /// Probablility that packets will be dropped for no reason.
+        /// Please don't use this in production!!
+        /// </summary>
+        public double PacketDropProbability { get; }
+#endif
+
     }
 }
