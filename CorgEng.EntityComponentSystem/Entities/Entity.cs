@@ -3,6 +3,7 @@ using CorgEng.EntityComponentSystem.Components;
 using CorgEng.EntityComponentSystem.Events;
 using CorgEng.EntityComponentSystem.Events.Events;
 using CorgEng.EntityComponentSystem.Implementations.Deletion;
+using CorgEng.Functional.Monads;
 using CorgEng.GenericInterfaces.EntityComponentSystem;
 using CorgEng.GenericInterfaces.Logging;
 using CorgEng.GenericInterfaces.UtilityTypes;
@@ -198,6 +199,22 @@ namespace CorgEng.EntityComponentSystem.Entities
             }
             component = default(T);
             return false;
+        }
+
+        public Result<T> TryGetComponent<T>()
+        {
+            //Get derived types too
+            lock (Components)
+            {
+                foreach (IComponent _component in Components)
+                {
+                    if (_component is T componentAsT)
+                    {
+                        return new Result<T>(componentAsT);
+                    }
+                }
+            }
+            return new Failure<T>();
         }
 
     }
