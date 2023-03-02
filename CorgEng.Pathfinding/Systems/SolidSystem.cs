@@ -49,7 +49,7 @@ namespace CorgEng.Pathfinding.Systems
                 WorldLayers.Add(0, new WorldGrid());
             }
             //Get the position
-            IVector<int> gridPosition = WorldAccess.GetGridPosition(attachedTransformComponent.Position);
+            IVector<int> gridPosition = WorldAccess.GetGridPosition(attachedTransformComponent.Position.Value);
             int positionX = gridPosition.X;
             int positionY = gridPosition.Y;
             WorldLayers[0].AddElement(positionX, positionY);
@@ -69,7 +69,7 @@ namespace CorgEng.Pathfinding.Systems
                 return;
             }
             //Get the position
-            IVector<int> gridPosition = WorldAccess.GetGridPosition(attachedTransformComponent.Position);
+            IVector<int> gridPosition = WorldAccess.GetGridPosition(attachedTransformComponent.Position.Value);
             int positionX = gridPosition.X;
             int positionY = gridPosition.Y;
             WorldLayers[0].RemoveElement(positionX, positionY);

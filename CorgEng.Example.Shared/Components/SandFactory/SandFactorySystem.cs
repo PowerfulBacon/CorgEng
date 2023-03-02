@@ -50,7 +50,7 @@ namespace CorgEng.Example.Shared.Components.SandFactory
                             Colour = new Colour(DebugRandom.NextSingle(), DebugRandom.NextSingle(), DebugRandom.NextSingle(), DebugRandom.NextSingle()),
                         });
                         //Update the entity
-                        new SetPositionEvent(new Vector<float>(transform.Position.X, transform.Position.Y)).Raise(entity);
+                        new SetPositionEvent(new Vector<float>(transform.Position.Value.X, transform.Position.Value.Y)).Raise(entity);
                         new SetSpriteEvent(IconFactory.CreateIcon("sand", 5, Constants.RenderingConstants.DEFAULT_RENDERER_PLANE)).Raise(entity);
                         new SetSpriteRendererEvent(1).Raise(entity);
                     });

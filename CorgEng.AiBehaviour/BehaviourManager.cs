@@ -22,7 +22,7 @@ namespace CorgEng.AiBehaviour
         private TransformComponent _transform;
 
 
-        public IVector<float> Position => _transform.Position;
+        public IVector<float> Position => _transform.Position.Value;
 
         /// <summary>
         /// The pawn entity we are attached to

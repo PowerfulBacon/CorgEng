@@ -1,5 +1,6 @@
 ﻿using CorgEng.Core;
 using CorgEng.Core.Dependencies;
+using CorgEng.EntityComponentSystem.Components;
 using CorgEng.EntityComponentSystem.Entities;
 using CorgEng.EntityComponentSystem.Events.Events;
 using CorgEng.EntityComponentSystem.Implementations.Transform;
@@ -45,6 +46,7 @@ namespace CorgEng.EntityComponentSystem.Implementations.Rendering.SpriteRenderin
             RegisterLocalEvent<SpriteRenderComponent, DeleteEntityEvent>(OnEntityDestroyed);
             RegisterLocalEvent<SpriteRenderComponent, ComponentAddedEvent>(OnComponentAdded);
             RegisterLocalEvent<SpriteRenderComponent, MoveEvent>(OnEntityMoved);
+            //Component.GetTemplate<TransformComponent>().Position
             RegisterLocalEvent<SpriteRenderComponent, RotationEvent>(OnEntityRotated);
             RegisterLocalEvent<SpriteRenderComponent, InitialiseNetworkedEntityEvent>(OnInitialise);
             RegisterLocalEvent<SpriteRenderComponent, AddOverlayEvent>(AddOverlay);
@@ -60,7 +62,7 @@ namespace CorgEng.EntityComponentSystem.Implementations.Rendering.SpriteRenderin
             if (!CorgEngMain.IsRendering)
                 return;
             //Take the position
-            spriteRenderComponent.CachedPosition = entity.GetComponent<TransformComponent>().Position.Copy();
+            spriteRenderComponent.CachedPosition = entity.GetComponent<TransformComponent>().Position.Value.Copy();
             //Update the sprite
             UpdateSprite(spriteRenderComponent);
             //Apply initial overlays

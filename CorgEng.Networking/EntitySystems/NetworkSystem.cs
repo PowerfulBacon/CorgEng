@@ -100,7 +100,7 @@ namespace CorgEng.Networking.EntitySystems
             {
                 ServerCommunicator?.SendToReleventClients(
                     NetworkMessageFactory.CreateMessage(PacketHeaders.LOCAL_EVENT_RAISED, InjectEventCode(networkedEventRaisedEvent.RaisedEvent, entity)),
-                    transformComponent.Position,
+                    transformComponent.Position.Value,
                     new Vector<float>(1, 1, 1)
                     );
             }

@@ -46,7 +46,7 @@ namespace CorgEng.World.EntitySystems
             if (trackComponent.Parent.HasComponent<ContainedComponent>())
                 return;
             //Add the entity to the world
-            WorldAccess.AddEntity(trackComponent.Key, trackComponent, trackComponent.Transform.Position.X, trackComponent.Transform.Position.Y, 0);
+            WorldAccess.AddEntity(trackComponent.Key, trackComponent, trackComponent.Transform.Position.Value.X, trackComponent.Transform.Position.Value.Y, 0);
             trackComponent.isTracking = true;
         }
 
@@ -68,7 +68,7 @@ namespace CorgEng.World.EntitySystems
             {
                 //Start tracking
                 trackComponent.isTracking = true;
-                WorldAccess.AddEntity(trackComponent.Key, trackComponent, trackComponent.Transform.Position.X, trackComponent.Transform.Position.Y, 0);
+                WorldAccess.AddEntity(trackComponent.Key, trackComponent, trackComponent.Transform.Position.Value.X, trackComponent.Transform.Position.Value.Y, 0);
             }
         }
 

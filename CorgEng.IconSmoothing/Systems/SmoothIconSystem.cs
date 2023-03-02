@@ -39,7 +39,7 @@ namespace CorgEng.IconSmoothing.Systems
         {
             if ((entity.EntityFlags & EntityComponentSystem.Entities.EntityFlags.DESTROYED) != 0)
                 return;
-            IVector<int> position = WorldAccess.GetGridPosition(smoothIconComponent.TransformComponent.Position);
+            IVector<int> position = WorldAccess.GetGridPosition(smoothIconComponent.TransformComponent.Position.Value);
             IVector<int> above = new Vector<int>(position.X, position.Y + 1);
             IVector<int> below = new Vector<int>(position.X, position.Y - 1);
             IVector<int> right = new Vector<int>(position.X + 1, position.Y);
@@ -102,7 +102,7 @@ namespace CorgEng.IconSmoothing.Systems
 
         private void SmoothAround(SmoothIconComponent smoothIconComponent)
         {
-            IVector<int> position = WorldAccess.GetGridPosition(smoothIconComponent.TransformComponent.Position);
+            IVector<int> position = WorldAccess.GetGridPosition(smoothIconComponent.TransformComponent.Position.Value);
             IVector<int> above = new Vector<int>(position.X, position.Y + 1);
             IVector<int> below = new Vector<int>(position.X, position.Y - 1);
             IVector<int> right = new Vector<int>(position.X + 1, position.Y);

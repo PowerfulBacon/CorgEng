@@ -14,12 +14,13 @@ using static CorgEng.EntityComponentSystem.Systems.EntitySystem;
 
 namespace CorgEng.EntityComponentSystem.Components
 {
+
     public abstract class Component : IInstantiatable, IVersionSynced, IComponent
     {
 
         [UsingDependency]
         private static ILogger Logger = null!;
-        
+
         /// <summary>
         /// The parent of this component
         /// </summary>
@@ -31,6 +32,27 @@ namespace CorgEng.EntityComponentSystem.Components
 
         //TODO: This is very memory expensive as its stored on ALL component instances, when it kind of works per-component.
         private List<InternalSignalHandleDelegate> componentInjectionLambdas = new List<InternalSignalHandleDelegate>();
+
+        /// <summary>
+        /// Super cool optimisation
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        private sealed class CompTemplate<T>
+            where T : Component
+        {
+            internal static readonly T Template = Activator.CreateInstance<T>();
+        }
+
+        /// <summary>
+        /// Get the template component so that signals can be registered to its CVars
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public static T GetTemplate<T>()
+            where T : Component
+        {
+            return CompTemplate<T>.Template;
+        }
 
         /// <summary>
         /// Register existing signals when we are added
