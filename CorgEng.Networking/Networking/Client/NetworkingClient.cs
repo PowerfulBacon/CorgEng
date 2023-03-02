@@ -15,6 +15,7 @@ using CorgEng.GenericInterfaces.Networking.Packets;
 using CorgEng.GenericInterfaces.Networking.Packets.PacketQueues;
 using CorgEng.GenericInterfaces.Networking.PrototypeManager;
 using CorgEng.GenericInterfaces.Rendering;
+using CorgEng.GenericInterfaces.UtilityTypes.BinaryLists;
 using CorgEng.Networking.EntitySystems;
 using CorgEng.Networking.Events;
 using CorgEng.Networking.Networking.Server;
@@ -33,6 +34,11 @@ using System.Threading.Tasks;
 
 namespace CorgEng.Networking.Networking.Client
 {
+    /// <summary>
+    /// The networking client.
+    /// This is absolutely awful and I hate it, will probably rewrite it in the future
+    /// to iron out some of the oversights.
+    /// </summary>
     [Dependency]
     internal class NetworkingClient : INetworkingClient
     {
@@ -114,6 +120,20 @@ namespace CorgEng.Networking.Networking.Client
         private bool cancelToken = false;
 
         public int TickRate { get; set; } = 32;
+
+        /// <summary>
+        /// The queue of packets that we have sent, so that we can check after some time
+        /// that the packet actually arrived like intended.
+        /// A priority queue sorted in order of when the packet will timeout.
+        /// </summary>
+        public PriorityQueue<IQueuedPacket, double> packetConfirmationQueue = new PriorityQueue<IQueuedPacket, double>();
+
+        [UsingDependency]
+        private static IQueuedPacketFactory QueuedPacketFactory = null!;
+
+#if DEBUG
+        private static Random random = new Random();
+#endif
 
         /// <summary>
         /// Attempt connection to a network address
@@ -275,12 +295,23 @@ namespace CorgEng.Networking.Networking.Client
                             //We send all the data straight to the server.
                             //The client cannot communicate with other clients.
                             udpClient.SendAsync(data, queuedPacket.TopPointer);
+                            //Register the packet so that after a set amount of time
+                            //we can resend it if it didn't arrive.
+                            OnPacketSent(queuedPacket);
                         }
                         finally
                         {
                             PacketQueue.ReleaseLock();
                         }
                         //Logger.WriteLine($"Sent packets to the server", LogType.TEMP);
+                    }
+                    // Check the packet confirmation queue, to see if we need to resent things
+                    while (packetConfirmationQueue.TryPeek(out var queuedPacket, out double resendTime) && resendTime > CorgEngMain.Time)
+                    {
+                        // Remove the packet
+                        packetConfirmationQueue.Dequeue();
+                        // Resend the packet
+
                     }
                     //Wait for variable time to maintain the tick rate
                     stopwatch.Stop();
@@ -299,6 +330,19 @@ namespace CorgEng.Networking.Networking.Client
             }
             Logger?.WriteLine($"Client sender thread terminated", LogType.WARNING);
             shutdownCountdown.Signal();
+        }
+
+        /// <summary>
+        /// Called when a packet is sent, adds it to the queue of things waiting to be verified that they were sent
+        /// successfully.
+        /// </summary>
+        /// <param name="sentPacket"></param>
+        private void OnPacketSent(IQueuedPacket sentPacket)
+        {
+            sentPacket.SentAt = CorgEngMain.Time;
+            //TODO: Implement ping (For now allow 100ms before a packet is resent. Should be probably around 20-50% the return time ping.)
+            packetConfirmationQueue.Enqueue(sentPacket, sentPacket.SentAt + 0.1);
+            //packetConfirmationQueue.Add(sentPacket.PacketIdentifier, sentPacket);
         }
 
         private ConcurrentQueue<(IPEndPoint, byte[])> packetQueue = new ConcurrentQueue<(IPEndPoint, byte[])>();
@@ -364,6 +408,10 @@ namespace CorgEng.Networking.Networking.Client
         {
             try
             {
+#if DEBUG
+                if (random.NextDouble() * 100 < NetworkConfig.PacketDropProbability)
+                    return;
+#endif
                 //Ignore messages from people we weren't connecting to.
                 //All communications must go through the server.
                 //This is for security reasons, so a hacked client can't tell other players
@@ -373,8 +421,9 @@ namespace CorgEng.Networking.Networking.Client
                     return;
                 }
                 Logger.WriteMetric("packet_size", data.Length.ToString());
+                bool needsAcknowledgement = true;
                 //Convert the packet into the individual messages
-                int messagePointer = 0;
+                int messagePointer = 8;
                 while (messagePointer < data.Length)
                 {
                     int originalPoint = messagePointer;
@@ -384,6 +433,16 @@ namespace CorgEng.Networking.Networking.Client
                     messagePointer += packetSize + 0x06;
                     //Read the packet header
                     PacketHeaders packetHeader = (PacketHeaders)BitConverter.ToInt32(data, originalPoint + 0x02);
+                    // Send an acknowledgement packet if we need to
+                    if (needsAcknowledgement && packetHeader != PacketHeaders.ACKNOWLEDGE_PACKET)
+                    {
+                        // Send the acknowledgement request
+                        // Read the packet ID
+                        double packetId = BitConverter.ToInt64(data, 0);
+                        // Tell the server that we recieved the packet
+                        QueueMessage(NetworkMessageFactory.CreateMessage(PacketHeaders.ACKNOWLEDGE_PACKET, BitConverter.GetBytes(packetId)));
+                        needsAcknowledgement = false;
+                    }
                     //Get the data and pass it on
                     HandleMessage(sender, packetHeader, data, originalPoint + 0x06, packetSize);
                 }
@@ -472,7 +531,7 @@ namespace CorgEng.Networking.Networking.Client
                                             raisedEvent.Raise(entityTarget);
                                         });
                                         // Request info about this entity
-
+                                        //TODO
                                         return;
                                     }
                                     Logger.WriteMetric("networked_local_event", raisedEvent.ToString());
@@ -531,6 +590,20 @@ namespace CorgEng.Networking.Networking.Client
                                 new ModifyIsometricView(viewX + viewOffsetX, viewY + viewOffsetY, viewZ, viewOffsetWidth, viewOffsetHeight).RaiseGlobally();
                             }
                         }
+                        return;
+                    // Ping requests need to not include delay
+                    case PacketHeaders.PING_REQUEST:
+                        // Send back the packet immediately, without waiting for the server to reach the next net tick
+                        // We trust the server to be correct, so don't ignore pings if they are being spammed unlike the server.
+                        double sentAt = BitConverter.ToDouble(data, start);
+                        INetworkMessage networkMessage = NetworkMessageFactory.CreateMessage(PacketHeaders.PING_RESPONSE, BitConverter.GetBytes(sentAt));
+                        IQueuedPacket packet = QueuedPacketFactory.CreatePacket(null, networkMessage.GetBytes());
+                        udpClient.Send(packet.Data, packet.TopPointer);
+                        return;
+                    case PacketHeaders.ACKNOWLEDGE_PACKET:
+                        long packetIdentifier = BitConverter.ToInt64(data, start);
+                        //TODO Allow for binary lists to contain long identifiers, 2^64 values instead of 2^31
+                        //packetConfirmationQueue.Remove((int)packetIdentifier);
                         return;
 #if DEBUG
                     default:

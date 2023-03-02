@@ -23,19 +23,29 @@ namespace CorgEng.Networking.Packets.PacketQueues
 
         public int TopPointer { get; set; }
 
+        private static int PacketCount = 0;
+
+        public int PacketIdentifier { get; private set; }
+
+        public double SentAt { get; set; }
+
         public QueuedPacket(IClientAddress targets)
         {
+            PacketIdentifier = PacketCount++;
             Targets = targets;
             Data = new byte[NetworkConfig.PacketMaxSizeBytes];
-            TopPointer = 0;
+            BitConverter.GetBytes(PacketIdentifier).CopyTo(Data, 0);
+            TopPointer = 8;
         }
 
         public QueuedPacket(IClientAddress targets, byte[] data)
         {
+            PacketIdentifier = PacketCount++;
             Targets = targets;
             Data = new byte[NetworkConfig.PacketMaxSizeBytes];
-            data.CopyTo(Data, 0);
-            TopPointer = data.Length;
+            BitConverter.GetBytes(PacketIdentifier).CopyTo(Data, 0);
+            data.CopyTo(Data, 8);
+            TopPointer = data.Length + 8;
         }
 
         public bool CanInsert(int length)
