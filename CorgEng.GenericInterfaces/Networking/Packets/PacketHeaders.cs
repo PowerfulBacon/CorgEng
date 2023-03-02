@@ -35,5 +35,7 @@ namespace CorgEng.GenericInterfaces.Networking.Packets
         PING_REQUEST,
         //Send a ping response
         PING_RESPONSE,
+        //Request information about an entity
+        REQUEST_ENTITY,
     }
 }
