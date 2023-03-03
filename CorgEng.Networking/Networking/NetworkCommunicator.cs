@@ -121,6 +121,10 @@ namespace CorgEng.Networking.Networking
 
         public int TickRate { get; set; } = 32;
 
+#if DEBUG
+        private Random random = new Random();
+#endif
+
         /// <summary>
         /// The sender thread.
         /// Runs when it needs to, transmits data to the server
@@ -248,6 +252,13 @@ namespace CorgEng.Networking.Networking
                     return;
                 }
                 Logger.WriteMetric("packet_size", data.Length.ToString());
+#if DEBUG
+                // Simulated packet-loss
+                if (NetworkConfig.PacketDropProbability > 0 && random.Next() < NetworkConfig.PacketDropProbability)
+                {
+                    return;
+                }
+#endif
                 //Convert the packet into the individual messages
                 int messagePointer = 0;
                 while (messagePointer < data.Length)

@@ -80,10 +80,6 @@ namespace CorgEng.Networking.Networking.Server
 
         private double lastPingAt = 0;
 
-#if DEBUG
-        private Random random = new Random();
-#endif
-
         [ModuleLoad]
         public void LoadDefaultPrototype()
         {
