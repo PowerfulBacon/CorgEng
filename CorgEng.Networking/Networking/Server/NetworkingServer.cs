@@ -64,19 +64,12 @@ namespace CorgEng.Networking.Networking.Server
         [UsingDependency]
         private static IEntityFactory EntityFactory;
 
-        [UsingDependency]
-        private static IQueuedPacketFactory QueuedPacketFactory = null!;
-
         private static IPrototype DefaultEntityPrototype;
 
         /// <summary>
         /// A dictionary containing all connected clients
         /// </summary>
         internal Dictionary<IPAddress, IClient> connectedClients = new Dictionary<IPAddress, IClient>();
-
-        private volatile EventWaitHandle messageReadyWaitHandle = new EventWaitHandle(false, EventResetMode.AutoReset);
-
-        private volatile bool threadWaiting = false;
 
         private double lastPingAt = 0;
 
@@ -277,6 +270,22 @@ namespace CorgEng.Networking.Networking.Server
         public void SetClientPrototype(IPrototype prototype)
         {
             DefaultEntityPrototype = prototype ?? throw new ArgumentNullException(nameof(prototype));
+        }
+
+        public override void Cleanup()
+        {
+            connectedClients = new Dictionary<IPAddress, IClient>();
+            NetworkConfig.ProcessServerSystems = false;
+            if (!NetworkConfig.ProcessClientSystems)
+                NetworkConfig.NetworkingActive = false;
+            if (ServerCommunicator.server == this)
+                ServerCommunicator.server = null;
+            base.Cleanup();
+        }
+
+        protected override bool IsConnectedAddress(IPAddress address)
+        {
+            return connectedClients.ContainsKey(address);
         }
 
     }

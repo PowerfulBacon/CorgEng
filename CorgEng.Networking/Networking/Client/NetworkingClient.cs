@@ -61,6 +61,9 @@ namespace CorgEng.Networking.Networking.Client
         [UsingDependency]
         private static IPrototypeManager PrototypeManager;
 
+        [UsingDependency]
+        private static IQueuedPacketFactory QueuedPacketFactory = null!;
+
         public event ConnectionSuccess OnConnectionSuccess;
 
         public event ConnectionFailed OnConnectionFailed;
@@ -194,6 +197,8 @@ namespace CorgEng.Networking.Networking.Client
         public void QueueMessage(INetworkMessage message)
         {
             PacketQueue?.QueueMessage(null, message);
+            if (threadWaiting)
+                messageReadyWaitHandle.Set();
         }
 
         /// <summary>
@@ -358,8 +363,15 @@ namespace CorgEng.Networking.Networking.Client
         {
             //OnConnectionFailed = null;
             OnConnectionSuccess = null;
+            NetworkConfig.ProcessClientSystems = false;
+            if (!NetworkConfig.ProcessServerSystems)
+                NetworkConfig.NetworkingActive = false;
             base.Cleanup();
         }
 
+        protected override bool IsConnectedAddress(IPAddress address)
+        {
+            return this.address == address;
+        }
     }
 }

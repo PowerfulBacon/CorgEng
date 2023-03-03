@@ -16,6 +16,8 @@ namespace CorgEng.Networking.Clients
 
         public int AddressBytes { get; private set; }
 
+        public bool HasTargets => clients.Count > 0;
+
         private List<IClient> clients = new List<IClient>();
 
         public unsafe ClientAddress(int clientIndex, IClient client)

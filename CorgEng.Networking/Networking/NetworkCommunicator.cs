@@ -46,22 +46,10 @@ namespace CorgEng.Networking.Networking
         private static INetworkMessageFactory NetworkMessageFactory;
 
         [UsingDependency]
-        private static IPacketQueueFactory PacketQueueFactory;
-
-        [UsingDependency]
         private static INetworkConfig NetworkConfig;
 
         [UsingDependency]
-        private static IEntityCommunicator EntityCommunicator;
-
-        [UsingDependency]
-        private static IPrototypeManager PrototypeManager;
-
-        [UsingDependency]
-        private static IClientAddressingTableFactory ClientAddressingTableFactory;
-
-        [UsingDependency]
-        private static IEntityFactory EntityFactory;
+        private static IQueuedPacketFactory QueuedPacketFactory;
 
         public IClientAddressingTable ClientAddressingTable { get; private set; }
 
@@ -125,6 +113,10 @@ namespace CorgEng.Networking.Networking
         private Random random = new Random();
 #endif
 
+        protected volatile EventWaitHandle messageReadyWaitHandle = new EventWaitHandle(false, EventResetMode.AutoReset);
+
+        protected volatile bool threadWaiting = false;
+
         /// <summary>
         /// The sender thread.
         /// Runs when it needs to, transmits data to the server
@@ -135,7 +127,7 @@ namespace CorgEng.Networking.Networking
             Logger?.WriteLine($"{GetType().Name} sender for {address} thread successfull started.", LogType.DEBUG);
             Stopwatch stopwatch = new Stopwatch();
             double inverseTickrate = 1000.0 / TickRate;
-            while (running && (client.Client?.Connected ?? false))
+            while (running)
             {
                 try
                 {
@@ -150,10 +142,23 @@ namespace CorgEng.Networking.Networking
                             IQueuedPacket queuedPacket = PacketQueue.DequeuePacket();
                             //Transmit the packet to the server
                             byte[] data = queuedPacket.Data;
-                            //Asynchronously send the data
-                            //We send all the data straight to the server.
-                            //The client cannot communicate with other clients.
-                            udpClient.SendAsync(data, queuedPacket.TopPointer);
+                            if (queuedPacket.Targets?.HasTargets ?? false)
+                            {
+                                // Targetted packet
+                                //Get a list of all clients we want to send to
+                                foreach (IClient target in queuedPacket.Targets.GetClients())
+                                {
+                                    target.SendMessage(udpClient, queuedPacket.Data, queuedPacket.TopPointer);
+                                }
+                            }
+                            else
+                            {
+                                // Untargetted packet
+                                //Asynchronously send the data
+                                //We send all the data straight to the server.
+                                //The client cannot communicate with other clients.
+                                udpClient.SendAsync(data, queuedPacket.TopPointer);
+                            }
                         }
                         finally
                         {
@@ -189,7 +194,7 @@ namespace CorgEng.Networking.Networking
         {
             Logger?.WriteLine($"{GetType().Name} listener for {address} thread successfull started.", LogType.DEBUG);
             //Continue always
-            while (running && (client.Client?.Connected ?? false))
+            while (running)
             {
                 try
                 {
@@ -198,6 +203,8 @@ namespace CorgEng.Networking.Networking
                     byte[] incomingData = udpClient.Receive(ref remoteEndPoint);
                     //Handle incomming data
                     packetQueue.Enqueue((remoteEndPoint, incomingData));
+                    if (threadWaiting)
+                        messageReadyWaitHandle.Set();
                 }
                 catch (Exception e)
                 {
@@ -217,8 +224,9 @@ namespace CorgEng.Networking.Networking
                 //Nothing to process
                 if (packetQueue.Count == 0)
                 {
-                    Thread.Yield();
-                    continue;
+                    threadWaiting = true;
+                    messageReadyWaitHandle.WaitOne();
+                    threadWaiting = false;
                 }
                 //Stuff to do
                 try
@@ -247,7 +255,7 @@ namespace CorgEng.Networking.Networking
                 //All communications must go through the server.
                 //This is for security reasons, so a hacked client can't tell other players
                 //invalid information.
-                if (!sender.Address.Equals(address))
+                if (address != null && !sender.Address.Equals(address))
                 {
                     return;
                 }
@@ -259,8 +267,9 @@ namespace CorgEng.Networking.Networking
                     return;
                 }
 #endif
+                bool needsAcknowledgement = true;
                 //Convert the packet into the individual messages
-                int messagePointer = 0;
+                int messagePointer = 8;
                 while (messagePointer < data.Length)
                 {
                     int originalPoint = messagePointer;
@@ -274,6 +283,19 @@ namespace CorgEng.Networking.Networking
                     HandleMessage(sender, packetHeader, data, originalPoint + 0x06, packetSize);
                     // Invoke received message
                     NetworkMessageReceived?.Invoke(packetHeader, data, originalPoint + 0x06, packetSize);
+                    // Deal with acknowledgement
+                    if (needsAcknowledgement && packetHeader != PacketHeaders.ACKNOWLEDGE_PACKET && IsConnectedAddress(sender.Address))
+                    {
+                        // Send the acknowledgement request
+                        // Read the packet ID
+                        double packetId = BitConverter.ToInt64(data, 0);
+                        // Tell the server that we recieved the packet
+                        INetworkMessage networkMessage = NetworkMessageFactory.CreateMessage(PacketHeaders.ACKNOWLEDGE_PACKET, BitConverter.GetBytes(packetId));
+                        IQueuedPacket queuedPacket = QueuedPacketFactory.CreatePacket(null, networkMessage.GetBytes());
+                        // Send confirmation immediately
+                        udpClient.Send(queuedPacket.Data, queuedPacket.TopPointer, sender);
+                        needsAcknowledgement = false;
+                    }
                 }
             }
             catch (Exception e)
@@ -281,6 +303,13 @@ namespace CorgEng.Networking.Networking
                 Logger?.WriteLine(e, LogType.ERROR);
             }
         }
+
+        /// <summary>
+        /// Is the provided address the address of someone connected / what we are connected to?
+        /// </summary>
+        /// <param name="address"></param>
+        /// <returns></returns>
+        protected abstract bool IsConnectedAddress(IPAddress address);
 
         /// <summary>
         /// Handle an incoming message
@@ -298,10 +327,10 @@ namespace CorgEng.Networking.Networking
             udpClient = null;
             connected = false;
             connecting = false;
+            threadWaiting = false;
             NetworkMessageReceived = null;
-            NetworkConfig.ProcessClientSystems = false;
-            if (!NetworkConfig.ProcessServerSystems)
-                NetworkConfig.NetworkingActive = false;
+            PacketQueue = null;
+            ClientAddressingTable = null;
             Logger?.WriteLine($"Waiting for {GetType().Name} cleanup completion...", LogType.LOG);
             //Wait for the threads to be closed
             if (started)
