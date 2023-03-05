@@ -1,4 +1,5 @@
-﻿using CorgEng.Core.Dependencies;
+﻿using CorgEng.Core;
+using CorgEng.Core.Dependencies;
 using CorgEng.Core.Modules;
 using CorgEng.DependencyInjection.Dependencies;
 using CorgEng.EntityComponentSystem.Entities;
@@ -34,7 +35,7 @@ namespace CorgEng.Networking.Networking.Server
 {
 
     [Dependency]
-    internal class NetworkingServer : INetworkingServer
+    internal class NetworkingServer : NetworkCommunicator, INetworkingServer
     {
 
         [UsingDependency]
@@ -65,53 +66,12 @@ namespace CorgEng.Networking.Networking.Server
 
         private static IPrototype DefaultEntityPrototype;
 
-        private IPacketQueue PacketQueue;
-
-        /// <summary>
-        /// The client we are using to communicate
-        /// </summary>
-        private UdpClient udpClient;
-
-        /// <summary>
-        /// Mark false if the server should shut down
-        /// </summary>
-        private volatile bool running = false;
-
-        /// <summary>
-        /// The port the server is currently running on.
-        /// </summary>
-        private int port;
-
         /// <summary>
         /// A dictionary containing all connected clients
         /// </summary>
         internal Dictionary<IPAddress, IClient> connectedClients = new Dictionary<IPAddress, IClient>();
 
-        public event NetworkMessageRecieved NetworkMessageReceived;
-
-        /// <summary>
-        /// The trigger that gets activated when shutdown is triggered
-        /// </summary>
-        private readonly AutoResetEvent shutdownThreadTrigger = new AutoResetEvent(false);
-
-        /// <summary>
-        /// The countdown event that allows the shutdown method to wait until threads are shutdown.
-        /// </summary>
-        private readonly CountdownEvent shutdownCountdown = new CountdownEvent(2);
-
-        /// <summary>
-        /// Have we ever been started?
-        /// </summary>
-        private bool started = false;
-
-        /// <summary>
-        /// Set the server transmission tick rate
-        /// </summary>
-        public int TickRate { get; set; } = 32;
-
-        private volatile EventWaitHandle messageReadyWaitHandle = new EventWaitHandle(false, EventResetMode.AutoReset);
-
-        private volatile bool threadWaiting = false;
+        private double lastPingAt = 0;
 
         [ModuleLoad]
         public void LoadDefaultPrototype()
@@ -127,7 +87,12 @@ namespace CorgEng.Networking.Networking.Server
             });
         }
 
-        public void StartHosting(int port)
+        /// <summary>
+        /// Start hosting a network server
+        /// </summary>
+        /// <param name="port"></param>
+        /// <exception cref="Exception"></exception>
+        public virtual void StartHosting(int port)
         {
             if (ClientAddressingTable == default)
             {
@@ -152,9 +117,10 @@ namespace CorgEng.Networking.Networking.Server
             //Start the server (Doesn't connect to anything, just listens)
             udpClient = new UdpClient(port);
             //Start running the serve
+            Logger.WriteLine($"UDP Server has buffer size of {udpClient.Client.ReceiveBufferSize}", LogType.DEBUG);
             running = true;
             //Start the networking thread
-            Thread serverThread = new Thread(NetworkListenerThread);
+            Thread serverThread = new Thread(() => NetworkListenerThread(udpClient));
             serverThread.Name = $"Networking Listener ({port})";
             serverThread.Start();
             //Start the packet queue thread
@@ -162,7 +128,7 @@ namespace CorgEng.Networking.Networking.Server
             packetProcessingThread.Name = $"Packet processing thread ({port})";
             packetProcessingThread.Start();
             //Start the transmission thread
-            Thread transmissionThread = new Thread(NetworkSenderThread);
+            Thread transmissionThread = new Thread(() => NetworkSenderThread(udpClient));
             transmissionThread.Name = $"Networking Transmitter ({port})";
             transmissionThread.Start();
             shutdownCountdown.Reset();
@@ -171,144 +137,7 @@ namespace CorgEng.Networking.Networking.Server
             NetworkConfig.ProcessServerSystems = true;
         }
 
-        /// <summary>
-        /// The sender thread.
-        /// Runs when it needs to, transmits data to the server
-        /// with a set tick rate.
-        /// </summary>
-        private void NetworkSenderThread()
-        {
-            Logger?.WriteLine($"Server sender for port:{port} thread successfull started.", LogType.DEBUG);
-            Stopwatch stopwatch = new Stopwatch();
-            double inverseTickrate = 1000.0 / TickRate;
-            while (running)
-            {
-                try
-                {
-                    //Create a stopwatch to get the current time
-                    stopwatch.Restart();
-                    //Transmit packets
-                    while (PacketQueue.AcquireLockIfHasMessages())
-                    {
-                        try
-                        {
-                            //Get the queued packet
-                            IQueuedPacket queuedPacket = PacketQueue.DequeuePacket();
-
-                            //Get a list of all clients we want to send to
-                            foreach (IClient target in queuedPacket.Targets.GetClients())
-                            {
-                                target.SendMessage(udpClient, queuedPacket.Data, queuedPacket.TopPointer);
-                            }
-                        }
-                        finally
-                        {
-                            PacketQueue.ReleaseLock();
-                        }
-                    }
-                    //Wait for variable time to maintain the tick rate
-                    stopwatch.Stop();
-                    double elapsedMilliseconds = stopwatch.ElapsedMilliseconds;
-                    double waitTime = inverseTickrate - elapsedMilliseconds;
-                    if (waitTime > 0)
-                    {
-                        //Sleep the thread
-                        shutdownThreadTrigger.WaitOne((int)waitTime);
-                    }
-                }
-                catch (Exception e)
-                {
-                    Logger?.WriteLine(e, LogType.ERROR);
-                }
-            }
-            Logger?.WriteLine($"Server sender thread terminated", LogType.ERROR);
-            shutdownCountdown.Signal();
-        }
-
-        private ConcurrentQueue<(IPEndPoint, byte[])> packetQueue = new ConcurrentQueue<(IPEndPoint, byte[])>();
-
-        private void NetworkListenerThread()
-        {
-            Logger?.WriteLine($"Server listening thread started on port {port}.", LogType.MESSAGE);
-            while (running)
-            {
-                try
-                {
-                    //Recieve messages
-                    IPEndPoint remoteEndPoint = new IPEndPoint(IPAddress.Any, port);
-                    byte[] incomingData = udpClient.Receive(ref remoteEndPoint);
-                    packetQueue.Enqueue((remoteEndPoint, incomingData));
-                    if (threadWaiting)
-                        messageReadyWaitHandle.Set();
-                }
-                catch (Exception e)
-                {
-                    Logger?.WriteLine($"Critical exception on server: {e}", LogType.ERROR);
-                }
-            }
-            //Log shutdown
-            Logger?.WriteLine($"Networking server shut down.", LogType.MESSAGE);
-            shutdownCountdown.Signal();
-        }
-
-        private void ProcessQueueThread()
-        {
-            Logger?.WriteLine($"Server packet queue processor thread started.", LogType.MESSAGE);
-            while (running)
-            {
-                //Nothing to process
-                if (packetQueue.Count == 0)
-                {
-                    threadWaiting = true;
-                    messageReadyWaitHandle.WaitOne();
-                    threadWaiting = false;
-                }
-                //Stuff to do
-                try
-                {
-                    //Recieve messages
-                    (IPEndPoint, byte[]) packet;
-                    if (packetQueue.TryDequeue(out packet))
-                    {
-                        ProcessPacket(packet.Item1, packet.Item2);
-                    }
-                }
-                catch (Exception e)
-                {
-                    Logger?.WriteLine($"Critical exception on server: {e}", LogType.ERROR);
-                }
-            }
-            //Log shutdown
-            Logger?.WriteLine($"Networking server packet queue processor thread stopped.", LogType.MESSAGE);
-        }
-
-        private void ProcessPacket(IPEndPoint sender, byte[] data)
-        {
-            try
-            {
-                //Convert the packet into the individual messages
-                int messagePointer = 0;
-                while (messagePointer < data.Length)
-                {
-                    int originalPoint = messagePointer;
-                    //Read the integer (First 4 bytes is the size of the message)
-                    int packetSize = BitConverter.ToInt16(data, originalPoint);
-                    //Move the message pointer along
-                    messagePointer += packetSize + 0x06;
-                    //Read the packet header
-                    PacketHeaders packetHeader = (PacketHeaders)BitConverter.ToInt32(data, originalPoint + 0x02);
-                    //Get the data and pass it on
-                    HandleMessage(sender, packetHeader, data, originalPoint + 0x06, packetSize);
-                }
-                Logger.WriteMetric("packet_size", data.Length.ToString());
-            }
-            catch (Exception e)
-            {
-                Logger?.WriteLine(e, LogType.ERROR);
-            }
-        }
-
-        private void HandleMessage(IPEndPoint sender, PacketHeaders header, byte[] data, int start, int length)
+        protected override void HandleMessage(IPEndPoint sender, PacketHeaders header, byte[] data, int start, int length)
         {
             try
             {
@@ -317,10 +146,8 @@ namespace CorgEng.Networking.Networking.Server
                 //Logger?.WriteLine($"Receieved server message: {header} from {sender.Address}", LogType.LOG);
                 //Check the message header
                 //Process messages
-                if (connectedClients.ContainsKey(sender.Address))
+                if (connectedClients.TryGetValue(sender.Address, out IClient client))
                 {
-                    //The client this message is coming from
-                    IClient client = connectedClients[sender.Address];
                     switch (header)
                     {
                         case PacketHeaders.REQUEST_PROTOTYPE:
@@ -360,13 +187,22 @@ namespace CorgEng.Networking.Networking.Server
                                 }
                                 return;
                             }
+                        case PacketHeaders.PING_RESPONSE:
+                            {
+                                double sentAt = BitConverter.ToDouble(data, start);
+                                client.RoundTripPing = CorgEngMain.Time - sentAt;
+                                Logger.WriteLine($"Recieved ping from {sender.Address}:{sender.Port} ({client.Username})\nSent at:\t\t{sentAt}s\nRecieved at:\t\t{CorgEngMain.Time}s\nRound trip time:\t{CorgEngMain.Time - sentAt}s", LogType.TEMP);
+                                return;
+                            }
+                        case PacketHeaders.ACKNOWLEDGE_PACKET:
+                            // Do nothing
+                            return;
 #if DEBUG
                         default:
                             Logger?.WriteLine($"Unhandled header: {header}", LogType.WARNING);
                             break;
 #endif
                     }
-                    NetworkMessageReceived?.Invoke(header, data, start, length);
                 }
                 else
                 {
@@ -431,37 +267,25 @@ namespace CorgEng.Networking.Networking.Server
                 messageReadyWaitHandle.Set();
         }
 
-        public void Cleanup()
+        public void SetClientPrototype(IPrototype prototype)
         {
-            Logger?.WriteLine("Server cleanup called...", LogType.LOG);
-            running = false;
-            shutdownThreadTrigger.Set();
-            udpClient?.Close();
-            udpClient?.Dispose();
-            udpClient = null;
-            PacketQueue = null;
-            threadWaiting = false;
-            ClientAddressingTable = null;
+            DefaultEntityPrototype = prototype ?? throw new ArgumentNullException(nameof(prototype));
+        }
+
+        public override void Cleanup()
+        {
             connectedClients = new Dictionary<IPAddress, IClient>();
-            NetworkMessageReceived = null;
             NetworkConfig.ProcessServerSystems = false;
             if (!NetworkConfig.ProcessClientSystems)
                 NetworkConfig.NetworkingActive = false;
             if (ServerCommunicator.server == this)
                 ServerCommunicator.server = null;
-            Logger?.WriteLine("Waiting for server cleanup completion...", LogType.LOG);
-            //Wait for the threads to be closed
-            if(started)
-                shutdownCountdown.Wait();
-            //Reset
-            shutdownThreadTrigger.Reset();
-            started = false;
-            Logger?.WriteLine("Server cleanup completed!", LogType.LOG);
+            base.Cleanup();
         }
 
-        public void SetClientPrototype(IPrototype prototype)
+        protected override bool IsConnectedAddress(IPAddress address)
         {
-            DefaultEntityPrototype = prototype ?? throw new ArgumentNullException(nameof(prototype));
+            return connectedClients.ContainsKey(address);
         }
 
     }

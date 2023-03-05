@@ -27,6 +27,16 @@ namespace CorgEng.GenericInterfaces.Networking.Packets.PacketQueues
         IClientAddress Targets { get; }
 
         /// <summary>
+        /// Defines when this packet was transmitted at, used for verification purposes
+        /// </summary>
+        double SentAt { get; set; }
+
+        /// <summary>
+        /// The identifier of this packet, used to confirm its arrival
+        /// </summary>
+        int PacketIdentifier { get; }
+
+        /// <summary>
         /// Can we insert a message of some specified length
         /// into this message?
         /// </summary>

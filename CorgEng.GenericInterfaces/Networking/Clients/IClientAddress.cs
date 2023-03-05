@@ -12,6 +12,8 @@ namespace CorgEng.GenericInterfaces.Networking.Clients
     public unsafe interface IClientAddress
     {
 
+        bool HasTargets { get; }
+
         byte[] ByteArray { get; }
 
         int AddressBytes { get; }

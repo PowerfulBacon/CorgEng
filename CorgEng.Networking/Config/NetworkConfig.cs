@@ -42,5 +42,14 @@ namespace CorgEng.Networking.Config
         private static bool _networkingActive = false;
 
         public bool NetworkingActive { get => _networkingActive; set => _networkingActive = value; }
+
+#if DEBUG
+        /// <summary>
+        /// Probablility that packets will be dropped for no reason.
+        /// Please don't use this in production!!
+        /// </summary>
+        public double PacketDropProbability => 0;
+#endif
+
     }
 }

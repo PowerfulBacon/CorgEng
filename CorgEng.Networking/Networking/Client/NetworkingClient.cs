@@ -15,6 +15,7 @@ using CorgEng.GenericInterfaces.Networking.Packets;
 using CorgEng.GenericInterfaces.Networking.Packets.PacketQueues;
 using CorgEng.GenericInterfaces.Networking.PrototypeManager;
 using CorgEng.GenericInterfaces.Rendering;
+using CorgEng.GenericInterfaces.UtilityTypes.BinaryLists;
 using CorgEng.Networking.EntitySystems;
 using CorgEng.Networking.Events;
 using CorgEng.Networking.Networking.Server;
@@ -33,8 +34,13 @@ using System.Threading.Tasks;
 
 namespace CorgEng.Networking.Networking.Client
 {
+    /// <summary>
+    /// The networking client.
+    /// This is absolutely awful and I hate it, will probably rewrite it in the future
+    /// to iron out some of the oversights.
+    /// </summary>
     [Dependency]
-    internal class NetworkingClient : INetworkingClient
+    internal class NetworkingClient : NetworkCommunicator, INetworkingClient
     {
 
         [UsingDependency]
@@ -55,65 +61,12 @@ namespace CorgEng.Networking.Networking.Client
         [UsingDependency]
         private static IPrototypeManager PrototypeManager;
 
-        private IPacketQueue PacketQueue;
+        [UsingDependency]
+        private static IQueuedPacketFactory QueuedPacketFactory = null!;
 
         public event ConnectionSuccess OnConnectionSuccess;
 
         public event ConnectionFailed OnConnectionFailed;
-
-        public event NetworkMessageRecieved NetworkMessageReceived;
-
-        /// <summary>
-        /// The client that we are using to communicate
-        /// </summary>
-        private UdpClient udpClient;
-
-        /// <summary>
-        /// The address we are connected to, if any
-        /// </summary>
-        private IPAddress address;
-
-        /// <summary>
-        /// The port we are connected to
-        /// </summary>
-        private int port;
-
-        /// <summary>
-        /// Are we connected to a server?
-        /// </summary>
-        private bool connected;
-
-        /// <summary>
-        /// Are we connecting to a server?
-        /// </summary>
-        private bool connecting;
-
-        /// <summary>
-        /// Are we running, or should we shutdown
-        /// </summary>
-        private volatile bool running = false;
-
-        /// <summary>
-        /// The trigger that gets activated when shutdown is triggered
-        /// </summary>
-        private readonly AutoResetEvent shutdownThreadTrigger = new AutoResetEvent(false);
-
-        /// <summary>
-        /// The countdown event that allows the shutdown method to wait until threads are shutdown.
-        /// </summary>
-        private readonly CountdownEvent shutdownCountdown = new CountdownEvent(2);
-
-        /// <summary>
-        /// Have we ever been started?
-        /// </summary>
-        private bool started = false;
-
-        /// <summary>
-        /// If this is true when shutdownThreadTrigger is raised, task will immediately end.
-        /// </summary>
-        private bool cancelToken = false;
-
-        public int TickRate { get; set; } = 32;
 
         /// <summary>
         /// Attempt connection to a network address
@@ -244,160 +197,14 @@ namespace CorgEng.Networking.Networking.Client
         public void QueueMessage(INetworkMessage message)
         {
             PacketQueue?.QueueMessage(null, message);
-        }
-
-        /// <summary>
-        /// The sender thread.
-        /// Runs when it needs to, transmits data to the server
-        /// with a set tick rate.
-        /// </summary>
-        private void NetworkSenderThread(UdpClient client)
-        {
-            Logger?.WriteLine($"Client sender for {address} thread successfull started.", LogType.DEBUG);
-            Stopwatch stopwatch = new Stopwatch();
-            double inverseTickrate = 1000.0 / TickRate;
-            while (running && (client.Client?.Connected ?? false))
-            {
-                try
-                {
-                    //Create a stopwatch to get the current time
-                    stopwatch.Restart();
-                    //Transmit packets
-                    while (PacketQueue.AcquireLockIfHasMessages())
-                    {
-                        try
-                        {
-                            //Dequeue the packet from the queue
-                            IQueuedPacket queuedPacket = PacketQueue.DequeuePacket();
-                            //Transmit the packet to the server
-                            byte[] data = queuedPacket.Data;
-                            //Asynchronously send the data
-                            //We send all the data straight to the server.
-                            //The client cannot communicate with other clients.
-                            udpClient.SendAsync(data, queuedPacket.TopPointer);
-                        }
-                        finally
-                        {
-                            PacketQueue.ReleaseLock();
-                        }
-                        //Logger.WriteLine($"Sent packets to the server", LogType.TEMP);
-                    }
-                    //Wait for variable time to maintain the tick rate
-                    stopwatch.Stop();
-                    double elapsedMilliseconds = stopwatch.ElapsedMilliseconds;
-                    double waitTime = inverseTickrate - elapsedMilliseconds;
-                    if (waitTime > 0)
-                    {
-                        //Sleep the thread
-                        shutdownThreadTrigger.WaitOne((int)waitTime);
-                    }
-                }
-                catch (Exception e)
-                {
-                    Logger?.WriteLine(e, LogType.ERROR);
-                }
-            }
-            Logger?.WriteLine($"Client sender thread terminated", LogType.WARNING);
-            shutdownCountdown.Signal();
-        }
-
-        private ConcurrentQueue<(IPEndPoint, byte[])> packetQueue = new ConcurrentQueue<(IPEndPoint, byte[])>();
-
-        /// <summary>
-        /// The networking thread
-        /// </summary>
-        private void NetworkListenerThread(UdpClient client)
-        {
-            Logger?.WriteLine($"Client listener for {address} thread successfull started.", LogType.DEBUG);
-            //Continue always
-            while (running && (client.Client?.Connected ?? false))
-            {
-                try
-                {
-                    //Wait until we are woken up
-                    IPEndPoint remoteEndPoint = new IPEndPoint(IPAddress.Any, port);
-                    byte[] incomingData = udpClient.Receive(ref remoteEndPoint);
-                    //Handle incomming data
-                    packetQueue.Enqueue((remoteEndPoint, incomingData));
-                }
-                catch (Exception e)
-                {
-                    Logger?.WriteLine(e, LogType.ERROR);
-                }
-            }
-            //Disconnected.
-            Logger?.WriteLine("Disconnected from remote server.", LogType.WARNING);
-            shutdownCountdown.Signal();
-        }
-
-        private void ProcessQueueThread()
-        {
-            Logger?.WriteLine($"Packet queue processor thread started.", LogType.MESSAGE);
-            while (running)
-            {
-                //Nothing to process
-                if (packetQueue.Count == 0)
-                {
-                    Thread.Yield();
-                    continue;
-                }
-                //Stuff to do
-                try
-                {
-                    //Recieve messages
-                    (IPEndPoint, byte[]) packet;
-                    if (packetQueue.TryDequeue(out packet))
-                    {
-                        ProcessPacket(packet.Item1, packet.Item2);
-                    }
-                }
-                catch (Exception e)
-                {
-                    Logger?.WriteLine($"Critical exception on processing thread: {e}", LogType.ERROR);
-                }
-            }
-            //Log shutdown
-            Logger?.WriteLine($"Packet queue processor thread stopped.", LogType.MESSAGE);
-        }
-
-        private void ProcessPacket(IPEndPoint sender, byte[] data)
-        {
-            try
-            {
-                //Ignore messages from people we weren't connecting to.
-                //All communications must go through the server.
-                //This is for security reasons, so a hacked client can't tell other players
-                //invalid information.
-                if (!sender.Address.Equals(address))
-                {
-                    return;
-                }
-                Logger.WriteMetric("packet_size", data.Length.ToString());
-                //Convert the packet into the individual messages
-                int messagePointer = 0;
-                while (messagePointer < data.Length)
-                {
-                    int originalPoint = messagePointer;
-                    //Read the integer (First 4 bytes is the size of the message)
-                    int packetSize = BitConverter.ToInt16(data, originalPoint);
-                    //Move the message pointer along
-                    messagePointer += packetSize + 0x06;
-                    //Read the packet header
-                    PacketHeaders packetHeader = (PacketHeaders)BitConverter.ToInt32(data, originalPoint + 0x02);
-                    //Get the data and pass it on
-                    HandleMessage(sender, packetHeader, data, originalPoint + 0x06, packetSize);
-                }
-            }
-            catch (Exception e)
-            {
-                Logger?.WriteLine(e, LogType.ERROR);
-            }
+            if (threadWaiting)
+                messageReadyWaitHandle.Set();
         }
 
         /// <summary>
         /// Handle an incoming message
         /// </summary>
-        private void HandleMessage(IPEndPoint sender, PacketHeaders header, byte[] data, int start, int length)
+        protected override void HandleMessage(IPEndPoint sender, PacketHeaders header, byte[] data, int start, int length)
         {
             Logger.WriteMetric("message_size", length.ToString());
             Logger.WriteMetric("message_header", header.ToString());
@@ -439,9 +246,6 @@ namespace CorgEng.Networking.Networking.Client
             }
             else
             {
-                //Logger?.WriteLine($"Receieved client message: {header} from {sender.Address}", LogType.LOG);
-                //Handle connected packets
-                NetworkMessageReceived?.Invoke(header, data, start, length);
                 //Handle the event
                 switch (header)
                 {
@@ -472,7 +276,7 @@ namespace CorgEng.Networking.Networking.Client
                                             raisedEvent.Raise(entityTarget);
                                         });
                                         // Request info about this entity
-
+                                        //TODO
                                         return;
                                     }
                                     Logger.WriteMetric("networked_local_event", raisedEvent.ToString());
@@ -532,6 +336,20 @@ namespace CorgEng.Networking.Networking.Client
                             }
                         }
                         return;
+                    // Ping requests need to not include delay
+                    case PacketHeaders.PING_REQUEST:
+                        // Send back the packet immediately, without waiting for the server to reach the next net tick
+                        // We trust the server to be correct, so don't ignore pings if they are being spammed unlike the server.
+                        double sentAt = BitConverter.ToDouble(data, start);
+                        INetworkMessage networkMessage = NetworkMessageFactory.CreateMessage(PacketHeaders.PING_RESPONSE, BitConverter.GetBytes(sentAt));
+                        IQueuedPacket packet = QueuedPacketFactory.CreatePacket(null, networkMessage.GetBytes());
+                        udpClient.Send(packet.Data, packet.TopPointer);
+                        return;
+                    case PacketHeaders.ACKNOWLEDGE_PACKET:
+                        long packetIdentifier = BitConverter.ToInt64(data, start);
+                        //TODO Allow for binary lists to contain long identifiers, 2^64 values instead of 2^31
+                        //packetConfirmationQueue.Remove((int)packetIdentifier);
+                        return;
 #if DEBUG
                     default:
                         Logger?.WriteLine($"Unknown packet header: {header}. This packet may be a bug or from a malicious attack (Debug build is on, so this message is shown which may slow the server down).", LogType.WARNING);
@@ -541,32 +359,19 @@ namespace CorgEng.Networking.Networking.Client
             }
         }
 
-        public void Cleanup()
+        public override void Cleanup()
         {
-            cancelToken = true;
-            Logger?.WriteLine("Client cleanup called", LogType.LOG);
-            running = false;
-            shutdownThreadTrigger.Set();
-            udpClient?.Close();
-            udpClient?.Dispose();
-            udpClient = null;
-            connected = false;
-            connecting = false;
-            NetworkMessageReceived = null;
             //OnConnectionFailed = null;
             OnConnectionSuccess = null;
             NetworkConfig.ProcessClientSystems = false;
             if (!NetworkConfig.ProcessServerSystems)
                 NetworkConfig.NetworkingActive = false;
-            Logger?.WriteLine("Waiting for client cleanup completion...", LogType.LOG);
-            //Wait for the threads to be closed
-            if (started)
-                shutdownCountdown.Wait();
-            //Reset
-            shutdownThreadTrigger.Reset();
-            started = false;
-            cancelToken = false;
-            Logger?.WriteLine("Client cleanup completed!", LogType.LOG);
+            base.Cleanup();
+        }
+
+        protected override bool IsConnectedAddress(IPAddress address)
+        {
+            return this.address == address;
         }
     }
 }

@@ -11,10 +11,8 @@ namespace CorgEng.UtilityTypes.BindableProperties
         public virtual T Value
         {
             get => _value;
-            set
-            {
-                // Type validation
-                if (value == null && typeof(T).GetGenericTypeDefinition() != typeof(Nullable<>))
+            set {
+                if (value == null && (!typeof(T).IsGenericType || typeof(T).GetGenericTypeDefinition() != typeof(Nullable<>)))
                     throw new ArgumentNullException("Attempting to set a bindable property of non-nullable type to null.");
                 // Stop listening for old value changes
                 if (_value != null && value is IListenable listener)
