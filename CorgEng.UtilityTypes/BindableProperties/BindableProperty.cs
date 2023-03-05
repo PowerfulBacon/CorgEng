@@ -1,5 +1,6 @@
 ﻿using CorgEng.GenericInterfaces.UtilityTypes;
 using System;
+using System.Threading.Tasks;
 
 namespace CorgEng.UtilityTypes.BindableProperties
 {
@@ -7,7 +8,7 @@ namespace CorgEng.UtilityTypes.BindableProperties
     {
 
         private T _value = default;
-        public T Value
+        public virtual T Value
         {
             get => _value;
             set
@@ -43,7 +44,7 @@ namespace CorgEng.UtilityTypes.BindableProperties
             TriggerChanged();
         }
 
-        public void TriggerChanged()
+        public virtual void TriggerChanged()
         {
             ValueChanged?.Invoke(_value, EventArgs.Empty);
         }
