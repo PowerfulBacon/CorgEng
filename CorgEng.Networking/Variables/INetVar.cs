@@ -8,5 +8,10 @@ namespace CorgEng.Networking.Variables
 {
     internal interface INetVar
     {
+
+        Type GetStoredType();
+
+        object GetValue();
+
     }
 }

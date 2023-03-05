@@ -16,11 +16,13 @@ using CorgEng.GenericInterfaces.Networking.Packets;
 using CorgEng.GenericInterfaces.Networking.Packets.PacketQueues;
 using CorgEng.GenericInterfaces.Networking.PrototypeManager;
 using CorgEng.GenericInterfaces.Rendering;
+using CorgEng.GenericInterfaces.Serialization;
 using CorgEng.Networking.Components;
 using CorgEng.Networking.EntitySystems;
 using CorgEng.Networking.Events;
 using CorgEng.Networking.Networking.Client;
 using CorgEng.Networking.Networking.Server;
+using CorgEng.Networking.Variables;
 using CorgEng.Networking.VersionSync;
 using System;
 using System.Collections.Concurrent;
@@ -50,6 +52,9 @@ namespace CorgEng.Networking.Networking
 
         [UsingDependency]
         private static IQueuedPacketFactory QueuedPacketFactory;
+
+        [UsingDependency]
+        private static IAutoSerialiser AutoSerialiser;
 
         public IClientAddressingTable ClientAddressingTable { get; private set; }
 
@@ -133,6 +138,8 @@ namespace CorgEng.Networking.Networking
                 {
                     //Create a stopwatch to get the current time
                     stopwatch.Restart();
+                    //Create messages if needed
+                    UpdateDirtyNetvars();
                     //Transmit packets
                     while (PacketQueue.AcquireLockIfHasMessages())
                     {
@@ -301,6 +308,27 @@ namespace CorgEng.Networking.Networking
             catch (Exception e)
             {
                 Logger?.WriteLine(e, LogType.ERROR);
+            }
+        }
+
+        private void UpdateDirtyNetvars()
+        {
+            lock (NetVar.DirtyNetvars)
+            {
+                // Get the values and packetise them
+                foreach (INetVar netVar in NetVar.DirtyNetvars)
+                {
+                    object value = netVar.GetValue();
+                    byte[] serialisedValue = new byte[AutoSerialiser.SerialisationLength(netVar.GetStoredType(), value)];
+                    using (BinaryWriter binaryWriter = new BinaryWriter(new MemoryStream(serialisedValue)))
+                    {
+                        AutoSerialiser.SerializeInto(netVar.GetStoredType(), value, binaryWriter);
+                    }
+                    INetworkMessage networkMessage = NetworkMessageFactory.CreateMessage(PacketHeaders.NETVAR_VALUE_UPDATED, serialisedValue);
+                    PacketQueue.QueueMessage(ClientAddressingTable?.GetEveryone() ?? null, networkMessage);
+                }
+                // Reset the list
+                NetVar.DirtyNetvars.Clear();
             }
         }
 

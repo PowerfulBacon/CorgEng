@@ -7,6 +7,12 @@ using System.Threading.Tasks;
 
 namespace CorgEng.Networking.Variables
 {
+
+    internal static class NetVar
+    {
+        internal static HashSet<INetVar> DirtyNetvars = new HashSet<INetVar>();
+    }
+
     /**
      * Networked version of a CVar
      */
@@ -14,8 +20,6 @@ namespace CorgEng.Networking.Variables
     {
 
         private static ulong _netVarCount = 0;
-
-        internal static HashSet<INetVar> DirtyNetvars = new HashSet<INetVar>();
 
         public ulong NetVarID { get; private set; }
 
@@ -33,13 +37,22 @@ namespace CorgEng.Networking.Variables
 
         public void MarkDirty()
         {
-            lock (DirtyNetvars)
+            lock (NetVar.DirtyNetvars)
             {
-                if (DirtyNetvars.Contains(this))
+                if (NetVar.DirtyNetvars.Contains(this))
                     return;
-                DirtyNetvars.Add(this);
+                NetVar.DirtyNetvars.Add(this);
             }
         }
 
+        public object GetValue()
+        {
+            return Value;
+        }
+
+        public Type GetStoredType()
+        {
+            return typeof(T);
+        }
     }
 }
