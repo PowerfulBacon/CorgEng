@@ -1,11 +1,10 @@
-﻿using CorgEng.EntityComponentSystem.Components;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CorgEng.Networking.Variables
+namespace CorgEng.NetworkingPrimitives.Variables
 {
 
     internal static class NetVar
@@ -16,12 +15,14 @@ namespace CorgEng.Networking.Variables
     /**
      * Networked version of a CVar
      */
-    internal class NetCVar<T> : CVar<T>, INetVar
+    public class NetCVar<T> : CVar<T>, INetVar
     {
 
         private static ulong _netVarCount = 0;
 
         public ulong NetVarID { get; private set; }
+
+        public bool PrototypeSerialised { get; set; }
 
         public NetCVar()
         {
@@ -43,6 +44,12 @@ namespace CorgEng.Networking.Variables
                     return;
                 NetVar.DirtyNetvars.Add(this);
             }
+        }
+
+        public NetCVar<T> SetPrototypeSerialised(bool value)
+        {
+            PrototypeSerialised = value;
+            return this;
         }
 
         public object GetValue()

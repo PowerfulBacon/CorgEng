@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CorgEng.Networking.Variables
+namespace CorgEng.EntityComponentSystem.Components.Networking
 {
-    internal interface INetVar
+    public interface INetVar
     {
 
         Type GetStoredType();

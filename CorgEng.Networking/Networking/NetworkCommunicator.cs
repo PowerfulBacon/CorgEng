@@ -2,6 +2,7 @@
 using CorgEng.Core.Dependencies;
 using CorgEng.Core.Modules;
 using CorgEng.DependencyInjection.Dependencies;
+using CorgEng.EntityComponentSystem.Components.Networking;
 using CorgEng.EntityComponentSystem.Entities;
 using CorgEng.EntityComponentSystem.Events;
 using CorgEng.EntityComponentSystem.Events.Events;
@@ -22,7 +23,6 @@ using CorgEng.Networking.EntitySystems;
 using CorgEng.Networking.Events;
 using CorgEng.Networking.Networking.Client;
 using CorgEng.Networking.Networking.Server;
-using CorgEng.Networking.Variables;
 using CorgEng.Networking.VersionSync;
 using System;
 using System.Collections.Concurrent;
