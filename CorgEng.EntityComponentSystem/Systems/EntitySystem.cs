@@ -14,6 +14,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -435,6 +436,26 @@ namespace CorgEng.EntityComponentSystem.Systems
                         }
                     }
                 }
+            }
+        }
+
+        /// <summary>
+        /// Queues an action for execution, which will be executed on the correct thread for this system.
+        /// </summary>
+        /// <param name="action"></param>
+        /// <param name="callingFile"></param>
+        /// <param name="callingMember"></param>
+        /// <param name="callingLine"></param>
+        public void QueueAction(Action action,
+            [CallerFilePath] string callingFile = "",
+            [CallerMemberName] string callingMember = "",
+            [CallerLineNumber] int callingLine = 0)
+        {
+            lock (RegisteredSystemSignalHandlers)
+            {
+                invokationQueue.Enqueue(new InvokationAction(action, callingFile, callingMember, callingLine));
+                if (isWaiting)
+                    waitHandle.Set();
             }
         }
 
