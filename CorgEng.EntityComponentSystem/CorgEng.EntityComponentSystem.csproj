@@ -21,7 +21,6 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\CorgEng.Core\CorgEng.Core.csproj" />
-    <ProjectReference Include="..\CorgEng.Functional\CorgEng.Functional.csproj" />
     <ProjectReference Include="..\CorgEng.GenericInterfaces\CorgEng.GenericInterfaces.csproj" />
     <ProjectReference Include="..\CorgEng.Rendering\CorgEng.Rendering.csproj" />
     <ProjectReference Include="..\CorgEng.UtilityTypes\CorgEng.UtilityTypes.csproj" />
