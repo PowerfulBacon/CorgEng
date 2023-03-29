@@ -40,7 +40,7 @@ namespace CorgEng.Networking.Networking.Client
     /// to iron out some of the oversights.
     /// </summary>
     [Dependency]
-    internal class NetworkingClient : NetworkCommunicator, INetworkingClient
+    public class NetworkingClient : NetworkCommunicator, INetworkingClient
     {
 
         [UsingDependency]

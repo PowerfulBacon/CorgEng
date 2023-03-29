@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CorgEng.EntityComponentSystem.Components.Networking
+namespace CorgEng.EntityComponentSystem.Components.ComponentVariables.Networking
 {
     public interface INetVar
     {

@@ -2,7 +2,7 @@
 using CorgEng.Core.Dependencies;
 using CorgEng.Core.Modules;
 using CorgEng.DependencyInjection.Dependencies;
-using CorgEng.EntityComponentSystem.Components.Networking;
+using CorgEng.EntityComponentSystem.Components.ComponentVariables.Networking;
 using CorgEng.EntityComponentSystem.Entities;
 using CorgEng.EntityComponentSystem.Events;
 using CorgEng.EntityComponentSystem.Events.Events;
@@ -38,7 +38,7 @@ using System.Threading.Tasks;
 
 namespace CorgEng.Networking.Networking
 {
-    internal abstract class NetworkCommunicator
+    public abstract class NetworkCommunicator
     {
 
         [UsingDependency]

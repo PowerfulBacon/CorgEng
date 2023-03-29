@@ -1,4 +1,5 @@
 ﻿using CorgEng.Core.Dependencies;
+using CorgEng.DependencyInjection.Injection;
 using CorgEng.EntityComponentSystem.Components;
 using CorgEng.EntityComponentSystem.Entities;
 using CorgEng.EntityComponentSystem.Events;
@@ -11,6 +12,8 @@ using CorgEng.GenericInterfaces.Networking.Networking.Client;
 using CorgEng.GenericInterfaces.Networking.Networking.Server;
 using CorgEng.GenericInterfaces.Networking.Packets;
 using CorgEng.Networking.EntitySystems;
+using CorgEng.Networking.Networking.Client;
+using CorgEng.Networking.Networking.Server;
 using CorgEng.Networking.VersionSync;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
@@ -55,6 +58,8 @@ namespace CorgEng.Tests.NetworkingTests
         [TestInitialize]
         public void SetupServer()
         {
+            DependencyInjector.OverrideDependency<INetworkingServer>(new NetworkingServer());
+            DependencyInjector.OverrideDependency<INetworkingClient>(new NetworkingClient());
             Server.GetType().GetMethod("LoadDefaultPrototype").Invoke(Server, new object[0]);
         }
 

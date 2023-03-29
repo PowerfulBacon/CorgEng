@@ -35,7 +35,7 @@ namespace CorgEng.Networking.Networking.Server
 {
 
     [Dependency]
-    internal class NetworkingServer : NetworkCommunicator, INetworkingServer
+    public class NetworkingServer : NetworkCommunicator, INetworkingServer
     {
 
         [UsingDependency]

@@ -7,7 +7,7 @@ namespace CorgEng.UtilityTypes.BindableProperties
     public class BindableProperty<T> : IBindableProperty<T>
     {
 
-        private T _value = default;
+        protected T _value = default;
         public virtual T Value
         {
             get => _value;

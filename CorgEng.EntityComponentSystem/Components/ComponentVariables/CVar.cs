@@ -5,27 +5,35 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CorgEng.EntityComponentSystem.Components
+namespace CorgEng.EntityComponentSystem.Components.ComponentVariables
 {
     /// <summary>
     /// TODO:
     /// - Automatic networking update
     /// - Updating this variable on the proper threads
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    public class CVar<T> : BindableProperty<T>
+    /// <typeparam name="TValueType"></typeparam>
+    public class CVar<TValueType, TComponentType> : BindableProperty<TValueType>, IComponentVariable
+        where TComponentType : Component
     {
+
+        public Component Parent { get; set; }
 
         public CVar() : this(default)
         {
         }
 
-        public CVar(T value) : base(value)
+        public CVar(TValueType value) : base(value)
         {
             // Determine our component type and prepare signal reaction handlers
         }
 
-        public CVar<T> InitialValue(T value)
+        public void AssociateTo(Component component)
+        {
+            Parent = component;
+        }
+
+        public CVar<TValueType, TComponentType> InitialValue(TValueType value)
         {
             Value = value;
             return this;

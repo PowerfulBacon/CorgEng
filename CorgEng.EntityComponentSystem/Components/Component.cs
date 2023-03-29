@@ -1,4 +1,5 @@
 ﻿using CorgEng.Core.Dependencies;
+using CorgEng.EntityComponentSystem.Components.ComponentVariables;
 using CorgEng.EntityComponentSystem.Entities;
 using CorgEng.EntityComponentSystem.Events;
 using CorgEng.EntityComponentSystem.Events.Events;
@@ -9,6 +10,8 @@ using CorgEng.GenericInterfaces.Networking.VersionSync;
 using CorgEng.GenericInterfaces.UtilityTypes;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using static CorgEng.EntityComponentSystem.Entities.Entity;
 using static CorgEng.EntityComponentSystem.Systems.EntitySystem;
 
@@ -32,6 +35,30 @@ namespace CorgEng.EntityComponentSystem.Components
 
         //TODO: This is very memory expensive as its stored on ALL component instances, when it kind of works per-component.
         private List<InternalSignalHandleDelegate> componentInjectionLambdas = new List<InternalSignalHandleDelegate>();
+
+        private static Dictionary<Type, PropertyInfo[]> cvarTypeCache = new Dictionary<Type, PropertyInfo[]>();
+
+        public Component()
+        {
+            if (!cvarTypeCache.ContainsKey(GetType()))
+            {
+                lock (cvarTypeCache)
+                {
+                    if (!cvarTypeCache.ContainsKey(GetType()))
+                    {
+                        cvarTypeCache.Add(GetType(), GetType()
+                            .GetProperties()
+                            .Where(x => typeof(IComponentVariable).IsAssignableFrom(x.PropertyType))
+                            .ToArray());
+                    }
+                }
+            }
+            foreach (PropertyInfo cvarProperty in cvarTypeCache[GetType()])
+            {
+                IComponentVariable attachedCVar = (IComponentVariable)cvarProperty.GetValue(this);
+                attachedCVar.AssociateTo(this);
+            }
+        }
 
         /// <summary>
         /// Super cool optimisation
