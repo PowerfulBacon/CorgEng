@@ -70,7 +70,9 @@ namespace CorgEng.EntityComponentSystem.WorldManager
         public World()
         {
             EntityManager = new EntityManager(this);
-            EntitySystemManager = new EntitySystemManager(this);
+            EntitySystemManager systemManager = new EntitySystemManager(this);
+            EntitySystemManager = systemManager;
+            systemManager.CreateAllSystems();
         }
 
         /// <summary>
