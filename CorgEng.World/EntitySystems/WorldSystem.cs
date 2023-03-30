@@ -19,11 +19,11 @@ namespace CorgEng.World.EntitySystems
     {
 
         [UsingDependency]
-        private static IWorld WorldAccess = null!;
+        private static IEntityPositionTracker WorldAccess = null!;
 
         public override EntitySystemFlags SystemFlags { get; } = EntitySystemFlags.HOST_SYSTEM;
 
-        public override void SystemSetup()
+        public override void SystemSetup(IWorld world)
         {
             RegisterLocalEvent<TrackComponent, ComponentAddedEvent>(OnEntityCreated);
             RegisterLocalEvent<TrackComponent, ContentsChangedEvent>(OnEntityLocationChanged);

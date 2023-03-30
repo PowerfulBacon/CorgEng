@@ -20,10 +20,10 @@ namespace CorgEng.Tests.Performance
     {
 
         [UsingDependency]
-        private static IEntityFactory EntityFactory;
+        private static IPrototypeManager PrototypeManager;
 
         [UsingDependency]
-        private static IPrototypeManager PrototypeManager;
+        private static IWorldFactory WorldFactory;
 
         private const int TEST_TIME = 5000;
 
@@ -33,8 +33,9 @@ namespace CorgEng.Tests.Performance
 #if !PERFORMANCE_TEST
             Assert.Inconclusive("Test not executed. Please enable PERFORMANCE_TEST define in order to test performance.");
 #endif
+            IWorld testWorld = WorldFactory.CreateWorld();
             //Create an entity
-            IEntity entity = EntityFactory.CreateEmptyEntity(null);
+            IEntity entity = testWorld.EntityManager.CreateEmptyEntity(null);
             TestComponent testComponent = new TestComponent();
             testComponent.Integer = 59;
             testComponent.Text = "Hello World!";
@@ -66,8 +67,9 @@ namespace CorgEng.Tests.Performance
 #if !PERFORMANCE_TEST
             Assert.Inconclusive("Test not executed. Please enable PERFORMANCE_TEST define in order to test performance.");
 #endif
+            IWorld testWorld = WorldFactory.CreateWorld();
             //Create an entity
-            IEntity entity = EntityFactory.CreateEmptyEntity(null);
+            IEntity entity = testWorld.EntityManager.CreateEmptyEntity(null);
             TestComponent testComponent = new TestComponent();
             testComponent.Integer = 59;
             testComponent.Text = "Hello World!";
@@ -83,7 +85,7 @@ namespace CorgEng.Tests.Performance
                 while (running)
                 {
                     //Perform a run, don't care about the identifier
-                    collectedPrototype.CreateEntityFromPrototype();
+                    collectedPrototype.CreateEntityFromPrototype(testWorld);
                     //Run completed
                     runs++;
                 }
@@ -101,9 +103,10 @@ namespace CorgEng.Tests.Performance
 #if !PERFORMANCE_TEST
             Assert.Inconclusive("Test not executed. Please enable PERFORMANCE_TEST define in order to test performance.");
 #endif
+            IWorld testWorld = WorldFactory.CreateWorld();
 
             //Create an entity
-            IEntity entity = EntityFactory.CreateEmptyEntity(null);
+            IEntity entity = testWorld.EntityManager.CreateEmptyEntity(null);
             TestComponent testComponent = new TestComponent();
             testComponent.Integer = 59;
             testComponent.Text = "Hello World!";
@@ -138,9 +141,10 @@ namespace CorgEng.Tests.Performance
 #if !PERFORMANCE_TEST
             Assert.Inconclusive("Test not executed. Please enable PERFORMANCE_TEST define in order to test performance.");
 #endif
+            IWorld testWorld = WorldFactory.CreateWorld();
 
             //Create an entity
-            IEntity entity = EntityFactory.CreateEmptyEntity(null);
+            IEntity entity = testWorld.EntityManager.CreateEmptyEntity(null);
             TestComponent testComponent = new TestComponent();
             testComponent.Integer = 59;
             testComponent.Text = "Hello World!";

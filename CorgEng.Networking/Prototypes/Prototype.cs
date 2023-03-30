@@ -1,5 +1,7 @@
 ﻿using CorgEng.Core.Dependencies;
 using CorgEng.EntityComponentSystem.Entities;
+using CorgEng.EntityComponentSystem.Events;
+using CorgEng.EntityComponentSystem.Events.Events;
 using CorgEng.EntityComponentSystem.Implementations.Deletion;
 using CorgEng.GenericInterfaces.EntityComponentSystem;
 using CorgEng.GenericInterfaces.Logging;
@@ -62,14 +64,14 @@ namespace CorgEng.Networking.Prototypes
             }
         }
 
-        public IEntity CreateEntityFromPrototype()
+        public IEntity CreateEntityFromPrototype(IWorld world)
         {
-            return CreateEntityFromPrototype(EntityManager.GetNewEntityId());
+            return CreateEntityFromPrototype(world, world.EntityManager.GetNewEntityId());
         }
 
-        public IEntity CreateEntityFromPrototype(uint entityIdentifier)
+        public IEntity CreateEntityFromPrototype(IWorld world, uint entityIdentifier)
         {
-            IEntity createdEntity = new Entity(entityIdentifier);
+            IEntity createdEntity = world.EntityManager.CreateUninitialisedEntity(entityIdentifier);
             //Add components
             foreach (Type type in prototypeComponents.Keys)
             {
@@ -83,6 +85,8 @@ namespace CorgEng.Networking.Prototypes
                 //Add the component
                 createdEntity.AddComponent(createdComponent);
             }
+            //Raise the initialise event
+            new InitialiseEvent().Raise(createdEntity, true);
             return createdEntity;
         }
 

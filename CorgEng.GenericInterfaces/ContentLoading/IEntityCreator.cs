@@ -18,14 +18,14 @@ namespace CorgEng.GenericInterfaces.ContentLoading
         /// </summary>
         /// <param name="entityName"></param>
         /// <returns>Returns an uninitialised entity.</returns>
-        IEntity CreateEntity(string entityName, Action<IEntity> preInitialisationEvents);
+        IEntity CreateEntity(IWorld world, string entityName, Action<IEntity> preInitialisationEvents);
 
         /// <summary>
         /// Create an object with the specified identifier.
         /// </summary>
         /// <param name="objectIdentifier">The identifier of the object to create.</param>
         /// <returns>Returns an object created based on the definition file.</returns>
-        object CreateObject(string objectIdentifier);
+        object CreateObject(IWorld world, string objectIdentifier);
 
     }
 }

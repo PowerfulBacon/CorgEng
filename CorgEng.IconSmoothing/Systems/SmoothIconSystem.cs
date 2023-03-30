@@ -23,11 +23,11 @@ namespace CorgEng.IconSmoothing.Systems
     {
 
         [UsingDependency]
-        private static IWorld WorldAccess;
+        private static IEntityPositionTracker WorldAccess;
 
         public override EntitySystemFlags SystemFlags => EntitySystemFlags.HOST_SYSTEM;
 
-        public override void SystemSetup()
+        public override void SystemSetup(IWorld world)
         {
             RegisterLocalEvent<SmoothIconComponent, InitialiseEvent>(OnEntityCreated);
             RegisterLocalEvent<SmoothIconComponent, MoveEvent>(OnEntityMoved);

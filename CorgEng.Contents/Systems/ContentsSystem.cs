@@ -28,7 +28,7 @@ namespace CorgEng.Contents.Systems
 
         public override EntitySystemFlags SystemFlags => EntitySystemFlags.HOST_SYSTEM;
 
-        public override void SystemSetup()
+        public override void SystemSetup(IWorld world)
         {
             RegisterLocalEvent<ContainedComponent, DeleteEntityEvent>(OnContainedEntityDeleted);
             RegisterLocalEvent<ContentsComponent, DeleteEntityEvent>(OnContentHolderDeleted);

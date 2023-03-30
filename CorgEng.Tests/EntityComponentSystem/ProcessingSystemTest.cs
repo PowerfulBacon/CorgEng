@@ -20,7 +20,7 @@ namespace CorgEng.Tests.EntityComponentSystem
     {
 
         [UsingDependency]
-        private static IEntityFactory EntityFactory;
+        private static IWorldFactory WorldFactory;
 
         private class TestComponent : Component
         {
@@ -38,7 +38,7 @@ namespace CorgEng.Tests.EntityComponentSystem
 
             public volatile int timesSignalled = 0;
 
-            public override void SystemSetup()
+            public override void SystemSetup(IWorld world)
             {
                 RegisterLocalEvent<TestComponent, TestEvent>((e, t, ev) => {
                     timesSignalled++;
@@ -51,11 +51,12 @@ namespace CorgEng.Tests.EntityComponentSystem
         [TestMethod]
         public void TestProcessingSystems()
         {
+            IWorld world = WorldFactory.CreateWorld();
             //Start the test system
             TestSystem testSystem = new TestSystem();
-            testSystem.SystemSetup();
+            testSystem.SystemSetup(world);
             //Create an entity to process
-            IEntity testEntity = EntityFactory.CreateEmptyEntity(null);
+            IEntity testEntity = world.EntityManager.CreateEmptyEntity(null);
             TestComponent testComponent = new TestComponent();
             testEntity.AddComponent(testComponent);
             //Start processing

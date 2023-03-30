@@ -14,7 +14,7 @@ namespace CorgEng.GenericInterfaces.Networking.Networking.Client
 
     public delegate void ConnectionFailed(IPAddress ipAddress, DisconnectReason disconnectReason, string reasonText);
 
-    public interface INetworkingClient
+    public interface INetworkClient
     {
 
         /// <summary>

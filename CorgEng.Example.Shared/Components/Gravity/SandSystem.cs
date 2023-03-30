@@ -19,7 +19,7 @@ namespace CorgEng.Example.Shared.Components.Gravity
     {
 
         [UsingDependency]
-        private static IWorld WorldAccess = default!;
+        private static IEntityPositionTracker WorldAccess = default!;
 
         public override EntitySystemFlags SystemFlags => EntitySystemFlags.HOST_SYSTEM;
 
@@ -30,7 +30,7 @@ namespace CorgEng.Example.Shared.Components.Gravity
         /// </summary>
         private WorldPathCellQueryer SolidCellQuery = new WorldPathCellQueryer();
 
-        public override void SystemSetup()
+        public override void SystemSetup(IWorld world)
         {
             RegisterLocalEvent<SandComponent, InitialiseEvent>(OnSandInitialise);
             RegisterLocalEvent<SandComponent, DeleteEntityEvent>(OnSandDestroyed);

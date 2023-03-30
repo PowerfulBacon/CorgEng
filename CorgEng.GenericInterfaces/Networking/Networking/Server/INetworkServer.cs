@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace CorgEng.GenericInterfaces.Networking.Networking.Server
 {
-    public interface INetworkingServer
+    public interface INetworkServer
     {
 
         /// <summary>

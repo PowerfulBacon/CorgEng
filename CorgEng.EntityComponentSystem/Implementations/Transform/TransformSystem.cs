@@ -22,7 +22,7 @@ namespace CorgEng.EntityComponentSystem.Implementations.Transform
         [UsingDependency]
         private static ILogger Logger;
 
-        public override void SystemSetup()
+        public override void SystemSetup(IWorld world)
         {
             RegisterLocalEvent<TransformComponent, SetPositionEvent>(SetEntityPosition);
             RegisterLocalEvent<TransformComponent, TranslateEvent>(TranslateEntity);

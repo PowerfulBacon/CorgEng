@@ -36,38 +36,30 @@ namespace CorgEng.Tests.NetworkingTests
     {
 
         [UsingDependency]
-        private static INetworkingServer Server;
-
-        [UsingDependency]
-        private static INetworkingClient Client;
+        private static IWorldFactory WorldFactory;
 
         [UsingDependency]
         private static INetworkMessageFactory MessageFactory;
 
         [UsingDependency]
-        private static IEntityFactory EntityFactory;
-
-        [UsingDependency]
         private static ILogger Logger;
 
-        [TestCleanup]
-        public void AfterTest()
-        {
-            Server.Cleanup();
-            Client.Cleanup();
-            Logger?.WriteLine("TEST COMPLETED", LogType.DEBUG);
-        }
+        private IWorld serverWorld;
+        private IWorld clientWorld;
 
         [TestInitialize]
         public void TestStart()
         {
+            serverWorld = WorldFactory.CreateWorld();
+            clientWorld = WorldFactory.CreateWorld();
+
             bool connected = false;
             bool success = false;
-            Server.StartHosting(5001);
-            Client.OnConnectionFailed += (IPAddress ipAddress, DisconnectReason disconnectReason, string reasonText) => { Assert.Inconclusive("Connection failed, server rejected connection."); };
-            Client.OnConnectionSuccess += (IPAddress ipAddress) => { connected = true; };
+            serverWorld.ServerInstance.StartHosting(5001);
+            clientWorld.ClientInstance.OnConnectionFailed += (IPAddress ipAddress, DisconnectReason disconnectReason, string reasonText) => { Assert.Inconclusive("Connection failed, server rejected connection."); };
+            clientWorld.ClientInstance.OnConnectionSuccess += (IPAddress ipAddress) => { connected = true; };
 
-            Server.NetworkMessageReceived += (PacketHeaders packetHeader, byte[] message, int start, int end) =>
+            serverWorld.ServerInstance.NetworkMessageReceived += (PacketHeaders packetHeader, byte[] message, int start, int end) =>
             {
                 if (packetHeader == PacketHeaders.NETWORKING_TEST)
                 {
@@ -78,7 +70,7 @@ namespace CorgEng.Tests.NetworkingTests
                 }
             };
 
-            Client.AttemptConnection("127.0.0.1", 5001, 1000);
+            clientWorld.ClientInstance.AttemptConnection("127.0.0.1", 5001, 1000);
 
             //Await connection to the server
             while (!connected)
@@ -89,11 +81,12 @@ namespace CorgEng.Tests.NetworkingTests
         public void TestNetVarModification()
         {
             // Create the entity
-            EntityFactory.CreateEmptyEntity(entity => {
+            serverWorld.EntityManager.CreateEmptyEntity(entity => {
                 entity.AddComponent(new NetworkTransformComponent());
                 entity.AddComponent(new ExampleComponent());
             });
             //
+            Assert.Fail("I haven't made this");
         }
 
     }

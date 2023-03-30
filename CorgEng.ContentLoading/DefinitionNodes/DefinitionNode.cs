@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CorgEng.GenericInterfaces.EntityComponentSystem;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,8 +17,11 @@ namespace CorgEng.GenericInterfaces.ContentLoading.DefinitionNodes
 
         public string? ID { get; set; }
 
+        protected IWorld world;
+
         public DefinitionNode(DefinitionNode parent)
         {
+            this.world = world;
             parent?.Children.Add(this);
         }
 
@@ -36,7 +40,7 @@ namespace CorgEng.GenericInterfaces.ContentLoading.DefinitionNodes
         /// Called when the instance needs to be created
         /// </summary>
         /// <returns></returns>
-        public abstract object CreateInstance(object parent, Dictionary<string, object> instanceRefs);
+        public abstract object CreateInstance(IWorld world, object parent, Dictionary<string, object> instanceRefs);
 
     }
 }

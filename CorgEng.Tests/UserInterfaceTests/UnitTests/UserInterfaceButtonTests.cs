@@ -1,5 +1,6 @@
 ﻿using CorgEng.Core.Dependencies;
 using CorgEng.EntityComponentSystem.Events;
+using CorgEng.GenericInterfaces.EntityComponentSystem;
 using CorgEng.GenericInterfaces.UserInterface.Components;
 using CorgEng.GenericInterfaces.UserInterface.Generators;
 using CorgEng.UserInterface.Attributes;
@@ -23,6 +24,11 @@ namespace CorgEng.Tests.UserInterfaceTests.UnitTests
         [UsingDependency]
         private static IUserInterfaceXmlLoader UserInterfaceXmlLoader;
 
+        [UsingDependency]
+        private static IWorldFactory WorldFactory;
+
+        private static IWorld world;
+
         private static bool TestPassed = false;
 
         [UserInterfaceCodeCallback("PassTest")]
@@ -39,8 +45,9 @@ namespace CorgEng.Tests.UserInterfaceTests.UnitTests
             if (!setup)
             {
                 setup = true;
+                world = WorldFactory.CreateWorld();
                 UserInterfaceClickSystem clickSystem = new UserInterfaceClickSystem();
-                clickSystem.SystemSetup();
+                clickSystem.SystemSetup(world);
             }
         }
 

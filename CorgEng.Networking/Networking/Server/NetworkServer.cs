@@ -33,36 +33,31 @@ using System.Threading.Tasks;
 
 namespace CorgEng.Networking.Networking.Server
 {
-
-    [Dependency]
-    public class NetworkingServer : NetworkCommunicator, INetworkingServer
+    public class NetworkServer : NetworkCommunicator, INetworkServer
     {
 
         [UsingDependency]
-        private static ILogger Logger;
+        private static ILogger Logger = null!;
 
         [UsingDependency]
-        private static IClientFactory ClientFactory;
+        private static IClientFactory ClientFactory = null!;
 
         [UsingDependency]
-        private static IClientAddressingTableFactory ClientAddressingTableFactory;
+        private static IClientAddressingTableFactory ClientAddressingTableFactory = null!;
 
         public IClientAddressingTable ClientAddressingTable { get; private set; }
 
         [UsingDependency]
-        private static INetworkMessageFactory NetworkMessageFactory;
+        private static INetworkMessageFactory NetworkMessageFactory = null!;
 
         [UsingDependency]
-        private static IPacketQueueFactory PacketQueueFactory;
+        private static IPacketQueueFactory PacketQueueFactory = null!;
 
         [UsingDependency]
-        private static INetworkConfig NetworkConfig;
+        private static INetworkConfig NetworkConfig = null!;
 
         [UsingDependency]
-        private static IPrototypeManager PrototypeManager;
-
-        [UsingDependency]
-        private static IEntityFactory EntityFactory;
+        private static IPrototypeManager PrototypeManager = null!;
 
         private static IPrototype DefaultEntityPrototype;
 
@@ -73,11 +68,18 @@ namespace CorgEng.Networking.Networking.Server
 
         private double lastPingAt = 0;
 
-        [ModuleLoad]
+        private IWorld world;
+
+        public NetworkServer(IWorld world)
+        {
+            this.world = world;
+            LoadDefaultPrototype();
+        }
+
         public void LoadDefaultPrototype()
         {
             //Set the default prototype
-            EntityFactory.CreateEmptyEntity(sampleEntity => {
+            world.EntityManager.CreateEmptyEntity(sampleEntity => {
                 sampleEntity.AddComponent(new NetworkTransformComponent());
                 sampleEntity.AddComponent(new ClientComponent());
                 //Get the prototype
@@ -253,7 +255,7 @@ namespace CorgEng.Networking.Networking.Server
                 ClientAddressingTable.AddClient(createdClient),
                 NetworkMessageFactory.CreateMessage(PacketHeaders.CONNECTION_ACCEPT, new byte[0]));
             //Create a new client entity and add what we need
-            IEntity createdEntity = DefaultEntityPrototype.CreateEntityFromPrototype();
+            IEntity createdEntity = DefaultEntityPrototype.CreateEntityFromPrototype(world);
             //Send a connection event
             new ClientConnectedEvent(createdClient).Raise(createdEntity);
             //Initialise the entity

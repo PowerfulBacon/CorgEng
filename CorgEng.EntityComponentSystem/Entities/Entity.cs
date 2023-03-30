@@ -59,25 +59,32 @@ namespace CorgEng.EntityComponentSystem.Entities
         /// </summary>
         public string DefinitionName { get; set; }
 
-        internal Entity()
+        /// <summary>
+        /// The manager that we belong to
+        /// </summary>
+        private EntityManager _attachedManager;
+
+        internal Entity(EntityManager entityManager)
         {
-            Identifier = EntityManager.GetNewEntityId();
-            EntityManager.RegisterEntity(this);
+            _attachedManager = entityManager;
+            Identifier = entityManager.GetNewEntityId();
+            entityManager.RegisterEntity(this);
             //Entities are deletable by default
             AddComponent(new DeleteableComponent());
         }
 
-        public Entity(uint identifier)
+        internal Entity(EntityManager entityManager, uint identifier)
         {
+            _attachedManager = entityManager;
             Identifier = identifier;
-            EntityManager.RegisterEntity(this);
+            entityManager.RegisterEntity(this);
             //Entities are deletable by default
             AddComponent(new DeleteableComponent());
         }
 
         ~Entity()
         {
-            Interlocked.Increment(ref EntityManager.GarbageCollectionCount);
+            Interlocked.Increment(ref _attachedManager.GarbageCollectionCount);
             //Debug
             //Logger.WriteLine($"Entity GC'd. {EntityManager.GarbageCollectionCount}/{EntityManager.DeletionCount}", LogType.TEMP);
         }

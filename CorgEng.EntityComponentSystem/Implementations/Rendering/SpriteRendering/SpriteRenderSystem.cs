@@ -39,7 +39,7 @@ namespace CorgEng.EntityComponentSystem.Implementations.Rendering.SpriteRenderin
         //Runs only on the client, contains no server-side logic.
         public override EntitySystemFlags SystemFlags { get; } = EntitySystemFlags.CLIENT_SYSTEM | EntitySystemFlags.HOST_SYSTEM;
 
-        public override void SystemSetup()
+        public override void SystemSetup(IWorld world)
         {
             RegisterLocalEvent<SpriteRenderComponent, SetSpriteEvent>(OnSetSprite);
             RegisterLocalEvent<SpriteRenderComponent, SetSpriteRendererEvent>(OnSetRenderer);

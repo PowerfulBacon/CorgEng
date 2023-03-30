@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace CorgEng.AiBehaviour
 {
-    internal class BehaviourManager : IBehaviourManager
+    internal class BehaviourManager : WorldObject, IBehaviourManager
     {
 
         //Are we currently processing? Prevents AIs from having multiple AI trees thinking
@@ -57,15 +57,16 @@ namespace CorgEng.AiBehaviour
         /// <summary>
         /// The root behaviour node
         /// </summary>
-        internal BehaviourRoot root = new BehaviourRoot();
+        internal BehaviourRoot root;
 
         /// <summary>
         /// Setup the behaviour manager
         /// </summary>
         /// <param name="pawnEntity"></param>
-        public BehaviourManager(IEntity pawnEntity)
+        public BehaviourManager(IWorld world, IEntity pawnEntity) : base(world)
         {
             PawnEntity = pawnEntity;
+            root = new BehaviourRoot(world);
         }
 
         public async Task Process()

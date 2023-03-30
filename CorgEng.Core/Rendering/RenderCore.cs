@@ -1,5 +1,6 @@
 ﻿using CorgEng.Core.Dependencies;
 using CorgEng.GenericInterfaces.Core;
+using CorgEng.GenericInterfaces.EntityComponentSystem;
 using CorgEng.GenericInterfaces.Logging;
 using CorgEng.GenericInterfaces.Rendering.Shaders;
 using CorgEng.GenericInterfaces.UtilityTypes;
@@ -89,6 +90,20 @@ namespace CorgEng.Core.Rendering
         public virtual string ShaderPath => "CoreShader";
 
         public virtual IColour BackColour { get; } = ColourFactory.GetColour(0, 0, 0, 0);
+
+        [UsingDependency]
+        private static IWorldFactory WorldFactory;
+
+        private static IWorld _internalWorld;
+        protected static IWorld internalWorld
+        {
+            get
+            {
+                if (_internalWorld == null)
+                    _internalWorld = WorldFactory.CreateWorld();
+                return _internalWorld;
+            }
+        }
 
         public unsafe RenderCore()
         {

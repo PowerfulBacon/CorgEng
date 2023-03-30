@@ -17,7 +17,7 @@ namespace CorgEng.UtilityTypes.Linecasting
         private const float VERY_SMALL_VALUE = 0.00001f;
 
         [UsingDependency]
-        private static IWorld World = null!;
+        private static IEntityPositionTracker World = null!;
 
         /// <summary>
         /// Lazilly evaluated enumerable of locations between start and end.

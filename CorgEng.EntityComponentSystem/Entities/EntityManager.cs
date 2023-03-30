@@ -12,24 +12,31 @@ using System.Threading.Tasks;
 
 namespace CorgEng.EntityComponentSystem.Entities
 {
-    public static class EntityManager
+    public class EntityManager : IEntityManager
     {
 
         [UsingDependency]
         private static ILogger Logger;
 
-        private static IEntity[] entityList = new IEntity[1024];
+        private IEntity[] entityList = new IEntity[1024];
 
-        internal static int GarbageCollectionCount = 0;
+        internal int GarbageCollectionCount = 0;
 
-        internal static int DeletionCount = 0;
+        internal int DeletionCount = 0;
 
         /// <summary>
         /// Amount of created entities
         /// </summary>
-        private static uint CreatedEntityCount = 0;
+        private uint CreatedEntityCount = 0;
 
-        public static void RegisterEntity(IEntity entity)
+        private IWorld world;
+
+        public EntityManager(IWorld world)
+        {
+            this.world = world;
+        }
+
+        public void RegisterEntity(IEntity entity)
         {
             while (entityList.Length <= entity.Identifier)
             {
@@ -43,17 +50,17 @@ namespace CorgEng.EntityComponentSystem.Entities
             new NewEntityEvent(entity.Identifier).RaiseGlobally();
         }
 
-        public static uint GetNewEntityId()
+        public uint GetNewEntityId()
         {
             return CreatedEntityCount++;
         }
 
-        public static void RemoveEntity(IEntity entity)
+        public void RemoveEntity(IEntity entity)
         {
             entityList[entity.Identifier] = null;
         }
 
-        public static IEntity GetEntity(uint identifier)
+        public IEntity GetEntity(uint identifier)
         {
             if (identifier < 0 || identifier >= entityList.Length)
                 return null;
@@ -70,7 +77,7 @@ namespace CorgEng.EntityComponentSystem.Entities
         /// -> Delete() method
         /// -> Component local removal + EntityManager removal
         /// </summary>
-        internal static void Delete(this IEntity entity)
+        public void InternallyDelete(IEntity entity)
         {
             if ((entity.EntityFlags & EntityFlags.DESTROYED) != 0)
             {
@@ -95,10 +102,31 @@ namespace CorgEng.EntityComponentSystem.Entities
             //Logger.WriteLine($"Entity deletion triggered. {GarbageCollectionCount}/{DeletionCount}", LogType.TEMP);
         }
 
-        public static IEntity[] GetEntityArrayUnsafe()
+        public IEntity[] GetEntityArrayUnsafe()
         {
             return entityList;
         }
 
+        public IEntity CreateEmptyEntity(Action<IEntity> preInitialisationEvents)
+        {
+            //Create the blank entity.
+            IEntity createdEntity = new Entity(this);
+            //Run any events that need to happen before initialisation
+            preInitialisationEvents?.Invoke(createdEntity);
+            //Raise the initialise event
+            new InitialiseEvent().Raise(createdEntity, true);
+            //Return the entity that was created
+            return createdEntity;
+        }
+
+        public IEntity CreateUninitialisedEntity()
+        {
+            return new Entity(this);
+        }
+
+        public IEntity CreateUninitialisedEntity(uint entityIdentifier)
+        {
+            return new Entity(this, entityIdentifier);
+        }
     }
 }

@@ -17,7 +17,7 @@ using System.Threading.Tasks;
 namespace CorgEng.World.WorldTracking
 {
     [Dependency]
-    internal class World : IWorld
+    internal class EntityPositionTracker : IEntityPositionTracker
     {
 
         [UsingDependency]

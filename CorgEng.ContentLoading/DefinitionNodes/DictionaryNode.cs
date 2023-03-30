@@ -1,4 +1,5 @@
 ﻿using CorgEng.GenericInterfaces.ContentLoading.DefinitionNodes;
+using CorgEng.GenericInterfaces.EntityComponentSystem;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -41,7 +42,7 @@ namespace CorgEng.ContentLoading.DefinitionNodes
                 BindingFlags.Public | BindingFlags.Instance);
         }
 
-        public override object CreateInstance(object parent, Dictionary<string, object> instanceRefs)
+        public override object CreateInstance(IWorld world, object parent, Dictionary<string, object> instanceRefs)
         {
             //Create the array object
             object dictionary = Activator.CreateInstance(dictionaryType);
@@ -49,7 +50,7 @@ namespace CorgEng.ContentLoading.DefinitionNodes
             foreach (DefinitionNode child in Children)
             {
                 addMethod.Invoke(dictionary, new object[] {
-                    child.CreateInstance(dictionary, instanceRefs)
+                    child.CreateInstance(world, dictionary, instanceRefs)
                 });
             }
             //Add a reference to the created array

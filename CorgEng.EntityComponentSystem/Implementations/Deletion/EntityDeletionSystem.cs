@@ -17,7 +17,7 @@ namespace CorgEng.EntityComponentSystem.Implementations.Deletion
         //entities when requested.
         public override EntitySystemFlags SystemFlags { get; } = EntitySystemFlags.HOST_SYSTEM | EntitySystemFlags.CLIENT_SYSTEM;
 
-        public override void SystemSetup()
+        public override void SystemSetup(IWorld world)
         {
             RegisterLocalEvent<DeleteableComponent, DeleteEntityEvent>(OnEntityDeleted);
         }
@@ -25,7 +25,7 @@ namespace CorgEng.EntityComponentSystem.Implementations.Deletion
         private void OnEntityDeleted(IEntity entity, DeleteableComponent deleteableComponent, DeleteEntityEvent entityDeletedEvent)
         {
             //Delete the entity
-            entity.Delete();
+            world.EntityManager.InternallyDelete(entity);
         }
 
     }

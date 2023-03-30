@@ -19,7 +19,7 @@ namespace CorgEng.Networking.Networking.Server
         [UsingDependency]
         private static IClientAddressFactory ClientAddressFactory;
 
-        public static NetworkingServer server;
+        public static NetworkServer server;
 
         public bool IsServer => server != null;
 

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace CorgEng.GenericInterfaces.World
 {
-    public interface IWorld
+    public interface IEntityPositionTracker
     {
 
         /// <summary>

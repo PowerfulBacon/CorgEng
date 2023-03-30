@@ -39,8 +39,7 @@ namespace CorgEng.Networking.Networking.Client
     /// This is absolutely awful and I hate it, will probably rewrite it in the future
     /// to iron out some of the oversights.
     /// </summary>
-    [Dependency]
-    public class NetworkingClient : NetworkCommunicator, INetworkingClient
+    public class NetworkClient : NetworkCommunicator, INetworkClient
     {
 
         [UsingDependency]
@@ -56,7 +55,9 @@ namespace CorgEng.Networking.Networking.Client
         private static INetworkConfig NetworkConfig;
 
         [UsingDependency]
-        private static IEntityCommunicator EntityCommunicator;
+        private static IEntityCommunicatorFactory EntityCommunicatorFactory;
+
+        private IEntityCommunicator EntityCommunicator;
 
         [UsingDependency]
         private static IPrototypeManager PrototypeManager;
@@ -67,6 +68,14 @@ namespace CorgEng.Networking.Networking.Client
         public event ConnectionSuccess OnConnectionSuccess;
 
         public event ConnectionFailed OnConnectionFailed;
+
+        private IWorld attachedWorld;
+
+        public NetworkClient(IWorld world)
+        {
+            attachedWorld = world;
+            EntityCommunicator = EntityCommunicatorFactory.CreateEntityCommunicator(world);
+        }
 
         /// <summary>
         /// Attempt connection to a network address
@@ -262,7 +271,7 @@ namespace CorgEng.Networking.Networking.Client
                                     ushort networkedIdentifier = reader.ReadUInt16();
                                     //Read the target entity
                                     uint entityIdentifier = reader.ReadUInt32();
-                                    IEntity entityTarget = EntityManager.GetEntity(entityIdentifier);
+                                    IEntity entityTarget = attachedWorld.EntityManager.GetEntity(entityIdentifier);
                                     //Get the event that was raised
                                     INetworkedEvent raisedEvent = VersionGenerator.CreateTypeFromIdentifier<INetworkedEvent>(networkedIdentifier);
                                     //Deserialize the event
@@ -313,7 +322,7 @@ namespace CorgEng.Networking.Networking.Client
                         Task.Run(async () =>
                         {
                             IEntity createdEntity = await EntityCommunicator.DeserialiseEntity(data.Skip(start).Take(length).ToArray());
-                            EntityManager.RegisterEntity(createdEntity);
+                            attachedWorld.EntityManager.RegisterEntity(createdEntity);
                         });
                         return;
                     case PacketHeaders.UPDATE_CLIENT_VIEW:

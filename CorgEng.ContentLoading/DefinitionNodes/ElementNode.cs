@@ -1,4 +1,5 @@
 ﻿using CorgEng.GenericInterfaces.ContentLoading.DefinitionNodes;
+using CorgEng.GenericInterfaces.EntityComponentSystem;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -70,9 +71,9 @@ namespace CorgEng.ContentLoading.DefinitionNodes
             }
         }
 
-        public override object CreateInstance(object parent, Dictionary<string, object> instanceRefs)
+        public override object CreateInstance(IWorld world, object parent, Dictionary<string, object> instanceRefs)
         {
-            object propertyValue = GetValue(parent, instanceRefs);
+            object propertyValue = GetValue(world, parent, instanceRefs);
             if (Key != null)
             {
                 instanceRefs.Add(Key, propertyValue);
@@ -82,7 +83,7 @@ namespace CorgEng.ContentLoading.DefinitionNodes
 
         private static MethodInfo cachedMethod = null;
 
-        private object GetValue(object parent, Dictionary<string, object> instanceRefs)
+        private object GetValue(IWorld world, object parent, Dictionary<string, object> instanceRefs)
         {
             //Has 2 children, key value pair
             if (Children.Count == 2)
@@ -99,8 +100,8 @@ namespace CorgEng.ContentLoading.DefinitionNodes
                 }
                 //Make the generic method and call it
                 return cachedMethod.MakeGenericMethod(dictionaryParentKeyType, dictionaryParentValueType).Invoke(null, new object[] {
-                    childKey.CreateInstance(parent, instanceRefs),
-                    childValue.CreateInstance(parent, instanceRefs)
+                    childKey.CreateInstance(world, parent, instanceRefs),
+                    childValue.CreateInstance(world, parent, instanceRefs)
                 });
 
             }
@@ -119,7 +120,7 @@ namespace CorgEng.ContentLoading.DefinitionNodes
             }
             //1 Child, return value
             // Either object or value node
-            return Children[0].CreateInstance(null, instanceRefs);
+            return Children[0].CreateInstance(world, null, instanceRefs);
         }
 
     }

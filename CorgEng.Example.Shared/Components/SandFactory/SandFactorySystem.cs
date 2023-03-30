@@ -24,9 +24,6 @@ namespace CorgEng.Example.Shared.Components.SandFactory
     {
 
         [UsingDependency]
-        private static IEntityFactory EntityFactory = default!;
-
-        [UsingDependency]
         private static IIconFactory IconFactory = default!;
 
         private static Random DebugRandom = new Random();
@@ -35,12 +32,12 @@ namespace CorgEng.Example.Shared.Components.SandFactory
 
         protected override int ProcessDelay => 2000;
 
-        public override void SystemSetup()
+        public override void SystemSetup(IWorld world)
         {
             RegisterLocalEvent<SandFactoryComponent, InitialiseEvent>((entity, component, signal) => {
                 TransformComponent transform = entity.GetComponent<TransformComponent>();
                 RegisterProcess<SandFactoryComponent>(entity, (entity, component, deltaTime) => {
-                    EntityFactory.CreateEmptyEntity(entity => {
+                    world.EntityManager.CreateEmptyEntity(entity => {
                         //Add components
                         entity.AddComponent(new NetworkTransformComponent());
                         entity.AddComponent(new SpriteRenderComponent());

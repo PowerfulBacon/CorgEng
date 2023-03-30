@@ -19,10 +19,10 @@ namespace CorgEng.GenericInterfaces.ContentLoading.DefinitionNodes
             Parent = parent as EntityNode;
         }
 
-        public override object CreateInstance(object parent, Dictionary<string, object> instanceRefs)
+        public override object CreateInstance(IWorld world, object parent, Dictionary<string, object> instanceRefs)
         {
             //Create the component
-            IComponent createdComponent = base.CreateInstance(parent, instanceRefs) as IComponent;
+            IComponent createdComponent = base.CreateInstance(world, parent, instanceRefs) as IComponent;
             //Add the compoennt
             IEntity parentEntity = parent as IEntity;
             parentEntity.AddComponent(createdComponent);

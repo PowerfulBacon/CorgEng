@@ -28,9 +28,6 @@ namespace CorgEng.UserInterface.Components
         [UsingDependency]
         private static ILogger Logger;
 
-        [UsingDependency]
-        private static IEntityFactory EntityFactory;
-
         /// <summary>
         /// The anchor details for this component
         /// </summary>
@@ -85,7 +82,7 @@ namespace CorgEng.UserInterface.Components
         /// so we can have a component based user interface model despite
         /// the oversight of not implementing it this way initially
         /// </summary>
-        public IEntity ComponentHolder { get; } = EntityFactory.CreateEmptyEntity(null);
+        public IEntity ComponentHolder { get; } = internalWorld.EntityManager.CreateEmptyEntity(null);
 
         /// <summary>
         /// Is this component fullscreen?

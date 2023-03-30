@@ -1,4 +1,5 @@
 ﻿using CorgEng.GenericInterfaces.ContentLoading.DefinitionNodes;
+using CorgEng.GenericInterfaces.EntityComponentSystem;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,7 +26,7 @@ namespace CorgEng.ContentLoading.DefinitionNodes
             referenceName = node.InnerText.Trim();
         }
 
-        public override object CreateInstance(object parent, Dictionary<string, object> instanceRefs)
+        public override object CreateInstance(IWorld world, object parent, Dictionary<string, object> instanceRefs)
         {
             if (instanceRefs.ContainsKey(referenceName))
             {
@@ -33,7 +34,7 @@ namespace CorgEng.ContentLoading.DefinitionNodes
             }
             else
             {
-                return EntityLoader.GetDefinition(referenceName).CreateInstance(parent, instanceRefs);
+                return EntityLoader.GetDefinition(referenceName).CreateInstance(world, parent, instanceRefs);
             }
         }
 

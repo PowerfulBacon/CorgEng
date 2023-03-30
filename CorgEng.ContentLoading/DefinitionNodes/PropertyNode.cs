@@ -1,5 +1,6 @@
 ﻿using CorgEng.ContentLoading;
 using CorgEng.ContentLoading.DefinitionNodes;
+using CorgEng.GenericInterfaces.EntityComponentSystem;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -70,7 +71,7 @@ namespace CorgEng.GenericInterfaces.ContentLoading.DefinitionNodes
             }
         }
 
-        public override object CreateInstance(object parent, Dictionary<string, object> instanceRefs)
+        public override object CreateInstance(IWorld world, object parent, Dictionary<string, object> instanceRefs)
         {
             if (PropertyValue != null)
             {
@@ -82,7 +83,7 @@ namespace CorgEng.GenericInterfaces.ContentLoading.DefinitionNodes
             }
             else
             {
-                object createdObject = Children[0].CreateInstance(null, instanceRefs);
+                object createdObject = Children[0].CreateInstance(world, null, instanceRefs);
                 if (Key != null)
                 {
                     instanceRefs.Add(Key, createdObject);

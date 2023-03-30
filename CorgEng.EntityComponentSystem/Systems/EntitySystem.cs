@@ -65,11 +65,6 @@ namespace CorgEng.EntityComponentSystem.Systems
         protected readonly ConcurrentQueue<InvokationAction> invokationQueue = new ConcurrentQueue<InvokationAction>();
 
         /// <summary>
-        /// A static list of all entity systems in use
-        /// </summary>
-        private static ConcurrentDictionary<Type, EntitySystem> EntitySystems = new ConcurrentDictionary<Type, EntitySystem>();
-
-        /// <summary>
         /// The flags of this system
         /// </summary>
         public abstract EntitySystemFlags SystemFlags { get; }
@@ -80,14 +75,9 @@ namespace CorgEng.EntityComponentSystem.Systems
         protected bool assassinated = false;
 
         /// <summary>
-        /// has setup been completed?
+        /// The world that we belong to
         /// </summary>
-        public static bool SetupCompleted = false;
-
-        /// <summary>
-        /// Actions to run after setup
-        /// </summary>
-        public static event Action postSetupAction;
+        protected IWorld world;
 
         public EntitySystem()
         {
@@ -98,58 +88,12 @@ namespace CorgEng.EntityComponentSystem.Systems
             RegisterGlobalEvent((GameClosedEvent e) => { });
         }
 
-        public abstract void SystemSetup();
-
-        /// <summary>
-        /// Called when the ECS module is loaded.
-        /// Creates all System types and tracks the to prevent GC
-        /// </summary>
-        [ModuleLoad]
-        private static void CreateAllSystems()
+        public void JoinWorld(IWorld world)
         {
-            Logger?.WriteLine($"Setting up systems...", LogType.LOG);
-            //Locate all system types using reflection.
-            //Note that we need all systems in all loaded modules
-            IEnumerable<Type> locatedSystems = CorgEngMain.LoadedAssemblyModules
-                .SelectMany(assembly => assembly.GetTypes()
-                .Where(type => typeof(EntitySystem).IsAssignableFrom(type) && !type.IsAbstract));
-            locatedSystems.Select((type) =>
-                {
-                    Logger?.WriteLine($"Initializing {type}...", LogType.LOG);
-                    EntitySystem createdSystem = (EntitySystem)type.GetConstructor(BindingFlags.Public | BindingFlags.Instance, null, CallingConventions.HasThis, new Type[0], null).Invoke(new object[0]);
-                    EntitySystems.TryAdd(createdSystem.GetType(), createdSystem);
-                    return createdSystem;
-                })
-                // Very important that we fully resolve the enumerator and don't evaluate it lazilly
-                .ToList()
-                // Now do the foreach after they have all been created
-                .ForEach(entitySystem => entitySystem.SystemSetup());
-            SetupCompleted = true;
-            // Run post-setup actions
-            postSetupAction?.Invoke();
-            postSetupAction = null;
-            //Trigger the event when this is all done and loaded
-            CorgEngMain.OnReadyEvents += () => {
-                new GameReadyEvent().RaiseGlobally();
-            };
-            Logger?.WriteLine($"Successfully created and setup all systems!", LogType.LOG);
+            this.world = world;
         }
 
-        /// <summary>
-        /// Gets a specific entity system
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
-        public static T GetSingleton<T>()
-        {
-            return (T)(object)EntitySystems[typeof(T)];
-        }
-
-        [ModuleTerminate]
-        private static void TerminateSubsystems()
-        {
-            new GameClosedEvent().RaiseGlobally();
-        }
+        public abstract void SystemSetup(IWorld world);
 
         /// <summary>
         /// The system thread. Waits until an invokation is required and then triggers it

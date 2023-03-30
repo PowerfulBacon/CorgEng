@@ -18,7 +18,7 @@ namespace CorgEng.Networking.Networking.Client
         [UsingDependency]
         private static ILogger Logger;
 
-        public static NetworkingClient client;
+        public static NetworkClient client;
 
         public void SendToServer(INetworkMessage networkMessage)
         {

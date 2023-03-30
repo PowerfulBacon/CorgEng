@@ -18,7 +18,7 @@ namespace CorgEng.Tests.World
     {
 
         [UsingDependency]
-        public static IWorld WorldAccess;
+        public static IEntityPositionTracker WorldAccess;
 
         [TestMethod]
         public void TestMassInsertion()

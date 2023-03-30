@@ -23,9 +23,8 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CorgEng.Networking.Networking.Server
+namespace CorgEng.Networking.Networking
 {
-    [Dependency]
     internal class EntityCommunicator : IEntityCommunicator
     {
 
@@ -43,6 +42,13 @@ namespace CorgEng.Networking.Networking.Server
 
         [UsingDependency]
         private static INetworkMessageFactory NetworkMessageFactory;
+
+        internal IWorld World { get; }
+
+        public EntityCommunicator(IWorld world)
+        {
+            World = world;
+        }
 
         /// <summary>
         /// Communicate information about an entity to a client.
@@ -71,14 +77,14 @@ namespace CorgEng.Networking.Networking.Server
                     uint entityIdentifier = binaryReader.ReadUInt32();
                     uint prototypeIdentifier = binaryReader.ReadUInt32();
                     //Create or locate the entity
-                    IEntity entity = EntityManager.GetEntity(entityIdentifier);
+                    IEntity entity = World.EntityManager.GetEntity(entityIdentifier);
                     if (entity == null)
                     {
                         //We need to create the entity
                         //Create it based on the prototype we have, which we need to request from the server if we don't have it already
                         IPrototype locatedPrototype = await PrototypeManager.GetPrototype(prototypeIdentifier);
                         //Create the entity with a specific identifier
-                        entity = locatedPrototype.CreateEntityFromPrototype(entityIdentifier);
+                        entity = locatedPrototype.CreateEntityFromPrototype(World, entityIdentifier);
                     }
                     else
                     {
