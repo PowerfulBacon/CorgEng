@@ -15,6 +15,8 @@ namespace CorgEng.GenericInterfaces.EntityComponentSystem
 
         IEntitySystemManager EntitySystemManager { get; }
 
+        IComponentSignalInjector ComponentSignalInjector { get; }
+
         INetworkServer ServerInstance { get; }
 
         INetworkClient ClientInstance { get; }

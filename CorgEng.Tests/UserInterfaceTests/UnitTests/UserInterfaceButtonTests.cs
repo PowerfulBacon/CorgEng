@@ -46,8 +46,6 @@ namespace CorgEng.Tests.UserInterfaceTests.UnitTests
             {
                 setup = true;
                 world = WorldFactory.CreateWorld();
-                UserInterfaceClickSystem clickSystem = new UserInterfaceClickSystem();
-                clickSystem.SystemSetup(world);
             }
         }
 
@@ -61,7 +59,7 @@ namespace CorgEng.Tests.UserInterfaceTests.UnitTests
             if (UserInterfaceXmlLoader == null)
                 Assert.Inconclusive("User interface XML loader dependency was not injected.");
             //Check for loading errors
-            IUserInterfaceComponent Root = UserInterfaceXmlLoader.LoadUserInterface("UserInterfaceTests/UnitTests/Content/UserInterfaceButton.xml");
+            IUserInterfaceComponent Root = UserInterfaceXmlLoader.LoadUserInterface(world, "UserInterfaceTests/UnitTests/Content/UserInterfaceButton.xml");
             IUserInterfaceComponent button = Root.GetChildren().First();
             new UserInterfaceClickEvent().Raise(button.ComponentHolder);
             while (!TestPassed)

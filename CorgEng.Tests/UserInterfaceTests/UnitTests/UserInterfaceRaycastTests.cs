@@ -1,4 +1,5 @@
 ﻿using CorgEng.Core.Dependencies;
+using CorgEng.GenericInterfaces.EntityComponentSystem;
 using CorgEng.GenericInterfaces.UserInterface.Anchors;
 using CorgEng.GenericInterfaces.UserInterface.Components;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -23,6 +24,9 @@ namespace CorgEng.Tests.UserInterfaceTests.UnitTests
         [UsingDependency]
         private static IAnchorDetailFactory AnchorDetailFactory;
 
+        [UsingDependency]
+        private static IWorldFactory WorldFactory;
+
         [DataTestMethod]
         [DataRow(0, 0, 0)]
         [DataRow(0, 50, 50)]
@@ -40,9 +44,11 @@ namespace CorgEng.Tests.UserInterfaceTests.UnitTests
                 Assert.Inconclusive("Anchor factory not located.");
             if (UserInterfaceComponentFactory == null)
                 Assert.Inconclusive("User interface factory not located.");
+            IWorld world = WorldFactory.CreateWorld();
             //Create a root component
             //(0, 0) -> (1000, 1000)
             IUserInterfaceComponent parentUserInterfaceComponent = UserInterfaceComponentFactory.CreateGenericUserInterfaceComponent(
+                world,
                 null,
                 AnchorFactory.CreateAnchor(
                     AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.LEFT, AnchorUnits.PIXELS, 0),
@@ -56,6 +62,7 @@ namespace CorgEng.Tests.UserInterfaceTests.UnitTests
             //Add a child component which can scale but starts with no height
             //(100, 100) -> (900, 900)
             IUserInterfaceComponent expandingComponent = UserInterfaceComponentFactory.CreateGenericUserInterfaceComponent(
+                world,
                 parentUserInterfaceComponent,
                 AnchorFactory.CreateAnchor(
                     AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.LEFT, AnchorUnits.PERCENTAGE, 10, true),
@@ -68,6 +75,7 @@ namespace CorgEng.Tests.UserInterfaceTests.UnitTests
             //Add a child component to that which has a huge scale
             //(100, 400) -> (900, 900)
             IUserInterfaceComponent bigComponent = UserInterfaceComponentFactory.CreateGenericUserInterfaceComponent(
+                world,
                 expandingComponent,
                 AnchorFactory.CreateAnchor(
                     AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.LEFT, AnchorUnits.PIXELS, 0, true),

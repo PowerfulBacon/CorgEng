@@ -1,7 +1,9 @@
 ﻿using CorgEng.Core.Dependencies;
+using CorgEng.EntityComponentSystem.Components;
 using CorgEng.EntityComponentSystem.Entities;
 using CorgEng.EntityComponentSystem.Systems;
 using CorgEng.GenericInterfaces.EntityComponentSystem;
+using CorgEng.GenericInterfaces.Logging;
 using CorgEng.GenericInterfaces.Networking.Networking.Client;
 using CorgEng.GenericInterfaces.Networking.Networking.Server;
 using System;
@@ -27,6 +29,9 @@ namespace CorgEng.EntityComponentSystem.WorldManager
         [UsingDependency]
         private static INetworkClientFactory NetworkClientFactory = null!;
 
+        [UsingDependency]
+        private static ILogger Logger = null!;
+
         /// <summary>
         /// The entity manager associated with this world process
         /// </summary>
@@ -36,6 +41,7 @@ namespace CorgEng.EntityComponentSystem.WorldManager
         /// The entity system manager associated with this world process
         /// </summary>
         public IEntitySystemManager EntitySystemManager { get; }
+
 
         /// <summary>
         /// The server instance, if it doesn't exist for this world, one will be
@@ -67,12 +73,17 @@ namespace CorgEng.EntityComponentSystem.WorldManager
             }
         }
 
+        public IComponentSignalInjector ComponentSignalInjector { get; } 
+
         public World()
         {
             EntityManager = new EntityManager(this);
+            ComponentSignalInjector = new ComponentSignalInjector(this);
             EntitySystemManager systemManager = new EntitySystemManager(this);
             EntitySystemManager = systemManager;
+            // Do this last
             systemManager.CreateAllSystems();
+            Logger.WriteLine("World created and initialised", LogType.LOG);
         }
 
         /// <summary>

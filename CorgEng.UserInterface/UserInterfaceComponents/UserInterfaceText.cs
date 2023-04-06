@@ -1,5 +1,6 @@
 ﻿using CorgEng.Core;
 using CorgEng.Core.Dependencies;
+using CorgEng.GenericInterfaces.EntityComponentSystem;
 using CorgEng.GenericInterfaces.Font.Fonts;
 using CorgEng.GenericInterfaces.Rendering.Cameras.Isometric;
 using CorgEng.GenericInterfaces.Rendering.Renderers.SpriteRendering;
@@ -44,12 +45,12 @@ namespace CorgEng.UserInterface.UserInterfaceComponents
 
         private IFont font;
 
-        public UserInterfaceText(IAnchor anchorDetails, IDictionary<string, string> arguments) : base(anchorDetails, arguments)
+        public UserInterfaceText(IWorld world, IAnchor anchorDetails, IDictionary<string, string> arguments) : base(world, anchorDetails, arguments)
         {
             Setup(arguments);
         }
 
-        public UserInterfaceText(IUserInterfaceComponent parent, IAnchor anchorDetails, IDictionary<string, string> arguments) : base(parent, anchorDetails, arguments)
+        public UserInterfaceText(IWorld world, IUserInterfaceComponent parent, IAnchor anchorDetails, IDictionary<string, string> arguments) : base(world, parent, anchorDetails, arguments)
         {
             Setup(arguments);
         }

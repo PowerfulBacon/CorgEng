@@ -12,33 +12,31 @@ using System.Text;
 using System.Threading.Tasks;
 using static CorgEng.EntityComponentSystem.Entities.Entity;
 using static CorgEng.EntityComponentSystem.Systems.EntitySystem;
+using static CorgEng.GenericInterfaces.EntityComponentSystem.IEntity;
 
 namespace CorgEng.EntityComponentSystem.Components
 {
-    internal static class ComponentExtensions
+    internal class ComponentSignalInjector : WorldObject, IComponentSignalInjector
     {
 
         [UsingDependency]
         private static ILogger Logger;
 
-        private static ConcurrentDictionary<IComponent, List<InternalSignalHandleDelegate>> componentInjectionLambdas = new ConcurrentDictionary<IComponent, List<InternalSignalHandleDelegate>>();
+        private ConcurrentDictionary<IComponent, List<InternalSignalHandleDelegate>> componentInjectionLambdas = new ConcurrentDictionary<IComponent, List<InternalSignalHandleDelegate>>();
+
+        public ComponentSignalInjector(IWorld world) : base(world)
+        {
+        }
 
         /// <summary>
         /// Register existing signals when we are added
         /// to an entity.
         /// </summary>
-        internal static void OnComponentAdded(this IComponent component, Entity parent)
+        public void OnComponentAdded(IComponent component, IEntity parent)
         {
             component.Parent = parent;
-            //Check if we have any registered signals
-            if (!EventManager.RegisteredEvents.ContainsKey(component.GetType()))
-            {
-                //Send the component added event
-                new ComponentAddedEvent(component).Raise(parent);
-                return;
-            }
             //Locate all event types we are listening for
-            foreach (Type eventType in EventManager.RegisteredEvents[component.GetType()])
+            foreach (Type eventType in world.EntitySystemManager.GetRegisteredEventTypes(component.GetType()))
             {
                 EventComponentPair key = new EventComponentPair(eventType, component.GetType());
                 //Locate the monitoring system's callback handler
@@ -64,12 +62,7 @@ namespace CorgEng.EntityComponentSystem.Components
                     componentInjectionLambdas[component].Add(componentInjectionLambda);
                 }
                 //Start listening for this event
-                if (parent.EventListeners == null)
-                    parent.EventListeners = new Dictionary<Type, List<InternalSignalHandleDelegate>>();
-                if (parent.EventListeners.ContainsKey(eventType))
-                    parent.EventListeners[eventType].Add(componentInjectionLambda);
-                else
-                    parent.EventListeners.Add(eventType, new List<InternalSignalHandleDelegate>() { componentInjectionLambda });
+                parent.AddEventListener(eventType, componentInjectionLambda);
             }
             //Send the component added event
             ComponentAddedEvent componentAddedEvent = new ComponentAddedEvent(component);
@@ -81,7 +74,7 @@ namespace CorgEng.EntityComponentSystem.Components
         /// Cleanup registered signals and remove any static references to the entity.
         /// Allow for safe garbage collection
         /// </summary>
-        internal static void OnComponentRemoved(this IComponent component, Entity parent, bool silent)
+        public void OnComponentRemoved(IComponent component, IEntity parent, bool silent)
         {
             component.Parent = null;
             //Raise component removed event.
@@ -89,45 +82,29 @@ namespace CorgEng.EntityComponentSystem.Components
             {
                 new ComponentRemovedEvent(component).Raise(parent);
             }
-            //Check if we have any registered signals
-            if (!EventManager.RegisteredEvents.ContainsKey(component.GetType()))
-                return;
             //Locate all event types we are listening for
-            foreach (Type eventType in EventManager.RegisteredEvents[component.GetType()])
+            foreach (Type eventType in world.EntitySystemManager.GetRegisteredEventTypes(component.GetType()))
             {
                 EventComponentPair key = new EventComponentPair(eventType, component.GetType());
                 //Locate the monitoring system's callback handler
                 if (!RegisteredSystemSignalHandlers.ContainsKey(key))
                     continue;
                 List<SystemEventHandlerDelegate> systemEventHandlers = RegisteredSystemSignalHandlers[key];
-                //Start listening for this event
-                if (parent.EventListeners == null)  //Probably shouldn't happen
-                {
-                    Logger.WriteLine($"Parent event listeners is null.", LogType.WARNING);
-                    continue;
-                }
                 //Locate and removed
-                if (parent.EventListeners.ContainsKey(eventType))
+                lock (componentInjectionLambdas[component])
                 {
-                    lock (componentInjectionLambdas[component])
+                    for (int i = componentInjectionLambdas[component].Count - 1; i >= 0; i--)
                     {
-                        for (int i = componentInjectionLambdas[component].Count - 1; i >= 0; i--)
-                        {
-                            InternalSignalHandleDelegate signalHandleDelegate = componentInjectionLambdas[component][i];
-                            if (parent.EventListeners[eventType].Contains(signalHandleDelegate))
-                            {
-                                parent.EventListeners[eventType].Remove(signalHandleDelegate);
-                                componentInjectionLambdas[component].Remove(signalHandleDelegate);
-                            }
-                        }
-                        if (componentInjectionLambdas[component].Count == 0)
-                        {
-                            componentInjectionLambdas.TryRemove(component, out _);
-                        }
+                        InternalSignalHandleDelegate signalHandleDelegate = componentInjectionLambdas[component][i];
+                        parent.RemoveEventListenter(eventType, signalHandleDelegate);
+                        if (componentInjectionLambdas.ContainsKey(component))
+                            componentInjectionLambdas[component].Remove(signalHandleDelegate);
+                    }
+                    if (componentInjectionLambdas[component].Count == 0)
+                    {
+                        componentInjectionLambdas.TryRemove(component, out _);
                     }
                 }
-                else
-                    Logger.WriteLine($"Parent event listener isn't listening for {eventType}", LogType.WARNING);
             }
         }
 

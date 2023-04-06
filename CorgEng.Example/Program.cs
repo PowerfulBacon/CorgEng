@@ -40,7 +40,7 @@ namespace CorgEng.Example
             IIsometricCamera camera = isometricCameraFactory.CreateCamera();
             CameraScrollSystem.IsometricCamera = camera;
 
-            ExampleRenderCore erc = new ExampleRenderCore();
+            ExampleRenderCore erc = new ExampleRenderCore(world);
             CorgEngMain.SetRenderCore(erc);
 
             //Connect to our server

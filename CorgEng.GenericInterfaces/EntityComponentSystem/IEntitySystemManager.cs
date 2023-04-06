@@ -16,5 +16,25 @@ namespace CorgEng.GenericInterfaces.EntityComponentSystem
 
         T GetSingleton<T>();
 
+        /// <summary>
+        /// Register an event with a specific type
+        /// </summary>
+        void RegisterEventType(Type componentType, Type eventType);
+
+        /// <summary>
+        /// Unregister an event with a given type for a given component.
+        /// </summary>
+        /// <typeparam name="TComponent"></typeparam>
+        /// <typeparam name="TEvent"></typeparam>
+        void UnregisterEventType(Type componentType, Type eventType);
+
+        /// <summary>
+        /// Returns the enumable set of types registered to the
+        /// provided component type.
+        /// </summary>
+        /// <param name="componentType"></param>
+        /// <returns></returns>
+        IEnumerable<Type> GetRegisteredEventTypes(Type componentType);
+
     }
 }

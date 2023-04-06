@@ -77,7 +77,7 @@ namespace CorgEng.Example.Server
             // Create the program world
             ServerWorld = WorldFactory.CreateWorld();
 
-            ExampleRenderCore erc = new ExampleRenderCore();
+            ExampleRenderCore erc = new ExampleRenderCore(ServerWorld);
             CorgEngMain.SetRenderCore(erc);
             ServerWorld.EntityManager.CreateEmptyEntity(entity => {
                 IIsometricCamera camera = IsometricCameraFactory.CreateCamera();

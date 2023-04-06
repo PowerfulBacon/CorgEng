@@ -136,8 +136,7 @@ namespace CorgEng.Tests.EntityComponentSystem
             {
                 Logger?.WriteLine("Setting up test", LogType.LOG);
                 world = WorldFactory.CreateWorld();
-                entitySystem = new TestEntitySystem();
-                entitySystem.SystemSetup(world);
+                entitySystem = world.EntitySystemManager.GetSingleton<TestEntitySystem>();
             }
         }
 

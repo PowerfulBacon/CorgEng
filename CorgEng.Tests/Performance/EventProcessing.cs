@@ -68,8 +68,7 @@ namespace CorgEng.Tests.Performance
 
             EventsHandled = 0;
             LateHandles = 0;
-            TestEntitySystem testEntitySystem = new TestEntitySystem();
-            testEntitySystem.SystemSetup(world);
+            TestEntitySystem testEntitySystem = world.EntitySystemManager.GetSingleton<TestEntitySystem>();
 
             //Perform the tests
             Running = true;
@@ -102,8 +101,7 @@ namespace CorgEng.Tests.Performance
 
             EventsHandled = 0;
             LateHandles = 0;
-            TestEntitySystem testEntitySystem = new TestEntitySystem();
-            testEntitySystem.SystemSetup(world);
+            TestEntitySystem testEntitySystem = world.EntitySystemManager.GetSingleton<TestEntitySystem>();
 
             //Perform the tests
             Running = true;
@@ -136,8 +134,7 @@ namespace CorgEng.Tests.Performance
 
             EventsHandled = 0;
             LateHandles = 0;
-            TestEntitySystem testEntitySystem = new TestEntitySystem();
-            testEntitySystem.SystemSetup(world);
+            TestEntitySystem testEntitySystem = world.EntitySystemManager.GetSingleton<TestEntitySystem>();
 
             //Perform the tests
             Running = true;

@@ -1,4 +1,5 @@
-﻿using CorgEng.GenericInterfaces.UserInterface.Components;
+﻿using CorgEng.DependencyInjection.Dependencies;
+using CorgEng.GenericInterfaces.UserInterface.Components;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace CorgEng.GenericInterfaces.UserInterface.Popups
 {
+    [NonDependency("IPopupManager is no longer used as a dependency and should be accessed from IWorld instead.")]
     public interface IPopupManager
     {
 

@@ -1,4 +1,5 @@
 ﻿using CorgEng.DependencyInjection.Dependencies;
+using CorgEng.GenericInterfaces.EntityComponentSystem;
 using CorgEng.GenericInterfaces.UserInterface.Anchors;
 using CorgEng.GenericInterfaces.UserInterface.Components;
 using CorgEng.UserInterface.UserInterfaceComponents;
@@ -16,45 +17,45 @@ namespace CorgEng.UserInterface.Components
 
         private static Dictionary<string, string> Empty { get; } = new Dictionary<string, string>();
 
-        public IUserInterfaceComponent CreateGenericUserInterfaceComponent(IUserInterfaceComponent parent, IAnchor anchorDetails, Action<IUserInterfaceComponent> preInitialiseAction)
+        public IUserInterfaceComponent CreateGenericUserInterfaceComponent(IWorld world, IUserInterfaceComponent parent, IAnchor anchorDetails, Action<IUserInterfaceComponent> preInitialiseAction)
         {
-            UserInterfaceComponent createdComponent = new UserInterfaceComponent(parent, anchorDetails, Empty);
+            UserInterfaceComponent createdComponent = new UserInterfaceComponent(world, parent, anchorDetails, Empty);
             preInitialiseAction?.Invoke(createdComponent);
             createdComponent.Initialize();
             return createdComponent;
         }
 
-        public IUserInterfaceComponent CreateGenericUserInterfaceComponent(IAnchor anchorDetails, Action<IUserInterfaceComponent> preInitialiseAction)
+        public IUserInterfaceComponent CreateGenericUserInterfaceComponent(IWorld world, IAnchor anchorDetails, Action<IUserInterfaceComponent> preInitialiseAction)
         {
-            UserInterfaceComponent createdComponent = new UserInterfaceComponent(anchorDetails, Empty);
+            UserInterfaceComponent createdComponent = new UserInterfaceComponent(world, anchorDetails, Empty);
             preInitialiseAction?.Invoke(createdComponent);
             createdComponent.Initialize();
             return createdComponent;
         }
 
-        public IUserInterfaceComponent CreateUserInterfaceComponent(string componentType, IUserInterfaceComponent parent, IAnchor anchorDetails, IDictionary<string, string> arguments, Action<IUserInterfaceComponent> preInitialiseAction)
+        public IUserInterfaceComponent CreateUserInterfaceComponent(IWorld world, string componentType, IUserInterfaceComponent parent, IAnchor anchorDetails, IDictionary<string, string> arguments, Action<IUserInterfaceComponent> preInitialiseAction)
         {
             UserInterfaceComponent createdComponent;
             switch (componentType)
             {
                 case "BoxComponent":
-                    createdComponent = new UserInterfaceBox(parent, anchorDetails, arguments);
+                    createdComponent = new UserInterfaceBox(world, parent, anchorDetails, arguments);
                     break;
                 case "UserInterface":
                 case "UserInterfaceComponent":
-                    createdComponent = new UserInterfaceComponent(parent, anchorDetails, arguments);
+                    createdComponent = new UserInterfaceComponent(world, parent, anchorDetails, arguments);
                     break;
                 case "UserInterfaceButton":
-                    createdComponent = new UserInterfaceButton(parent, anchorDetails, arguments);
+                    createdComponent = new UserInterfaceButton(world, parent, anchorDetails, arguments);
                     break;
                 case "DropdownComponent":
-                    createdComponent = new UserInterfaceDropdown(parent, anchorDetails, arguments);
+                    createdComponent = new UserInterfaceDropdown(world, parent, anchorDetails, arguments);
                     break;
                 case "TextComponent":
-                    createdComponent = new UserInterfaceText(parent, anchorDetails, arguments);
+                    createdComponent = new UserInterfaceText(world, parent, anchorDetails, arguments);
                     break;
                 case "IconComponent":
-                    createdComponent = new UserInterfaceIcon(parent, anchorDetails, arguments);
+                    createdComponent = new UserInterfaceIcon(world, parent, anchorDetails, arguments);
                     break;
                 default:
                     throw new NotImplementedException($"The component {componentType} is not recognised.");
@@ -64,9 +65,9 @@ namespace CorgEng.UserInterface.Components
             return createdComponent;
         }
 
-        public IUserInterfaceComponent CreateUserInterfaceComponent(string componentType, IAnchor anchorDetails, IDictionary<string, string> arguments, Action<IUserInterfaceComponent> preInitialiseAction)
+        public IUserInterfaceComponent CreateUserInterfaceComponent(IWorld world, string componentType, IAnchor anchorDetails, IDictionary<string, string> arguments, Action<IUserInterfaceComponent> preInitialiseAction)
         {
-            return CreateUserInterfaceComponent(componentType, null, anchorDetails, arguments, preInitialiseAction);
+            return CreateUserInterfaceComponent(world, componentType, null, anchorDetails, arguments, preInitialiseAction);
         }
     }
 }

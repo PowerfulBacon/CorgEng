@@ -1,4 +1,5 @@
 ﻿using CorgEng.Core.Dependencies;
+using CorgEng.GenericInterfaces.EntityComponentSystem;
 using CorgEng.GenericInterfaces.UserInterface.Anchors;
 using CorgEng.GenericInterfaces.UserInterface.Components;
 using CorgEng.GenericInterfaces.UserInterface.Generators;
@@ -19,6 +20,9 @@ namespace CorgEng.Tests.UserInterfaceTests.UnitTests
         [UsingDependency]
         private static IUserInterfaceXmlLoader UserInterfaceXmlLoader;
 
+        [UsingDependency]
+        private static IWorldFactory WorldFactory;
+
         [TestMethod]
         public void TestDependencyImplementation()
         {
@@ -38,7 +42,7 @@ namespace CorgEng.Tests.UserInterfaceTests.UnitTests
             if (UserInterfaceXmlLoader == null)
                 Assert.Inconclusive("User interface XML loader dependency was not injected.");
             //Check for loading errors
-            IUserInterfaceComponent Root = UserInterfaceXmlLoader.LoadUserInterface(filepath);
+            IUserInterfaceComponent Root = UserInterfaceXmlLoader.LoadUserInterface(WorldFactory.CreateWorld(), filepath);
             //If the returned value if null, fail
             Assert.IsNotNull(Root, "User interface loader returned null.");
             //Execute test
@@ -62,7 +66,7 @@ namespace CorgEng.Tests.UserInterfaceTests.UnitTests
             if (UserInterfaceXmlLoader == null)
                 Assert.Inconclusive("User interface XML loader dependency was not injected.");
             //Check for loading errors
-            IUserInterfaceComponent Root = UserInterfaceXmlLoader.LoadUserInterface(filepath);
+            IUserInterfaceComponent Root = UserInterfaceXmlLoader.LoadUserInterface(WorldFactory.CreateWorld(), filepath);
             //If the returned value if null, fail
             Assert.IsNotNull(Root, "User interface loader returned null.");
             //Execute test
@@ -86,7 +90,7 @@ namespace CorgEng.Tests.UserInterfaceTests.UnitTests
             if (UserInterfaceXmlLoader == null)
                 Assert.Inconclusive("User interface XML loader dependency was not injected.");
             //Check for loading errors
-            IUserInterfaceComponent Root = UserInterfaceXmlLoader.LoadUserInterface(filepath);
+            IUserInterfaceComponent Root = UserInterfaceXmlLoader.LoadUserInterface(WorldFactory.CreateWorld(), filepath);
             //If the returned value if null, fail
             Assert.IsNotNull(Root, "User interface loader returned null.");
             //Execute test
@@ -110,7 +114,7 @@ namespace CorgEng.Tests.UserInterfaceTests.UnitTests
             if (UserInterfaceXmlLoader == null)
                 Assert.Inconclusive("User interface XML loader dependency was not injected.");
             //Check for loading errors
-            IUserInterfaceComponent Root = UserInterfaceXmlLoader.LoadUserInterface(filepath);
+            IUserInterfaceComponent Root = UserInterfaceXmlLoader.LoadUserInterface(WorldFactory.CreateWorld(), filepath);
             //If the returned value if null, fail
             Assert.IsNotNull(Root, "User interface loader returned null.");
             //Execute test
@@ -136,7 +140,7 @@ namespace CorgEng.Tests.UserInterfaceTests.UnitTests
             if (UserInterfaceXmlLoader == null)
                 Assert.Inconclusive("User interface XML loader dependency was not injected.");
             //Check for loading errors
-            UserInterfaceXmlLoader.LoadUserInterface(filepath);
+            UserInterfaceXmlLoader.LoadUserInterface(WorldFactory.CreateWorld(), filepath);
         }
 
         [DataTestMethod]
@@ -149,7 +153,7 @@ namespace CorgEng.Tests.UserInterfaceTests.UnitTests
             if (UserInterfaceXmlLoader == null)
                 Assert.Inconclusive("User interface XML loader dependency was not injected.");
             //Check for loading errors
-            IUserInterfaceComponent Root = UserInterfaceXmlLoader.LoadUserInterface(filepath);
+            IUserInterfaceComponent Root = UserInterfaceXmlLoader.LoadUserInterface(WorldFactory.CreateWorld(), filepath);
             //If the returned value if null, fail
             Assert.IsNotNull(Root, "User interface loader returned null.");
             //Validate assumptions

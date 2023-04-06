@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace CorgEng.Tests.EntityComponentSystem
@@ -58,6 +59,25 @@ namespace CorgEng.Tests.EntityComponentSystem
             new TestEvent().Raise(entity);
             // Assertion
             Assert.IsTrue(system.testCompleted);
+        }
+
+        [TestMethod]
+        [Timeout(200)]
+        public void TestEntitySystemThreadProcessing()
+        {
+            IWorld world = WorldFactory.CreateWorld();
+            IEntity entity = world.EntityManager.CreateEmptyEntity(e => {
+                e.AddComponent(new TestComponent());
+            });
+            TestSystem system = world.EntitySystemManager.GetSingleton<TestSystem>();
+            // Verify
+            Assert.IsFalse(system.testCompleted);
+            // Send the signal
+            system.AcquireHighPriorityLock();
+            new TestEvent().Raise(entity);
+            system.ReleaseLock();
+            while (!system.testCompleted)
+                Thread.Sleep(10);
         }
 
         [TestMethod]

@@ -9,7 +9,7 @@ using static OpenGL.Gl;
 
 namespace CorgEng.Core.Rendering
 {
-    public abstract class RenderCore : IRenderCore
+    public abstract class RenderCore : WorldObject, IRenderCore
     {
 
         [UsingDependency]
@@ -94,18 +94,7 @@ namespace CorgEng.Core.Rendering
         [UsingDependency]
         private static IWorldFactory WorldFactory;
 
-        private static IWorld _internalWorld;
-        protected static IWorld internalWorld
-        {
-            get
-            {
-                if (_internalWorld == null)
-                    _internalWorld = WorldFactory.CreateWorld();
-                return _internalWorld;
-            }
-        }
-
-        public unsafe RenderCore()
+        public unsafe RenderCore(IWorld world) : base(world)
         {
             if (!CorgEngMain.IsRendering)
                 return;

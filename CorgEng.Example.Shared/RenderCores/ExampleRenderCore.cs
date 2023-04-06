@@ -2,6 +2,7 @@
 using CorgEng.Core.Dependencies;
 using CorgEng.Core.Rendering;
 using CorgEng.EntityComponentSystem.Entities;
+using CorgEng.GenericInterfaces.EntityComponentSystem;
 using CorgEng.GenericInterfaces.Font.Fonts;
 using CorgEng.GenericInterfaces.Rendering.Renderers.SpriteRendering;
 using CorgEng.GenericInterfaces.Rendering.RenderObjects.SpriteRendering;
@@ -40,6 +41,12 @@ namespace CorgEng.Example.Shared.RenderCores
         [UsingDependency]
         public static ITextObjectFactory TextObjectFactory;
 
+        private LightingRenderCore lightingRenderCore;
+
+        public ExampleRenderCore(IWorld world) : base(world)
+        {
+        }
+
         public override void Initialize()
         {
 
@@ -50,16 +57,14 @@ namespace CorgEng.Example.Shared.RenderCores
             ITextObject textObject = TextObjectFactory.CreateTextObject(spriteRenderer, font, "CorgEng.Font");
             textObject.StartRendering();
 
-            LightingRenderCore.Resolve();
-
-
+            lightingRenderCore = new LightingRenderCore(world);
         }
 
         public override void PerformRender()
         {
             spriteRenderer?.Render(CorgEngMain.MainCamera);
-            LightingRenderCore.Singleton.DoRender();
-            LightingRenderCore.Singleton.DrawToBuffer(FrameBufferUint, 0, 0, Width, Height);
+            lightingRenderCore.DoRender();
+            lightingRenderCore.DrawToBuffer(FrameBufferUint, 0, 0, Width, Height);
         }
     }
 }

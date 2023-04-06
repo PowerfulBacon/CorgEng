@@ -9,7 +9,7 @@ namespace CorgEng.GenericInterfaces.EntityComponentSystem
     public class WorldObject
     {
 
-        protected IWorld world;
+        public IWorld world { get; }
 
         public WorldObject(IWorld world)
         {

@@ -14,6 +14,7 @@ using System.Linq;
 using System.Reflection;
 using static CorgEng.EntityComponentSystem.Entities.Entity;
 using static CorgEng.EntityComponentSystem.Systems.EntitySystem;
+using static CorgEng.GenericInterfaces.EntityComponentSystem.IEntity;
 
 namespace CorgEng.EntityComponentSystem.Components
 {
@@ -87,15 +88,8 @@ namespace CorgEng.EntityComponentSystem.Components
         /// </summary>
         internal void OnComponentAdded(Entity parent)
         {
-            //Check if we have any registered signals
-            if (!EventManager.RegisteredEvents.ContainsKey(GetType()))
-            {
-                //Send the component added event
-                new ComponentAddedEvent(this).Raise(parent);
-                return;
-            }
             //Locate all event types we are listening for
-            foreach (Type eventType in EventManager.RegisteredEvents[GetType()])
+            foreach (Type eventType in parent.world.EntitySystemManager.GetRegisteredEventTypes(GetType()))
             {
                 EventComponentPair key = new EventComponentPair(eventType, GetType());
                 //Locate the monitoring system's callback handler
@@ -139,11 +133,8 @@ namespace CorgEng.EntityComponentSystem.Components
         {
             //Raise component removed event.
             new ComponentRemovedEvent(this).Raise(parent);
-            //Check if we have any registered signals
-            if (!EventManager.RegisteredEvents.ContainsKey(GetType()))
-                return;
             //Locate all event types we are listening for
-            foreach (Type eventType in EventManager.RegisteredEvents[GetType()])
+            foreach (Type eventType in parent.world.EntitySystemManager.GetRegisteredEventTypes(GetType()))
             {
                 EventComponentPair key = new EventComponentPair(eventType, GetType());
                 //Locate the monitoring system's callback handler

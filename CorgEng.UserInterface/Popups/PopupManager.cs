@@ -12,7 +12,6 @@ using System.Threading.Tasks;
 
 namespace CorgEng.UserInterface.Popups
 {
-    [Dependency]
     internal class PopupManager : IPopupManager
     {
 

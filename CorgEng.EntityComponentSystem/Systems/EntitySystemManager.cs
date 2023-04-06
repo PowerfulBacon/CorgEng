@@ -38,6 +38,13 @@ namespace CorgEng.EntityComponentSystem.Systems
         /// </summary>
         public event Action postSetupAction;
 
+        /// <summary>
+        /// Matches component type to types of registered events
+        /// </summary>
+        internal Dictionary<Type, List<Type>> RegisteredEvents = new Dictionary<Type, List<Type>>();
+
+        private EntitySystemThreadManager entitySystemThreadManager = new EntitySystemThreadManager(4);
+
         private IWorld world;
 
         public EntitySystemManager(IWorld world)
@@ -63,17 +70,24 @@ namespace CorgEng.EntityComponentSystem.Systems
             IEnumerable<Type> locatedSystems = CorgEngMain.LoadedAssemblyModules
                 .SelectMany(assembly => assembly.GetTypes()
                 .Where(type => typeof(EntitySystem).IsAssignableFrom(type) && !type.IsAbstract));
+            int setupAmount = 0;
             locatedSystems.Select((type) =>
             {
                 Logger?.WriteLine($"Initializing {type}...", LogType.LOG);
                 EntitySystem createdSystem = (EntitySystem)type.GetConstructor(BindingFlags.Public | BindingFlags.Instance, null, CallingConventions.HasThis, new Type[0], null).Invoke(new object[0]);
+                createdSystem.JoinWorld(world);
+                createdSystem.JoinEntitySystemManager(entitySystemThreadManager);
                 EntitySystems.TryAdd(createdSystem.GetType(), createdSystem);
                 return createdSystem;
             })
                 // Very important that we fully resolve the enumerator and don't evaluate it lazilly
                 .ToList()
                 // Now do the foreach after they have all been created
-                .ForEach(entitySystem => entitySystem.SystemSetup(world));
+                .ForEach(entitySystem =>
+                {
+                    setupAmount++;
+                    entitySystem.SystemSetup(world);
+                });
             SetupCompleted = true;
             // Run post-setup actions
             postSetupAction?.Invoke();
@@ -83,7 +97,7 @@ namespace CorgEng.EntityComponentSystem.Systems
             {
                 new GameReadyEvent().RaiseGlobally();
             };
-            Logger?.WriteLine($"Successfully created and setup all systems!", LogType.LOG);
+            Logger?.WriteLine($"Successfully created and setup {setupAmount} systems!", LogType.LOG);
         }
 
         /// <summary>
@@ -105,5 +119,36 @@ namespace CorgEng.EntityComponentSystem.Systems
             new GameClosedEvent().RaiseGlobally();
         }
 
+        public void RegisterEventType(Type componentType, Type eventType)
+        {
+            lock (RegisteredEvents)
+            {
+                if (!RegisteredEvents.ContainsKey(componentType))
+                    RegisteredEvents.Add(componentType, new List<Type>());
+                if (!RegisteredEvents[componentType].Contains(eventType))
+                    RegisteredEvents[componentType].Add(eventType);
+            }
+        }
+
+        public void UnregisterEventType(Type componentType, Type eventType)
+        {
+            lock (RegisteredEvents)
+            {
+                if (!RegisteredEvents.ContainsKey(componentType))
+                    throw new Exception("Attempted to unregister an event that was not present on the target entity system. (Component is not registered, are you using the right generic types?)");
+                if (!RegisteredEvents[componentType].Contains(eventType))
+                    throw new Exception("Attempted to unregister an event that was not present on the target entity system. (Event was not registered, are you using the right generic types?)");
+            }
+        }
+
+        public IEnumerable<Type> GetRegisteredEventTypes(Type componentType)
+        {
+            lock (RegisteredEvents)
+            {
+                if (RegisteredEvents.ContainsKey(componentType))
+                    return RegisteredEvents[componentType];
+            }
+            return Enumerable.Empty<Type>();
+        }
     }
 }

@@ -54,7 +54,6 @@ namespace CorgEng.EntityComponentSystem.Events
             [CallerMemberName] string callingMember = "",
             [CallerLineNumber] int callingLine = 0)
         {
-            Logger.WriteMetric("event_raised", signal.ToString());
             //Handle the signal
             target.HandleSignal(signal, synchronous, callingFile, callingMember, callingLine);
             //Inform the entity that networked event was raised
@@ -74,10 +73,6 @@ namespace CorgEng.EntityComponentSystem.Events
             [CallerMemberName] string callingMember = "",
             [CallerLineNumber] int callingLine = 0)
         {
-            Logger.WriteMetric("global_event_raised", signal.ToString());
-            //Check if we have any registered signals
-            if (!EventManager.RegisteredEvents.ContainsKey(typeof(GlobalEventComponent)))
-                return;
             //Locate all event types we are listening for
             EventComponentPair key = new EventComponentPair(signal.GetType(), typeof(GlobalEventComponent));
             //Locate the monitoring system's callback handler
@@ -101,9 +96,6 @@ namespace CorgEng.EntityComponentSystem.Events
             [CallerLineNumber] int callingLine = 0)
         {
             Logger.WriteMetric("global_event_raised", signal.ToString());
-            //Check if we have any registered signals
-            if (!EventManager.RegisteredEvents.ContainsKey(typeof(GlobalEventComponent)))
-                return;
             //Locate all event types we are listening for
             EventComponentPair key = new EventComponentPair(signal.GetType(), typeof(GlobalEventComponent));
             //Locate the monitoring system's callback handler

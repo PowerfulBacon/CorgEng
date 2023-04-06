@@ -82,7 +82,7 @@ namespace CorgEng.UserInterface.Components
         /// so we can have a component based user interface model despite
         /// the oversight of not implementing it this way initially
         /// </summary>
-        public IEntity ComponentHolder { get; } = internalWorld.EntityManager.CreateEmptyEntity(null);
+        public IEntity ComponentHolder { get; }
 
         /// <summary>
         /// Is this component fullscreen?
@@ -139,6 +139,8 @@ namespace CorgEng.UserInterface.Components
 
         public IDictionary<string, string> Parameters { get; private set; } = null;
 
+        public IWorld World => world;
+
         /// <summary>
         /// A unique identifier for this component.
         /// </summary>
@@ -151,7 +153,7 @@ namespace CorgEng.UserInterface.Components
 
         private static object lockObject = new object();
 
-        public UserInterfaceComponent(IUserInterfaceComponent parent, IAnchor anchorDetails, IDictionary<string, string> arguments) : this(anchorDetails, arguments)
+        public UserInterfaceComponent(IWorld world, IUserInterfaceComponent parent, IAnchor anchorDetails, IDictionary<string, string> arguments) : this(world, anchorDetails, arguments)
         {
             //Set the parent
             Parent = parent;
@@ -159,13 +161,14 @@ namespace CorgEng.UserInterface.Components
             Parent?.AddChild(this);
         }
 
-        public UserInterfaceComponent(IAnchor anchorDetails, IDictionary<string, string> arguments)
+        public UserInterfaceComponent(IWorld world, IAnchor anchorDetails, IDictionary<string, string> arguments) : base(world)
         {
             Parameters = arguments;
             RegisterArguments();
             ParseArguments(arguments);
             // Set the anchor details
             Anchor = anchorDetails;
+            ComponentHolder = world.EntityManager.CreateEmptyEntity(null);
         }
 
         //====================================

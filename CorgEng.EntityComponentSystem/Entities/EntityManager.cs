@@ -110,7 +110,7 @@ namespace CorgEng.EntityComponentSystem.Entities
         public IEntity CreateEmptyEntity(Action<IEntity> preInitialisationEvents)
         {
             //Create the blank entity.
-            IEntity createdEntity = new Entity(this);
+            IEntity createdEntity = new Entity(world);
             //Run any events that need to happen before initialisation
             preInitialisationEvents?.Invoke(createdEntity);
             //Raise the initialise event
@@ -121,12 +121,12 @@ namespace CorgEng.EntityComponentSystem.Entities
 
         public IEntity CreateUninitialisedEntity()
         {
-            return new Entity(this);
+            return new Entity(world);
         }
 
         public IEntity CreateUninitialisedEntity(uint entityIdentifier)
         {
-            return new Entity(this, entityIdentifier);
+            return new Entity(world, entityIdentifier);
         }
     }
 }
