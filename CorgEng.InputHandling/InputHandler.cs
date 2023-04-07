@@ -76,7 +76,7 @@ namespace CorgEng.InputHandling
         {
             //Synchronous to prevent subsystem overloading, will not render the
             //next frame until this is handled.
-            new MouseScrollEvent(y).RaiseGlobally(synchronous: true);
+            new MouseScrollEvent(y).RaiseGlobally(CorgEngMain.PrimaryWorld, synchronous: true);
             //Trigger the new actions
             foreach (string actionName in boundScrollActions)
             {
@@ -96,7 +96,7 @@ namespace CorgEng.InputHandling
         {
             //Synchronous to prevent subsystem overloading, will not render the
             //next frame until this is handled.
-            new MouseMoveEvent(x / CorgEngMain.GameWindow.Width, y / CorgEngMain.GameWindow.Height).RaiseGlobally(synchronous: true);
+            new MouseMoveEvent(x / CorgEngMain.GameWindow.Width, y / CorgEngMain.GameWindow.Height).RaiseGlobally(CorgEngMain.PrimaryWorld, synchronous: true);
             //Trigger the new actions
             foreach (string actionName in boundMouseMoveActions)
             {
@@ -134,7 +134,7 @@ namespace CorgEng.InputHandling
                         {
                             return;
                         }
-                        mousePressEvent.RaiseGlobally();
+                        mousePressEvent.RaiseGlobally(CorgEngMain.PrimaryWorld);
                         mouseDownAt = CorgEngMain.Time;
                         //Trigger the action
                         if (!boundMouseActions.TryGetValue(button, out action))
@@ -153,7 +153,7 @@ namespace CorgEng.InputHandling
                         MouseReleaseEvent mouseReleaseEvent = new MouseReleaseEvent(x / width, y / height, button, modifiers);
                         mouseReleaseEvent.HeldTime = CorgEngMain.Time - mouseDownAt;
                         //Raise synchronously, so we can determine if the event was handled
-                        mouseReleaseEvent.RaiseGlobally(true);
+                        mouseReleaseEvent.RaiseGlobally(CorgEngMain.PrimaryWorld, true);
                         //Handle world clicks
                         if (!mouseReleaseEvent.Handled && mouseReleaseEvent.MouseButton == MouseButton.Left)
                         {
@@ -192,7 +192,7 @@ namespace CorgEng.InputHandling
                 {
                     case InputState.Press:
                         KeyPressEvent keyPressEvent = new KeyPressEvent(key, mods);
-                        keyPressEvent.RaiseGlobally();
+                        keyPressEvent.RaiseGlobally(CorgEngMain.PrimaryWorld);
                         lock (heldKeysDownAt)
                         {
                             heldKeysDownAt.Add(key, CorgEngMain.Time);
@@ -214,7 +214,7 @@ namespace CorgEng.InputHandling
                         try
                         {
                             KeyReleaseEvent keyReleaseEvent = new KeyReleaseEvent(key, mods);
-                            keyReleaseEvent.RaiseGlobally();
+                            keyReleaseEvent.RaiseGlobally(CorgEngMain.PrimaryWorld);
                             //Trigger the action
                             if (!boundKeyActions.TryGetValue(key, out action))
                                 return;

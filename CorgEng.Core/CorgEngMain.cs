@@ -4,6 +4,7 @@ using CorgEng.Core.Dependencies;
 using CorgEng.Core.Modules;
 using CorgEng.Core.Rendering;
 using CorgEng.Core.Rendering.Exceptions;
+using CorgEng.GenericInterfaces.EntityComponentSystem;
 using CorgEng.GenericInterfaces.Logging;
 using CorgEng.GenericInterfaces.Rendering;
 using GLFW;
@@ -80,6 +81,16 @@ namespace CorgEng.Core
         public static event Action OnReadyEvents = null;
 
         /// <summary>
+        /// The main world to use for the game for when one isn't accessible
+        /// </summary>
+        public static IWorld PrimaryWorld { get; set; } = null;
+        
+        /// <summary>
+        /// All current active worlds
+        /// </summary>
+        public static ConcurrentBag<IWorld> WorldList { get; } = new ConcurrentBag<IWorld>();
+
+        /// <summary>
         /// List of actions queued to be execuetd on the main thread
         /// </summary>
         private static ConcurrentQueue<Action> queuedActions = new ConcurrentQueue<Action>();
@@ -92,6 +103,8 @@ namespace CorgEng.Core
         {
             try
             {
+                // Reset the world list
+                WorldList.Clear();
                 //Load priority modules (Logging)
                 PriorityModuleInit();
                 Logger?.WriteLine("Starting CorgEng Application", LogType.DEBUG);
@@ -226,6 +239,8 @@ namespace CorgEng.Core
             TriggerTerminateMethods();
             //Terminate GLFW
             Glfw.Terminate();
+            // Reset the world bag
+            WorldList.Clear();
         }
 
         /// <summary>

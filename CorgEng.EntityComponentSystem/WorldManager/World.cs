@@ -1,4 +1,5 @@
-﻿using CorgEng.Core.Dependencies;
+﻿using CorgEng.Core;
+using CorgEng.Core.Dependencies;
 using CorgEng.EntityComponentSystem.Components;
 using CorgEng.EntityComponentSystem.Entities;
 using CorgEng.EntityComponentSystem.Systems;
@@ -83,6 +84,7 @@ namespace CorgEng.EntityComponentSystem.WorldManager
             EntitySystemManager = systemManager;
             // Do this last
             systemManager.CreateAllSystems();
+            CorgEngMain.WorldList.Add(this);
             Logger.WriteLine("World created and initialised", LogType.LOG);
         }
 

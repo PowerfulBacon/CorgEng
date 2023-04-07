@@ -47,7 +47,7 @@ namespace CorgEng.EntityComponentSystem.Entities
             }
             entityList[entity.Identifier] = entity;
             //Raise a new entity created event
-            new NewEntityEvent(entity.Identifier).RaiseGlobally();
+            new NewEntityEvent(entity.Identifier).RaiseGlobally(world);
         }
 
         public uint GetNewEntityId()

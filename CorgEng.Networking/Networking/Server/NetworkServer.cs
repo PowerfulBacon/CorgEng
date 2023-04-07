@@ -184,7 +184,7 @@ namespace CorgEng.Networking.Networking.Server
                                         Logger.WriteMetric("networked_global_event", raisedEvent.ToString());
                                         //Deserialize the event
                                         raisedEvent.Deserialise(reader);
-                                        raisedEvent.RaiseGlobally(false);
+                                        raisedEvent.RaiseGlobally(CorgEngMain.PrimaryWorld, false);
                                     }
                                 }
                                 return;

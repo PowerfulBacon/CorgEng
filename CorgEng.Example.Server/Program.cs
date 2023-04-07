@@ -76,6 +76,7 @@ namespace CorgEng.Example.Server
 
             // Create the program world
             ServerWorld = WorldFactory.CreateWorld();
+            CorgEngMain.PrimaryWorld = ServerWorld;
 
             ExampleRenderCore erc = new ExampleRenderCore(ServerWorld);
             CorgEngMain.SetRenderCore(erc);

@@ -1,6 +1,7 @@
 ﻿using CorgEng.Core.Dependencies;
 using CorgEng.EntityComponentSystem.Entities;
 using CorgEng.EntityComponentSystem.Events.Events;
+using CorgEng.EntityComponentSystem.WorldManager;
 using CorgEng.GenericInterfaces.EntityComponentSystem;
 using CorgEng.GenericInterfaces.Logging;
 using CorgEng.GenericInterfaces.Networking.Config;
@@ -14,6 +15,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using static CorgEng.EntityComponentSystem.Entities.Entity;
 using static CorgEng.EntityComponentSystem.Systems.EntitySystem;
+using static CorgEng.GenericInterfaces.EntityComponentSystem.IEntitySystemManager;
 
 namespace CorgEng.EntityComponentSystem.Events
 {
@@ -68,6 +70,7 @@ namespace CorgEng.EntityComponentSystem.Events
         /// </summary>
         public static void RaiseGlobally(
             this IEvent signal,
+            IWorld world,
             bool synchronous = false,
             [CallerFilePath] string callingFile = "",
             [CallerMemberName] string callingMember = "",
@@ -76,12 +79,9 @@ namespace CorgEng.EntityComponentSystem.Events
             //Locate all event types we are listening for
             EventComponentPair key = new EventComponentPair(signal.GetType(), typeof(GlobalEventComponent));
             //Locate the monitoring system's callback handler
-            if (RegisteredSystemSignalHandlers.ContainsKey(key))
-            {
-                List<SystemEventHandlerDelegate> systemEventHandlers = RegisteredSystemSignalHandlers[key];
-                for (int i = systemEventHandlers.Count - 1; i >= 0; i--)
-                    systemEventHandlers[i].Invoke(null, null, signal, synchronous, callingFile, callingMember, callingLine);
-            }
+            List<SystemEventHandlerDelegate> systemEventHandlers = world.EntitySystemManager.GetRegisteredSystemEventHandlers(key);
+            for (int i = systemEventHandlers.Count - 1; i >= 0; i--)
+                systemEventHandlers[i].Invoke(null, null, signal, synchronous, callingFile, callingMember, callingLine);
         }
 
         /// <summary>
@@ -89,6 +89,7 @@ namespace CorgEng.EntityComponentSystem.Events
         /// </summary>
         public static void RaiseGlobally(
             this INetworkedEvent signal,
+            IWorld world,
             bool sourcedLocally = true,
             bool synchronous = false,
             [CallerFilePath] string callingFile = "",
@@ -99,12 +100,9 @@ namespace CorgEng.EntityComponentSystem.Events
             //Locate all event types we are listening for
             EventComponentPair key = new EventComponentPair(signal.GetType(), typeof(GlobalEventComponent));
             //Locate the monitoring system's callback handler
-            if (RegisteredSystemSignalHandlers.ContainsKey(key))
-            {
-                List<SystemEventHandlerDelegate> systemEventHandlers = RegisteredSystemSignalHandlers[key];
-                for (int i = systemEventHandlers.Count - 1; i >= 0; i--)
-                    systemEventHandlers[i].Invoke(null, null, signal, synchronous, callingFile, callingMember, callingLine);
-            }
+            List<SystemEventHandlerDelegate> systemEventHandlers = world.EntitySystemManager.GetRegisteredSystemEventHandlers(key);
+            for (int i = systemEventHandlers.Count - 1; i >= 0; i--)
+                systemEventHandlers[i].Invoke(null, null, signal, synchronous, callingFile, callingMember, callingLine);
             //Don't relay messages coming from other clients already
             if (!sourcedLocally)
                 return;
@@ -116,11 +114,7 @@ namespace CorgEng.EntityComponentSystem.Events
             //Locate all event types we are listening for
             EventComponentPair networkKey = new EventComponentPair(typeof(NetworkedEventRaisedEvent), typeof(GlobalEventComponent));
             //Locate the monitoring system's callback handler
-            if (!RegisteredSystemSignalHandlers.ContainsKey(networkKey))
-            {
-                return;
-            }
-            List<SystemEventHandlerDelegate> networkedEventHandlers = RegisteredSystemSignalHandlers[networkKey];
+            List<SystemEventHandlerDelegate> networkedEventHandlers = world.EntitySystemManager.GetRegisteredSystemEventHandlers(networkKey);
             for (int i = networkedEventHandlers.Count - 1; i >= 0; i--)
                 networkedEventHandlers[i].Invoke(null, null, new NetworkedEventRaisedEvent(signal), synchronous, callingFile, callingMember, callingLine);
         }

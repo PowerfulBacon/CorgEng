@@ -1,4 +1,4 @@
-﻿#define PROCESSING_SYSTEM_DEBUG
+﻿//#define PROCESSING_SYSTEM_DEBUG
 
 using CorgEng.Core;
 using CorgEng.Core.Dependencies;

@@ -1,4 +1,5 @@
-﻿using CorgEng.Core.Dependencies;
+﻿using CorgEng.Core;
+using CorgEng.Core.Dependencies;
 using CorgEng.EntityComponentSystem.Components;
 using CorgEng.EntityComponentSystem.Entities;
 using CorgEng.EntityComponentSystem.Events;
@@ -53,6 +54,7 @@ namespace CorgEng.Tests.EntityComponentSystem
         public void TestProcessingSystems()
         {
             IWorld world = WorldFactory.CreateWorld();
+            CorgEngMain.PrimaryWorld = world;
             //Create an entity to process
             IEntity testEntity = world.EntityManager.CreateEmptyEntity(null);
             TestComponent testComponent = new TestComponent();

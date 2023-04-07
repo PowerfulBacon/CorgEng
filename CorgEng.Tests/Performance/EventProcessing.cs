@@ -77,7 +77,7 @@ namespace CorgEng.Tests.Performance
                 while (Running)
                 {
                     //Perform a run
-                    new TestEvent().RaiseGlobally();
+                    new TestEvent().RaiseGlobally(world);
                     //Run completed
                     runs++;
                 }
@@ -110,7 +110,7 @@ namespace CorgEng.Tests.Performance
                 while (Running)
                 {
                     //Perform a run
-                    new TestEvent().RaiseGlobally(true);
+                    new TestEvent().RaiseGlobally(world, true);
                     //Run completed
                     runs++;
                 }

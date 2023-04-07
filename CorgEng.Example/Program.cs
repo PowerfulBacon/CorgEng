@@ -30,6 +30,7 @@ namespace CorgEng.Example
 
             // Create the world
             IWorld world = WorldFactory.CreateWorld();
+            CorgEngMain.PrimaryWorld = world;
 
             //Set the render core
 

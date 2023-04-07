@@ -216,8 +216,7 @@ namespace CorgEng.Tests.NetworkingTests
             IWorld serverWorld = WorldFactory.CreateWorld();
 
             //Set up a test entity system
-            NetworkedTestEntitySystem networkedTestEntitySystem = new NetworkedTestEntitySystem();
-            networkedTestEntitySystem.SystemSetup(clientWorld);
+            NetworkedTestEntitySystem networkedTestEntitySystem = serverWorld.EntitySystemManager.GetSingleton<NetworkedTestEntitySystem>();
             //Start a networking system
             NetworkSystem networkSystem = new NetworkSystem();
             networkSystem.SystemSetup(clientWorld);
@@ -235,7 +234,7 @@ namespace CorgEng.Tests.NetworkingTests
             //Raise a global event
             NetworkedTestEvent testEvent = new NetworkedTestEvent();
             testEvent.testNumber = 142;
-            testEvent.RaiseGlobally();
+            testEvent.RaiseGlobally(serverWorld);
 
             Logger?.WriteLine($"Test event raised globally, ID: {testEvent.GetNetworkedIdentifier()}", LogType.DEBUG);
 

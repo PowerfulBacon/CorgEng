@@ -12,6 +12,8 @@ using CorgEng.Core.Dependencies;
 using CorgEng.EntityComponentSystem.Events;
 using CorgEng.EntityComponentSystem.Events.Events;
 using CorgEng.GenericInterfaces.EntityComponentSystem;
+using static CorgEng.EntityComponentSystem.Systems.EntitySystem;
+using static CorgEng.GenericInterfaces.EntityComponentSystem.IEntitySystemManager;
 
 namespace CorgEng.EntityComponentSystem.Systems
 {
@@ -42,6 +44,11 @@ namespace CorgEng.EntityComponentSystem.Systems
         /// Matches component type to types of registered events
         /// </summary>
         internal Dictionary<Type, List<Type>> RegisteredEvents = new Dictionary<Type, List<Type>>();
+
+        /// <summary>
+        /// Matches event and component types to registered signal handlers on systems
+        /// </summary>
+        internal Dictionary<EventComponentPair, List<SystemEventHandlerDelegate>> RegisteredSystemSignalHandlers { get; } = new Dictionary<EventComponentPair, List<SystemEventHandlerDelegate>>();
 
         private EntitySystemThreadManager entitySystemThreadManager = new EntitySystemThreadManager(4);
 
@@ -95,7 +102,7 @@ namespace CorgEng.EntityComponentSystem.Systems
             //Trigger the event when this is all done and loaded
             CorgEngMain.OnReadyEvents += () =>
             {
-                new GameReadyEvent().RaiseGlobally();
+                new GameReadyEvent().RaiseGlobally(world);
             };
             Logger?.WriteLine($"Successfully created and setup {setupAmount} systems!", LogType.LOG);
         }
@@ -116,7 +123,7 @@ namespace CorgEng.EntityComponentSystem.Systems
         /// </summary>
         internal void TerminateSubsystems()
         {
-            new GameClosedEvent().RaiseGlobally();
+            new GameClosedEvent().RaiseGlobally(world);
         }
 
         public void RegisterEventType(Type componentType, Type eventType)
@@ -130,6 +137,8 @@ namespace CorgEng.EntityComponentSystem.Systems
             }
         }
 
+        //TODO: Does this work?
+        //TODO: Create unit tests for the expected behaviour of unregister event type.
         public void UnregisterEventType(Type componentType, Type eventType)
         {
             lock (RegisteredEvents)
@@ -149,6 +158,38 @@ namespace CorgEng.EntityComponentSystem.Systems
                     return RegisteredEvents[componentType];
             }
             return Enumerable.Empty<Type>();
+        }
+
+        public void RegisterSystemEventHandler(EventComponentPair registeredEventComponentType, SystemEventHandlerDelegate eventAction)
+        {
+            lock (RegisteredSystemSignalHandlers)
+            {
+                if (!RegisteredSystemSignalHandlers.ContainsKey(registeredEventComponentType))
+                    RegisteredSystemSignalHandlers.Add(registeredEventComponentType, new List<SystemEventHandlerDelegate>());
+                RegisteredSystemSignalHandlers[registeredEventComponentType].Add(eventAction);
+            }
+        }
+
+        public void UnregisterSystemEventHandler(EventComponentPair registeredEventComponentType, SystemEventHandlerDelegate eventAction)
+        {
+            lock (RegisteredSystemSignalHandlers)
+            {
+                RegisteredSystemSignalHandlers[registeredEventComponentType].Remove(eventAction);
+                if (RegisteredSystemSignalHandlers[registeredEventComponentType].Count == 0)
+                {
+                    RegisteredSystemSignalHandlers.Remove(registeredEventComponentType);
+                }
+            }
+        }
+
+        public List<SystemEventHandlerDelegate> GetRegisteredSystemEventHandlers(EventComponentPair registeredEventComponentType)
+        {
+            lock (RegisteredSystemSignalHandlers)
+            {
+                if (!RegisteredSystemSignalHandlers.ContainsKey(registeredEventComponentType))
+                    return new List<SystemEventHandlerDelegate>();
+                return RegisteredSystemSignalHandlers[registeredEventComponentType];
+            }
         }
     }
 }

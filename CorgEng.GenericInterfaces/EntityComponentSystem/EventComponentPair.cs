@@ -1,8 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace CorgEng.EntityComponentSystem.Events
+namespace CorgEng.GenericInterfaces.EntityComponentSystem
 {
-    internal struct EventComponentPair
+    public struct EventComponentPair
     {
 
         public Type EventType { get; }

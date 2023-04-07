@@ -18,6 +18,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using static CorgEng.GenericInterfaces.EntityComponentSystem.IEntitySystemManager;
 
 namespace CorgEng.EntityComponentSystem.Systems
 {
@@ -39,13 +40,6 @@ namespace CorgEng.EntityComponentSystem.Systems
         /// </summary>
         [UsingDependency]
         protected static INetworkConfig NetworkConfig;
-
-        internal delegate void SystemEventHandlerDelegate(IEntity entity, IComponent component, IEvent signal, bool synchronous, string file, string member, int lineNumber);
-
-        /// <summary>
-        /// Matches event and component types to registered signal handlers on systems
-        /// </summary>
-        internal static Dictionary<EventComponentPair, List<SystemEventHandlerDelegate>> RegisteredSystemSignalHandlers { get; } = new Dictionary<EventComponentPair, List<SystemEventHandlerDelegate>>();
 
         /// <summary>
         /// The invokation queue. A queue of actions that need to be triggered (Raised events)
@@ -277,60 +271,55 @@ namespace CorgEng.EntityComponentSystem.Systems
             world.EntitySystemManager.RegisterEventType(typeof(GlobalEventComponent), typeof(GEvent));
             //Register the system to receieve the event
             EventComponentPair eventComponentPair = new EventComponentPair(typeof(GEvent), typeof(GlobalEventComponent));
-            lock (RegisteredSystemSignalHandlers)
+            // Everything inside this is an extremely hot path since its the game engine's function call.
+            // This should be pretty cheap (although it probably isn't very cheap right now).
+            SystemEventHandlerDelegate createdEventHandler = (IEntity entity, IComponent component, IEvent signal, bool synchronous, string file, string member, int lineNumber) =>
             {
-                if (!RegisteredSystemSignalHandlers.ContainsKey(eventComponentPair))
-                    RegisteredSystemSignalHandlers.Add(eventComponentPair, new List<SystemEventHandlerDelegate>());
-                // Everything inside this is an extremely hot path since its the game engine's function call.
-                // This should be pretty cheap (although it probably isn't very cheap right now).
-                SystemEventHandlerDelegate createdEventHandler = (IEntity entity, IComponent component, IEvent signal, bool synchronous, string file, string member, int lineNumber) =>
+                //Check to see if we were processing when the event was fired
+                if (NetworkConfig != null
+                    && NetworkConfig.NetworkingActive
+                    && ((SystemFlags & EntitySystemFlags.HOST_SYSTEM) == 0 || !NetworkConfig.ProcessServerSystems)
+                    && ((SystemFlags & EntitySystemFlags.CLIENT_SYSTEM) == 0 || !NetworkConfig.ProcessClientSystems))
+                    return;
+                // Attempt to gain ownership of the system
+                // There is a potential issue here: Synchronous event deadlock.
+                if ((synchronous && AcquireHighPriorityLock()) || ((SystemFlags & EntitySystemFlags.NO_IMMEDIATE_ASYNCHRONOUS_EVENTS) == 0 && TryAcquireLowPriorityLock()))
                 {
-                    //Check to see if we were processing when the event was fired
-                    if (NetworkConfig != null
-                        && NetworkConfig.NetworkingActive
-                        && ((SystemFlags & EntitySystemFlags.HOST_SYSTEM) == 0 || !NetworkConfig.ProcessServerSystems)
-                        && ((SystemFlags & EntitySystemFlags.CLIENT_SYSTEM) == 0 || !NetworkConfig.ProcessClientSystems))
-                        return;
-                    // Attempt to gain ownership of the system
-                    // There is a potential issue here: Synchronous event deadlock.
-                    if ((synchronous && AcquireHighPriorityLock()) || ((SystemFlags & EntitySystemFlags.NO_IMMEDIATE_ASYNCHRONOUS_EVENTS) == 0 && TryAcquireLowPriorityLock()))
+                    // Fire the event on the current thread
+                    try
                     {
-                        // Fire the event on the current thread
-                        try
-                        {
-                            // Now that the current thread has the processing key, we can immediately invoke the requested action
-                            eventHandler.Invoke((GEvent)signal);
-                        }
-                        catch (Exception e)
-                        {
-                            Logger?.WriteLine($"Event Called (and fired immediately) from: {Environment.StackTrace}\n{e}", LogType.ERROR);
-                        }
-                        finally
-                        {
-                            // Ensure that we definitely release this lock
-                            ReleaseLock();
-                        }
+                        // Now that the current thread has the processing key, we can immediately invoke the requested action
+                        eventHandler.Invoke((GEvent)signal);
                     }
-                    else
+                    catch (Exception e)
                     {
-                        // If this is not a synchronous event, just queue the event
-                        ConcurrentQueue<InvokationAction> targetQueue = invokationQueue;
-                        targetQueue.Enqueue(new InvokationAction(() =>
-                        {
-                            eventHandler.Invoke((GEvent)signal);
-                        }, file, member, lineNumber));
-                        //Wake up the system if its sleeping
-                        QueueProcessing();
+                        Logger?.WriteLine($"Event Called (and fired immediately) from: {Environment.StackTrace}\n{e}", LogType.ERROR);
                     }
-                };
-                lock (_globalLinkedHandlers)
-                {
-                    if (_globalLinkedHandlers.ContainsKey(eventHandler))
-                        throw new Exception("Attempting to register a global signal handler that is already registered to this system.");
-                    _globalLinkedHandlers.Add(eventHandler, createdEventHandler);
+                    finally
+                    {
+                        // Ensure that we definitely release this lock
+                        ReleaseLock();
+                    }
                 }
-                RegisteredSystemSignalHandlers[eventComponentPair].Add(createdEventHandler);
+                else
+                {
+                    // If this is not a synchronous event, just queue the event
+                    ConcurrentQueue<InvokationAction> targetQueue = invokationQueue;
+                    targetQueue.Enqueue(new InvokationAction(() =>
+                    {
+                        eventHandler.Invoke((GEvent)signal);
+                    }, file, member, lineNumber));
+                    //Wake up the system if its sleeping
+                    QueueProcessing();
+                }
+            };
+            lock (_globalLinkedHandlers)
+            {
+                if (_globalLinkedHandlers.ContainsKey(eventHandler))
+                    throw new Exception("Attempting to register a global signal handler that is already registered to this system.");
+                _globalLinkedHandlers.Add(eventHandler, createdEventHandler);
             }
+            world.EntitySystemManager.RegisterSystemEventHandler(eventComponentPair, createdEventHandler);
         }
 
         /// <summary>
@@ -342,21 +331,16 @@ namespace CorgEng.EntityComponentSystem.Systems
         public void UnregisterGlobalEvent<GEvent>(Action<GEvent> eventHandler)
             where GEvent : IEvent
         {
-            world.EntitySystemManager.RegisterEventType(typeof(GlobalEventComponent), typeof(GEvent));
+            world.EntitySystemManager.UnregisterEventType(typeof(GlobalEventComponent), typeof(GEvent));
             //Register the system to receieve the event
             EventComponentPair eventComponentPair = new EventComponentPair(typeof(GEvent), typeof(GlobalEventComponent));
-            lock (RegisteredSystemSignalHandlers)
+            //Hnadle unregistering
+            lock (_globalLinkedHandlers)
             {
-                if (!RegisteredSystemSignalHandlers.ContainsKey(eventComponentPair))
-                    RegisteredSystemSignalHandlers.Add(eventComponentPair, new List<SystemEventHandlerDelegate>());
-                //Hnadle unregistering
-                lock (_globalLinkedHandlers)
-                {
-                    if (!_globalLinkedHandlers.ContainsKey(eventHandler))
-                        throw new Exception("Attempting to unregister a global event handler that isn't currently registered.");
-                    RegisteredSystemSignalHandlers[eventComponentPair].Remove(_globalLinkedHandlers[eventHandler]);
-                    _globalLinkedHandlers.Remove(eventHandler);
-                }
+                if (!_globalLinkedHandlers.ContainsKey(eventHandler))
+                    throw new Exception("Attempting to unregister a global event handler that isn't currently registered.");
+                world.EntitySystemManager.UnregisterSystemEventHandler(eventComponentPair, _globalLinkedHandlers[eventHandler]);
+                _globalLinkedHandlers.Remove(eventHandler);
             }
         }
 
@@ -386,59 +370,54 @@ namespace CorgEng.EntityComponentSystem.Systems
                 world.EntitySystemManager.RegisterEventType(typeToRegister, typeof(GEvent));
                 //Register the system to receieve the event
                 EventComponentPair eventComponentPair = new EventComponentPair(typeof(GEvent), typeToRegister);
-                lock (RegisteredSystemSignalHandlers)
+                //Create and return an event handler so that it can be 
+                createdEventHandler = (IEntity entity, IComponent component, IEvent signal, bool synchronous, string callingFile, string callingMember, int callingLine) =>
                 {
-                    if (!RegisteredSystemSignalHandlers.ContainsKey(eventComponentPair))
-                        RegisteredSystemSignalHandlers.Add(eventComponentPair, new List<SystemEventHandlerDelegate>());
-                    //Create and return an event handler so that it can be 
-                    createdEventHandler = (IEntity entity, IComponent component, IEvent signal, bool synchronous, string callingFile, string callingMember, int callingLine) =>
+                    //Check to see if we were processing when the event was fired
+                    if (NetworkConfig != null
+                        && NetworkConfig.NetworkingActive
+                        && ((SystemFlags & EntitySystemFlags.HOST_SYSTEM) == 0 || !NetworkConfig.ProcessServerSystems)
+                        && ((SystemFlags & EntitySystemFlags.CLIENT_SYSTEM) == 0 || !NetworkConfig.ProcessClientSystems))
+                        return;
+                    // Attempt to gain ownership of the system
+                    // There is a potential issue here: Synchronous event deadlock.
+                    if ((synchronous && AcquireHighPriorityLock()) || ((SystemFlags & EntitySystemFlags.NO_IMMEDIATE_ASYNCHRONOUS_EVENTS) == 0 && TryAcquireLowPriorityLock()))
                     {
-                        //Check to see if we were processing when the event was fired
-                        if (NetworkConfig != null
-                            && NetworkConfig.NetworkingActive
-                            && ((SystemFlags & EntitySystemFlags.HOST_SYSTEM) == 0 || !NetworkConfig.ProcessServerSystems)
-                            && ((SystemFlags & EntitySystemFlags.CLIENT_SYSTEM) == 0 || !NetworkConfig.ProcessClientSystems))
-                            return;
-                        // Attempt to gain ownership of the system
-                        // There is a potential issue here: Synchronous event deadlock.
-                        if ((synchronous && AcquireHighPriorityLock()) || ((SystemFlags & EntitySystemFlags.NO_IMMEDIATE_ASYNCHRONOUS_EVENTS) == 0 && TryAcquireLowPriorityLock()))
+                        // Fire the event on the current thread
+                        try
                         {
-                            // Fire the event on the current thread
-                            try
-                            {
-                                // Now that the current thread has the processing key, we can immediately invoke the requested action
-                                eventHandler.Invoke(entity, (GComponent)component, (GEvent)signal);
-                            }
-                            catch (Exception e)
-                            {
-                                Logger?.WriteLine($"Event Called (and fired immediately) from: {Environment.StackTrace}\n{e}", LogType.ERROR);
-                            }
-                            finally
-                            {
-                                // Ensure that we definitely release this lock
-                                ReleaseLock();
-                            }
+                            // Now that the current thread has the processing key, we can immediately invoke the requested action
+                            eventHandler.Invoke(entity, (GComponent)component, (GEvent)signal);
                         }
-                        else
+                        catch (Exception e)
                         {
-                            // If this is not a synchronous event, just queue the event
-                            ConcurrentQueue<InvokationAction> targetQueue = invokationQueue;
-                            targetQueue.Enqueue(new InvokationAction(() =>
-                            {
-                                eventHandler.Invoke(entity, (GComponent)component, (GEvent)signal);
-                            }, callingFile, callingMember, callingLine));
-                            //Wake up the system if its sleeping
-                            QueueProcessing();
+                            Logger?.WriteLine($"Event Called (and fired immediately) from: {Environment.StackTrace}\n{e}", LogType.ERROR);
                         }
-                    };
-                    lock (_linkedHandlers)
-                    {
-                        if (_linkedHandlers.ContainsKey((typeToRegister, eventHandler)))
-                            throw new Exception("Attempting to register an event that is already registered.");
-                        _linkedHandlers.Add((typeToRegister, eventHandler), createdEventHandler);
+                        finally
+                        {
+                            // Ensure that we definitely release this lock
+                            ReleaseLock();
+                        }
                     }
-                    RegisteredSystemSignalHandlers[eventComponentPair].Add(createdEventHandler);
+                    else
+                    {
+                        // If this is not a synchronous event, just queue the event
+                        ConcurrentQueue<InvokationAction> targetQueue = invokationQueue;
+                        targetQueue.Enqueue(new InvokationAction(() =>
+                        {
+                            eventHandler.Invoke(entity, (GComponent)component, (GEvent)signal);
+                        }, callingFile, callingMember, callingLine));
+                        //Wake up the system if its sleeping
+                        QueueProcessing();
+                    }
+                };
+                lock (_linkedHandlers)
+                {
+                    if (_linkedHandlers.ContainsKey((typeToRegister, eventHandler)))
+                        throw new Exception("Attempting to register an event that is already registered.");
+                    _linkedHandlers.Add((typeToRegister, eventHandler), createdEventHandler);
                 }
+                world.EntitySystemManager.RegisterSystemEventHandler(eventComponentPair, createdEventHandler);
             }
         }
 
@@ -465,21 +444,13 @@ namespace CorgEng.EntityComponentSystem.Systems
                 world.EntitySystemManager.UnregisterEventType(typeToRegister, typeof(GEvent));
                 //Register the system to receieve the event
                 EventComponentPair eventComponentPair = new EventComponentPair(typeof(GEvent), typeToRegister);
-                lock (RegisteredSystemSignalHandlers)
+                lock (_linkedHandlers)
                 {
-                    lock (_linkedHandlers)
+                    if (!_linkedHandlers.ContainsKey((typeToRegister, eventHandler)))
                     {
-                        if (!_linkedHandlers.ContainsKey((typeToRegister, eventHandler)))
-                        {
-                            throw new Exception($"Attempting to unregister an event handler that isn't registered on {GetType()}.");
-                        }
-                        //Create and return an event handler so that it can be 
-                        RegisteredSystemSignalHandlers[eventComponentPair].Remove(_linkedHandlers[(typeToRegister, eventHandler)]);
-                        if (RegisteredSystemSignalHandlers[eventComponentPair].Count == 0)
-                        {
-                            RegisteredSystemSignalHandlers.Remove(eventComponentPair);
-                        }
+                        throw new Exception($"Attempting to unregister an event handler that isn't registered on {GetType()}.");
                     }
+                    world.EntitySystemManager.UnregisterSystemEventHandler(eventComponentPair, _linkedHandlers[(typeToRegister, eventHandler)]);
                 }
             }
         }

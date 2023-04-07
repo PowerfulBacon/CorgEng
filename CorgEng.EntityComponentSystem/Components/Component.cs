@@ -15,6 +15,7 @@ using System.Reflection;
 using static CorgEng.EntityComponentSystem.Entities.Entity;
 using static CorgEng.EntityComponentSystem.Systems.EntitySystem;
 using static CorgEng.GenericInterfaces.EntityComponentSystem.IEntity;
+using static CorgEng.GenericInterfaces.EntityComponentSystem.IEntitySystemManager;
 
 namespace CorgEng.EntityComponentSystem.Components
 {
@@ -93,11 +94,7 @@ namespace CorgEng.EntityComponentSystem.Components
             {
                 EventComponentPair key = new EventComponentPair(eventType, GetType());
                 //Locate the monitoring system's callback handler
-                if (!RegisteredSystemSignalHandlers.ContainsKey(key))
-                {
-                    continue;
-                }
-                List<SystemEventHandlerDelegate> systemEventHandlers = RegisteredSystemSignalHandlers[key];
+                IEnumerable<SystemEventHandlerDelegate> systemEventHandlers = parent.world.EntitySystemManager.GetRegisteredSystemEventHandlers(key);
                 //Create a lambda function that injects this component and relays it to the system
                 InternalSignalHandleDelegate componentInjectionLambda = (IEntity entity, IEvent signal, bool synchronous, string callingFile, string callingMember, int callingLine) => {
                     foreach(SystemEventHandlerDelegate systemEventHandler in systemEventHandlers)
@@ -138,9 +135,7 @@ namespace CorgEng.EntityComponentSystem.Components
             {
                 EventComponentPair key = new EventComponentPair(eventType, GetType());
                 //Locate the monitoring system's callback handler
-                if (!RegisteredSystemSignalHandlers.ContainsKey(key))
-                    continue;
-                List<SystemEventHandlerDelegate> systemEventHandlers = RegisteredSystemSignalHandlers[key];
+                IEnumerable<SystemEventHandlerDelegate> systemEventHandlers = parent.world.EntitySystemManager.GetRegisteredSystemEventHandlers(key);
                 //Start listening for this event
                 if (parent.EventListeners == null)  //Probably shouldn't happen
                 {
