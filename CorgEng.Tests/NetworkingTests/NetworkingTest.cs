@@ -216,10 +216,9 @@ namespace CorgEng.Tests.NetworkingTests
             IWorld serverWorld = WorldFactory.CreateWorld();
 
             //Set up a test entity system
-            NetworkedTestEntitySystem networkedTestEntitySystem = serverWorld.EntitySystemManager.GetSingleton<NetworkedTestEntitySystem>();
+            NetworkedTestEntitySystem networkedTestEntitySystem = clientWorld.EntitySystemManager.GetSingleton<NetworkedTestEntitySystem>();
             //Start a networking system
-            NetworkSystem networkSystem = new NetworkSystem();
-            networkSystem.SystemSetup(clientWorld);
+            NetworkSystem networkSystem = clientWorld.EntitySystemManager.GetSingleton<NetworkSystem>();
 
             //Connect to the server
             bool success = false;

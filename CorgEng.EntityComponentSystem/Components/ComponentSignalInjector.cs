@@ -86,18 +86,21 @@ namespace CorgEng.EntityComponentSystem.Components
                 //Locate the monitoring system's callback handler
                 List<SystemEventHandlerDelegate> systemEventHandlers = world.EntitySystemManager.GetRegisteredSystemEventHandlers(key);
                 //Locate and removed
-                lock (componentInjectionLambdas[component])
+                if (componentInjectionLambdas.ContainsKey(component))
                 {
-                    for (int i = componentInjectionLambdas[component].Count - 1; i >= 0; i--)
+                    lock (componentInjectionLambdas[component])
                     {
-                        InternalSignalHandleDelegate signalHandleDelegate = componentInjectionLambdas[component][i];
-                        parent.RemoveEventListenter(eventType, signalHandleDelegate);
-                        if (componentInjectionLambdas.ContainsKey(component))
-                            componentInjectionLambdas[component].Remove(signalHandleDelegate);
-                    }
-                    if (componentInjectionLambdas[component].Count == 0)
-                    {
-                        componentInjectionLambdas.TryRemove(component, out _);
+                        for (int i = componentInjectionLambdas[component].Count - 1; i >= 0; i--)
+                        {
+                            InternalSignalHandleDelegate signalHandleDelegate = componentInjectionLambdas[component][i];
+                            parent.RemoveEventListenter(eventType, signalHandleDelegate);
+                            if (componentInjectionLambdas.ContainsKey(component))
+                                componentInjectionLambdas[component].Remove(signalHandleDelegate);
+                        }
+                        if (componentInjectionLambdas[component].Count == 0)
+                        {
+                            componentInjectionLambdas.TryRemove(component, out _);
+                        }
                     }
                 }
             }
