@@ -58,6 +58,7 @@ namespace CorgEng.Example.Shared.RenderCores
             textObject.StartRendering();
 
             lightingRenderCore = new LightingRenderCore(world);
+            lightingRenderCore.Initialize();
         }
 
         public override void PerformRender()

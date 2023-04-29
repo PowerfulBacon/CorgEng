@@ -1,4 +1,7 @@
-﻿using System;
+﻿using CorgEng.Core.Dependencies;
+using CorgEng.Core.Modules;
+using CorgEng.GenericInterfaces.Logging;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,6 +22,11 @@ namespace CorgEng.EntityComponentSystem.Systems
     public class EntitySystemThreadManager
     {
 
+        private static ConcurrentBag<EntitySystemThreadManager> activeBags = new ConcurrentBag<EntitySystemThreadManager>();
+
+        [UsingDependency]
+        private static ILogger Logger;
+
         private EntitySystemThread[] runningWorkers;
 
         internal bool working = true;
@@ -36,7 +44,22 @@ namespace CorgEng.EntityComponentSystem.Systems
             runningWorkers = new EntitySystemThread[workerThreads];
             for (int i = 0; i < workerThreads; i++)
             {
-                runningWorkers[i] = new EntitySystemThread(this);
+                runningWorkers[i] = new EntitySystemThread(this, i);
+            }
+            Logger.WriteLine($"Entity system thread manager created with {workerThreads} maximum threads.", LogType.DEBUG);
+            activeBags.Add(this);
+        }
+
+        [ModuleTerminate]
+        public static void ShutdownEntitySystemManagers()
+        {
+            lock (activeBags)
+            {
+                foreach (EntitySystemThreadManager thread in activeBags)
+                {
+                    thread.working = false;
+                }
+                activeBags.Clear();
             }
         }
 
@@ -67,14 +90,20 @@ namespace CorgEng.EntityComponentSystem.Systems
     public class EntitySystemThread
     {
 
+        [UsingDependency]
+        private static ILogger Logger;
+
+        public int identifier;
+
         private bool isRunning = false;
 
         private EntitySystemThreadManager threadManager;
 
         private Thread thread;
 
-        public EntitySystemThread(EntitySystemThreadManager threadManager)
+        public EntitySystemThread(EntitySystemThreadManager threadManager, int identifier)
         {
+            this.identifier = identifier;
             this.threadManager = threadManager;
             thread = new Thread(WorkerThread);
             WakeUp();
@@ -89,9 +118,9 @@ namespace CorgEng.EntityComponentSystem.Systems
             {
                 if (isRunning)
                     return;
+                Monitor.Pulse(this);
                 isRunning = true;
-                thread = new Thread(WorkerThread);
-                thread.Start();
+                Logger.WriteLine($"Entity System Thread {identifier} waking up...", LogType.DEBUG);
             }
         }
 
@@ -115,15 +144,17 @@ namespace CorgEng.EntityComponentSystem.Systems
                         entitySystem.QueueProcessing();
                     }
                 }
-                lock (threadManager)
+                // Check if we were requested to wakeup while trying to sleep
+                if (threadManager.queuedSystems.IsEmpty)
                 {
-                    // Check if we were requested to wakeup while trying to sleep
-                    if (threadManager.queuedSystems.IsEmpty)
+                    lock (this)
                     {
                         // We can spin down now
                         isRunning = false;
                         threadManager.sleepingThreads.Enqueue(this);
-                        return;
+                        // Wait until we are woken up again
+                        Logger.WriteLine($"Entity System Thread {identifier} entering sleep mode...", LogType.DEBUG);
+                        Monitor.Wait(this);
                     }
                 }
             }

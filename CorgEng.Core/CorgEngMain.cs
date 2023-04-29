@@ -80,11 +80,19 @@ namespace CorgEng.Core
 
         public static event Action OnReadyEvents = null;
 
+        private static IWorld primaryWorld = null;
+
         /// <summary>
         /// The main world to use for the game for when one isn't accessible
         /// </summary>
-        public static IWorld PrimaryWorld { get; set; } = null;
-        
+        public static IWorld PrimaryWorld
+        {
+            get => primaryWorld;
+            set {
+                primaryWorld = value;
+                WorldInit(primaryWorld);
+            }
+        }
         /// <summary>
         /// All current active worlds
         /// </summary>
@@ -285,7 +293,7 @@ namespace CorgEng.Core
                             //Unit test support.
                             if (Assembly.GetCallingAssembly() != null && Assembly.GetCallingAssembly() != Assembly.GetEntryAssembly())
                                 loadedAssemblies.Add(Assembly.GetCallingAssembly());
-                            if(Assembly.GetExecutingAssembly() != null)
+                            if (Assembly.GetExecutingAssembly() != null)
                                 loadedAssemblies.Add(Assembly.GetExecutingAssembly());
                             foreach (XElement dependency in childElement.Elements())
                             {
@@ -318,7 +326,7 @@ namespace CorgEng.Core
                 Console.Error.WriteLine("Please reinstall the program and ensure that if developing a CorgEng game, the config is set as an embedded resource.");
                 Console.Error.WriteLine("The application will now be terminated.");
                 Console.Error.WriteLine("Press any key to continue...");
-                if(awaitOnError)
+                if (awaitOnError)
                     Console.ReadKey();
                 throw;
             }
@@ -348,10 +356,11 @@ namespace CorgEng.Core
             ModuleLoadAttributes = LoadedAssemblyModules
                 .SelectMany(assembly => assembly.GetTypes()
                 .SelectMany(type => type.GetMethods(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static)
-                .Where(method => method.GetCustomAttribute<ModuleLoadAttribute>() != null )));
-            Parallel.ForEach(ModuleLoadAttributes, (MethodInfo) => {
+                .Where(method => method.GetCustomAttribute<ModuleLoadAttribute>() != null)));
+            Parallel.ForEach(ModuleLoadAttributes, (MethodInfo) =>
+            {
                 Console.WriteLine(MethodInfo.Name);
-                if(MethodInfo.GetCustomAttribute<ModuleLoadAttribute>().priority
+                if (MethodInfo.GetCustomAttribute<ModuleLoadAttribute>().priority
                     && !MethodInfo.GetCustomAttribute<ModuleLoadAttribute>().mainThread)
                     MethodInfo.Invoke(null, new object[] { });
             });
@@ -368,7 +377,8 @@ namespace CorgEng.Core
         /// </summary>
         private static void ModuleInit()
         {
-            Parallel.ForEach(ModuleLoadAttributes, (MethodInfo) => {
+            Parallel.ForEach(ModuleLoadAttributes, (MethodInfo) =>
+            {
                 if (!MethodInfo.GetCustomAttribute<ModuleLoadAttribute>().priority
                     && !MethodInfo.GetCustomAttribute<ModuleLoadAttribute>().mainThread)
                 {
@@ -383,6 +393,21 @@ namespace CorgEng.Core
                     methodToInvoke.Invoke(null, new object[] { });
             }
             ModuleLoadAttributes = null;
+        }
+
+        /// <summary>
+        /// Calls priority method modules
+        /// </summary>
+        private static void WorldInit(IWorld world)
+        {
+            IEnumerable<MethodInfo> worldMethods = LoadedAssemblyModules
+                .SelectMany(assembly => assembly.GetTypes()
+                .SelectMany(type => type.GetMethods(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static)
+                .Where(method => method.GetCustomAttribute<WorldInitialiseAttribute>() != null)));
+            foreach (MethodInfo methodToInvoke in worldMethods)
+            {
+                methodToInvoke.Invoke(null, new object[] { world });
+            }
         }
 
         /// <summary>
