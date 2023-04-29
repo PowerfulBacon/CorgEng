@@ -1,4 +1,4 @@
-﻿#define PERFORMANCE_TEST
+﻿//#define PERFORMANCE_TEST
 
 using CorgEng.Core.Dependencies;
 using CorgEng.EntityComponentSystem.Events;

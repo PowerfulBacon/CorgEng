@@ -73,7 +73,6 @@ namespace CorgEng.Networking.Networking.Server
         public NetworkServer(IWorld world)
         {
             this.world = world;
-            LoadDefaultPrototype();
         }
 
         public void LoadDefaultPrototype()
@@ -112,6 +111,13 @@ namespace CorgEng.Networking.Networking.Server
             }
             //Start networking
             NetworkConfig.NetworkingActive = true;
+            NetworkConfig.ProcessServerSystems = true;
+            // Load the default player prototype if it hasn't been set.
+            // Must be done after we activate the server system processing flag
+            if (DefaultEntityPrototype == null)
+            {
+                LoadDefaultPrototype();
+            }
             //Log
             Logger?.WriteLine($"Starting UDP server on port {port}.", LogType.MESSAGE);
             //Set the listening port
@@ -136,7 +142,6 @@ namespace CorgEng.Networking.Networking.Server
             shutdownCountdown.Reset();
             started = true;
             ServerCommunicator.server = this;
-            NetworkConfig.ProcessServerSystems = true;
         }
 
         protected override void HandleMessage(IPEndPoint sender, PacketHeaders header, byte[] data, int start, int length)
@@ -184,7 +189,7 @@ namespace CorgEng.Networking.Networking.Server
                                         Logger.WriteMetric("networked_global_event", raisedEvent.ToString());
                                         //Deserialize the event
                                         raisedEvent.Deserialise(reader);
-                                        raisedEvent.RaiseGlobally(CorgEngMain.PrimaryWorld, false);
+                                        raisedEvent.RaiseGlobally(world, false);
                                     }
                                 }
                                 return;

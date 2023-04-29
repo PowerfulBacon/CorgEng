@@ -49,7 +49,7 @@ namespace CorgEng.EntityComponentSystem.Components.ComponentVariables.Networking
         public NetCVar()
         {
             if (NetVar.NetworkConfig == null || !NetVar.NetworkConfig.NetworkingActive)
-                return;
+                throw new Exception("Attempted to initialise a netvar prior to network initialisation.");
             if (!NetVar.NetworkConfig.ProcessServerSystems)
             {
                 if (!NetVar.NetworkConfig.ProcessClientSystems)
@@ -63,7 +63,7 @@ namespace CorgEng.EntityComponentSystem.Components.ComponentVariables.Networking
         public NetCVar(TValueType value) : base(value)
         {
             if (NetVar.NetworkConfig == null || !NetVar.NetworkConfig.NetworkingActive)
-                return;
+                throw new Exception("Attempted to initialise a netvar prior to network initialisation.");
             if (!NetVar.NetworkConfig.ProcessServerSystems)
             {
                 if (!NetVar.NetworkConfig.ProcessClientSystems)
@@ -84,6 +84,8 @@ namespace CorgEng.EntityComponentSystem.Components.ComponentVariables.Networking
 
         public void MarkDirty()
         {
+            if (NetVarID == 0)
+                throw new Exception("Attempting to mark an uninitialised NetVar as dirty.");
             lock (NetVar.DirtyNetvars)
             {
                 if (NetVar.DirtyNetvars.Contains(this))

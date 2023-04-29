@@ -54,7 +54,9 @@ namespace CorgEng.EntityComponentSystem.WorldManager
             get
             {
                 if (_serverInstance == null)
+                {
                     _serverInstance = NetworkServerFactory.CreateNetworkServer(this);
+                }
                 return _serverInstance;
             }
         }

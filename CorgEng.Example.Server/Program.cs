@@ -78,6 +78,9 @@ namespace CorgEng.Example.Server
             ServerWorld = WorldFactory.CreateWorld();
             CorgEngMain.PrimaryWorld = ServerWorld;
 
+            //Start networking server
+            ServerWorld.ServerInstance.StartHosting(5000);
+
             ExampleRenderCore erc = new ExampleRenderCore(ServerWorld);
             CorgEngMain.SetRenderCore(erc);
             ServerWorld.EntityManager.CreateEmptyEntity(entity => {
@@ -109,8 +112,6 @@ namespace CorgEng.Example.Server
 
             //Set the default player prototype
             SetPlayerPrototype();
-            //Start networking server
-            ServerWorld.ServerInstance.StartHosting(5000);
 
 #if DEBUG_RENDERING
             //Transfer control of the main thread to the CorgEng
