@@ -207,8 +207,10 @@ namespace CorgEng.EntityComponentSystem.Systems
             lock (this)
             {
                 isControlled = (threadManagerFlags & (ThreadManagerFlags.LOCKED_LOW | ThreadManagerFlags.LOCKED_HIGH)) != 0;
-                if (!isControlled)
+                if (isControlled)
                     threadManagerFlags |= ThreadManagerFlags.REQUESTED_HIGH;
+                else
+                    threadManagerFlags |= ThreadManagerFlags.LOCKED_HIGH;
             }
             while (isControlled)
             {
@@ -225,8 +227,9 @@ namespace CorgEng.EntityComponentSystem.Systems
                     isControlled = (threadManagerFlags & (ThreadManagerFlags.LOCKED_LOW | ThreadManagerFlags.LOCKED_HIGH)) != 0;
                     if (!isControlled)
                     {
-                        // Claim the system
-                        threadManagerFlags |= ThreadManagerFlags.REQUESTED_HIGH;
+                        // Claim the system and release our request
+                        threadManagerFlags |= ThreadManagerFlags.LOCKED_HIGH;
+                        threadManagerFlags &= ~ThreadManagerFlags.REQUESTED_HIGH;
                     }
                 }
             }

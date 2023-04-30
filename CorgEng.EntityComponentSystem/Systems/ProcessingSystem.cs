@@ -104,7 +104,7 @@ namespace CorgEng.EntityComponentSystem.Systems
             if (isRunningProcesses)
             {
                 // We are not ready to re-fire at this time
-                if (nextProcessTime > CorgEngMain.Time)
+                if (!continued && nextProcessTime > CorgEngMain.Time)
                 {
                     isRunningProcesses = false;
 #if PROCESSING_SYSTEM_DEBUG
@@ -157,7 +157,7 @@ namespace CorgEng.EntityComponentSystem.Systems
                 int waitTime = (int)Math.Max(1000 * (lastFireTime - CorgEngMain.Time) + ProcessDelay, 0);
                 nextProcessTime = CorgEngMain.Time + (waitTime * 0.001f);
 #if PROCESSING_SYSTEM_DEBUG
-                Logger.WriteLine($"Processing subsystem queued to fire in {waitTime}ms. It should fire at {nextProcessTime}, it is currently {CorgEngMain.Time}", LogType.DEBUG);
+                Logger.WriteLine($"{ToString()} queued to fire in {waitTime}ms. It should fire at {nextProcessTime}, it is currently {CorgEngMain.Time}", LogType.DEBUG);
 #endif
                 //If we recieve a signal, loop straight round to processing signal handlers.
                 //Otherwise, we reached the next processor step, so do processing
