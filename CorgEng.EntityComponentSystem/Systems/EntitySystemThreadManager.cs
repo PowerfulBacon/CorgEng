@@ -106,6 +106,7 @@ namespace CorgEng.EntityComponentSystem.Systems
             this.identifier = identifier;
             this.threadManager = threadManager;
             thread = new Thread(WorkerThread);
+            thread.Start();
             WakeUp();
         }
 
@@ -120,7 +121,7 @@ namespace CorgEng.EntityComponentSystem.Systems
                     return;
                 Monitor.Pulse(this);
                 isRunning = true;
-                Logger.WriteLine($"Entity System Thread {identifier} waking up...", LogType.DEBUG);
+                //Logger.WriteLine($"Entity System Thread {identifier} waking up...", LogType.DEBUG);
             }
         }
 
@@ -137,7 +138,10 @@ namespace CorgEng.EntityComponentSystem.Systems
                 // Begin working through the systems
                 while (threadManager.queuedSystems.TryDequeue(out EntitySystem entitySystem))
                 {
-                    entitySystem.threadManagerFlags &= ~ThreadManagerFlags.QUEUED_SYSTEM;
+                    lock (entitySystem)
+                    {
+                        entitySystem.threadManagerFlags &= ~ThreadManagerFlags.QUEUED_SYSTEM;
+                    }
                     if (!entitySystem.PerformRun(threadManager))
                     {
                         // Requeue the system for further processing
@@ -153,7 +157,7 @@ namespace CorgEng.EntityComponentSystem.Systems
                         isRunning = false;
                         threadManager.sleepingThreads.Enqueue(this);
                         // Wait until we are woken up again
-                        Logger.WriteLine($"Entity System Thread {identifier} entering sleep mode...", LogType.DEBUG);
+                        //Logger.WriteLine($"Entity System Thread {identifier} entering sleep mode...", LogType.DEBUG);
                         Monitor.Wait(this);
                     }
                 }

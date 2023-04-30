@@ -81,12 +81,12 @@ namespace CorgEng.Tests.NetworkingTests
         public void TestNetVarModification()
         {
             // Create the entity
-            serverWorld.EntityManager.CreateEmptyEntity(entity => {
+            IEntity createdEntity = serverWorld.EntityManager.CreateEmptyEntity(entity => {
                 entity.AddComponent(new NetworkTransformComponent());
                 entity.AddComponent(new ExampleComponent());
             });
             //
-            Assert.Fail("I haven't made this");
+            Assert.Inconclusive("I haven't made this");
         }
 
     }

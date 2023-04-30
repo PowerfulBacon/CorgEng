@@ -1,4 +1,4 @@
-﻿//#define PROCESSING_SYSTEM_DEBUG
+﻿#define PROCESSING_SYSTEM_DEBUG
 
 using CorgEng.Core;
 using CorgEng.Core.Dependencies;
@@ -121,7 +121,7 @@ namespace CorgEng.EntityComponentSystem.Systems
                     //Mark the last fire time as now
                     lastFireTime = CorgEngMain.Time;
 #if PROCESSING_SYSTEM_DEBUG
-                    Logger.WriteLine($"Firing processing system at {CorgEngMain.Time}", LogType.DEBUG);
+                    Logger.WriteLine($"Firing {ToString()} processing system at {CorgEngMain.Time} (Delay: {ProcessDelay}ms)", LogType.DEBUG);
 #endif
                 }
                 //Mark the system as being completed, unless we have to break out early
@@ -145,6 +145,7 @@ namespace CorgEng.EntityComponentSystem.Systems
                     // Check to see if someone else is doing something more important than us
                     if (CheckRelinquishControl())
                     {
+                        continued = true;
                         return false;
                     }
                 }

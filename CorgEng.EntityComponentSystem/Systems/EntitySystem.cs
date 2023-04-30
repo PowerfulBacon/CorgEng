@@ -80,6 +80,8 @@ namespace CorgEng.EntityComponentSystem.Systems
         public void JoinEntitySystemManager(EntitySystemThreadManager threadManager)
         {
             this.threadManager = threadManager;
+            // Queue the system for a single fire, in case it is a processing system
+            QueueProcessing();
         }
 
         public abstract void SystemSetup(IWorld world);
