@@ -114,19 +114,19 @@ namespace CorgEng.EntityComponentSystem.Components.ComponentVariables.Networking
 
         public int GetSerialisationLength()
         {
-            return NetVar.AutoSerialiser.SerialisationLength(typeof(uint), NetVarID)
+            return NetVar.AutoSerialiser.SerialisationLength(typeof(ulong), NetVarID)
                 + NetVar.AutoSerialiser.SerialisationLength(typeof(TValueType), Value);
         }
 
         public void SerialiseInto(BinaryWriter binaryWriter)
         {
-            NetVar.AutoSerialiser.SerializeInto(typeof(uint), NetVarID, binaryWriter);
+            NetVar.AutoSerialiser.SerializeInto(typeof(ulong), NetVarID, binaryWriter);
             NetVar.AutoSerialiser.SerializeInto(typeof(TValueType), Value, binaryWriter);
         }
 
         public void DeserialiseFrom(BinaryReader binaryReader)
         {
-            NetVarID = (uint)NetVar.AutoSerialiser.Deserialize(typeof(uint), binaryReader);
+            NetVarID = (uint)NetVar.AutoSerialiser.Deserialize(typeof(ulong), binaryReader);
             Value = (TValueType)NetVar.AutoSerialiser.Deserialize(typeof(TValueType), binaryReader);
         }
     }
