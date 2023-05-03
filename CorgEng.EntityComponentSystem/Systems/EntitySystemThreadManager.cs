@@ -162,6 +162,7 @@ namespace CorgEng.EntityComponentSystem.Systems
                         }
                         try
                         {
+                            entitySystem.calledFromProcess = true;
                             if (!entitySystem.PerformRun(threadManager))
                             {
                                 // Requeue the system for further processing
@@ -171,6 +172,7 @@ namespace CorgEng.EntityComponentSystem.Systems
                         // Release our low priority lock at the end without side effects.
                         finally
                         {
+                            entitySystem.calledFromProcess = false;
                             entitySystem.ReleaseInternalLock();
                         }
                     }

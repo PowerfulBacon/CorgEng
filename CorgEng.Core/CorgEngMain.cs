@@ -502,7 +502,7 @@ namespace CorgEng.Core
             lock (executeInQueue)
             {
                 nextBucketFireTime = Math.Min(nextBucketFireTime, timeToFire);
-                executeInQueue.Enqueue(action, nextBucketFireTime);
+                executeInQueue.Enqueue(action, timeToFire);
             }
         }
 
@@ -520,6 +520,7 @@ namespace CorgEng.Core
                 {
                     // Invoke the action
                     Action lowest = executeInQueue.Dequeue();
+                    //Logger.WriteLine($"Action invoked at {Time}. NEXT BUCKET TIME: {nextBucketFireTime}", LogType.WARNING);
                     lowest.Invoke();
                     // Move to the next
                     if (executeInQueue.TryPeek(out Action _, out double nextFireTime))

@@ -81,6 +81,9 @@ namespace CorgEng.Example.Server
             //Start networking server
             ServerWorld.ServerInstance.StartHosting(5000);
 
+            //Debug
+            NetworkConfig.ProcessClientSystems = true;
+
             ExampleRenderCore erc = new ExampleRenderCore(ServerWorld);
             CorgEngMain.SetRenderCore(erc);
             ServerWorld.EntityManager.CreateEmptyEntity(entity => {
@@ -103,9 +106,6 @@ namespace CorgEng.Example.Server
                 new SetSpriteEvent(IconFactory.CreateIcon("rock", 5, Constants.RenderingConstants.DEFAULT_RENDERER_PLANE)).Raise(entity);
                 new SetSpriteRendererEvent(1).Raise(entity);
             });
-
-            //Debug
-            NetworkConfig.ProcessClientSystems = true;
 #endif
 
             BuildWorld();

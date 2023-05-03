@@ -71,7 +71,7 @@ namespace CorgEng.EntityComponentSystem.Systems
             if (!isRunningProcesses)
             {
                 // Refresh the tick runs that we need to
-                if (tickRunsRemaining == 0)
+                if (tickRunsRemaining <= 0)
                 {
                     tickRunsRemaining = invokationQueue.Count;
                 }
@@ -109,6 +109,10 @@ namespace CorgEng.EntityComponentSystem.Systems
                     isRunningProcesses = false;
 #if PROCESSING_SYSTEM_DEBUG
                     Logger.WriteLine($"{this} is not ready to fire, fire at: {nextProcessTime}, current time: {CorgEngMain.Time}", LogType.DEBUG);
+                    if (calledFromProcess)
+                    {
+                        Logger.WriteLine($"wtf, we were claled from runningProcess::: {this}", LogType.TEMP);
+                    }
 #endif
                     return invokationQueue.IsEmpty;
                 }

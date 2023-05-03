@@ -72,6 +72,8 @@ namespace CorgEng.EntityComponentSystem.Systems
 
         private EntitySystemThreadManager threadManager;
 
+        internal bool calledFromProcess = false;
+
         public EntitySystem()
         {
             name = $"{GetType().Name}-{Interlocked.Increment(ref EntitySystemCount)}";
@@ -107,11 +109,11 @@ namespace CorgEng.EntityComponentSystem.Systems
         public virtual bool PerformRun(EntitySystemThreadManager threadManager)
         {
             // Refresh the tick runs that we need to
-            if (tickRunsRemaining == 0)
+            if (tickRunsRemaining <= 0)
             {
                 tickRunsRemaining = invokationQueue.Count;
             }
-            while (invokationQueue.Count > 0 && tickRunsRemaining-- > 0)
+            while (!invokationQueue.IsEmpty && tickRunsRemaining-- > 0)
             {
                 InvokationAction firstInvokation;
                 invokationQueue.TryDequeue(out firstInvokation);
