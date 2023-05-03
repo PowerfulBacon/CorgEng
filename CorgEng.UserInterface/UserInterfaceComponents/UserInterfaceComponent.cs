@@ -163,12 +163,12 @@ namespace CorgEng.UserInterface.Components
 
         public UserInterfaceComponent(IWorld world, IAnchor anchorDetails, IDictionary<string, string> arguments) : base(world)
         {
+            ComponentHolder = world.EntityManager.CreateEmptyEntity(null);
             Parameters = arguments;
             RegisterArguments();
             ParseArguments(arguments);
             // Set the anchor details
             Anchor = anchorDetails;
-            ComponentHolder = world.EntityManager.CreateEmptyEntity(null);
         }
 
         //====================================

@@ -59,9 +59,9 @@ namespace CorgEng.Core.Rendering
         /// </summary>
         public uint RenderTextureUint { get; }
 
-        public int Width { get; internal set; } = 1920;
+        public virtual int Width { get; internal set; } = 1920;
 
-        public int Height { get; internal set; } = 1080;
+        public virtual int Height { get; internal set; } = 1080;
 
         private static IColour _currentBackColour;
         private static DepthModes _currentDepthMode = DepthModes.KEEP_DEPTH;
@@ -82,6 +82,16 @@ namespace CorgEng.Core.Rendering
         /// Ignoring depth causes the render core to overlay on whatever it is being drawn on.
         /// </summary>
         public virtual DepthModes DepthMode { get; } = DepthModes.KEEP_DEPTH;
+
+        /// <summary>
+        /// The scaling mode of this render core.
+        /// </summary>
+        public virtual ScalingModes ScalingMode { get; } = ScalingModes.NEAREST_NEIGHBOUR;
+
+        /// <summary>
+        /// If this is set to true, the render core will be allowed to be resized through the Resize() function.
+        /// </summary>
+        public virtual bool CanResize { get; } = true;
 
         /// <summary>
         /// The path of the shaders to use.
@@ -255,7 +265,7 @@ namespace CorgEng.Core.Rendering
             Height = height;
             //Log
             Logger?.WriteLine($"Render core resized to {Width}x{Height}", LogType.DEBUG);
-            if (!CorgEngMain.IsRendering)
+            if (!CorgEngMain.IsRendering || !CanResize)
                 return;
             //Update the tex image
             //Bind the created texture so we can modify it
@@ -263,8 +273,8 @@ namespace CorgEng.Core.Rendering
             //Load the texture scale
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, Width, Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
             //Set the texture parameters
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, ScalingMode == ScalingModes.NEAREST_NEIGHBOUR ? GL_NEAREST : GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, ScalingMode == ScalingModes.NEAREST_NEIGHBOUR ? GL_NEAREST : GL_LINEAR);
         }
 
         public unsafe void DrawToBuffer(uint buffer, int drawX, int drawY, int bufferWidth, int bufferHeight)

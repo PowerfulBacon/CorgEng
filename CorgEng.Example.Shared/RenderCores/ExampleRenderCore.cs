@@ -43,6 +43,14 @@ namespace CorgEng.Example.Shared.RenderCores
 
         private LightingRenderCore lightingRenderCore;
 
+        public override bool CanResize => false;
+
+        public override int Width => 1920 / 4;
+
+        public override int Height => 1080 / 4;
+
+        public override ScalingModes ScalingMode => ScalingModes.LINEAR_SCALING;
+
         public ExampleRenderCore(IWorld world) : base(world)
         {
         }
