@@ -13,8 +13,7 @@ namespace CorgEng.EntityComponentSystem.Components.ComponentVariables
     /// - Updating this variable on the proper threads
     /// </summary>
     /// <typeparam name="TValueType"></typeparam>
-    public class CVar<TValueType, TComponentType> : BindableProperty<TValueType>, IComponentVariable
-        where TComponentType : Component
+    public class CVar<TValueType> : BindableProperty<TValueType>, IComponentVariable
     {
 
         public Component Parent { get; set; }
@@ -33,7 +32,7 @@ namespace CorgEng.EntityComponentSystem.Components.ComponentVariables
             Parent = component;
         }
 
-        public CVar<TValueType, TComponentType> InitialValue(TValueType value)
+        public CVar<TValueType> InitialValue(TValueType value)
         {
             Value = value;
             return this;

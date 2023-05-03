@@ -32,8 +32,7 @@ namespace CorgEng.EntityComponentSystem.Components.ComponentVariables.Networking
     /**
      * Networked version of a CVar
      */
-    public class NetCVar<TValueType, TComponentType> : CVar<TValueType, TComponentType>, INetVar, ICustomSerialisationBehaviour
-        where TComponentType : Component
+    public class NetCVar<TValueType> : CVar<TValueType>, INetVar, ICustomSerialisationBehaviour
     {
 
         /// <summary>
@@ -94,7 +93,7 @@ namespace CorgEng.EntityComponentSystem.Components.ComponentVariables.Networking
             }
         }
 
-        public NetCVar<TValueType, TComponentType> SetPrototypeSerialised(bool value)
+        public NetCVar<TValueType> SetPrototypeSerialised(bool value)
         {
             PrototypeSerialised = value;
             return this;
@@ -126,7 +125,7 @@ namespace CorgEng.EntityComponentSystem.Components.ComponentVariables.Networking
 
         public void DeserialiseFrom(BinaryReader binaryReader)
         {
-            NetVarID = (uint)NetVar.AutoSerialiser.Deserialize(typeof(ulong), binaryReader);
+            NetVarID = (ulong)NetVar.AutoSerialiser.Deserialize(typeof(ulong), binaryReader);
             Value = (TValueType)NetVar.AutoSerialiser.Deserialize(typeof(TValueType), binaryReader);
         }
     }

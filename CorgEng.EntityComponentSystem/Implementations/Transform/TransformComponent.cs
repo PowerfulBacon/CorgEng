@@ -29,14 +29,14 @@ namespace CorgEng.EntityComponentSystem.Implementations.Transform
         /// Start with a zero value
         /// </summary>
         [NetworkSerialized(prototypeInclude = false)]
-        public NetCVar<Vector<float>, TransformComponent> Position { get; internal set; } = new NetCVar<Vector<float>, TransformComponent>(new Vector<float>(0, 0))
+        public NetCVar<Vector<float>> Position { get; internal set; } = new NetCVar<Vector<float>>(new Vector<float>(0, 0))
             .SetPrototypeSerialised(false);
 
         /// <summary>
         /// Rotation property of this transform
         /// </summary>
         [NetworkSerialized(prototypeInclude = false)]
-        public NetCVar<Vector<float>, TransformComponent> Rotation { get; internal set; } = new NetCVar<Vector<float>, TransformComponent>(new Vector<float>(0))
+        public NetCVar<Vector<float>> Rotation { get; internal set; } = new NetCVar<Vector<float>>(new Vector<float>(0))
             .SetPrototypeSerialised(false);
 
         public override TransformComponent Transform => this;

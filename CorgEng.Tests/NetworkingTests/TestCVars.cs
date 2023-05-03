@@ -26,7 +26,7 @@ namespace CorgEng.Tests.NetworkingTests
     public class ExampleComponent : Component
     {
 
-        public NetCVar<int, ExampleComponent> exampleNetvar = new NetCVar<int, ExampleComponent>(5);
+        public NetCVar<int> exampleNetvar = new NetCVar<int>(5);
 
     }
 
