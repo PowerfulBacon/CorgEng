@@ -97,6 +97,7 @@ namespace CorgEng.EntityComponentSystem.WorldManager
         {
             _serverInstance?.Cleanup();
             _clientInstance?.Cleanup();
+            Logger.WriteLine("World went out of scope and was cleaned up.", LogType.DEBUG);
         }
 
     }

@@ -6,6 +6,7 @@ using CorgEng.EntityComponentSystem.Events;
 using CorgEng.EntityComponentSystem.Systems;
 using CorgEng.GenericInterfaces.ContentLoading;
 using CorgEng.GenericInterfaces.EntityComponentSystem;
+using CorgEng.GenericInterfaces.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
@@ -23,6 +24,9 @@ namespace CorgEng.Tests.EntityComponentSystem
 
         [UsingDependency]
         private static IWorldFactory WorldFactory;
+
+        [UsingDependency]
+        private static ILogger Logger;
 
         private class TestComponent : Component
         {
@@ -64,6 +68,7 @@ namespace CorgEng.Tests.EntityComponentSystem
             testSystem.RegisterProcess<TestComponent>(testEntity, (e, t, d) => {
                 t.timesProcessed++;
             });
+            Logger.WriteLine(testSystem, LogType.TEMP);
             //Send some signals to check
             new TestEvent().Raise(testEntity);
             new TestEvent().Raise(testEntity);

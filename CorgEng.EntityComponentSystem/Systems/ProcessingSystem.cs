@@ -108,7 +108,7 @@ namespace CorgEng.EntityComponentSystem.Systems
                 {
                     isRunningProcesses = false;
 #if PROCESSING_SYSTEM_DEBUG
-                    Logger.WriteLine($"The processing system is not ready to fire, {nextProcessTime} instead of {CorgEngMain.Time}", LogType.DEBUG);
+                    Logger.WriteLine($"{this} is not ready to fire, fire at: {nextProcessTime}, current time: {CorgEngMain.Time}", LogType.DEBUG);
 #endif
                     return invokationQueue.IsEmpty;
                 }
@@ -155,7 +155,7 @@ namespace CorgEng.EntityComponentSystem.Systems
                 //and the system wait time.
                 //Stay in sync! if this value is less than 0, we are overtiming.
                 int waitTime = (int)Math.Max(1000 * (lastFireTime - CorgEngMain.Time) + ProcessDelay, 0);
-                nextProcessTime = CorgEngMain.Time + (waitTime * 0.001f);
+                nextProcessTime = CorgEngMain.Time + (waitTime * 0.001);
 #if PROCESSING_SYSTEM_DEBUG
                 Logger.WriteLine($"{ToString()} queued to fire in {waitTime}ms. It should fire at {nextProcessTime}, it is currently {CorgEngMain.Time}", LogType.DEBUG);
 #endif

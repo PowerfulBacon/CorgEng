@@ -1,4 +1,5 @@
-﻿using CorgEng.Core.Dependencies;
+﻿using CorgEng.Core;
+using CorgEng.Core.Dependencies;
 using CorgEng.Core.Modules;
 using CorgEng.GenericInterfaces.Logging;
 using System;
@@ -41,12 +42,14 @@ namespace CorgEng.EntityComponentSystem.Systems
             {
                 workerThreads = 1;
             }
+            List<string> threadNumbers = new List<string>();
             runningWorkers = new EntitySystemThread[workerThreads];
             for (int i = 0; i < workerThreads; i++)
             {
                 runningWorkers[i] = new EntitySystemThread(this, i);
+                threadNumbers.Add("Thread: " + runningWorkers[i].thread.ManagedThreadId);
             }
-            Logger.WriteLine($"Entity system thread manager created with {workerThreads} maximum threads.", LogType.DEBUG);
+            Logger.WriteLine($"Entity system thread manager created with {workerThreads} maximum threads. Thread IDs: {string.Join(", ", threadNumbers)}", LogType.DEBUG);
             activeBags.Add(this);
         }
 
@@ -60,6 +63,14 @@ namespace CorgEng.EntityComponentSystem.Systems
                     thread.working = false;
                 }
                 activeBags.Clear();
+            }
+        }
+
+        public void Cleanup()
+        {
+            lock (activeBags)
+            {
+                working = false;
             }
         }
 
@@ -79,10 +90,10 @@ namespace CorgEng.EntityComponentSystem.Systems
 
         public void FireSystemIn(EntitySystem system, double fireTime)
         {
-            Task.Run(async () => {
-                await Task.Delay((int)fireTime);
+            CorgEngMain.ExecuteIn(() => {
+                Logger.WriteLine($"Attempting to queue system {system} for processing fire at {CorgEngMain.Time}", LogType.TEMP);
                 system.QueueProcessing();
-            });
+            }, fireTime);
         }
 
     }
@@ -99,7 +110,7 @@ namespace CorgEng.EntityComponentSystem.Systems
 
         private EntitySystemThreadManager threadManager;
 
-        private Thread thread;
+        internal Thread thread;
 
         public EntitySystemThread(EntitySystemThreadManager threadManager, int identifier)
         {
@@ -133,34 +144,54 @@ namespace CorgEng.EntityComponentSystem.Systems
         /// </summary>
         private void WorkerThread()
         {
-            while (threadManager.working)
+            try
             {
-                // Begin working through the systems
-                while (threadManager.queuedSystems.TryDequeue(out EntitySystem entitySystem))
+                while (threadManager.working)
                 {
-                    lock (entitySystem)
+                    // Begin working through the systems
+                    while (threadManager.queuedSystems.TryDequeue(out EntitySystem entitySystem))
                     {
-                        entitySystem.threadManagerFlags &= ~ThreadManagerFlags.QUEUED_SYSTEM;
+                        lock (entitySystem)
+                        {
+                            entitySystem.threadManagerFlags &= ~ThreadManagerFlags.QUEUED_SYSTEM;
+                            if (!entitySystem.TryAcquireLowPriorityLock())
+                            {
+                                // We will be re-queued when the lock is released.
+                                continue;
+                            }
+                        }
+                        try
+                        {
+                            if (!entitySystem.PerformRun(threadManager))
+                            {
+                                // Requeue the system for further processing
+                                entitySystem.QueueProcessing();
+                            }
+                        }
+                        // Release our low priority lock at the end without side effects.
+                        finally
+                        {
+                            entitySystem.ReleaseInternalLock();
+                        }
                     }
-                    if (!entitySystem.PerformRun(threadManager))
+                    // Check if we were requested to wakeup while trying to sleep
+                    if (threadManager.queuedSystems.IsEmpty)
                     {
-                        // Requeue the system for further processing
-                        entitySystem.QueueProcessing();
+                        lock (this)
+                        {
+                            // We can spin down now
+                            isRunning = false;
+                            threadManager.sleepingThreads.Enqueue(this);
+                            // Wait until we are woken up again
+                            //Logger.WriteLine($"Entity System Thread {identifier} entering sleep mode...", LogType.DEBUG);
+                            Monitor.Wait(this);
+                        }
                     }
                 }
-                // Check if we were requested to wakeup while trying to sleep
-                if (threadManager.queuedSystems.IsEmpty)
-                {
-                    lock (this)
-                    {
-                        // We can spin down now
-                        isRunning = false;
-                        threadManager.sleepingThreads.Enqueue(this);
-                        // Wait until we are woken up again
-                        //Logger.WriteLine($"Entity System Thread {identifier} entering sleep mode...", LogType.DEBUG);
-                        Monitor.Wait(this);
-                    }
-                }
+            }
+            catch (Exception e)
+            {
+                Logger.WriteLine($"FATAL EXCEPTION: THREAD MANAGER CRASHED\n{e}.", LogType.ERROR);
             }
         }
 

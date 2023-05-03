@@ -63,6 +63,7 @@ namespace CorgEng.EntityComponentSystem.Systems
         {
             TerminateSubsystems();
             EntitySystems.Clear();
+            entitySystemThreadManager.Cleanup();
         }
 
         /// <summary>

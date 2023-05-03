@@ -25,6 +25,10 @@ namespace CorgEng.EntityComponentSystem.Systems
     public abstract class EntitySystem
     {
 
+        public static int EntitySystemCount = 0;
+
+        private string name;
+
         /// <summary>
         /// Internal global event component specifically for handling global signals
         /// </summary>
@@ -66,9 +70,12 @@ namespace CorgEng.EntityComponentSystem.Systems
         /// </summary>
         internal ThreadManagerFlags threadManagerFlags;
 
-        private object _threadManagerFlagLock = new object();
-
         private EntitySystemThreadManager threadManager;
+
+        public EntitySystem()
+        {
+            name = $"{GetType().Name}-{Interlocked.Increment(ref EntitySystemCount)}";
+        }
 
         public void JoinWorld(IWorld world)
         {
@@ -142,7 +149,7 @@ namespace CorgEng.EntityComponentSystem.Systems
             if ((threadManagerFlags & ThreadManagerFlags.REQUESTED_HIGH) == ThreadManagerFlags.REQUESTED_HIGH)
             {
                 // Release our thread manager lock
-                lock (_threadManagerFlagLock)
+                lock (this)
                 {
                     threadManagerFlags &= ~ThreadManagerFlags.LOCKED_LOW;
                     lock (_controlLockObject)
@@ -195,6 +202,18 @@ namespace CorgEng.EntityComponentSystem.Systems
             }
         }
 
+        internal void ReleaseInternalLock()
+        {
+            lock (this)
+            {
+                threadManagerFlags &= ~ThreadManagerFlags.LOCKED_LOW;
+            }
+            lock (_controlLockObject)
+            {
+                Monitor.PulseAll(_controlLockObject);
+            }
+        }
+
         /// <summary>
         /// Acquire a high priority lock. This action is blocking
         /// until the lock is acquired.
@@ -214,24 +233,27 @@ namespace CorgEng.EntityComponentSystem.Systems
             }
             while (isControlled)
             {
-                // Add the flag to indicate that we want to claim the system
-                lock (this)
+                // Wait until the thread manager flags are changed
+                lock (_controlLockObject)
                 {
-                    threadManagerFlags |= ThreadManagerFlags.REQUESTED_HIGH;
-                }
-                // Wait untili the thread manager flags are changed
-                Monitor.Wait(_controlLockObject);
-                // Check if the thread is controlled
-                lock (this)
-                {
-                    isControlled = (threadManagerFlags & (ThreadManagerFlags.LOCKED_LOW | ThreadManagerFlags.LOCKED_HIGH)) != 0;
-                    if (!isControlled)
+                    // Add the flag to indicate that we want to claim the system
+                    lock (this)
                     {
-                        // Claim the system and release our request
-                        threadManagerFlags |= ThreadManagerFlags.LOCKED_HIGH;
-                        threadManagerFlags &= ~ThreadManagerFlags.REQUESTED_HIGH;
+                        // Check to see if we are controlled
+                        isControlled = (threadManagerFlags & (ThreadManagerFlags.LOCKED_LOW | ThreadManagerFlags.LOCKED_HIGH)) != 0;
+                        if (!isControlled)
+                        {
+                            // Claim the system and release our request
+                            threadManagerFlags |= ThreadManagerFlags.LOCKED_HIGH;
+                            threadManagerFlags &= ~ThreadManagerFlags.REQUESTED_HIGH;
+                            return true;
+                        }
+                        // Request high priority
+                        threadManagerFlags |= ThreadManagerFlags.REQUESTED_HIGH;
                     }
+                    Monitor.Wait(_controlLockObject);
                 }
+
             }
             // We now have a high priority lock over this system
             return true;
@@ -412,7 +434,7 @@ namespace CorgEng.EntityComponentSystem.Systems
                         {
                             eventHandler.Invoke(entity, (GComponent)component, (GEvent)signal);
                         }, callingFile, callingMember, callingLine));
-                        //Wake up the system if its sleeping
+                        // Wake up the system if its sleeping
                         QueueProcessing();
                     }
                 };
@@ -476,5 +498,9 @@ namespace CorgEng.EntityComponentSystem.Systems
             QueueProcessing();
         }
 
+        public override string ToString()
+        {
+            return name;
+        }
     }
 }

@@ -15,6 +15,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Loader;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 
@@ -188,6 +189,8 @@ namespace CorgEng.Core
                         }
                     }
                 }
+                // Trigger any deferred rendering thread code
+                CheckQueuedExecutions();
                 //Swap the framebuffers
                 GameWindow.SwapFramebuffers();
                 //Poll for system events to prevent the program from showing as hanging
@@ -440,6 +443,95 @@ namespace CorgEng.Core
             {
                 //Headless mode, immedaitely execute
                 action.Invoke();
+            }
+        }
+
+        /// <summary>
+        /// The lowest time of the thing that we want to fire
+        /// </summary>
+        private static double nextBucketFireTime = double.PositiveInfinity;
+
+        /// <summary>
+        /// A heap of the things that we want to execute on this thread and the
+        /// time of when we want to execute them.
+        /// </summary>
+        private static PriorityQueue<Action, double> executeInQueue = new PriorityQueue<Action, double>();
+
+        private static Thread headlessExecutionThread = null;
+
+        /// <summary>
+        /// Add something to a bucket
+        /// </summary>
+        /// <param name="action"></param>
+        /// <param name="executeTime">The time to wait in milliseconds</param>
+        public static void ExecuteIn(Action action, double executeTime)
+        {
+            if (!IsRendering && headlessExecutionThread == null)
+            {
+                // Lock something random so that we can only enter this once
+                lock (executeInQueue)
+                {
+                    if (headlessExecutionThread == null)
+                    {
+                        // This is horrible
+                        headlessExecutionThread = new Thread(() => {
+                            while (!Terminated)
+                            {
+                                CheckQueuedExecutions();
+                                Thread.Yield();
+                            }
+                            lock (executeInQueue)
+                            {
+                                headlessExecutionThread = null;
+                            }
+                        });
+                        headlessExecutionThread.Start();
+                    }
+                }
+            }
+            double timeToFire = Time + executeTime * 0.001;
+            Logger.WriteLine($"Action queued to fire at {timeToFire}", LogType.WARNING);
+            // 0 or negative execution time
+            if (timeToFire <= Time)
+            {
+                //Rendering thread exists, queue the action
+                queuedActions.Enqueue(action);
+                return;
+            }
+            // Queue the action to be fired
+            lock (executeInQueue)
+            {
+                nextBucketFireTime = Math.Min(nextBucketFireTime, timeToFire);
+                executeInQueue.Enqueue(action, nextBucketFireTime);
+            }
+        }
+
+        /// <summary>
+        /// Check the queue of things that we want to fire on this thread and fire them if
+        /// we are ready for them.
+        /// </summary>
+        internal static void CheckQueuedExecutions()
+        {
+            if (nextBucketFireTime > Time)
+                return;
+            lock (executeInQueue)
+            {
+                while (nextBucketFireTime <= Time)
+                {
+                    // Invoke the action
+                    Action lowest = executeInQueue.Dequeue();
+                    lowest.Invoke();
+                    // Move to the next
+                    if (executeInQueue.TryPeek(out Action _, out double nextFireTime))
+                    {
+                        nextBucketFireTime = nextFireTime;
+                    }
+                    else
+                    {
+                        nextBucketFireTime = double.PositiveInfinity;
+                        return;
+                    }
+                }
             }
         }
 
