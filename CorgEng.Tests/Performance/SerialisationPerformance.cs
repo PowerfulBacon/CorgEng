@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 namespace CorgEng.Tests.Performance
 {
     [TestClass]
-    public class SerialisationPerformance
+    public class SerialisationPerformance : TestBase
     {
 
         [UsingDependency]

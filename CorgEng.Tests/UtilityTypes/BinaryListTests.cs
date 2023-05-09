@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace CorgEng.Tests.UtilityTypes
 {
     [TestClass]
-    public class BinaryListTests
+    public class BinaryListTests : TestBase
     {
 
         [UsingDependency]

@@ -18,7 +18,7 @@ using System.Threading.Tasks;
 namespace CorgEng.Tests.UserInterfaceTests.UnitTests
 {
     [TestClass]
-    public class UserInterfaceButtonTests
+    public class UserInterfaceButtonTests : TestBase
     {
 
         [UsingDependency]

@@ -43,13 +43,14 @@ namespace CorgEng.Example.Shared.RenderCores
 
         private LightingRenderCore lightingRenderCore;
 
+        public override bool DebugDrawDepth => true;
+
         public ExampleRenderCore(IWorld world) : base(world)
         {
         }
 
         public override void Initialize()
         {
-
             spriteRenderer = SpriteRendererFactory.CreateSpriteRenderer(1);
             spriteRenderer?.Initialize();
 
@@ -64,8 +65,8 @@ namespace CorgEng.Example.Shared.RenderCores
         public override void PerformRender()
         {
             spriteRenderer?.Render(CorgEngMain.MainCamera);
-            lightingRenderCore.DoRender();
-            lightingRenderCore.DrawToBuffer(FrameBufferUint, 0, 0, Width, Height);
+            //lightingRenderCore.DoRender();
+            //lightingRenderCore.DrawToBuffer(FrameBufferUint, 0, 0, Width, Height);
         }
     }
 }

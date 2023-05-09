@@ -59,13 +59,6 @@ namespace CorgEng.EntityComponentSystem.Systems
             this.world = world;
         }
 
-        ~EntitySystemManager()
-        {
-            TerminateSubsystems();
-            EntitySystems.Clear();
-            entitySystemThreadManager.Cleanup();
-        }
-
         /// <summary>
         /// Called when the attached world process is created.
         /// Creates all System types and tracks the to prevent GC
@@ -191,6 +184,13 @@ namespace CorgEng.EntityComponentSystem.Systems
                     return new List<SystemEventHandlerDelegate>();
                 return RegisteredSystemSignalHandlers[registeredEventComponentType];
             }
+        }
+
+        public void Cleanup()
+        {
+            TerminateSubsystems();
+            EntitySystems.Clear();
+            entitySystemThreadManager.Cleanup();
         }
     }
 }

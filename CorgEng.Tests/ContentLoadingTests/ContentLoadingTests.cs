@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 namespace CorgEng.Tests.ContentLoadingTests
 {
     [TestClass]
-    public class ContentLoadingTests
+    public class ContentLoadingTests : TestBase
     {
 
         [UsingDependency]

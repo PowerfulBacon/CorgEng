@@ -21,5 +21,7 @@ namespace CorgEng.GenericInterfaces.EntityComponentSystem
 
         INetworkClient ClientInstance { get; }
 
+        void Cleanup();
+
     }
 }

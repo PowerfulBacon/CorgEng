@@ -32,7 +32,7 @@ namespace CorgEng.Tests.NetworkingTests
 
 
     [TestClass]
-    public class TestCVars
+    public class TestCVars : TestBase
     {
 
         [UsingDependency]

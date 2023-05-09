@@ -19,7 +19,7 @@ using static CorgEng.Tests.EntityComponentSystem.TestEntitySystems;
 namespace CorgEng.Tests.EntityComponentSystem
 {
     [TestClass]
-    public class ProcessingSystemTest
+    public class ProcessingSystemTest : TestBase
     {
 
         [UsingDependency]

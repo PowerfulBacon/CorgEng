@@ -89,5 +89,10 @@ namespace CorgEng.GenericInterfaces.EntityComponentSystem
         /// <returns></returns>
         List<SystemEventHandlerDelegate> GetRegisteredSystemEventHandlers(EventComponentPair registeredEventComponentType);
 
+        /**
+         * Shutdown and cleanup
+         */
+        void Cleanup();
+
     }
 }

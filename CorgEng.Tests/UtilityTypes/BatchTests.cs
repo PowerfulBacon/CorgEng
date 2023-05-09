@@ -8,7 +8,7 @@ using System;
 namespace CorgEng.Tests.UtilityTypes
 {
     [TestClass]
-    public class BatchTests
+    public class BatchTests : TestBase
     {
 
         private Vector<float> TestVector { get; } = new Vector<float>();

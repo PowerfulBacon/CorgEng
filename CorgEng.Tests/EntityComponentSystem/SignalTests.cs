@@ -107,7 +107,7 @@ namespace CorgEng.Tests.EntityComponentSystem
     }
 
     [TestClass]
-    public class SignalTests
+    public class SignalTests : TestBase
     {
 
         [UsingDependency]

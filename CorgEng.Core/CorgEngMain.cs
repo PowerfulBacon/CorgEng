@@ -536,5 +536,23 @@ namespace CorgEng.Core
             }
         }
 
+        /**
+         * Fully cleanup the CorgEng application, resetting it into a state
+         * of startup.
+         */
+        public static void Cleanup()
+        {
+            MainCamera = null;
+            primaryWorld = null;
+            foreach (IWorld world in WorldList)
+            {
+                world.Cleanup();
+            }
+            WorldList.Clear();
+            queuedActions.Clear();
+            MainRenderCore = null;
+            Logger.WriteLine("Full cleanup of CorgEng application completed.", LogType.DEBUG);
+        }
+
     }
 }

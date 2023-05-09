@@ -39,7 +39,7 @@ namespace CorgEng.Tests.NetworkingTests
     }
 
     [TestClass]
-    public class PrototypeTests
+    public class PrototypeTests : TestBase
     {
 
         [UsingDependency]

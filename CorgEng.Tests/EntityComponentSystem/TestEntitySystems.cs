@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 namespace CorgEng.Tests.EntityComponentSystem
 {
     [TestClass]
-    public class TestEntitySystems
+    public class TestEntitySystems : TestBase
     {
 
         [UsingDependency]

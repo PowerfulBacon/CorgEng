@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 namespace CorgEng.Tests.UserInterfaceTests.UnitTests
 {
     [TestClass]
-    public class UserInterfaceRaycastTests
+    public class UserInterfaceRaycastTests : TestBase
     {
 
         [UsingDependency]

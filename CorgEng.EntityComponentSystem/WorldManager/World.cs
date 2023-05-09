@@ -95,10 +95,15 @@ namespace CorgEng.EntityComponentSystem.WorldManager
         /// </summary>
         ~World()
         {
-            _serverInstance?.Cleanup();
-            _clientInstance?.Cleanup();
+            Cleanup();
             Logger.WriteLine("World went out of scope and was cleaned up.", LogType.DEBUG);
         }
 
+        public void Cleanup()
+        {
+            _serverInstance?.Cleanup();
+            _clientInstance?.Cleanup();
+            EntitySystemManager?.Cleanup();
+        }
     }
 }

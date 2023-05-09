@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 namespace CorgEng.Tests.World
 {
     [TestClass]
-    public class WorldTests
+    public class WorldTests : TestBase
     {
 
         [UsingDependency]

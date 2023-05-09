@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 namespace CorgEng.Tests.RenderingTests
 {
     [TestClass]
-    public class BindedBatchTest
+    public class BindedBatchTest : TestBase
     {
 
         private class TestBatch : Batch<TestBatch>
