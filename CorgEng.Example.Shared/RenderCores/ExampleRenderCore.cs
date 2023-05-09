@@ -65,8 +65,8 @@ namespace CorgEng.Example.Shared.RenderCores
         public override void PerformRender()
         {
             spriteRenderer?.Render(CorgEngMain.MainCamera);
-            //lightingRenderCore.DoRender();
-            //lightingRenderCore.DrawToBuffer(FrameBufferUint, 0, 0, Width, Height);
+            lightingRenderCore.DoRender();
+            lightingRenderCore.DrawToBuffer(FrameBufferUint, 0, 0, Width, Height);
         }
     }
 }

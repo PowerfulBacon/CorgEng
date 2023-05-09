@@ -43,6 +43,8 @@ namespace CorgEng.Core.Rendering
 
         private static int textureUniformLocation;
 
+        private static int depthUniformLocation;
+
         //Create a program for rendering
         private static uint programUint;
 
@@ -138,17 +140,23 @@ namespace CorgEng.Core.Rendering
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
             //Bind the framebuffer to the texture
-            //glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, RenderTextureUint, 0);
+            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, RenderTextureUint, 0);
+            //glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, Width, Height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+            //Bind the render depth buffer to the framebuffer
+            //glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, RenderBufferUint);
+            //Bind the framebuffer to the texture
+            //glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, RenderTextureUint, 0);
             //=========================
             // Setup the depth texture
             //=========================
-            //DepthTextureUint = glGenTexture();
-            //glBindTexture(GL_TEXTURE_2D, DepthTextureUint);
+            glActiveTexture(GL_TEXTURE1);
+            DepthTextureUint = glGenTexture();
+            glBindTexture(GL_TEXTURE_2D, DepthTextureUint);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
             glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, Width, Height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-            //Bind the render depth buffer to the framebuffer
             glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, RenderBufferUint);
-            //Bind the framebuffer to the texture
-            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, RenderTextureUint, 0);
+            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, DepthTextureUint, 0);
             //Check for issues
             if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
             {
@@ -192,6 +200,7 @@ namespace CorgEng.Core.Rendering
                 glLinkProgram(programUint);
                 //Fetch uniform locations
                 textureUniformLocation = glGetUniformLocation(programUint, "renderTexture");
+                depthUniformLocation = glGetUniformLocation(programUint, "depthTexture");
                 //==========================
                 // Do the same for the depth
                 //==========================
@@ -307,6 +316,7 @@ namespace CorgEng.Core.Rendering
             //Set the texture parameters
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, ScalingMode == ScalingModes.NEAREST_NEIGHBOUR ? GL_NEAREST : GL_LINEAR);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, ScalingMode == ScalingModes.NEAREST_NEIGHBOUR ? GL_NEAREST : GL_LINEAR);
+            // Bind the depth texture
             glBindTexture(GL_TEXTURE_2D, DepthTextureUint);
             //Load the texture scale
             glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, Width, Height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
@@ -331,7 +341,8 @@ namespace CorgEng.Core.Rendering
             //Set the using program to our program uint
             glUseProgram(programUint);
             //Bind uniform variables
-            glUniform1ui(textureUniformLocation, 0);
+            glUniform1i(textureUniformLocation, 0);
+            glUniform1i(depthUniformLocation, 1);
             //Bind the vertex buffer
             glEnableVertexAttribArray(0);
             glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
@@ -348,6 +359,8 @@ namespace CorgEng.Core.Rendering
             //Bind the texture
             glActiveTexture(GL_TEXTURE0);
             glBindTexture(GL_TEXTURE_2D, RenderTextureUint);
+            glActiveTexture(GL_TEXTURE1);
+            glBindTexture(GL_TEXTURE_2D, DepthTextureUint);
             //glBindRenderbuffer(RenderBufferUint);
             //glBindTexture(GL_RENDERBUFFER, RenderBufferUint);
             //Draw
