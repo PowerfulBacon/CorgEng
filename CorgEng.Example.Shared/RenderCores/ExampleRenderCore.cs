@@ -11,6 +11,7 @@ using CorgEng.GenericInterfaces.Rendering.Textures;
 using CorgEng.GenericInterfaces.UserInterface.Components;
 using CorgEng.GenericInterfaces.UserInterface.Generators;
 using CorgEng.Lighting.RenderCores;
+using CorgEng.Rendering.DepthParallax;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -43,7 +44,7 @@ namespace CorgEng.Example.Shared.RenderCores
 
         private LightingRenderCore lightingRenderCore;
 
-        public override bool DebugDrawDepth => true;
+        private ParallaxLayerRenderCore parallaxLayerRenderCore;
 
         public ExampleRenderCore(IWorld world) : base(world)
         {
@@ -58,6 +59,9 @@ namespace CorgEng.Example.Shared.RenderCores
             ITextObject textObject = TextObjectFactory.CreateTextObject(spriteRenderer, font, "CorgEng.Font");
             textObject.StartRendering();
 
+            parallaxLayerRenderCore = new ParallaxLayerRenderCore(world, 1, 30);
+            parallaxLayerRenderCore?.Initialize();
+
             lightingRenderCore = new LightingRenderCore(world);
             lightingRenderCore.Initialize();
         }
@@ -65,8 +69,10 @@ namespace CorgEng.Example.Shared.RenderCores
         public override void PerformRender()
         {
             spriteRenderer?.Render(CorgEngMain.MainCamera);
-            lightingRenderCore.DoRender();
-            lightingRenderCore.DrawToBuffer(FrameBufferUint, 0, 0, Width, Height);
+            parallaxLayerRenderCore.DoRender();
+            parallaxLayerRenderCore.DrawToBuffer(FrameBufferUint, 0, 0, Width, Height);
+            //lightingRenderCore.DoRender();
+            //lightingRenderCore.DrawToBuffer(FrameBufferUint, 0, 0, Width, Height);
         }
     }
 }

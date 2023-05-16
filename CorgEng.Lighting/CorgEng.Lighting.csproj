@@ -9,6 +9,7 @@
   <ItemGroup>
     <ProjectReference Include="..\CorgEng.Core\CorgEng.Core.csproj" />
     <ProjectReference Include="..\CorgEng.EntityComponentSystem\CorgEng.EntityComponentSystem.csproj" />
+    <ProjectReference Include="..\CorgEng.Rendering\CorgEng.Rendering.csproj" />
   </ItemGroup>
 
   <ItemGroup>

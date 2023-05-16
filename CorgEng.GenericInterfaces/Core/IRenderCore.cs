@@ -29,9 +29,11 @@ namespace CorgEng.GenericInterfaces.Core
         void Initialize();
 
         /// <summary>
-        /// Perform rendering
+        /// Render this render core to its render texture.
         /// </summary>
-        void DoRender();
+        /// <param name="previousDepthTexture">The depth texture of the thing that we are drawing on top of</param>
+        /// <param name="preRenderAction"></param>
+        void DoRender(Action? preRenderAction = null);
 
         /// <summary>
         /// Draws the rendered frame buffer to the screen (Framebuffer 0)

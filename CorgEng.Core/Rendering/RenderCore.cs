@@ -45,6 +45,8 @@ namespace CorgEng.Core.Rendering
 
         private static int depthUniformLocation;
 
+        private static int depthIncrementUniformLocation;
+
         //Create a program for rendering
         private static uint programUint;
 
@@ -113,7 +115,10 @@ namespace CorgEng.Core.Rendering
 
         public virtual IColour BackColour { get; } = ColourFactory.GetColour(0, 0, 0, 0);
 
-        public virtual bool DebugDrawDepth => false;
+        /// <summary>
+        /// How much depth should we add to this render core?
+        /// </summary>
+        public virtual float DepthAdd { get; } = 0;
 
         [UsingDependency]
         private static IWorldFactory WorldFactory;
@@ -201,6 +206,7 @@ namespace CorgEng.Core.Rendering
                 //Fetch uniform locations
                 textureUniformLocation = glGetUniformLocation(programUint, "renderTexture");
                 depthUniformLocation = glGetUniformLocation(programUint, "depthTexture");
+                depthIncrementUniformLocation = glGetUniformLocation(programUint, "depthIncrement");
                 //==========================
                 // Do the same for the depth
                 //==========================
@@ -228,12 +234,13 @@ namespace CorgEng.Core.Rendering
         /// <summary>
         /// Do rendering
         /// </summary>
-        public void DoRender()
+        public void DoRender(Action? preRenderAction = null)
         {
             RenderModes prev = SwitchBlendMode(BlendMode);
             DepthModes prevDepth = SwitchDepthMode(DepthMode);
             IColour prevColour = SwitchBackColour(BackColour);
             PreRender();
+            preRenderAction?.Invoke();
             PerformRender();
             SwitchBlendMode(prev);
             SwitchDepthMode(prevDepth);
@@ -340,9 +347,11 @@ namespace CorgEng.Core.Rendering
 
             //Set the using program to our program uint
             glUseProgram(programUint);
+            //glUseProgram(depthProgramUint);
             //Bind uniform variables
             glUniform1i(textureUniformLocation, 0);
             glUniform1i(depthUniformLocation, 1);
+            glUniform1f(depthIncrementUniformLocation, DepthAdd);
             //Bind the vertex buffer
             glEnableVertexAttribArray(0);
             glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);

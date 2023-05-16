@@ -79,6 +79,8 @@ namespace CorgEng.Rendering
 
         public void Render(ICamera camera)
         {
+            if (ShaderSet == null)
+                throw new Exception("Attempting to use a renderer before it has been initialised. Please call Initialize() first.");
             //Start using our program
             //Shaders were loaded during init
             glUseProgram(programUint);

@@ -20,6 +20,7 @@
     <ProjectReference Include="..\CorgEng.Lighting\CorgEng.Lighting.csproj" />
     <ProjectReference Include="..\CorgEng.Networking\CorgEng.Networking.csproj" />
     <ProjectReference Include="..\CorgEng.Pathfinding\CorgEng.Pathfinding.csproj" />
+    <ProjectReference Include="..\CorgEng.Rendering\CorgEng.Rendering.csproj" />
     <ProjectReference Include="..\CorgEng.UtilityTypes\CorgEng.UtilityTypes.csproj" />
   </ItemGroup>
   <ItemGroup>

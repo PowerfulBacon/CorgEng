@@ -10,6 +10,7 @@ using CorgEng.GenericInterfaces.Rendering.Icons;
 using CorgEng.Lighting.Components;
 using CorgEng.Networking.Components;
 using CorgEng.Pathfinding.Components;
+using CorgEng.Rendering.ComponentSystem.DepthParallax;
 using CorgEng.UtilityTypes.Colours;
 using CorgEng.UtilityTypes.Vectors;
 using System;
@@ -40,7 +41,8 @@ namespace CorgEng.Example.Shared.Components.SandFactory
                     world.EntityManager.CreateEmptyEntity(entity => {
                         //Add components
                         entity.AddComponent(new NetworkTransformComponent());
-                        entity.AddComponent(new SpriteRenderComponent());
+                        entity.AddComponent(new DepthSpriteRenderComponent());
+                        //entity.AddComponent(new SpriteRenderComponent());
                         entity.AddComponent(new SandComponent());
                         entity.AddComponent(new SolidComponent());
                         entity.AddComponent(new LightingComponent() {
@@ -48,7 +50,7 @@ namespace CorgEng.Example.Shared.Components.SandFactory
                         });
                         //Update the entity
                         new SetPositionEvent(new Vector<float>(transform.Position.Value.X, transform.Position.Value.Y)).Raise(entity);
-                        new SetSpriteEvent(IconFactory.CreateIcon("sand", DebugRandom.Next(0, 100), Constants.RenderingConstants.DEFAULT_RENDERER_PLANE)).Raise(entity);
+                        new SetSpriteEvent(IconFactory.CreateIcon("sand", DebugRandom.Next(10, 300) / 10.0f, Constants.RenderingConstants.DEFAULT_RENDERER_PLANE)).Raise(entity);
                         new SetSpriteRendererEvent(1).Raise(entity);
                     });
                 });
