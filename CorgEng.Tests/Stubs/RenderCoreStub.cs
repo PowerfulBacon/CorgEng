@@ -17,7 +17,7 @@ namespace CorgEng.Tests.Stubs
 
         public int Height => 0;
 
-        public void DoRender()
+        public void DoRender(Action preRenderAction = null)
         {
             return;
         }
