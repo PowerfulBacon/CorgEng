@@ -50,9 +50,6 @@ namespace CorgEng.Core.Rendering
         //Create a program for rendering
         private static uint programUint;
 
-        // Create a program for rendering depth
-        private static uint depthProgramUint;
-
         /// <summary>
         /// The uint of the frame buffer
         /// </summary>
@@ -183,7 +180,6 @@ namespace CorgEng.Core.Rendering
                 initialized = true;
                 //create and link a program
                 programUint = glCreateProgram();
-                depthProgramUint = glCreateProgram();
                 //Start using the program: All operations will affect this program
                 glUseProgram(programUint);
                 //Generate a vertex array and bind it
@@ -207,17 +203,6 @@ namespace CorgEng.Core.Rendering
                 textureUniformLocation = glGetUniformLocation(programUint, "renderTexture");
                 depthUniformLocation = glGetUniformLocation(programUint, "depthTexture");
                 depthIncrementUniformLocation = glGetUniformLocation(programUint, "depthIncrement");
-                //==========================
-                // Do the same for the depth
-                //==========================
-                depthShaderSet = ShaderFactory.CreateShaderSet("DepthShader");
-                glUseProgram(depthProgramUint);
-                //Generate a vertex array and bind it
-                glBindVertexArray(vertexArray);
-                //Create and bind the vertex buffer
-                glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-                depthShaderSet.AttachShaders(depthProgramUint);
-                glLinkProgram(depthProgramUint);
             }
         }
 
@@ -347,7 +332,6 @@ namespace CorgEng.Core.Rendering
 
             //Set the using program to our program uint
             glUseProgram(programUint);
-            //glUseProgram(depthProgramUint);
             //Bind uniform variables
             glUniform1i(textureUniformLocation, 0);
             glUniform1i(depthUniformLocation, 1);

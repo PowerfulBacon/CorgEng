@@ -14,6 +14,6 @@ void main()
 	result = texture(renderTexture, fragUV);
 	float depthValue = texture(depthTexture, fragUV).r + depthIncrement;
 	gl_FragDepth = depthValue;
-	result = texture(depthTexture, fragUV);
+	//result = texture(depthTexture, fragUV);
 	//result.a *= depthValue;
 }
