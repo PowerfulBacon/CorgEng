@@ -5,6 +5,7 @@ using CorgEng.GenericInterfaces.Logging;
 using CorgEng.GenericInterfaces.Rendering.Shaders;
 using CorgEng.GenericInterfaces.UtilityTypes;
 using System;
+using System.Collections.Generic;
 using static OpenGL.Gl;
 
 namespace CorgEng.Core.Rendering
@@ -204,6 +205,18 @@ namespace CorgEng.Core.Rendering
                 depthUniformLocation = glGetUniformLocation(programUint, "depthTexture");
                 depthIncrementUniformLocation = glGetUniformLocation(programUint, "depthIncrement");
             }
+        }
+
+        private static Dictionary<string, IShaderSet> loadedShaders = new Dictionary<string, IShaderSet>();
+
+        private IShaderSet GetShader(string name)
+        {
+            if (!loadedShaders.ContainsKey(name))
+            {
+                IShaderSet createdShader = ShaderFactory.CreateShaderSet(name);
+                loadedShaders.Add(name, createdShader);
+            }
+            return loadedShaders[name];
         }
 
         public void PreRender()
