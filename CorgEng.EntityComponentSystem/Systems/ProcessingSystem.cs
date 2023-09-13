@@ -1,4 +1,6 @@
-﻿using CorgEng.Core;
+﻿//#define PROCESSING_SYSTEM_DEBUG
+
+using CorgEng.Core;
 using CorgEng.Core.Dependencies;
 using CorgEng.EntityComponentSystem.Events.Events;
 using CorgEng.EntityComponentSystem.Implementations.Deletion;
@@ -9,6 +11,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace CorgEng.EntityComponentSystem.Systems
@@ -53,18 +56,66 @@ namespace CorgEng.EntityComponentSystem.Systems
         /// </summary>
         public static double DeltaTimeMultiplier { get; set; } = 1;
 
-        private ConcurrentQueue<InvokationAction> WorkingQueue
-        {
-            get => priorityInvokationQueue.Count > 0 ? priorityInvokationQueue : invokationQueue;
-        }
+        private int tickRunsRemaining = 0;
+        private bool isRunningProcesses = false;
+
+        private double nextProcessTime;
 
         /// <summary>
-        /// Override initial behaviour to also be able to handle processing at regular intervals
+        /// Override initial behaviour to also be able to handle processing at regular intervals.
+        /// This works slightly differently as it needs to allow for adequate time to process
+        /// the things it needs to process while still letting signals pass.
         /// </summary>
-        protected override void SystemThread()
+        public override bool PerformRun(EntitySystemThreadManager threadManager)
         {
-            while (!CorgEngMain.Terminated && !assassinated)
+            if (!isRunningProcesses)
             {
+                // Refresh the tick runs that we need to
+                if (tickRunsRemaining <= 0)
+                {
+                    tickRunsRemaining = invokationQueue.Count;
+                }
+                // Run the processes that we need to
+                while (invokationQueue.Count > 0 && tickRunsRemaining-- > 0)
+                {
+                    InvokationAction firstInvokation;
+                    invokationQueue.TryDequeue(out firstInvokation);
+                    if (firstInvokation != null)
+                    {
+                        try
+                        {
+                            //Invoke the provided action
+                            firstInvokation.Action();
+                        }
+                        catch (Exception e)
+                        {
+                            Logger?.WriteLine($"Event Called From: {firstInvokation.CallingMemberName}:{firstInvokation.CallingLineNumber} in {firstInvokation.CallingFile}\n{e}", LogType.ERROR);
+                        }
+                    }
+                    // Check to see if someone else is doing something more important than us
+                    if (CheckRelinquishControl())
+                    {
+                        return false;
+                    }
+                }
+                // Move to the next step (processes)
+                isRunningProcesses = true;
+            }
+            if (isRunningProcesses)
+            {
+                // We are not ready to re-fire at this time
+                if (!continued && nextProcessTime > CorgEngMain.Time)
+                {
+                    isRunningProcesses = false;
+#if PROCESSING_SYSTEM_DEBUG
+                    Logger.WriteLine($"{this} is not ready to fire, fire at: {nextProcessTime}, current time: {CorgEngMain.Time}", LogType.DEBUG);
+                    if (calledFromProcess)
+                    {
+                        Logger.WriteLine($"wtf, we were claled from runningProcess::: {this}", LogType.TEMP);
+                    }
+#endif
+                    return invokationQueue.IsEmpty;
+                }
                 //If we aren't continued, fetch the new queue
                 if (!continued)
                 {
@@ -73,6 +124,9 @@ namespace CorgEng.EntityComponentSystem.Systems
                     deltaTime = CorgEngMain.Time - lastFireTime;
                     //Mark the last fire time as now
                     lastFireTime = CorgEngMain.Time;
+#if PROCESSING_SYSTEM_DEBUG
+                    Logger.WriteLine($"Firing {ToString()} processing system at {CorgEngMain.Time} (Delay: {ProcessDelay}ms)", LogType.DEBUG);
+#endif
                 }
                 //Mark the system as being completed, unless we have to break out early
                 continued = false;
@@ -92,47 +146,34 @@ namespace CorgEng.EntityComponentSystem.Systems
                     {
                         Logger.WriteLine(e, LogType.ERROR);
                     }
-                    //Check to see if a new signal that needs to be handled has come in
-                    if (WorkingQueue.Count > 0)
+                    // Check to see if someone else is doing something more important than us
+                    if (CheckRelinquishControl())
                     {
-                        //We have an invokation to handle, we will continue processing on the next cycle round
                         continued = true;
-                        break;
+                        return false;
                     }
                 }
-                //Allocate time to processing signal handles
-                InvokationAction current;
-                while (WorkingQueue.TryDequeue(out current))
+                // Move to the first step again
+                isRunningProcesses = false;
+                //Calculate how long we have to wait for, based on the last fire time, our current time
+                //and the system wait time.
+                //Stay in sync! if this value is less than 0, we are overtiming.
+                int waitTime = (int)Math.Max(1000 * (lastFireTime - CorgEngMain.Time) + ProcessDelay, 0);
+                nextProcessTime = CorgEngMain.Time + (waitTime * 0.001);
+#if PROCESSING_SYSTEM_DEBUG
+                Logger.WriteLine($"{ToString()} queued to fire in {waitTime}ms. It should fire at {nextProcessTime}, it is currently {CorgEngMain.Time}", LogType.DEBUG);
+#endif
+                //If we recieve a signal, loop straight round to processing signal handlers.
+                //Otherwise, we reached the next processor step, so do processing
+                if (waitTime > 0)
                 {
-                    try
-                    {
-                        current.Action();
-                    }
-                    catch (Exception e)
-                    {
-                        Logger?.WriteLine($"Event Called From: {current.CallingMemberName}:{current.CallingLineNumber} in {current.CallingFile}\n{e}", LogType.ERROR);
-                    }
+                    threadManager.FireSystemIn(this, waitTime);
                 }
-                //If we completed processing, wait for the specified time, or until another signal handler comes in
-                //If a signal comes in when we loop round, we will go straight back to handling signals again
-                if (!continued)
-                {
-                    isWaiting = true;
-                    //Calculate how long we have to wait for, based on the last fire time, our current time
-                    //and the system wait time.
-                    //Stay in sync! if this value is less than 0, we are overtiming.
-                    int waitTime = (int)Math.Max(1000 * (lastFireTime - CorgEngMain.Time) + ProcessDelay, 0);
-                    //If we recieve a signal, loop straight round to processing signal handlers.
-                    //Otherwise, we reached the next processor step, so do processing
-                    if(waitTime > 0)
-                        continued = waitHandle.WaitOne(waitTime);
-                    else
-                        continued = false;
-                    isWaiting = false;
-                }
+                // We need to immediately re-fire to process the next tick
+                else
+                    return false;
             }
-            //Terminated
-            Logger?.WriteLine($"Terminated EntitySystem thread: {this}", LogType.LOG);
+            return invokationQueue.IsEmpty;
         }
 
         private HashSet<Type> registeredDeletionHandlers = new HashSet<Type>();

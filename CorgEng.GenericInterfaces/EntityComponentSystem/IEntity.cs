@@ -11,6 +11,8 @@ namespace CorgEng.GenericInterfaces.EntityComponentSystem
     public interface IEntity
     {
 
+        public delegate void InternalSignalHandleDelegate(IEntity entity, IEvent signal, bool synchronous, string callingFile, string callingMember, int callingLine);
+
         /// <summary>
         /// The name of the definition used to spawn this entity.
         /// Null if the entity was created without using EntityCreator.
@@ -72,6 +74,21 @@ namespace CorgEng.GenericInterfaces.EntityComponentSystem
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
         bool HasComponent<T>();
+
+        /// <summary>
+        /// Add an event listener to a specific type
+        /// </summary>
+        /// <param name="eventType"></param>
+        /// <param name="eventHandler"></param>
+        void AddEventListener(Type eventType, InternalSignalHandleDelegate eventHandler);
+
+        /// <summary>
+        /// Remove an event listener from a provided event type.
+        /// 
+        /// </summary>
+        /// <param name="eventType"></param>
+        /// <param name="eventHandler"></param>
+        void RemoveEventListenter(Type eventType, InternalSignalHandleDelegate eventHandler);
 
     }
 }

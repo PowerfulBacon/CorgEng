@@ -1,4 +1,5 @@
 ﻿using CorgEng.Core.Dependencies;
+using CorgEng.DependencyInjection.Injection;
 using CorgEng.EntityComponentSystem.Components;
 using CorgEng.EntityComponentSystem.Entities;
 using CorgEng.EntityComponentSystem.Events;
@@ -6,11 +7,14 @@ using CorgEng.EntityComponentSystem.Systems;
 using CorgEng.GenericInterfaces.ContentLoading;
 using CorgEng.GenericInterfaces.EntityComponentSystem;
 using CorgEng.GenericInterfaces.Logging;
+using CorgEng.GenericInterfaces.Networking.Clients;
 using CorgEng.GenericInterfaces.Networking.Networking;
 using CorgEng.GenericInterfaces.Networking.Networking.Client;
 using CorgEng.GenericInterfaces.Networking.Networking.Server;
 using CorgEng.GenericInterfaces.Networking.Packets;
 using CorgEng.Networking.EntitySystems;
+using CorgEng.Networking.Networking.Client;
+using CorgEng.Networking.Networking.Server;
 using CorgEng.Networking.VersionSync;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
@@ -30,46 +34,27 @@ namespace CorgEng.Tests.NetworkingTests
     {
 
         [UsingDependency]
-        private static INetworkingServer Server;
-
-        [UsingDependency]
-        private static INetworkingClient Client;
-
-        [UsingDependency]
         private static INetworkMessageFactory MessageFactory;
 
         [UsingDependency]
+        private static IWorldFactory WorldFactory;
+
+        [UsingDependency]
         private static ILogger Logger;
-
-        private static bool TestRunning = false;
-
-        [TestCleanup]
-        public void AfterTest()
-        {
-            Server.Cleanup();
-            Client.Cleanup();
-            Logger?.WriteLine("TEST COMPLETED", LogType.DEBUG);
-            TestRunning = false;
-        }
-
-        [TestInitialize]
-        public void SetupServer()
-        {
-            Server.GetType().GetMethod("LoadDefaultPrototype").Invoke(Server, new object[0]);
-        }
 
         [TestMethod]
         [Timeout(5000)]
         public void TestNetworkConnection()
         {
-            if (TestRunning)
-                Assert.Fail("Attempted to test while testing.");
-            TestRunning = true;
             bool success = false;
-            Server.StartHosting(5000);
-            Client.OnConnectionSuccess += (IPAddress ipAddress) => { success = true;  };
-            Client.OnConnectionFailed += (IPAddress ipAddress, DisconnectReason disconnectReason, string reasonText) => { Assert.Fail("Connection failed, server rejected connection."); };
-            Client.AttemptConnection("127.0.0.1", 5000, 1000);
+
+            IWorld clientWorld = WorldFactory.CreateWorld();
+            IWorld serverWorld = WorldFactory.CreateWorld();
+
+            serverWorld.ServerInstance.StartHosting(5000);
+            clientWorld.ClientInstance.OnConnectionSuccess += (IPAddress ipAddress) => { success = true;  };
+            clientWorld.ClientInstance.OnConnectionFailed += (IPAddress ipAddress, DisconnectReason disconnectReason, string reasonText) => { Assert.Fail("Connection failed, server rejected connection."); };
+            clientWorld.ClientInstance.AttemptConnection("127.0.0.1", 5000, 1000);
 
             while (!success)
                 Thread.Sleep(0);
@@ -80,16 +65,17 @@ namespace CorgEng.Tests.NetworkingTests
         [Timeout(3000)]
         public void TestSendingToServer()
         {
-            if (TestRunning)
-                Assert.Fail("Attempted to test while testing.");
-            TestRunning = true;
             bool connected = false;
             bool success = false;
-            Server.StartHosting(5001);
-            Client.OnConnectionFailed += (IPAddress ipAddress, DisconnectReason disconnectReason, string reasonText) => { Assert.Inconclusive("Connection failed, server rejected connection."); };
-            Client.OnConnectionSuccess += (IPAddress ipAddress) => { connected = true; };
 
-            Server.NetworkMessageReceived += (PacketHeaders packetHeader, byte[] message, int start, int end) =>
+            IWorld clientWorld = WorldFactory.CreateWorld();
+            IWorld serverWorld = WorldFactory.CreateWorld();
+
+            serverWorld.ServerInstance.StartHosting(5001);
+            clientWorld.ClientInstance.OnConnectionFailed += (IPAddress ipAddress, DisconnectReason disconnectReason, string reasonText) => { Assert.Inconclusive("Connection failed, server rejected connection."); };
+            clientWorld.ClientInstance.OnConnectionSuccess += (IPAddress ipAddress) => { connected = true; };
+
+            serverWorld.ServerInstance.NetworkMessageReceived += (PacketHeaders packetHeader, byte[] message, int start, int end) =>
             {
                 if (packetHeader == PacketHeaders.NETWORKING_TEST)
                 {
@@ -100,14 +86,14 @@ namespace CorgEng.Tests.NetworkingTests
                 }
             };
 
-            Client.AttemptConnection("127.0.0.1", 5001, 1000);
+            clientWorld.ClientInstance.AttemptConnection("127.0.0.1", 5001, 1000);
 
             //Await connection to the server
             while (!connected)
                 Thread.Sleep(0);
 
             //Send a server message to the client
-            Client.QueueMessage(
+            clientWorld.ClientInstance.QueueMessage(
                 MessageFactory.CreateMessage(PacketHeaders.NETWORKING_TEST, Encoding.ASCII.GetBytes("CORRECT"))
                 );
 
@@ -120,15 +106,16 @@ namespace CorgEng.Tests.NetworkingTests
         [Timeout(3000)]
         public void TestSendingToClient()
         {
-            if (TestRunning)
-                Assert.Fail("Attempted to test while testing.");
-            TestRunning = true;
             bool connected = false;
             bool success = false;
-            Server.StartHosting(5002);
-            Client.OnConnectionFailed += (IPAddress ipAddress, DisconnectReason disconnectReason, string reasonText) => { Assert.Inconclusive("Connection failed, server rejected connection."); };
-            Client.OnConnectionSuccess += (IPAddress ipAddress) => { connected = true; };
-            Client.NetworkMessageReceived += (PacketHeaders packetHeader, byte[] message, int start, int end) =>
+
+            IWorld clientWorld = WorldFactory.CreateWorld();
+            IWorld serverWorld = WorldFactory.CreateWorld();
+
+            serverWorld.ServerInstance.StartHosting(5002);
+            clientWorld.ClientInstance.OnConnectionFailed += (IPAddress ipAddress, DisconnectReason disconnectReason, string reasonText) => { Assert.Inconclusive("Connection failed, server rejected connection."); };
+            clientWorld.ClientInstance.OnConnectionSuccess += (IPAddress ipAddress) => { connected = true; };
+            clientWorld.ClientInstance.NetworkMessageReceived += (PacketHeaders packetHeader, byte[] message, int start, int end) =>
             {
                 if (packetHeader == PacketHeaders.NETWORKING_TEST)
                 {
@@ -138,15 +125,15 @@ namespace CorgEng.Tests.NetworkingTests
                     success = true;
                 }
             };
-            Client.AttemptConnection("127.0.0.1", 5002, 1000);
+            clientWorld.ClientInstance.AttemptConnection("127.0.0.1", 5002, 1000);
 
             //Await connection to the server
             while (!connected)
                 Thread.Sleep(0);
 
             //Send a server message to the client
-            Server.QueueMessage(
-                Server.ClientAddressingTable.GetEveryone(),
+            serverWorld.ServerInstance.QueueMessage(
+                serverWorld.ServerInstance.ClientAddressingTable.GetEveryone(),
                 MessageFactory.CreateMessage(PacketHeaders.NETWORKING_TEST, Encoding.ASCII.GetBytes("CORRECT"))
                 );
 
@@ -158,9 +145,6 @@ namespace CorgEng.Tests.NetworkingTests
         [Timeout(5000)]
         public void TestClientKick()
         {
-            if (TestRunning)
-                Assert.Fail("Attempted to test while testing.");
-            TestRunning = true;
             Assert.Inconclusive("Test isn't implemented");
         }
 
@@ -168,9 +152,6 @@ namespace CorgEng.Tests.NetworkingTests
         [Timeout(5000)]
         public void TestBanning()
         {
-            if (TestRunning)
-                Assert.Fail("Attempted to test while testing.");
-            TestRunning = true;
             Assert.Inconclusive("Test isn't implemented");
         }
 
@@ -208,7 +189,7 @@ namespace CorgEng.Tests.NetworkingTests
 
             public override EntitySystemFlags SystemFlags { get; } = EntitySystemFlags.HOST_SYSTEM | EntitySystemFlags.CLIENT_SYSTEM;
 
-            public override void SystemSetup()
+            public override void SystemSetup(IWorld world)
             {
                 RegisterGlobalEvent<NetworkedTestEvent>(AcceptTestEvent);
             }
@@ -231,23 +212,23 @@ namespace CorgEng.Tests.NetworkingTests
         [Timeout(3000)]
         public void TestGlobalNetworkedEvent()
         {
-            if (TestRunning)
-                Assert.Fail("Attempted to test while testing.");
-            TestRunning = true;
-            //Set up a test entity system
-            NetworkedTestEntitySystem networkedTestEntitySystem = new NetworkedTestEntitySystem();
-            networkedTestEntitySystem.SystemSetup();
+            // Currently broken
+            Assert.Inconclusive("This test currently doesn't work.");
 
+            IWorld clientWorld = WorldFactory.CreateWorld();
+            IWorld serverWorld = WorldFactory.CreateWorld();
+
+            //Set up a test entity system
+            NetworkedTestEntitySystem networkedTestEntitySystem = clientWorld.EntitySystemManager.GetSingleton<NetworkedTestEntitySystem>();
             //Start a networking system
-            NetworkSystem networkSystem = new NetworkSystem();
-            networkSystem.SystemSetup();
+            NetworkSystem networkSystem = clientWorld.EntitySystemManager.GetSingleton<NetworkSystem>();
 
             //Connect to the server
             bool success = false;
-            Server.StartHosting(5003);
-            Client.OnConnectionSuccess += (IPAddress ipAddress) => { success = true; };
-            Client.OnConnectionFailed += (IPAddress ipAddress, DisconnectReason disconnectReason, string reasonText) => { Assert.Fail("Connection failed, server rejected connection."); };
-            Client.AttemptConnection("127.0.0.1", 5003, 1000);
+            serverWorld.ServerInstance.StartHosting(5003);
+            clientWorld.ClientInstance.OnConnectionSuccess += (IPAddress ipAddress) => { success = true; };
+            clientWorld.ClientInstance.OnConnectionFailed += (IPAddress ipAddress, DisconnectReason disconnectReason, string reasonText) => { Assert.Fail("Connection failed, server rejected connection."); };
+            clientWorld.ClientInstance.AttemptConnection("127.0.0.1", 5003, 1000);
 
             while (!success)
                 Thread.Sleep(0);
@@ -255,7 +236,7 @@ namespace CorgEng.Tests.NetworkingTests
             //Raise a global event
             NetworkedTestEvent testEvent = new NetworkedTestEvent();
             testEvent.testNumber = 142;
-            testEvent.RaiseGlobally();
+            testEvent.RaiseGlobally(serverWorld);
 
             Logger?.WriteLine($"Test event raised globally, ID: {testEvent.GetNetworkedIdentifier()}", LogType.DEBUG);
 

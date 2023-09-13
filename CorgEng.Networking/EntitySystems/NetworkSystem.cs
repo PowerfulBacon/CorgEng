@@ -12,6 +12,7 @@ using CorgEng.GenericInterfaces.Networking.Networking.Client;
 using CorgEng.GenericInterfaces.Networking.Networking.Server;
 using CorgEng.GenericInterfaces.Networking.Packets;
 using CorgEng.Networking.Components;
+using CorgEng.Networking.Networking;
 using CorgEng.Networking.Networking.Server;
 using CorgEng.Networking.VersionSync;
 using CorgEng.UtilityTypes.Vectors;
@@ -40,19 +41,19 @@ namespace CorgEng.Networking.EntitySystems
         private static INetworkMessageFactory NetworkMessageFactory;
 
         [UsingDependency]
-        private static IEntityCommunicator EntityCommunicator;
+        private static IEntityCommunicatorFactory EntityCommunicatorFactory;
 
-        [UsingDependency]
-        private static INetworkingServer NetworkingServer;
+        private IEntityCommunicator EntityCommunicator;
 
         public override EntitySystemFlags SystemFlags { get; } = EntitySystemFlags.HOST_SYSTEM | EntitySystemFlags.CLIENT_SYSTEM;
 
-        public override void SystemSetup()
+        public override void SystemSetup(IWorld world)
         {
+            EntityCommunicator = EntityCommunicatorFactory.CreateEntityCommunicator(world);
             RegisterLocalEvent<NetworkTransformComponent, ComponentAddedEvent>(OnComponentAdded);
             RegisterLocalEvent<NetworkTransformComponent, NetworkedEventRaisedEvent>(OnNetworkedEventRaised);
             RegisterLocalEvent<NetworkTransformComponent, InitialiseEvent>((e, c, s) => {
-                foreach (IClient client in ((NetworkingServer)NetworkingServer).connectedClients.Values)
+                foreach (IClient client in ((NetworkServer)world.ServerInstance).connectedClients.Values)
                     EntityCommunicator.CommunicateEntity(e, client);
             });
             RegisterGlobalEvent<NetworkedEventRaisedEvent>(OnGlobalNetworkedEventRaised);
@@ -100,7 +101,7 @@ namespace CorgEng.Networking.EntitySystems
             {
                 ServerCommunicator?.SendToReleventClients(
                     NetworkMessageFactory.CreateMessage(PacketHeaders.LOCAL_EVENT_RAISED, InjectEventCode(networkedEventRaisedEvent.RaisedEvent, entity)),
-                    transformComponent.Position,
+                    transformComponent.Position.Value,
                     new Vector<float>(1, 1, 1)
                     );
             }

@@ -2,6 +2,7 @@
 using CorgEng.Core.Dependencies;
 using CorgEng.Core.Modules;
 using CorgEng.EntityComponentSystem.Components;
+using CorgEng.GenericInterfaces.EntityComponentSystem;
 using CorgEng.GenericInterfaces.Logging;
 using CorgEng.GenericInterfaces.Networking.Attributes;
 using CorgEng.GenericInterfaces.Networking.Serialisation;
@@ -48,7 +49,7 @@ namespace CorgEng.Networking.Components
             //Locate all component types
             IEnumerable<Type> locatedComponentTypes = CorgEngMain.LoadedAssemblyModules
                 .SelectMany(x => x.GetTypes())
-                .Where(type => typeof(Component).IsAssignableFrom(type) && !type.IsAbstract);
+                .Where(type => typeof(IComponent).IsAssignableFrom(type) && !type.IsAbstract);
             //Populate the property info cache
             foreach (Type componentType in locatedComponentTypes)
             {

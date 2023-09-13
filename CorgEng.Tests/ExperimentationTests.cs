@@ -12,7 +12,7 @@ namespace CorgEng.Tests
     /// Class for experimenting with C# features
     /// </summary>
     [TestClass]
-    public class ExperimentationTests
+    public class ExperimentationTests : TestBase
     {
 
         [TestMethod]

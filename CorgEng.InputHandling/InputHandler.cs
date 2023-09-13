@@ -76,7 +76,7 @@ namespace CorgEng.InputHandling
         {
             //Synchronous to prevent subsystem overloading, will not render the
             //next frame until this is handled.
-            new MouseScrollEvent(y).RaiseGlobally(synchronous: true);
+            new MouseScrollEvent(y).RaiseGlobally(CorgEngMain.PrimaryWorld, synchronous: true);
             //Trigger the new actions
             foreach (string actionName in boundScrollActions)
             {
@@ -96,7 +96,7 @@ namespace CorgEng.InputHandling
         {
             //Synchronous to prevent subsystem overloading, will not render the
             //next frame until this is handled.
-            new MouseMoveEvent(x / CorgEngMain.GameWindow.Width, y / CorgEngMain.GameWindow.Height).RaiseGlobally(synchronous: true);
+            new MouseMoveEvent(x / CorgEngMain.GameWindow.Width, y / CorgEngMain.GameWindow.Height).RaiseGlobally(CorgEngMain.PrimaryWorld, synchronous: true);
             //Trigger the new actions
             foreach (string actionName in boundMouseMoveActions)
             {
@@ -134,7 +134,7 @@ namespace CorgEng.InputHandling
                         {
                             return;
                         }
-                        mousePressEvent.RaiseGlobally();
+                        mousePressEvent.RaiseGlobally(CorgEngMain.PrimaryWorld);
                         mouseDownAt = CorgEngMain.Time;
                         //Trigger the action
                         if (!boundMouseActions.TryGetValue(button, out action))
@@ -153,7 +153,7 @@ namespace CorgEng.InputHandling
                         MouseReleaseEvent mouseReleaseEvent = new MouseReleaseEvent(x / width, y / height, button, modifiers);
                         mouseReleaseEvent.HeldTime = CorgEngMain.Time - mouseDownAt;
                         //Raise synchronously, so we can determine if the event was handled
-                        mouseReleaseEvent.RaiseGlobally(true);
+                        mouseReleaseEvent.RaiseGlobally(CorgEngMain.PrimaryWorld, true);
                         //Handle world clicks
                         if (!mouseReleaseEvent.Handled && mouseReleaseEvent.MouseButton == MouseButton.Left)
                         {
@@ -192,7 +192,7 @@ namespace CorgEng.InputHandling
                 {
                     case InputState.Press:
                         KeyPressEvent keyPressEvent = new KeyPressEvent(key, mods);
-                        keyPressEvent.RaiseGlobally();
+                        keyPressEvent.RaiseGlobally(CorgEngMain.PrimaryWorld);
                         lock (heldKeysDownAt)
                         {
                             heldKeysDownAt.Add(key, CorgEngMain.Time);
@@ -214,7 +214,7 @@ namespace CorgEng.InputHandling
                         try
                         {
                             KeyReleaseEvent keyReleaseEvent = new KeyReleaseEvent(key, mods);
-                            keyReleaseEvent.RaiseGlobally();
+                            keyReleaseEvent.RaiseGlobally(CorgEngMain.PrimaryWorld);
                             //Trigger the action
                             if (!boundKeyActions.TryGetValue(key, out action))
                                 return;
@@ -270,57 +270,84 @@ namespace CorgEng.InputHandling
 
         public void AddKeybind(string action, Keys key)
         {
-            boundKeyActions.Add(key, action);
+            lock (boundKeyActions)
+            {
+                boundKeyActions.Add(key, action);
+            }
         }
 
         public void AddMouseButtonbind(string action, MouseButton key)
         {
-            boundMouseActions.Add(key, action);
+            lock (boundMouseActions)
+            {
+                boundMouseActions.Add(key, action);
+            }
         }
 
         public void AddMouseMoveBind(string action)
         {
-            boundMouseMoveActions.Add(action);
+            lock (boundMouseMoveActions)
+            {
+                boundMouseMoveActions.Add(action);
+            }
         }
 
         public void AddMouseScrollBind(string action)
         {
-            boundScrollActions.Add(action);
+            lock (boundScrollActions)
+            {
+                boundScrollActions.Add(action);
+            }
         }
 
         public void AddButtonPressAction(string actionKey, Func<bool> actionDelegate, int priority)
         {
-            if (!buttonDownActions.ContainsKey(actionKey))
-                buttonDownActions.Add(actionKey, new SortedList<int, Func<bool>>());
-            buttonDownActions[actionKey].Add(priority, actionDelegate);
+            lock (buttonDownActions)
+            {
+                if (!buttonDownActions.ContainsKey(actionKey))
+                    buttonDownActions.Add(actionKey, new SortedList<int, Func<bool>>());
+                buttonDownActions[actionKey].Add(priority, actionDelegate);
+            }
         }
 
         public void AddButtonReleaseAction(string actionKey, Func<double, bool> actionDelegate, int priority)
         {
-            if (!buttonUpActions.ContainsKey(actionKey))
-                buttonUpActions.Add(actionKey, new SortedList<int, Func<double, bool>>());
-            buttonUpActions[actionKey].Add(priority, actionDelegate);
+            lock (buttonUpActions)
+            {
+                if (!buttonUpActions.ContainsKey(actionKey))
+                    buttonUpActions.Add(actionKey, new SortedList<int, Func<double, bool>>());
+                buttonUpActions[actionKey].Add(priority, actionDelegate);
+            }
         }
 
         public void AddButtonHoldAction(string actionKey, Func<double, bool> actionDelegate, int priority)
         {
-            if (!buttonHoldActions.ContainsKey(actionKey))
-                buttonHoldActions.Add(actionKey, new SortedList<int, Func<double, bool>>());
-            buttonHoldActions[actionKey].Add(priority, actionDelegate);
+            lock (buttonHoldActions)
+            {
+                if (!buttonHoldActions.ContainsKey(actionKey))
+                    buttonHoldActions.Add(actionKey, new SortedList<int, Func<double, bool>>());
+                buttonHoldActions[actionKey].Add(priority, actionDelegate);
+            }
         }
 
         public void AddMouseMoveAction(string actionKey, Func<double, double, double, bool> actionDelegate, int priority)
         {
-            if (!mouseMoveActions.ContainsKey(actionKey))
-                mouseMoveActions.Add(actionKey, new SortedList<int, Func<double, double, double, bool>>());
-            mouseMoveActions[actionKey].Add(priority, actionDelegate);
+            lock (mouseMoveActions)
+            {
+                if (!mouseMoveActions.ContainsKey(actionKey))
+                    mouseMoveActions.Add(actionKey, new SortedList<int, Func<double, double, double, bool>>());
+                mouseMoveActions[actionKey].Add(priority, actionDelegate);
+            }
         }
 
         public void AddMouseScrollAction(string actionKey, Func<double, double, bool> actionDelegate, int priority)
         {
-            if (!scrollActions.ContainsKey(actionKey))
-                scrollActions.Add(actionKey, new SortedList<int, Func<double, double, bool>>());
-            scrollActions[actionKey].Add(priority, actionDelegate);
+            lock (scrollActions)
+            {
+                if (!scrollActions.ContainsKey(actionKey))
+                    scrollActions.Add(actionKey, new SortedList<int, Func<double, double, bool>>());
+                scrollActions[actionKey].Add(priority, actionDelegate);
+            }
         }
 
         public void GetCursorPosition(out double x, out double y)

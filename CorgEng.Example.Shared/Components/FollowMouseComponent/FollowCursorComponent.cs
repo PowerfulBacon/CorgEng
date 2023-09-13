@@ -5,6 +5,7 @@ using CorgEng.EntityComponentSystem.Events;
 using CorgEng.EntityComponentSystem.Implementations.Transform;
 using CorgEng.EntityComponentSystem.Systems;
 using CorgEng.EntityQuery;
+using CorgEng.GenericInterfaces.EntityComponentSystem;
 using CorgEng.GenericInterfaces.InputHandler;
 using CorgEng.GenericInterfaces.UtilityTypes;
 using CorgEng.GenericInterfaces.World;
@@ -28,14 +29,15 @@ namespace CorgEng.Example.Shared.Components.FollowMouseComponent
         private static IInputHandler InputHandler = null!;
 
         [UsingDependency]
-        private static IWorld World;
+        private static IEntityPositionTracker World;
 
-        private static EntityQuery<FollowCursorComponent> CursorComponents = new EntityQuery<FollowCursorComponent>();
+        private static EntityQuery<FollowCursorComponent> CursorComponents;
 
         public override EntitySystemFlags SystemFlags => EntitySystemFlags.CLIENT_SYSTEM;
 
-        public override void SystemSetup()
+        public override void SystemSetup(IWorld world)
         {
+            CursorComponents = new EntityQuery<FollowCursorComponent>(world);
             InputHandler.AddMouseMoveBind("cursor_moved");
             InputHandler.AddMouseMoveAction("cursor_moved", (deltaTime, mouseX, mouseY) => {
                 Vector<float> worldCoordinates = (Vector<float>)CorgEngMain.MainCamera.ScreenToWorldCoordinates(mouseX * 2 - 1, mouseY * 2 - 1, CorgEngMain.GameWindow.Width, CorgEngMain.GameWindow.Height);

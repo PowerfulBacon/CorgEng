@@ -16,18 +16,31 @@ namespace CorgEng.Networking.Serialization
     [Dependency]
     internal class AutoSerialiser : IAutoSerialiser
     {
+
+        private Type ConstructGenericType(Type startingType, BinaryReader binaryReader)
+        {
+            Type nextType = VersionGenerator.GetTypeFromNetworkedIdentifier(binaryReader.ReadUInt16());
+            if (nextType.IsGenericType)
+            {
+                Type nextGenericType = ConstructGenericType(nextType, binaryReader);
+                nextType = nextType.MakeGenericType(nextGenericType);
+            }
+            return nextType;
+        }
+
         public object Deserialize(Type deserialisationType, BinaryReader binaryReader)
         {
             //Set the value based on the property type
             if (typeof(ICustomSerialisationBehaviour).IsAssignableFrom(deserialisationType))
             {
+                // Wait, why do we need to do any of this if we already know the type we are deserialising??
+                // ^ Because subtypes can be assigned to variables of a parent type.
                 Type type = VersionGenerator.GetTypeFromNetworkedIdentifier(binaryReader.ReadUInt16());
                 //Generic types need additional handling in order to determine the contained generic type
                 if (type.IsGenericType)
                 {
-                    //Doesn't allow for embedded generic types, would be easy to implement with a recursive function however
-                    Type genericType = VersionGenerator.GetTypeFromNetworkedIdentifier(binaryReader.ReadUInt16()); ;
-                    type = type.MakeGenericType(genericType);
+                    Type createdGenericType = ConstructGenericType(type, binaryReader);
+                    type = type.MakeGenericType(createdGenericType);
                 }
                 ICustomSerialisationBehaviour createdObject = (ICustomSerialisationBehaviour)FormatterServices.GetUninitializedObject(type);
                 createdObject.DeserialiseFrom(binaryReader);
@@ -79,7 +92,13 @@ namespace CorgEng.Networking.Serialization
             }
             if (value is ICustomSerialisationBehaviour serialisationBehaviour)
             {
-                int genericSize = value.GetType().IsGenericType ? sizeof(ushort) : 0;
+                int genericSize = 0;
+                Type current = value.GetType();
+                while (current.IsGenericType)
+                {
+                    genericSize += sizeof(ushort);
+                    current = current.GetGenericArguments()[0];
+                }
                 return sizeof(ushort) + genericSize + serialisationBehaviour.GetSerialisationLength();
             }
             if (type.IsPrimitive)
@@ -97,10 +116,12 @@ namespace CorgEng.Networking.Serialization
                 if (typeof(ICustomSerialisationBehaviour).IsAssignableFrom(objectType))
                 {
                     binaryWriter.Write(VersionGenerator.GetNetworkedIdentifier(value.GetType()));
-                    if (value.GetType().IsGenericType)
+                    Type current = value.GetType();
+                    while (current.IsGenericType)
                     {
                         //TODO: Add embedded recursive types and multiple recursive type arguments.
-                        binaryWriter.Write(VersionGenerator.GetNetworkedIdentifier(value.GetType().GenericTypeArguments[0]));
+                        current = current.GenericTypeArguments[0];
+                        binaryWriter.Write(VersionGenerator.GetNetworkedIdentifier(current));
                     }
                     ((ICustomSerialisationBehaviour)value).SerialiseInto(binaryWriter);
                 }

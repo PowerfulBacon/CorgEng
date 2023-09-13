@@ -1,5 +1,6 @@
 ﻿//#define PERFORMANCE_TEST
 
+using CorgEng.Core.Dependencies;
 using CorgEng.EntityComponentSystem.Events;
 using CorgEng.EntityComponentSystem.Systems;
 using CorgEng.GenericInterfaces.EntityComponentSystem;
@@ -24,6 +25,9 @@ namespace CorgEng.Tests.Performance
     public class EventProcessing
     {
 
+        [UsingDependency]
+        private static IWorldFactory WorldFactory;
+
         private static int EventsHandled = 0;
         private static int LateHandles = 0;
         private static bool Running = false;
@@ -35,7 +39,7 @@ namespace CorgEng.Tests.Performance
         {
             public override EntitySystemFlags SystemFlags => EntitySystemFlags.HOST_SYSTEM;
 
-            public override void SystemSetup()
+            public override void SystemSetup(IWorld world)
             {
                 RegisterGlobalEvent<TestEvent>(HandleEvent);
             }
@@ -59,10 +63,12 @@ namespace CorgEng.Tests.Performance
 #if !PERFORMANCE_TEST
             Assert.Inconclusive("Test not executed. Please enable PERFORMANCE_TEST define in order to test performance.");
 #endif
+
+            IWorld world = WorldFactory.CreateWorld();
+
             EventsHandled = 0;
             LateHandles = 0;
-            TestEntitySystem testEntitySystem = new TestEntitySystem();
-            testEntitySystem.SystemSetup();
+            TestEntitySystem testEntitySystem = world.EntitySystemManager.GetSingleton<TestEntitySystem>();
 
             //Perform the tests
             Running = true;
@@ -71,7 +77,7 @@ namespace CorgEng.Tests.Performance
                 while (Running)
                 {
                     //Perform a run
-                    new TestEvent().RaiseGlobally();
+                    new TestEvent().RaiseGlobally(world);
                     //Run completed
                     runs++;
                 }
@@ -91,10 +97,11 @@ namespace CorgEng.Tests.Performance
 #if !PERFORMANCE_TEST
             Assert.Inconclusive("Test not executed. Please enable PERFORMANCE_TEST define in order to test performance.");
 #endif
+            IWorld world = WorldFactory.CreateWorld();
+
             EventsHandled = 0;
             LateHandles = 0;
-            TestEntitySystem testEntitySystem = new TestEntitySystem();
-            testEntitySystem.SystemSetup();
+            TestEntitySystem testEntitySystem = world.EntitySystemManager.GetSingleton<TestEntitySystem>();
 
             //Perform the tests
             Running = true;
@@ -103,7 +110,7 @@ namespace CorgEng.Tests.Performance
                 while (Running)
                 {
                     //Perform a run
-                    new TestEvent().RaiseGlobally(true);
+                    new TestEvent().RaiseGlobally(world, true);
                     //Run completed
                     runs++;
                 }
@@ -123,10 +130,11 @@ namespace CorgEng.Tests.Performance
 #if !PERFORMANCE_TEST
             Assert.Inconclusive("Test not executed. Please enable PERFORMANCE_TEST define in order to test performance.");
 #endif
+            IWorld world = WorldFactory.CreateWorld();
+
             EventsHandled = 0;
             LateHandles = 0;
-            TestEntitySystem testEntitySystem = new TestEntitySystem();
-            testEntitySystem.SystemSetup();
+            TestEntitySystem testEntitySystem = world.EntitySystemManager.GetSingleton<TestEntitySystem>();
 
             //Perform the tests
             Running = true;

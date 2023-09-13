@@ -19,7 +19,7 @@ namespace CorgEng.Example.Shared.Components.Gravity
     {
 
         [UsingDependency]
-        private static IWorld WorldAccess = default!;
+        private static IEntityPositionTracker WorldAccess = default!;
 
         public override EntitySystemFlags SystemFlags => EntitySystemFlags.HOST_SYSTEM;
 
@@ -30,7 +30,7 @@ namespace CorgEng.Example.Shared.Components.Gravity
         /// </summary>
         private WorldPathCellQueryer SolidCellQuery = new WorldPathCellQueryer();
 
-        public override void SystemSetup()
+        public override void SystemSetup(IWorld world)
         {
             RegisterLocalEvent<SandComponent, InitialiseEvent>(OnSandInitialise);
             RegisterLocalEvent<SandComponent, DeleteEntityEvent>(OnSandDestroyed);
@@ -49,7 +49,7 @@ namespace CorgEng.Example.Shared.Components.Gravity
         private void ProcessSand(IEntity sandEntity, SandComponent sandComponent, double deltaTime)
         {
             TransformComponent sandTransform = sandEntity.GetComponent<TransformComponent>();
-            Vector<float> nextPosition = new Vector<float>(sandTransform.Position.X, sandTransform.Position.Y - 1);
+            Vector<float> nextPosition = new Vector<float>(sandTransform.Position.Value.X, sandTransform.Position.Value.Y - 1);
             if (SolidCellQuery.EnterPositionCost(nextPosition, GenericInterfaces.Core.Direction.SOUTH) > 0)
             {
                 new SetPositionEvent(nextPosition).Raise(sandEntity);

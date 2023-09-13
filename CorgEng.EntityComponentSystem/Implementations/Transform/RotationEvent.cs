@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace CorgEng.EntityComponentSystem.Implementations.Transform
 {
-    internal class RotationEvent : INetworkedEvent
+    public class RotationEvent : INetworkedEvent
     {
         public bool CanBeRaisedByClient => false;
 

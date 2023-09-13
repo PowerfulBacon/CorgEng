@@ -37,5 +37,7 @@ namespace CorgEng.GenericInterfaces.Networking.Packets
         PING_RESPONSE,
         //Request information about an entity
         REQUEST_ENTITY,
+        //Update a netvar value
+        NETVAR_VALUE_UPDATED,
     }
 }

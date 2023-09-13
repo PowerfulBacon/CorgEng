@@ -1,4 +1,5 @@
 ﻿using CorgEng.Core.Dependencies;
+using CorgEng.EntityComponentSystem.Components.ComponentVariables;
 using CorgEng.EntityComponentSystem.Entities;
 using CorgEng.EntityComponentSystem.Events;
 using CorgEng.EntityComponentSystem.Events.Events;
@@ -9,17 +10,22 @@ using CorgEng.GenericInterfaces.Networking.VersionSync;
 using CorgEng.GenericInterfaces.UtilityTypes;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using static CorgEng.EntityComponentSystem.Entities.Entity;
 using static CorgEng.EntityComponentSystem.Systems.EntitySystem;
+using static CorgEng.GenericInterfaces.EntityComponentSystem.IEntity;
+using static CorgEng.GenericInterfaces.EntityComponentSystem.IEntitySystemManager;
 
 namespace CorgEng.EntityComponentSystem.Components
 {
+
     public abstract class Component : IInstantiatable, IVersionSynced, IComponent
     {
 
         [UsingDependency]
         private static ILogger Logger = null!;
-        
+
         /// <summary>
         /// The parent of this component
         /// </summary>
@@ -32,29 +38,63 @@ namespace CorgEng.EntityComponentSystem.Components
         //TODO: This is very memory expensive as its stored on ALL component instances, when it kind of works per-component.
         private List<InternalSignalHandleDelegate> componentInjectionLambdas = new List<InternalSignalHandleDelegate>();
 
+        private static Dictionary<Type, PropertyInfo[]> cvarTypeCache = new Dictionary<Type, PropertyInfo[]>();
+
+        public Component()
+        {
+            if (!cvarTypeCache.ContainsKey(GetType()))
+            {
+                lock (cvarTypeCache)
+                {
+                    if (!cvarTypeCache.ContainsKey(GetType()))
+                    {
+                        cvarTypeCache.Add(GetType(), GetType()
+                            .GetProperties()
+                            .Where(x => typeof(IComponentVariable).IsAssignableFrom(x.PropertyType))
+                            .ToArray());
+                    }
+                }
+            }
+            foreach (PropertyInfo cvarProperty in cvarTypeCache[GetType()])
+            {
+                IComponentVariable attachedCVar = (IComponentVariable)cvarProperty.GetValue(this);
+                attachedCVar.AssociateTo(this);
+            }
+        }
+
+        /// <summary>
+        /// Super cool optimisation
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        private sealed class CompTemplate<T>
+            where T : Component
+        {
+            internal static readonly T Template = Activator.CreateInstance<T>();
+        }
+
+        /// <summary>
+        /// Get the template component so that signals can be registered to its CVars
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public static T GetTemplate<T>()
+            where T : Component
+        {
+            return CompTemplate<T>.Template;
+        }
+
         /// <summary>
         /// Register existing signals when we are added
         /// to an entity.
         /// </summary>
         internal void OnComponentAdded(Entity parent)
         {
-            //Check if we have any registered signals
-            if (!EventManager.RegisteredEvents.ContainsKey(GetType()))
-            {
-                //Send the component added event
-                new ComponentAddedEvent(this).Raise(parent);
-                return;
-            }
             //Locate all event types we are listening for
-            foreach (Type eventType in EventManager.RegisteredEvents[GetType()])
+            foreach (Type eventType in parent.world.EntitySystemManager.GetRegisteredEventTypes(GetType()))
             {
                 EventComponentPair key = new EventComponentPair(eventType, GetType());
                 //Locate the monitoring system's callback handler
-                if (!RegisteredSystemSignalHandlers.ContainsKey(key))
-                {
-                    continue;
-                }
-                List<SystemEventHandlerDelegate> systemEventHandlers = RegisteredSystemSignalHandlers[key];
+                IEnumerable<SystemEventHandlerDelegate> systemEventHandlers = parent.world.EntitySystemManager.GetRegisteredSystemEventHandlers(key);
                 //Create a lambda function that injects this component and relays it to the system
                 InternalSignalHandleDelegate componentInjectionLambda = (IEntity entity, IEvent signal, bool synchronous, string callingFile, string callingMember, int callingLine) => {
                     foreach(SystemEventHandlerDelegate systemEventHandler in systemEventHandlers)
@@ -90,17 +130,12 @@ namespace CorgEng.EntityComponentSystem.Components
         {
             //Raise component removed event.
             new ComponentRemovedEvent(this).Raise(parent);
-            //Check if we have any registered signals
-            if (!EventManager.RegisteredEvents.ContainsKey(GetType()))
-                return;
             //Locate all event types we are listening for
-            foreach (Type eventType in EventManager.RegisteredEvents[GetType()])
+            foreach (Type eventType in parent.world.EntitySystemManager.GetRegisteredEventTypes(GetType()))
             {
                 EventComponentPair key = new EventComponentPair(eventType, GetType());
                 //Locate the monitoring system's callback handler
-                if (!RegisteredSystemSignalHandlers.ContainsKey(key))
-                    continue;
-                List<SystemEventHandlerDelegate> systemEventHandlers = RegisteredSystemSignalHandlers[key];
+                IEnumerable<SystemEventHandlerDelegate> systemEventHandlers = parent.world.EntitySystemManager.GetRegisteredSystemEventHandlers(key);
                 //Start listening for this event
                 if (parent.EventListeners == null)  //Probably shouldn't happen
                 {

@@ -10,6 +10,7 @@ using CorgEng.GenericInterfaces.Rendering.Icons;
 using CorgEng.Lighting.Components;
 using CorgEng.Networking.Components;
 using CorgEng.Pathfinding.Components;
+using CorgEng.Rendering.ComponentSystem.DepthParallax;
 using CorgEng.UtilityTypes.Colours;
 using CorgEng.UtilityTypes.Vectors;
 using System;
@@ -24,9 +25,6 @@ namespace CorgEng.Example.Shared.Components.SandFactory
     {
 
         [UsingDependency]
-        private static IEntityFactory EntityFactory = default!;
-
-        [UsingDependency]
         private static IIconFactory IconFactory = default!;
 
         private static Random DebugRandom = new Random();
@@ -35,23 +33,24 @@ namespace CorgEng.Example.Shared.Components.SandFactory
 
         protected override int ProcessDelay => 2000;
 
-        public override void SystemSetup()
+        public override void SystemSetup(IWorld world)
         {
             RegisterLocalEvent<SandFactoryComponent, InitialiseEvent>((entity, component, signal) => {
                 TransformComponent transform = entity.GetComponent<TransformComponent>();
                 RegisterProcess<SandFactoryComponent>(entity, (entity, component, deltaTime) => {
-                    EntityFactory.CreateEmptyEntity(entity => {
+                    world.EntityManager.CreateEmptyEntity(entity => {
                         //Add components
                         entity.AddComponent(new NetworkTransformComponent());
-                        entity.AddComponent(new SpriteRenderComponent());
+                        entity.AddComponent(new DepthSpriteRenderComponent());
+                        //entity.AddComponent(new SpriteRenderComponent());
                         entity.AddComponent(new SandComponent());
                         entity.AddComponent(new SolidComponent());
                         entity.AddComponent(new LightingComponent() {
                             Colour = new Colour(DebugRandom.NextSingle(), DebugRandom.NextSingle(), DebugRandom.NextSingle(), DebugRandom.NextSingle()),
                         });
                         //Update the entity
-                        new SetPositionEvent(new Vector<float>(transform.Position.X, transform.Position.Y)).Raise(entity);
-                        new SetSpriteEvent(IconFactory.CreateIcon("sand", 5, Constants.RenderingConstants.DEFAULT_RENDERER_PLANE)).Raise(entity);
+                        new SetPositionEvent(new Vector<float>(transform.Position.Value.X, transform.Position.Value.Y)).Raise(entity);
+                        new SetSpriteEvent(IconFactory.CreateIcon("sand", DebugRandom.Next(10, 300) / 10.0f, Constants.RenderingConstants.DEFAULT_RENDERER_PLANE)).Raise(entity);
                         new SetSpriteRendererEvent(1).Raise(entity);
                     });
                 });

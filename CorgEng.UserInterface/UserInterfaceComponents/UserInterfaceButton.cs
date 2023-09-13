@@ -1,4 +1,5 @@
 ﻿using CorgEng.Core;
+using CorgEng.GenericInterfaces.EntityComponentSystem;
 using CorgEng.GenericInterfaces.UserInterface.Anchors;
 using CorgEng.GenericInterfaces.UserInterface.Components;
 using CorgEng.GenericInterfaces.UtilityTypes;
@@ -15,11 +16,11 @@ namespace CorgEng.UserInterface.Components
     internal class UserInterfaceButton : UserInterfaceBox
     {
 
-        public UserInterfaceButton(IUserInterfaceComponent parent, IAnchor anchorDetails, IDictionary<string, string> arguments) : base(parent, anchorDetails, arguments)
+        public UserInterfaceButton(IWorld world, IUserInterfaceComponent parent, IAnchor anchorDetails, IDictionary<string, string> arguments) : base(world, parent, anchorDetails, arguments)
         {
         }
 
-        public UserInterfaceButton(IAnchor anchorDetails, IDictionary<string, string> arguments) : base(anchorDetails, arguments)
+        public UserInterfaceButton(IWorld world, IAnchor anchorDetails, IDictionary<string, string> arguments) : base(world, anchorDetails, arguments)
         {
         }
 

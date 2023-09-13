@@ -3,21 +3,22 @@ using CorgEng.EntityComponentSystem.Components;
 using CorgEng.EntityComponentSystem.Events;
 using CorgEng.EntityComponentSystem.Events.Events;
 using CorgEng.EntityComponentSystem.Implementations.Deletion;
+using CorgEng.EntityComponentSystem.Systems;
 using CorgEng.GenericInterfaces.EntityComponentSystem;
 using CorgEng.GenericInterfaces.Logging;
 using CorgEng.GenericInterfaces.UtilityTypes;
+using CorgEng.UtilityTypes.Monads;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
+using static CorgEng.GenericInterfaces.EntityComponentSystem.IEntity;
 
 namespace CorgEng.EntityComponentSystem.Entities
 {
 
-    public class Entity : IEntity
+    public class Entity : WorldObject, IEntity
     {
-
-        internal delegate void InternalSignalHandleDelegate(IEntity entity, IEvent signal, bool synchronous, string callingFile, string callingMember, int callingLine);
 
         [UsingDependency]
         private static ILogger Logger;
@@ -51,32 +52,32 @@ namespace CorgEng.EntityComponentSystem.Entities
         /// Components register themselves to this when needed, and this gets fired off to the component
         /// which then can fire off itself to the system.
         /// </summary>
-        internal Dictionary<Type, List<InternalSignalHandleDelegate>> EventListeners { get; set; } = null;
+        public Dictionary<Type, List<InternalSignalHandleDelegate>> EventListeners { get; set; } = null;
 
         /// <summary>
         /// Name of the entity definition
         /// </summary>
         public string DefinitionName { get; set; }
 
-        internal Entity()
+        internal Entity(IWorld world) : base(world)
         {
-            Identifier = EntityManager.GetNewEntityId();
-            EntityManager.RegisterEntity(this);
+            Identifier = world.EntityManager.GetNewEntityId();
+            world.EntityManager.RegisterEntity(this);
             //Entities are deletable by default
             AddComponent(new DeleteableComponent());
         }
 
-        public Entity(uint identifier)
+        internal Entity(IWorld world, uint identifier) : base(world)
         {
             Identifier = identifier;
-            EntityManager.RegisterEntity(this);
+            world.EntityManager.RegisterEntity(this);
             //Entities are deletable by default
             AddComponent(new DeleteableComponent());
         }
 
         ~Entity()
         {
-            Interlocked.Increment(ref EntityManager.GarbageCollectionCount);
+            Interlocked.Increment(ref ((EntityManager)world.EntityManager).GarbageCollectionCount);
             //Debug
             //Logger.WriteLine($"Entity GC'd. {EntityManager.GarbageCollectionCount}/{EntityManager.DeletionCount}", LogType.TEMP);
         }
@@ -97,7 +98,7 @@ namespace CorgEng.EntityComponentSystem.Entities
                 }
 #endif
                 Components.Add(component);
-                component.OnComponentAdded(this);
+                world.ComponentSignalInjector.OnComponentAdded(component, this);
             }
         }
 
@@ -109,7 +110,7 @@ namespace CorgEng.EntityComponentSystem.Entities
         {
             lock (Components)
             {
-                component.OnComponentRemoved(this, silent);
+                world.ComponentSignalInjector.OnComponentRemoved(component, this, silent);
                 Components.Remove(component);
             }
         }
@@ -200,5 +201,38 @@ namespace CorgEng.EntityComponentSystem.Entities
             return false;
         }
 
+        public Result<T> TryGetComponent<T>()
+        {
+            //Get derived types too
+            lock (Components)
+            {
+                foreach (IComponent _component in Components)
+                {
+                    if (_component is T componentAsT)
+                    {
+                        return new Result<T>(componentAsT);
+                    }
+                }
+            }
+            return new Failure<T>();
+        }
+
+        public void AddEventListener(Type eventType, InternalSignalHandleDelegate eventHandler)
+        {
+            if (EventListeners == null)
+                EventListeners = new Dictionary<Type, List<InternalSignalHandleDelegate>>();
+            if (EventListeners.ContainsKey(eventType))
+                EventListeners[eventType].Add(eventHandler);
+            else
+                EventListeners.Add(eventType, new List<InternalSignalHandleDelegate>() { eventHandler });
+        }
+
+        public void RemoveEventListenter(Type eventType, InternalSignalHandleDelegate eventHandler)
+        {
+            if (EventListeners[eventType].Contains(eventHandler))
+            {
+                EventListeners[eventType].Remove(eventHandler);
+            }
+        }
     }
 }

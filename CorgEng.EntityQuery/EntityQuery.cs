@@ -3,6 +3,7 @@ using CorgEng.EntityComponentSystem.Components;
 using CorgEng.EntityComponentSystem.Entities;
 using CorgEng.EntityComponentSystem.Events.Events;
 using CorgEng.EntityComponentSystem.Systems;
+using CorgEng.GenericInterfaces.EntityComponentSystem;
 using CorgEng.GenericInterfaces.Logging;
 using System;
 using System.Collections.Generic;
@@ -13,10 +14,14 @@ using System.Threading.Tasks;
 namespace CorgEng.EntityQuery
 {
 
-    public class EntityQuery
+    public class EntityQuery : WorldObject
     {
         [UsingDependency]
         internal static ILogger Logger = default!;
+
+        public EntityQuery(IWorld world) : base(world)
+        {
+        }
     }
 
     public class EntityQuery<TComponent> : EntityQuery
@@ -41,7 +46,7 @@ namespace CorgEng.EntityQuery
         /// <summary>
         /// Fetch the query if it already exists
         /// </summary>
-        public EntityQuery()
+        public EntityQuery(IWorld world) : base(world)
         {
             // Lock the entity query lookup so that we don't have issues with threading.
             lock (EntityQueryLookup)
@@ -57,25 +62,25 @@ namespace CorgEng.EntityQuery
                     {
                         // The entity lookup doesn't exist, perform an expensive search over all entities
 #pragma warning disable CS8619 // Nullability of reference types in value doesn't match target type.
-                        components = EntityManager.GetEntityArrayUnsafe()
+                        components = world.EntityManager.GetEntityArrayUnsafe()
                             .Select(entity => entity?.FindComponent<TComponent>())
                             .Where(component => component != null)
                             .ToHashSet();
 #pragma warning restore CS8619 // Nullability of reference types in value doesn't match target type.
                         if (components.Count > 0)
                         {
-                            EntityQuery.Logger.WriteLine($"Performed an entity query locating {components.Count} components. " +
+                            Logger.WriteLine($"Performed an entity query locating {components.Count} components. " +
                                 $"It would be far more efficient to initialise the query at runtime.", LogType.WARNING);
                         }
                         // Force ourselves into the entity query system
-                        EntitySystem.GetSingleton<EntityQuerySystem>()
+                        world.EntitySystemManager.GetSingleton<EntityQuerySystem>()
                             .RegisterLocalEvent<TComponent, ComponentAddedEvent>((entity, component, signal) =>
                             {
                                 if (component != signal.Component)
                                     return;
                                 components.Add(component);
                             });
-                        EntitySystem.GetSingleton<EntityQuerySystem>()
+                        world.EntitySystemManager.GetSingleton<EntityQuerySystem>()
                             .RegisterLocalEvent<TComponent, ComponentRemovedEvent>((entity, component, signal) =>
                             {
                                 if (component != signal.Component)
@@ -83,10 +88,10 @@ namespace CorgEng.EntityQuery
                                 components.Remove(component);
                             });
                     };
-                if (EntitySystem.SetupCompleted)
+                if (world.EntitySystemManager.SetupCompleted)
                     setupFunction();
                 else
-                    EntitySystem.postSetupAction += setupFunction;
+                    world.EntitySystemManager.postSetupAction += setupFunction;
             }
         }
 

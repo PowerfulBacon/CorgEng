@@ -28,13 +28,10 @@ namespace CorgEng.InputHandling.ClickHandler
     {
 
         [UsingDependency]
-        private static IWorld World = default!;
+        private static IEntityPositionTracker World = default!;
 
         [UsingDependency]
         private static IIconFactory IconFactory = default!;
-
-        [UsingDependency]
-        private static IEntityFactory EntityFactory = default!;
 
         [UsingDependency]
         private static IInputHandler InputHandler = default!;
@@ -50,7 +47,7 @@ namespace CorgEng.InputHandling.ClickHandler
         private static SelectedComponent currentSelectedComponent;
         public static IEntity SelectedEntity { get; private set; }
 
-        public override void SystemSetup()
+        public override void SystemSetup(IWorld world)
         {
             selectorOverlay = IconFactory.CreateIcon("selector", 100, 1);
             RegisterLocalEvent<SelectedComponent, ComponentAddedEvent>(OnComponentAdded);

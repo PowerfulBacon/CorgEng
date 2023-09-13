@@ -11,6 +11,7 @@ using CorgEng.GenericInterfaces.Networking.Packets;
 using CorgEng.GenericInterfaces.World;
 using CorgEng.Networking.Components;
 using CorgEng.Networking.Events;
+using CorgEng.Networking.Networking;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -31,7 +32,9 @@ namespace CorgEng.Networking.EntitySystems
         private static ILogger Logger;
 
         [UsingDependency]
-        private static IEntityCommunicator EntityCommunicator;
+        private static IEntityCommunicatorFactory EntityCommunicatorFactory;
+
+        private IEntityCommunicator EntityCommunicator;
 
         [UsingDependency]
         private static IServerCommunicator ServerCommunicator;
@@ -40,12 +43,13 @@ namespace CorgEng.Networking.EntitySystems
         private static INetworkMessageFactory NetworkMessageFactory;
 
         [UsingDependency]
-        private static IWorld WorldAccess;
+        private static IEntityPositionTracker WorldAccess;
 
         public override EntitySystemFlags SystemFlags { get; } = EntitySystemFlags.HOST_SYSTEM;
 
-        public override void SystemSetup()
+        public override void SystemSetup(IWorld world)
         {
+            EntityCommunicator = EntityCommunicatorFactory.CreateEntityCommunicator(world);
             RegisterLocalEvent<ClientComponent, ClientConnectedEvent>(OnClientConnected);
             RegisterLocalEvent<ClientComponent, MoveEvent>(OnClientMoved);
             RegisterLocalEvent<ClientComponent, DeleteEntityEvent>(OnEntityDeleted);

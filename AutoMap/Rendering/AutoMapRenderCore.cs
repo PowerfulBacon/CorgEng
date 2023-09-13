@@ -1,6 +1,7 @@
 ﻿using CorgEng.Core;
 using CorgEng.Core.Dependencies;
 using CorgEng.Core.Rendering;
+using CorgEng.GenericInterfaces.EntityComponentSystem;
 using CorgEng.GenericInterfaces.Rendering.Renderers.SpriteRendering;
 using System;
 using System.Collections.Generic;
@@ -17,6 +18,10 @@ namespace AutoMap.Rendering
         public static ISpriteRendererFactory SpriteRendererFactory;
 
         private ISpriteRenderer spriteRenderer;
+
+        public AutoMapRenderCore(IWorld world) : base(world)
+        {
+        }
 
         public override void Initialize()
         {

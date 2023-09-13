@@ -18,7 +18,7 @@ using System.Threading.Tasks;
 namespace CorgEng.Tests
 {
     [TestClass]
-    public class TestSetup
+    public class TestSetup : TestBase
     {
 
         [AssemblyInitialize]

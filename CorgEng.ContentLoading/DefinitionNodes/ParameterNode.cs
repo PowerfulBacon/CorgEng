@@ -1,4 +1,5 @@
 ﻿using CorgEng.GenericInterfaces.ContentLoading.DefinitionNodes;
+using CorgEng.GenericInterfaces.EntityComponentSystem;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,9 +14,9 @@ namespace CorgEng.ContentLoading.DefinitionNodes
         {
         }
 
-        public override object CreateInstance(object parent, Dictionary<string, object> instanceRefs)
+        public override object CreateInstance(IWorld world, object parent, Dictionary<string, object> instanceRefs)
         {
-            object created = Children.First().CreateInstance(parent, instanceRefs);
+            object created = Children.First().CreateInstance(world, parent, instanceRefs);
             if (Key != null)
             {
                 instanceRefs.Add(Key, created);

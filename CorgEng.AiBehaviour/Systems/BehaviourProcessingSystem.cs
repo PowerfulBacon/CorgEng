@@ -22,7 +22,7 @@ namespace CorgEng.AiBehaviour.Systems
 
         protected override int ProcessDelay => 1000;
 
-        public override void SystemSetup()
+        public override void SystemSetup(IWorld world)
         {
             RegisterLocalEvent<AiBehaviourComponent, ComponentAddedEvent>(OnComponentAdded);
         }

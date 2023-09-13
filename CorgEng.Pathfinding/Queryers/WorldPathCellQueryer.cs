@@ -16,7 +16,7 @@ namespace CorgEng.Pathfinding.Queryers
     {
 
         [UsingDependency]
-        private static IWorld WorldAccess;
+        private static IEntityPositionTracker WorldAccess;
 
         public int EnterPositionCost(IVector<float> position, Direction enterDirection)
         {

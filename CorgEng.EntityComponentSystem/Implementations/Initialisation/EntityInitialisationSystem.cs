@@ -16,7 +16,7 @@ namespace CorgEng.EntityComponentSystem.Implementations.Initialisation
 
         public override EntitySystemFlags SystemFlags => EntitySystemFlags.HOST_SYSTEM | EntitySystemFlags.CLIENT_SYSTEM;
 
-        public override void SystemSetup()
+        public override void SystemSetup(IWorld world)
         {
             RegisterLocalEvent<DeleteableComponent, InitialiseEvent>(OnInitialisation);
         }

@@ -1,5 +1,6 @@
 ﻿using CorgEng.Core;
 using CorgEng.EntityComponentSystem.Systems;
+using CorgEng.GenericInterfaces.EntityComponentSystem;
 using CorgEng.GenericInterfaces.Rendering.Cameras.Isometric;
 using CorgEng.InputHandling.Events;
 using System;
@@ -17,7 +18,7 @@ namespace CorgEng.Example.Modules.CameraScroll
 
         public override EntitySystemFlags SystemFlags => EntitySystemFlags.CLIENT_SYSTEM;
 
-        public override void SystemSetup()
+        public override void SystemSetup(IWorld world)
         {
             //RegisterGlobalEvent<MouseScrollEvent>(OnMouseScroll);
         }

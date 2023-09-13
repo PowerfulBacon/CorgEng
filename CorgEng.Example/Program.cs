@@ -2,6 +2,7 @@
 using CorgEng.Core.Dependencies;
 using CorgEng.Example.Modules.CameraScroll;
 using CorgEng.Example.Shared.RenderCores;
+using CorgEng.GenericInterfaces.EntityComponentSystem;
 using CorgEng.GenericInterfaces.Networking.Networking.Client;
 using CorgEng.GenericInterfaces.Rendering.Cameras.Isometric;
 using System.Threading;
@@ -13,10 +14,10 @@ namespace CorgEng.Example
     {
 
         [UsingDependency]
-        private static IIsometricCameraFactory isometricCameraFactory;
+        private static IIsometricCameraFactory isometricCameraFactory = null!;
 
         [UsingDependency]
-        private static INetworkingClient NetworkingClient;
+        private static IWorldFactory WorldFactory = null!;
 
         static void Main(string[] args)
         {
@@ -27,6 +28,10 @@ namespace CorgEng.Example
             //modules that are dependencies
             CorgEngMain.Initialize();
 
+            // Create the world
+            IWorld world = WorldFactory.CreateWorld();
+            CorgEngMain.PrimaryWorld = world;
+
             //Set the render core
 
             // Prevent failures
@@ -36,11 +41,11 @@ namespace CorgEng.Example
             IIsometricCamera camera = isometricCameraFactory.CreateCamera();
             CameraScrollSystem.IsometricCamera = camera;
 
-            ExampleRenderCore erc = new ExampleRenderCore();
+            ExampleRenderCore erc = new ExampleRenderCore(world);
             CorgEngMain.SetRenderCore(erc);
 
             //Connect to our server
-            NetworkingClient.AttemptConnection("127.0.0.1", 5000);
+            world.ClientInstance.AttemptConnection("127.0.0.1", 5000);
 
             //Create the entity to hold and move the camera
             /*Entity mainCameraEntity = new Entity();

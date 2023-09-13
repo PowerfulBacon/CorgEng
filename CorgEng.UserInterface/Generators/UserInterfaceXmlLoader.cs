@@ -1,5 +1,6 @@
 ﻿using CorgEng.Core.Dependencies;
 using CorgEng.DependencyInjection.Dependencies;
+using CorgEng.GenericInterfaces.EntityComponentSystem;
 using CorgEng.GenericInterfaces.Logging;
 using CorgEng.GenericInterfaces.UserInterface.Anchors;
 using CorgEng.GenericInterfaces.UserInterface.Components;
@@ -29,14 +30,14 @@ namespace CorgEng.UserInterface.Generators
         [UsingDependency]
         private static ILogger Logger;
 
-        public IUserInterfaceComponent LoadUserInterface(string filepath)
+        public IUserInterfaceComponent LoadUserInterface(IWorld world, string filepath)
         {
             try
             {
                 //Load the XML file provided
                 XElement userInterfaceElement = XElement.Load(filepath);
                 //Load the interface component
-                return LoadFromXmlComponent(userInterfaceElement);
+                return LoadFromXmlComponent(world, userInterfaceElement);
             }
             catch (Exception e)
             {
@@ -45,7 +46,7 @@ namespace CorgEng.UserInterface.Generators
             }
         }
 
-        private IUserInterfaceComponent LoadFromXmlComponent(XElement node, IUserInterfaceComponent parent = null)
+        private IUserInterfaceComponent LoadFromXmlComponent(IWorld world, XElement node, IUserInterfaceComponent parent = null)
         {
             try
             {
@@ -54,6 +55,7 @@ namespace CorgEng.UserInterface.Generators
                 parameters = node.Attributes().ToDictionary(attribute => attribute.Name.LocalName, attribute => attribute.Value);
                 //Create a generic user interface component
                 IUserInterfaceComponent currentElement = UserInterfaceComponentFactory.CreateUserInterfaceComponent(
+                    world,
                     node.Name.LocalName,
                     parent,
                     AnchorFactory.CreateAnchor(
@@ -69,7 +71,7 @@ namespace CorgEng.UserInterface.Generators
                         foreach (XElement childElement in node.Elements())
                         {
                             //Children are automatically added when created with a parent
-                            LoadFromXmlComponent(childElement, currentElement);
+                            LoadFromXmlComponent(world, childElement, currentElement);
                         }
                     }
                     );

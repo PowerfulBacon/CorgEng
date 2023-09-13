@@ -31,6 +31,7 @@
     <ProjectReference Include="..\CorgEng.DependencyInjection\CorgEng.DependencyInjection.csproj" />
     <ProjectReference Include="..\CorgEng.EntityComponentSystem\CorgEng.EntityComponentSystem.csproj" />
     <ProjectReference Include="..\CorgEng.GenericInterfaces\CorgEng.GenericInterfaces.csproj" />
+    <ProjectReference Include="..\CorgEng.Rendering\CorgEng.Rendering.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />

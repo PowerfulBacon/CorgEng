@@ -1,5 +1,6 @@
 ﻿using CorgEng.Core;
 using CorgEng.Core.Dependencies;
+using CorgEng.GenericInterfaces.EntityComponentSystem;
 using CorgEng.GenericInterfaces.Logging;
 using CorgEng.GenericInterfaces.UserInterface.Anchors;
 using CorgEng.GenericInterfaces.UserInterface.Components;
@@ -31,12 +32,12 @@ namespace CorgEng.UserInterface.Components
             get => boxRenderObject.Style;
         }
 
-        public UserInterfaceBox(IUserInterfaceComponent parent, IAnchor anchorDetails, IDictionary<string, string> arguments) : base(parent, anchorDetails, arguments)
+        public UserInterfaceBox(IWorld world, IUserInterfaceComponent parent, IAnchor anchorDetails, IDictionary<string, string> arguments) : base(world, parent, anchorDetails, arguments)
         {
             Setup(arguments);
         }
 
-        public UserInterfaceBox(IAnchor anchorDetails, IDictionary<string, string> arguments) : base(anchorDetails, arguments)
+        public UserInterfaceBox(IWorld world, IAnchor anchorDetails, IDictionary<string, string> arguments) : base(world, anchorDetails, arguments)
         {
             Setup(arguments);
         }

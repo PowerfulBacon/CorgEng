@@ -15,7 +15,7 @@ namespace CorgEng.GenericInterfaces.AiBehaviours
         /// </summary>
         /// <param name="attachedPawn"></param>
         /// <returns></returns>
-        IBehaviourManager CreateBehaviourManager(IEntity attachedPawn, params IBehaviourNode[] nodes);
+        IBehaviourManager CreateBehaviourManager(IWorld world, IEntity attachedPawn, params IBehaviourNode[] nodes);
 
     }
 }

@@ -16,7 +16,7 @@ namespace CorgEng.UserInterface.Systems
 
         public override EntitySystemFlags SystemFlags => EntitySystemFlags.CLIENT_SYSTEM;
 
-        public override void SystemSetup()
+        public override void SystemSetup(IWorld world)
         {
             RegisterLocalEvent<UserInterfaceClickerComponent, UserInterfaceClickEvent>(OnUserInterfaceElementClicked);
             RegisterLocalEvent<UserInterfaceClickActionComponent, UserInterfaceClickEvent>(OnUserInterfaceActionElementClicked);

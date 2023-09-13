@@ -1,5 +1,6 @@
 ﻿using CorgEng.Core.Dependencies;
 using CorgEng.EntityComponentSystem.Entities;
+using CorgEng.EntityComponentSystem.Systems;
 using CorgEng.GenericInterfaces.EntityComponentSystem;
 using CorgEng.GenericInterfaces.World;
 using CorgEng.World.Components;
@@ -14,11 +15,44 @@ using System.Threading.Tasks;
 namespace CorgEng.Tests.World
 {
     [TestClass]
-    public class WorldTests
+    public class WorldTests : TestBase
     {
 
         [UsingDependency]
-        public static IWorld WorldAccess;
+        public static IEntityPositionTracker WorldAccess;
+
+        [UsingDependency]
+        public static IWorldFactory WorldFactory = null!;
+
+        private class TestSystem : EntitySystem
+        {
+            public int setupTimes = 0;
+
+            public override EntitySystemFlags SystemFlags => EntitySystemFlags.HOST_SYSTEM | EntitySystemFlags.CLIENT_SYSTEM;
+
+            public override void SystemSetup(IWorld world)
+            {
+                setupTimes++;
+            }
+        }
+
+        [TestMethod]
+        [Timeout(1000)]
+        public void TestCreatingWorlds()
+        {
+            IWorld world = WorldFactory.CreateWorld();
+            Assert.AreEqual(1, world.EntitySystemManager.GetSingleton<TestSystem>().setupTimes);
+            world = WorldFactory.CreateWorld();
+            Assert.AreEqual(1, world.EntitySystemManager.GetSingleton<TestSystem>().setupTimes);
+            world = WorldFactory.CreateWorld();
+            Assert.AreEqual(1, world.EntitySystemManager.GetSingleton<TestSystem>().setupTimes);
+            world = WorldFactory.CreateWorld();
+            Assert.AreEqual(1, world.EntitySystemManager.GetSingleton<TestSystem>().setupTimes);
+            world = WorldFactory.CreateWorld();
+            Assert.AreEqual(1, world.EntitySystemManager.GetSingleton<TestSystem>().setupTimes);
+            world = WorldFactory.CreateWorld();
+            Assert.AreEqual(1, world.EntitySystemManager.GetSingleton<TestSystem>().setupTimes);
+        }
 
         [TestMethod]
         public void TestMassInsertion()

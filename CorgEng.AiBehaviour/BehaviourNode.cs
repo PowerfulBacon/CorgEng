@@ -2,6 +2,7 @@
 
 using CorgEng.Core.Dependencies;
 using CorgEng.GenericInterfaces.AiBehaviours;
+using CorgEng.GenericInterfaces.EntityComponentSystem;
 using CorgEng.GenericInterfaces.Logging;
 using CorgEng.GenericInterfaces.UtilityTypes.BinaryLists;
 using System;
@@ -12,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace CorgEng.AiBehaviour
 {
-    public abstract class BehaviourNode : IBehaviourNode
+    public abstract class BehaviourNode : WorldObject, IBehaviourNode
     {
 
         [UsingDependency]
@@ -27,7 +28,7 @@ namespace CorgEng.AiBehaviour
 
         public abstract BehaviourContinuationMode ContinuationMode { get; }
 
-        public BehaviourNode()
+        public BehaviourNode(IWorld world) : base(world)
         {
             Subtasks = BinaryListFactory.CreateEmpty<IBehaviourNode>();
         }

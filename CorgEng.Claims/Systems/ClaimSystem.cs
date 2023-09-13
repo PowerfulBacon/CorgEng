@@ -16,7 +16,7 @@ namespace CorgEng.Claims.Systems
 
         public override EntitySystemFlags SystemFlags => EntitySystemFlags.HOST_SYSTEM;
 
-        public override void SystemSetup()
+        public override void SystemSetup(IWorld world)
         {
             //Deletable is common to all entities, so register to that component.
             RegisterLocalEvent<DeleteableComponent, RequestClaimEvent>(HandleClaimRequest);

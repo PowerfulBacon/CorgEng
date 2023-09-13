@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace CorgEng.Tests.UtilityTypes.MatrixTests
 {
     [TestClass]
-    public class MultiplicationMatrixTests
+    public class MultiplicationMatrixTests : TestBase
     {
 
         [TestMethod]

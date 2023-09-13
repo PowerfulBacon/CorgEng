@@ -18,7 +18,7 @@ namespace CorgEng.Audio.Systems
 
         public override EntitySystemFlags SystemFlags => EntitySystemFlags.CLIENT_SYSTEM;
 
-        public override void SystemSetup()
+        public override void SystemSetup(IWorld world)
         {
             RegisterLocalEvent<AudioListenerComponent, MoveEvent>(AudioListenerMoved);
             RegisterLocalEvent<AudioListenerComponent, InitialiseEvent>(AudioListenerInitialised);
@@ -32,7 +32,7 @@ namespace CorgEng.Audio.Systems
 
         private void AudioListenerInitialised(IEntity entity, AudioListenerComponent audioListenerComponent, InitialiseEvent initialiseEvent)
         {
-            IVector<float> position = audioListenerComponent.Transform.Position;
+            IVector<float> position = audioListenerComponent.Transform.Position.Value;
             AudioMaster.UpdateListener(position.X, position.Y, 0);
         }
 

@@ -6,10 +6,8 @@ using System.Threading.Tasks;
 
 namespace CorgEng.GenericInterfaces.UtilityTypes
 {
-    public interface IVector<T>
+    public interface IVector<T> : IListenable
     {
-
-        event EventHandler OnChange;
 
         T this[int x] { get; set; }
 

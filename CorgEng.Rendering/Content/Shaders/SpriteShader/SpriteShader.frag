@@ -22,6 +22,7 @@ void main()
     transformedUV *= vec2(fragTextureData[2], fragTextureData[3]);
     transformedUV += vec2(fragTextureData[0], 1.0 - fragTextureData[1] - fragTextureData[3]);
     result = texture(renderTexture, transformedUV) * fragColour;
+    //result.rgb = vec3(gl_FragCoord.z, gl_FragCoord.z, gl_FragCoord.z);
     //result = vec4(1, 0, 0, 1);
     //result = vec4(vec3(gl_FragCoord.z), 1.0);
     if (result.a == 0)

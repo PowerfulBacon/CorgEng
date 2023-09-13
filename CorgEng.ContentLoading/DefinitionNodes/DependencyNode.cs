@@ -1,6 +1,7 @@
 ﻿using CorgEng.Core.Dependencies;
 using CorgEng.GenericInterfaces.ContentLoading.DefinitionNodes;
 using CorgEng.GenericInterfaces.DependencyInjection;
+using CorgEng.GenericInterfaces.EntityComponentSystem;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -85,7 +86,7 @@ namespace CorgEng.ContentLoading.DefinitionNodes
             }
         }
 
-        public override object CreateInstance(object parent, Dictionary<string, object> instanceRefs)
+        public override object CreateInstance(IWorld world, object parent, Dictionary<string, object> instanceRefs)
         {
             //Set the parameters
             if (hasDynamicParams)
@@ -94,7 +95,7 @@ namespace CorgEng.ContentLoading.DefinitionNodes
                 {
                     if (isDynamic[i])
                     {
-                        parameters[i] = Children[i].CreateInstance(parent, instanceRefs);
+                        parameters[i] = Children[i].CreateInstance(world, parent, instanceRefs);
                     }
                 }
             }

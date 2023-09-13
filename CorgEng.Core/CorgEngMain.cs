@@ -4,6 +4,7 @@ using CorgEng.Core.Dependencies;
 using CorgEng.Core.Modules;
 using CorgEng.Core.Rendering;
 using CorgEng.Core.Rendering.Exceptions;
+using CorgEng.GenericInterfaces.EntityComponentSystem;
 using CorgEng.GenericInterfaces.Logging;
 using CorgEng.GenericInterfaces.Rendering;
 using GLFW;
@@ -14,6 +15,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Loader;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 
@@ -79,6 +81,24 @@ namespace CorgEng.Core
 
         public static event Action OnReadyEvents = null;
 
+        private static IWorld primaryWorld = null;
+
+        /// <summary>
+        /// The main world to use for the game for when one isn't accessible
+        /// </summary>
+        public static IWorld PrimaryWorld
+        {
+            get => primaryWorld;
+            set {
+                primaryWorld = value;
+                WorldInit(primaryWorld);
+            }
+        }
+        /// <summary>
+        /// All current active worlds
+        /// </summary>
+        public static ConcurrentBag<IWorld> WorldList { get; } = new ConcurrentBag<IWorld>();
+
         /// <summary>
         /// List of actions queued to be execuetd on the main thread
         /// </summary>
@@ -92,6 +112,8 @@ namespace CorgEng.Core
         {
             try
             {
+                // Reset the world list
+                WorldList.Clear();
                 //Load priority modules (Logging)
                 PriorityModuleInit();
                 Logger?.WriteLine("Starting CorgEng Application", LogType.DEBUG);
@@ -167,6 +189,8 @@ namespace CorgEng.Core
                         }
                     }
                 }
+                // Trigger any deferred rendering thread code
+                CheckQueuedExecutions();
                 //Swap the framebuffers
                 GameWindow.SwapFramebuffers();
                 //Poll for system events to prevent the program from showing as hanging
@@ -226,6 +250,8 @@ namespace CorgEng.Core
             TriggerTerminateMethods();
             //Terminate GLFW
             Glfw.Terminate();
+            // Reset the world bag
+            WorldList.Clear();
         }
 
         /// <summary>
@@ -270,7 +296,7 @@ namespace CorgEng.Core
                             //Unit test support.
                             if (Assembly.GetCallingAssembly() != null && Assembly.GetCallingAssembly() != Assembly.GetEntryAssembly())
                                 loadedAssemblies.Add(Assembly.GetCallingAssembly());
-                            if(Assembly.GetExecutingAssembly() != null)
+                            if (Assembly.GetExecutingAssembly() != null)
                                 loadedAssemblies.Add(Assembly.GetExecutingAssembly());
                             foreach (XElement dependency in childElement.Elements())
                             {
@@ -303,7 +329,7 @@ namespace CorgEng.Core
                 Console.Error.WriteLine("Please reinstall the program and ensure that if developing a CorgEng game, the config is set as an embedded resource.");
                 Console.Error.WriteLine("The application will now be terminated.");
                 Console.Error.WriteLine("Press any key to continue...");
-                if(awaitOnError)
+                if (awaitOnError)
                     Console.ReadKey();
                 throw;
             }
@@ -333,10 +359,11 @@ namespace CorgEng.Core
             ModuleLoadAttributes = LoadedAssemblyModules
                 .SelectMany(assembly => assembly.GetTypes()
                 .SelectMany(type => type.GetMethods(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static)
-                .Where(method => method.GetCustomAttribute<ModuleLoadAttribute>() != null )));
-            Parallel.ForEach(ModuleLoadAttributes, (MethodInfo) => {
+                .Where(method => method.GetCustomAttribute<ModuleLoadAttribute>() != null)));
+            Parallel.ForEach(ModuleLoadAttributes, (MethodInfo) =>
+            {
                 Console.WriteLine(MethodInfo.Name);
-                if(MethodInfo.GetCustomAttribute<ModuleLoadAttribute>().priority
+                if (MethodInfo.GetCustomAttribute<ModuleLoadAttribute>().priority
                     && !MethodInfo.GetCustomAttribute<ModuleLoadAttribute>().mainThread)
                     MethodInfo.Invoke(null, new object[] { });
             });
@@ -353,7 +380,8 @@ namespace CorgEng.Core
         /// </summary>
         private static void ModuleInit()
         {
-            Parallel.ForEach(ModuleLoadAttributes, (MethodInfo) => {
+            Parallel.ForEach(ModuleLoadAttributes, (MethodInfo) =>
+            {
                 if (!MethodInfo.GetCustomAttribute<ModuleLoadAttribute>().priority
                     && !MethodInfo.GetCustomAttribute<ModuleLoadAttribute>().mainThread)
                 {
@@ -368,6 +396,21 @@ namespace CorgEng.Core
                     methodToInvoke.Invoke(null, new object[] { });
             }
             ModuleLoadAttributes = null;
+        }
+
+        /// <summary>
+        /// Calls priority method modules
+        /// </summary>
+        private static void WorldInit(IWorld world)
+        {
+            IEnumerable<MethodInfo> worldMethods = LoadedAssemblyModules
+                .SelectMany(assembly => assembly.GetTypes()
+                .SelectMany(type => type.GetMethods(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static)
+                .Where(method => method.GetCustomAttribute<WorldInitialiseAttribute>() != null)));
+            foreach (MethodInfo methodToInvoke in worldMethods)
+            {
+                methodToInvoke.Invoke(null, new object[] { world });
+            }
         }
 
         /// <summary>
@@ -401,6 +444,114 @@ namespace CorgEng.Core
                 //Headless mode, immedaitely execute
                 action.Invoke();
             }
+        }
+
+        /// <summary>
+        /// The lowest time of the thing that we want to fire
+        /// </summary>
+        private static double nextBucketFireTime = double.PositiveInfinity;
+
+        /// <summary>
+        /// A heap of the things that we want to execute on this thread and the
+        /// time of when we want to execute them.
+        /// </summary>
+        private static PriorityQueue<Action, double> executeInQueue = new PriorityQueue<Action, double>();
+
+        private static Thread headlessExecutionThread = null;
+
+        /// <summary>
+        /// Add something to a bucket
+        /// </summary>
+        /// <param name="action"></param>
+        /// <param name="executeTime">The time to wait in milliseconds</param>
+        public static void ExecuteIn(Action action, double executeTime)
+        {
+            if (!IsRendering && headlessExecutionThread == null)
+            {
+                // Lock something random so that we can only enter this once
+                lock (executeInQueue)
+                {
+                    if (headlessExecutionThread == null)
+                    {
+                        // This is horrible
+                        headlessExecutionThread = new Thread(() => {
+                            while (!Terminated)
+                            {
+                                CheckQueuedExecutions();
+                                Thread.Yield();
+                            }
+                            lock (executeInQueue)
+                            {
+                                headlessExecutionThread = null;
+                            }
+                        });
+                        headlessExecutionThread.Start();
+                    }
+                }
+            }
+            double timeToFire = Time + executeTime * 0.001;
+            Logger.WriteLine($"Action queued to fire at {timeToFire}", LogType.WARNING);
+            // 0 or negative execution time
+            if (timeToFire <= Time)
+            {
+                //Rendering thread exists, queue the action
+                queuedActions.Enqueue(action);
+                return;
+            }
+            // Queue the action to be fired
+            lock (executeInQueue)
+            {
+                nextBucketFireTime = Math.Min(nextBucketFireTime, timeToFire);
+                executeInQueue.Enqueue(action, timeToFire);
+            }
+        }
+
+        /// <summary>
+        /// Check the queue of things that we want to fire on this thread and fire them if
+        /// we are ready for them.
+        /// </summary>
+        internal static void CheckQueuedExecutions()
+        {
+            if (nextBucketFireTime > Time)
+                return;
+            lock (executeInQueue)
+            {
+                while (nextBucketFireTime <= Time)
+                {
+                    // Invoke the action
+                    Action lowest = executeInQueue.Dequeue();
+                    //Logger.WriteLine($"Action invoked at {Time}. NEXT BUCKET TIME: {nextBucketFireTime}", LogType.WARNING);
+                    lowest.Invoke();
+                    // Move to the next
+                    if (executeInQueue.TryPeek(out Action _, out double nextFireTime))
+                    {
+                        nextBucketFireTime = nextFireTime;
+                    }
+                    else
+                    {
+                        nextBucketFireTime = double.PositiveInfinity;
+                        return;
+                    }
+                }
+            }
+        }
+
+        /**
+         * Fully cleanup the CorgEng application, resetting it into a state
+         * of startup.
+         */
+        public static void Cleanup()
+        {
+            MainCamera = null;
+            primaryWorld = null;
+            foreach (IWorld world in WorldList)
+            {
+                world.Cleanup();
+            }
+            WorldList.Clear();
+            queuedActions.Clear();
+            MainRenderCore = null;
+            Logger.WriteLine("Full cleanup of CorgEng application completed.", LogType.DEBUG);
         }
 
     }

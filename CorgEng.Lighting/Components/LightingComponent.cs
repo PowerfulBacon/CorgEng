@@ -1,5 +1,4 @@
 ﻿using CorgEng.EntityComponentSystem.Components;
-using CorgEng.EntityComponentSystem.Implementations.Rendering.SpriteRendering;
 using CorgEng.GenericInterfaces.UtilityTypes;
 using CorgEng.UtilityTypes.Colours;
 using System;

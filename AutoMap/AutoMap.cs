@@ -19,8 +19,8 @@ namespace AutoMap
         [UsingDependency]
         private static IIsometricCameraFactory isometricCameraFactory;
 
-        [UsingDependency]
-        private static IEntityFactory EntityFactory;
+        //[UsingDependency]
+        //private static IEntityFactory EntityFactory;
 
         public static void Main(string[] args)
         {
@@ -35,11 +35,11 @@ namespace AutoMap
             IIsometricCamera camera = isometricCameraFactory.CreateCamera();
 
             //Create the entity to hold and move the camera
-            EntityFactory.CreateEmptyEntity((mainCameraEntity) => {
-                mainCameraEntity.AddComponent(new TransformComponent());
+            //EntityFactory.CreateEmptyEntity((mainCameraEntity) => {
+            //    mainCameraEntity.AddComponent(new TransformComponent());
                 //mainCameraEntity.AddComponent(new PlayerMovementComponent());
                 //mainCameraEntity.AddComponent(new CameraComponent(camera));
-            });
+            //});
 
             //Set the main camera
             CorgEngMain.SetMainCamera(camera);

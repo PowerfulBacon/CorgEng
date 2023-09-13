@@ -30,7 +30,7 @@ namespace CorgEng.Example.Components.PlayerMovement
         //Logic executed on the server that moves players when requested.
         public override EntitySystemFlags SystemFlags { get; } = EntitySystemFlags.HOST_SYSTEM;
 
-        public override void SystemSetup()
+        public override void SystemSetup(IWorld world)
         {
             RegisterLocalEvent<PlayerMovementComponent, ComponentAddedEvent>(OnComponentAdded);
             RegisterLocalEvent<PlayerMovementComponent, ComponentRemovedEvent>(OnComponentRemoved);

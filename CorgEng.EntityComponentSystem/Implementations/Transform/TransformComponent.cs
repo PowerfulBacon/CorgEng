@@ -1,4 +1,5 @@
 ﻿using CorgEng.EntityComponentSystem.Components;
+using CorgEng.EntityComponentSystem.Components.ComponentVariables.Networking;
 using CorgEng.GenericInterfaces.ContentLoading;
 using CorgEng.GenericInterfaces.Networking.Attributes;
 using CorgEng.UtilityTypes.Vectors;
@@ -28,13 +29,15 @@ namespace CorgEng.EntityComponentSystem.Implementations.Transform
         /// Start with a zero value
         /// </summary>
         [NetworkSerialized(prototypeInclude = false)]
-        public Vector<float> Position { get; internal set; } = new Vector<float>(0, 0);
+        public NetCVar<Vector<float>> Position { get; internal set; } = new NetCVar<Vector<float>>(new Vector<float>(0, 0))
+            .SetPrototypeSerialised(false);
 
         /// <summary>
         /// Rotation property of this transform
         /// </summary>
         [NetworkSerialized(prototypeInclude = false)]
-        public Vector<float> Rotation { get; internal set; } = new Vector<float>(0);
+        public NetCVar<Vector<float>> Rotation { get; internal set; } = new NetCVar<Vector<float>>(new Vector<float>(0))
+            .SetPrototypeSerialised(false);
 
         public override TransformComponent Transform => this;
 
