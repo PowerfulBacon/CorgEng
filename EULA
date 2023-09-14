@@ -1,0 +1,78 @@
+
+BY USING ANY OF THE CODE IN THIS PROJECT YOU ARE AGREEING TO BE BOUND BY THE TERMS OF THIS AGREEMENT.
+
+1. Grant of License
+
+1.1. Free Use for Personal and Non-Commercial Purposes: Subject to the terms and conditions of this End-User License Agreement (EULA), Licensor grants Licensee a non-exclusive, non-transferable license to use the CorgEng game engine ("Software") for personal and non-commercial purposes at no cost. Personal and non-commercial use includes but is not limited to educational, hobbyist, and non-profit projects.
+1.2. Commercial Use License: If Licensee intends to use the Software for commercial purposes, including but not limited to selling a game created with the Software, Licensee must obtain a Commercial Use License by paying a one-time licensing fee of £50 (or its equivalent in the local currency) per user working on the commercial project, as specified in Section 5 of this EULA.
+1.3. Modification of Source Code: Licensee may modify the original source code of the Software, subject to the following conditions:
+  1.3.1. Any modified code must retain this same license agreement and its restrictions.
+  1.3.2. Modules created specifically for the game engine, but not containing any code from the original game engine, may be independently licensed by Licensee.
+1.4. Ownership and Copyright: Licensee acknowledges that all ownership rights and intellectual property rights to the Software, except for code created by Licensee, belong to Licensor. Licensee does not acquire ownership rights to the Software under this EULA.
+
+2. Ownership and Copyright
+
+2.1. Ownership: Licensee acknowledges and agrees that all ownership rights, title, and interest in and to the CorgEng game engine ("Software"), including all intellectual property rights, are and shall remain the exclusive property of PowerfulBacon ("Licensor"). Licensee does not acquire any ownership rights to the Software under this End-User License Agreement (EULA).
+2.2. Third-Party Code: Licensee acknowledges that any third-party code or libraries used in the Software are subject to their respective owners' copyrights and may be governed by separate licenses. Licensor does not own the copyright to third-party code or libraries, and Licensee's use of such code is subject to the terms of the respective licenses.
+2.3. Modification: Any code or content created or modified by Licensee, independent of the original CorgEng codebase, shall remain the property of Licensee. Licensee retains ownership and intellectual property rights to their own code and content, subject to applicable laws and agreements.
+2.4. Contributors' Code: Licensee acknowledges that all code contributions to the CorgEng repository by contributors are also owned by Licensor, and contributors agree to transfer ownership of their code contributions to Licensor upon submission. These code contributions are subject to the terms of this EULA.
+
+3. Restrictions
+
+3.1. Limitations on Commercial Use: Licensee shall not use the CorgEng game engine ("Software") in any manner that violates applicable laws or regulations. Licensee is expressly prohibited from:
+  3.1.1. Reverse engineering, decompiling, disassembling, or attempting to derive the source code of the Software, except to the extent expressly permitted by applicable law.
+  3.1.2. Renting, leasing, sublicensing, selling, or otherwise transferring or distributing the Software for commercial purposes without obtaining a valid Commercial Use License from Licensor, as specified in Section 1.2 of this EULA.
+  3.1.3. Modifying, adapting, translating, or creating derivative works based on the Software for commercial purposes without obtaining a valid Commercial Use License from Licensor, as specified in Section 1.2 of this EULA.
+  3.1.4. Removing, altering, or obscuring any copyright, trademark, or other proprietary notices from the Software or any copies thereof.
+3.2. Non-Commercial Use: Licensee may use the Software for non-commercial purposes without incurring the commercial licensing fee, subject to the terms and conditions of this EULA.
+3.3. Compliance with Laws: Licensee agrees to comply with all applicable laws and regulations in connection with their use of the Software, including but not limited to export control laws and regulations.
+3.4. No Warranty of Compatibility: Licensor does not warrant or guarantee that the Software will be compatible with all hardware, software, or systems, and Licensee acknowledges that system requirements may change over time.
+3.5. No Competitive Use: Licensee shall not use the Software to develop, promote, or distribute any software or services that compete with or replicate the core functionality of the CorgEng game engine.
+3.6. No Assignment or Transfer: Licensee may not assign, transfer, or sublicense their rights under this EULA to any third party without the prior written consent of Licensor.
+
+4. Payment and Licencing
+
+4.1. Commercial Use License Fee: Licensee shall pay a one-time licensing fee of £50 (or its equivalent in the local currency) per licensee utilizing the CorgEng game engine ("Software"). Multiple commercial products may be developed by the licensee using the commercial license, and this license is bound to the licensee and not tied to a single commercial product.
+4.2. Payment Process: The licensing fee specified in Section 4.1 must be paid to Licensor in accordance with the payment methods and instructions provided by Licensor. Licensee shall be responsible for any applicable taxes or fees associated with the payment.
+4.3. Permanent License: Upon payment of the licensing fee specified in Section 4.1, Licensee shall be granted a permanent Commercial Use License for each user covered by the fee. This license is non-transferable and grants the Licensee the right to use the Software for commercial purposes in accordance with the terms of this EULA.
+4.4. License Per User: The licensing fee specified in Section 4.1 is applicable per user working on the commercial project. Each user must obtain a separate Commercial Use License. The license cannot be transferred between users.
+4.5. Access to Commercial Features: Payment of the licensing fee specified in Section 4.1 provides Licensee access to the commercial features and functionalities of the Software as outlined in this EULA.
+4.6. Payment Refunds: The licensing fee specified in Section 4.1 is non-refundable, except as required by applicable law.
+4.7. Free and Non-Commercial Use: Licensee may use the Software for free and non-commercial purposes without incurring the licensing fee, subject to the terms and conditions of this EULA.
+
+5. Modification of Software
+
+5.1. Modification of CorgEng Source Code: Licensee may modify the original source code of the CorgEng game engine ("Software") for both non-commercial and commercial purposes, subject to the following conditions:
+  5.1.1. Licensee agrees that any modified code must retain this same license agreement and its restrictions.
+  5.1.2. Licensee acknowledges that modules created specifically for the game engine, which do not contain any code from the CorgEng game engine, may be independently licensed by Licensee.
+
+6. Liability and Warranty Disclaimer
+
+6.1. No Warranty: The CorgEng game engine ("Software") is provided "as is" and without warranty of any kind, whether express or implied. Licensor makes no warranties or representations regarding the performance, functionality, or suitability of the Software for any purpose.
+6.2. No Liability: To the extent permitted by applicable law, Licensor shall not be liable for any direct, indirect, incidental, special, consequential, or punitive damages arising out of or in connection with the use or inability to use the Software. This includes, but is not limited to, damages for loss of profits, data, goodwill, or other intangible losses, even if Licensor has been advised of the possibility of such damages.
+6.3. No Obligation: Licensor has no obligation to provide maintenance, support, updates, or enhancements for the Software. Licensor may, at its sole discretion, choose to offer such services, but Licensee acknowledges that Licensor is not obligated to do so.
+6.4. Limitation of Liability: In no event shall Licensor's total liability to Licensee for all claims related to the Software exceed the total amount of licensing fees paid by Licensee under this EULA.
+6.5. Essence of Disclaimer: Licensee acknowledges that the disclaimers and limitations of liability set forth in this Section 6 are fundamental elements of this EULA, and Licensee accepts them as such.
+
+7. Termination
+
+7.1. Termination by Licensor: Licensor may terminate this End-User License Agreement (EULA) immediately by providing written notice to Licensee if Licensee breaches any material term or condition of this EULA and fails to remedy the breach within 14 days of receiving written notice from Licensor.
+7.2. Effect of Termination: Upon termination of this EULA, Licensee shall cease all use of the CorgEng game engine ("Software") and promptly uninstall and delete all copies of the Software from their devices. Termination shall not relieve Licensee of their obligation to pay any outstanding licensing fees.
+
+8. Governing Law and Jurisdiction
+
+8.1. Governing Law: This End-User License Agreement (EULA) shall be governed by and construed in accordance with the laws of the United Kingdom, without regard to its conflict of law principles.
+8.2. Jurisdiction: Any disputes or claims arising out of or in connection with this EULA shall be subject to the exclusive jurisdiction of the courts located within the United Kingdom. Licensee consents to the personal jurisdiction of such courts and waives any objection to the laying of venue in such courts.
+
+9. Communication
+
+9.1. Contact Information: For any inquiries, notices, or communication regarding this EULA or the CorgEng game engine ("Software"), Licensee may contact Licensor via the Discord user 'powerfulbacon'.
+9.2. Notices: All notices and communications required or permitted under this EULA shall be in writing and sent by discord, or any other form of communication agreed to by licencor, to the contact information provided by the parties.
+9.3. Electronic Communication: Licensee consents to receive communications and notices electronically, including via email and discord messages, and agrees that such electronic communications satisfy any legal requirement for written notice.
+
+10. License Amendment and User Rights
+
+10.1. License Amendment: Licensor reserves the right to amend this End-User License Agreement (EULA) at its sole discretion. Any amendments shall be posted to the CorgEng github repository (or other designated platform) and shall become effective immediately upon posting. Licensee is responsible for regularly reviewing the EULA for updates.
+10.2. Effect on Existing Commercial Licensees: If Licensee has paid for a commercial license for the CorgEng game engine ("Software") prior to any amendment to this EULA, the terms and conditions of the license at the time of purchase shall remain in effect for Licensee. Subsequent amendments to the EULA shall not affect the license held by Licensee at the time of purchase.
+10.3. Termination Option: In the event that Licensee does not agree to any amendments made to this EULA, Licensee's sole remedy shall be to terminate the license by discontinuing the use of the Software. No refunds shall be issued for previously paid licensing fees.
+10.4. No Obligation to Notify: Licensor is not obligated to notify Licensee individually of amendments to this EULA. It is the responsibility of Licensee to stay informed about any changes by reviewing the EULA periodically.
