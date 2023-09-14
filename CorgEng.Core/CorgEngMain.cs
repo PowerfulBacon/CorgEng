@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.Loader;
 using System.Threading.Tasks;
 using System.Xml.Linq;
@@ -30,9 +31,22 @@ namespace CorgEng.Core
         private static RenderMaster InternalRenderMaster { get; set; }
 
         /// <summary>
-        /// The main render core currently in use by the renderer
+        /// The render cores that are currently being used by the renderer.
+        /// If none is provided then a renderer provided one will be given which just draws things on its plane and performs
+        /// no other special effects.
         /// </summary>
-        public static RenderCore MainRenderCore { get; private set; }
+        private static ConcurrentDictionary<int, RenderCore> renderCores { get; } = new ConcurrentDictionary<int, RenderCore>();
+
+        /// <summary>
+        /// Render planes that are staged to start rendering
+        /// </summary>
+        private static SortedList<int, RenderCore> stagedRenderPlanes = new SortedList<int, RenderCore>();
+
+        /// <summary>
+        /// A sorted list containing the planes that are currently drawing directly to the screen.
+        /// Planes are drawn in order of layer when they aren't drawn to another surface first.
+        /// </summary>
+        private static SortedList<int, RenderCore> renderingPlanes = new SortedList<int, RenderCore>();
 
         /// <summary>
         /// The window associated with the CorgEng application
@@ -111,8 +125,9 @@ namespace CorgEng.Core
                 InternalRenderMaster = new RenderMaster();
                 InternalRenderMaster.Initialize();
                 Logger?.WriteLine("Successfully initialized render master", LogType.DEBUG);
-                //Bind the render master size to the game window size
-                GameWindow.OnWindowResized += InternalRenderMaster.SetWindowRenderSize;
+				//Bind the render master size to the game window 
+				GameWindow.OnWindowResized += InternalRenderMaster.SetWindowRenderSize;
+				GameWindow.OnWindowResized += activeSizeDelegate;
                 //Load non-priority modules
                 ModuleInit();
             }
@@ -151,6 +166,15 @@ namespace CorgEng.Core
             while (!GameWindow.ShouldClose())
             {
                 lastFrameTime = Glfw.Time;
+                // Move the staged rendering planes into the active queue
+                lock (stagedRenderPlanes)
+                {
+                    foreach (var stagedPlane in stagedRenderPlanes)
+                    {
+                        renderingPlanes.TryAdd(stagedPlane.Key, stagedPlane.Value);
+                    }
+                    stagedRenderPlanes.Clear();
+				}
                 //Trigger any render thread code
                 if (!queuedActions.IsEmpty)
                 {
@@ -173,13 +197,15 @@ namespace CorgEng.Core
                 Glfw.PollEvents();
                 //Handle key events
                 GameWindow.Update();
-                //Check to ensure we have a render core
-                if (MainRenderCore == null)
-                    throw new NullRenderCoreException("The main CorgEng render core is not set! Use CorgEng.SetRenderCore(RenderCore) to set the primary render core.");
-                //Process the main render core
-                MainRenderCore.DoRender();
-                //Pass the output image from the render core to the internal renderer
-                InternalRenderMaster.RenderImageToScreen(MainRenderCore);
+                // Perform rendering of the render planes that are not diverted to another source
+                foreach (var renderPlane in renderingPlanes.Values)
+                {
+                    // Process the actual render
+                    renderPlane.DoRender();
+					//Pass the output image from the render core to the internal renderer
+					InternalRenderMaster.RenderImageToScreen(renderPlane);
+				}
+                // Update the delta time
                 DeltaTime = Glfw.Time - lastFrameTime;
 #if PERFORMANCE
                 total += DeltaTime;
@@ -200,19 +226,42 @@ namespace CorgEng.Core
             MainCamera = camera;
         }
 
-        private static CorgEngWindow.WindowResizeDelegate activeSizeDelegate;
+        /// <summary>
+        /// Resize all of the contained render cores when the screen size changes
+        /// </summary>
+        private static CorgEngWindow.WindowResizeDelegate activeSizeDelegate = (width, height) => {
+            foreach (RenderCore renderCore in renderCores.Values)
+            {
+                renderCore.Resize(width, height);
+            }
+        };
 
         /// <summary>
         /// Sets the CorgEng program's render core.
         /// </summary>
-        public static void SetRenderCore(RenderCore newRenderCore)
+        public static void SetPlaneRenderCore(int renderCorePlane, RenderCore newRenderCore)
         {
-            MainRenderCore = newRenderCore;
-            MainRenderCore.Initialize();
-            GameWindow.OnWindowResized -= activeSizeDelegate;
-            activeSizeDelegate = MainRenderCore.Resize;
-            GameWindow.OnWindowResized += activeSizeDelegate;
+			newRenderCore.Initialize();
+			renderCores.AddOrUpdate(renderCorePlane, newRenderCore, (plane, oldCore) => {
+                oldCore.Dispose();
+                return newRenderCore;
+            });
         }
+        /// <summary>
+        /// Get the render core with the provided plane number.
+        /// If no render core has been set for this plane, one will be created.
+        /// </summary>
+        /// <param name="renderCorePlane"></param>
+        /// <returns></returns>
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static RenderCore GetRenderCore(int renderCorePlane)
+        {
+            return renderCores.GetOrAdd(renderCorePlane, plane => {
+                // Fetch a default render core implementation
+                //return new RenderCore();
+            });
+		}
 
         /// <summary>
         /// Shuts down and cleans up all resources used by CorgEng

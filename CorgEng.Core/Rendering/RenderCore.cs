@@ -8,7 +8,7 @@ using static OpenGL.Gl;
 
 namespace CorgEng.Core.Rendering
 {
-    public abstract class RenderCore : IRenderCore
+    public abstract class RenderCore : IRenderCore, IDisposable
     {
 
         [UsingDependency]
@@ -304,5 +304,10 @@ namespace CorgEng.Core.Rendering
             SwitchDepthMode(prevBlend);
             SwitchBackColour(prevColour);
         }
-    }
+
+        /// <summary>
+        /// Dispose the render core and cleanup any resources
+        /// </summary>
+        public abstract void Dispose();
+	}
 }
