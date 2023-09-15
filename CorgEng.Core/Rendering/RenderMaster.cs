@@ -1,4 +1,5 @@
 ﻿using CorgEng.Core.Dependencies;
+using CorgEng.GenericInterfaces.Rendering.Renderers;
 using CorgEng.GenericInterfaces.Rendering.Shaders;
 using System;
 using static OpenGL.Gl;
@@ -19,8 +20,6 @@ namespace CorgEng.Core.Rendering
         {
             //Setup the global GL flags
             SetGlobalGlFlags();
-            //Initialize render core
-            RenderCore.SetupRendering();
         }
 
         private void SetGlobalGlFlags()
@@ -51,7 +50,7 @@ namespace CorgEng.Core.Rendering
         /// <summary>
         /// Renders an image outputted by a render core to the screen.
         /// </summary>
-        public unsafe void RenderImageToScreen(RenderCore renderCore)
+        public unsafe void RenderImageToScreen(IRenderer renderCore)
         {
             //Reset the framebuffer (We want to draw to the screen, not a frame buffer)
             glBindFramebuffer(GL_FRAMEBUFFER, 0);

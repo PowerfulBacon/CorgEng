@@ -1,4 +1,5 @@
-﻿using CorgEng.EntityComponentSystem.Components;
+﻿using CorgEng.Core;
+using CorgEng.EntityComponentSystem.Components;
 using CorgEng.GenericInterfaces.ContentLoading;
 using CorgEng.GenericInterfaces.Networking.Attributes;
 using CorgEng.GenericInterfaces.Rendering.Icons;
@@ -49,7 +50,7 @@ namespace CorgEng.EntityComponentSystem.Implementations.Rendering.SpriteRenderin
         /// The identifier of the sprite renderer to use
         /// </summary>
         [NetworkSerialized]
-        public uint SpriteRendererIdentifier { get; set; }
+        public int SpriteRendererIdentifier { get; set; }
 
         /// <summary>
         /// Is the sprite currently being rendered
@@ -58,7 +59,7 @@ namespace CorgEng.EntityComponentSystem.Implementations.Rendering.SpriteRenderin
 
         internal bool WantsToRender { get; set; } = true;
 
-        private uint cachedSpriteRendererIdentifier = 0;
+        private int cachedSpriteRendererIdentifier = 0;
 
         private ISpriteRenderer _spriteRenderer;
 
@@ -70,7 +71,7 @@ namespace CorgEng.EntityComponentSystem.Implementations.Rendering.SpriteRenderin
                     return null;
                 if (_spriteRenderer == null || cachedSpriteRendererIdentifier != SpriteRendererIdentifier)
                 {
-                    _spriteRenderer = RendererLookup.GetRendererByIdentifier<ISpriteRenderer>(SpriteRendererIdentifier);
+                    _spriteRenderer = (ISpriteRenderer)CorgEngMain.GetRendererForPlane(SpriteRendererIdentifier);
                     cachedSpriteRendererIdentifier = SpriteRendererIdentifier;
                 }
                 return _spriteRenderer;

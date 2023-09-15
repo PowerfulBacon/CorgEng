@@ -11,9 +11,9 @@ namespace CorgEng.Rendering.SpriteRendering.Parallax
     [Dependency]
     internal class ParallaxRendererFactory : IParallaxRendererFactory
     {
-        public IParallaxRenderer CreateParallaxRenderer(uint networkedIdentifier)
+        public IParallaxRenderer CreateParallaxRenderer(int plane)
         {
-            return new ParallaxRenderer(networkedIdentifier);
+            return new ParallaxRenderer();
         }
     }
 }

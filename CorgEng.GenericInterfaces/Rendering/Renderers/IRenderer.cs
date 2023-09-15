@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CorgEng.GenericInterfaces.Rendering.Renderers
 {
-    public interface IRenderer
+    public interface IRenderer : IDisposable
     {
 
 		/// <summary>
@@ -28,6 +28,11 @@ namespace CorgEng.GenericInterfaces.Rendering.Renderers
 		/// The uint of our render texture
 		/// </summary>
 		uint RenderTextureUint { get; }
+
+		/// <summary>
+		/// The plane of the renderer
+		/// </summary>
+		int Plane { get; }
 
 		/// <summary>
 		/// Initialise the renderer

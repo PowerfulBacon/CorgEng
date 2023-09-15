@@ -9,8 +9,6 @@ namespace CorgEng.Rendering.SpriteRendering.Parallax
 {
     internal class ParallaxRenderer : SpriteRenderer, IParallaxRenderer
     {
-        internal ParallaxRenderer(uint networkedId) : base(networkedId)
-        { }
 
         protected override void CreateShaders()
         {

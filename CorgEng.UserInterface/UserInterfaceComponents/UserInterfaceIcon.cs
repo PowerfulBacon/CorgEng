@@ -2,6 +2,7 @@
 using CorgEng.Core;
 using CorgEng.Core.Dependencies;
 using CorgEng.GenericInterfaces.Logging;
+using CorgEng.GenericInterfaces.Rendering;
 using CorgEng.GenericInterfaces.Rendering.Icons;
 using CorgEng.GenericInterfaces.Rendering.Textures;
 using CorgEng.GenericInterfaces.UserInterface.Anchors;
@@ -71,8 +72,8 @@ namespace CorgEng.UserInterface.UserInterfaceComponents
                 userInterfaceIconRenderer.StartRendering(userInterfaceIconRenderObject);
         }
 
-        public override void PerformRender()
-        {
+		public override void Render(ICamera camera)
+		{
             if (!CorgEngMain.IsRendering)
                 return;
             userInterfaceIconRenderer.Render(Width, Height);

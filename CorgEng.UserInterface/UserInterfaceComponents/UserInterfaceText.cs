@@ -1,6 +1,7 @@
 ﻿using CorgEng.Core;
 using CorgEng.Core.Dependencies;
 using CorgEng.GenericInterfaces.Font.Fonts;
+using CorgEng.GenericInterfaces.Rendering;
 using CorgEng.GenericInterfaces.Rendering.Cameras.Isometric;
 using CorgEng.GenericInterfaces.Rendering.Renderers.SpriteRendering;
 using CorgEng.GenericInterfaces.Rendering.Text;
@@ -78,8 +79,8 @@ namespace CorgEng.UserInterface.UserInterfaceComponents
             });
         }
 
-        public override void PerformRender()
-        {
+		public override void Render(ICamera camera)
+		{
             if (!ready)
                 return;
             IsometricCamera.X = 0.8f;

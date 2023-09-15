@@ -1,7 +1,6 @@
 ﻿using CorgEng.Core;
 using CorgEng.Core.Dependencies;
 using CorgEng.Example.Modules.CameraScroll;
-using CorgEng.Example.Shared.RenderCores;
 using CorgEng.GenericInterfaces.Networking.Networking.Client;
 using CorgEng.GenericInterfaces.Rendering.Cameras.Isometric;
 using System.Threading;
@@ -35,9 +34,6 @@ namespace CorgEng.Example
             //Camera an isometric camera
             IIsometricCamera camera = isometricCameraFactory.CreateCamera();
             CameraScrollSystem.IsometricCamera = camera;
-
-            ExampleRenderCore erc = new ExampleRenderCore();
-            CorgEngMain.SetRenderCore(erc);
 
             //Connect to our server
             NetworkingClient.AttemptConnection("127.0.0.1", 5000);

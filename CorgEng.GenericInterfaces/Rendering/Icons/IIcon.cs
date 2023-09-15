@@ -47,7 +47,7 @@ namespace CorgEng.GenericInterfaces.Rendering.Icons
         /// <summary>
         /// The plane that this icon should be renderer on.
         /// </summary>
-        uint Plane { get; set; }
+        int Plane { get; set; }
 
         /// <summary>
         /// The renderer being used to render this icon.

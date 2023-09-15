@@ -33,7 +33,7 @@ namespace CorgEng.Lighting.Systems
             //When the lighting object initialises, set it to start rendering on the specified system
             RegisterLocalEvent<LightingComponent, InitialiseEvent>((entity, lightingComponent, signal) => {
                 //Create an overlay lighting icon.
-                IIcon createdIcon = IconFactory.CreateIcon("light_mask", 100, LightingRenderCore.LIGHTING_PLANE);
+                IIcon createdIcon = IconFactory.CreateIcon("light_mask", 100, LightingRenderer.LIGHTING_PLANE);
                 createdIcon.Transform = new Matrix(new float[,]
                     {
                         { lightingComponent.Radius, 0, 0 },

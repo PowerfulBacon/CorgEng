@@ -14,7 +14,7 @@ namespace CorgEng.GenericInterfaces.Rendering.Renderers.ParallaxRenderer
         /// </summary>
         /// <param name="networkedIdentifier"></param>
         /// <returns></returns>
-        IParallaxRenderer CreateParallaxRenderer(uint networkedIdentifier);
+        IParallaxRenderer CreateParallaxRenderer(int plane);
 
     }
 }

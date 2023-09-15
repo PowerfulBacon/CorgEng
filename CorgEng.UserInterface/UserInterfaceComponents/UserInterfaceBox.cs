@@ -1,6 +1,7 @@
 ﻿using CorgEng.Core;
 using CorgEng.Core.Dependencies;
 using CorgEng.GenericInterfaces.Logging;
+using CorgEng.GenericInterfaces.Rendering;
 using CorgEng.GenericInterfaces.UserInterface.Anchors;
 using CorgEng.GenericInterfaces.UserInterface.Components;
 using CorgEng.GenericInterfaces.UtilityTypes;
@@ -65,11 +66,11 @@ namespace CorgEng.UserInterface.Components
                 userInterfaceBoxRenderer.StartRendering(boxRenderObject);
         }
 
-        public override void PerformRender()
-        {
-            if (!CorgEngMain.IsRendering)
-                return;
-            userInterfaceBoxRenderer.Render(Width, Height);
-        }
-    }
+		public override void Render(ICamera camera)
+		{
+			if (!CorgEngMain.IsRendering)
+				return;
+			userInterfaceBoxRenderer.Render(Width, Height);
+		}
+	}
 }

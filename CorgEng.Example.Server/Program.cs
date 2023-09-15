@@ -14,7 +14,6 @@ using CorgEng.Example.Components.PlayerMovement;
 using CorgEng.Example.Shared.Components.FollowMouseComponent;
 using CorgEng.Example.Shared.Components.Gravity;
 using CorgEng.Example.Shared.Components.SandFactory;
-using CorgEng.Example.Shared.RenderCores;
 using CorgEng.GenericInterfaces.EntityComponentSystem;
 using CorgEng.GenericInterfaces.Logging;
 using CorgEng.GenericInterfaces.Networking.Config;
@@ -76,8 +75,6 @@ namespace CorgEng.Example.Server
 #else
             CorgEngMain.Initialize();
 
-            ExampleRenderCore erc = new ExampleRenderCore();
-            CorgEngMain.SetRenderCore(erc);
             EntityFactory.CreateEmptyEntity(entity => {
                 IIsometricCamera camera = IsometricCameraFactory.CreateCamera();
                 camera.Width = 30;

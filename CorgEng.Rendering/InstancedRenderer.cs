@@ -7,6 +7,7 @@ using CorgEng.GenericInterfaces.Rendering.Renderers;
 using CorgEng.GenericInterfaces.Rendering.RenderObjects;
 using CorgEng.GenericInterfaces.Rendering.Shaders;
 using CorgEng.GenericInterfaces.Rendering.SharedRenderAttributes;
+using CorgEng.GenericInterfaces.UtilityTypes;
 using CorgEng.GenericInterfaces.UtilityTypes.Batches;
 using System;
 using System.Collections.Generic;
@@ -18,14 +19,21 @@ using static OpenGL.Gl;
 namespace CorgEng.Rendering
 {
 
-    internal static class InstancedRendererDependencyHolder
+    public abstract class InstancedRendererDependencyHolder
     {
         [UsingDependency]
         internal static ILogger Logger;
-    }
 
-    public abstract class InstancedRenderer<TSharedRenderAttributes, TBatch> : IRenderer
-        where TSharedRenderAttributes : ISharedRenderAttributes
+		//Fetch shader loading from some dependency somewhere
+		[UsingDependency]
+		protected static IShaderFactory ShaderFactory;
+
+		[UsingDependency]
+		protected static IColourFactory ColourFactory;
+	}
+
+    public abstract partial class InstancedRenderer<TSharedRenderAttributes, TBatch> : PlaneRenderer, IRenderer
+		where TSharedRenderAttributes : ISharedRenderAttributes
         where TBatch : IBatch<TBatch>, new()
     {
 
@@ -44,24 +52,13 @@ namespace CorgEng.Rendering
         //The location of buffers that we are using
         protected uint[] storedBufferLocations;
 
-        //Used to identifier the networker
-        public uint NetworkIdentifier { get; }
+        public int Plane { get; private set; }
 
-        public InstancedRenderer(uint networkIdentifier)
+        public override void Initialize()
         {
-            //Set the network identifier
-            NetworkIdentifier = networkIdentifier;
-            //Do the renderer lookup
-            if (networkIdentifier != RenderingConstants.NETWORK_RENDERING_ID_LOCAL)
-            {
-                InstancedRendererDependencyHolder.Logger.WriteLine($"Added renderer on plane ID {networkIdentifier}", LogType.DEBUG);
-                RendererLookup.AddRenderer(this);
-            }
-        }
-
-        public void Initialize()
-        {
-            CreateShaders();
+            base.Initialize();
+            // Create the shaders
+			CreateShaders();
             //Create a program for the renderer
             programUint = glCreateProgram();
             //Setup the program:
@@ -77,7 +74,7 @@ namespace CorgEng.Rendering
 
         protected abstract void CreateShaders();
 
-        public void Render(ICamera camera)
+        public override void Render(ICamera camera)
         {
             //Start using our program
             //Shaders were loaded during init
@@ -268,6 +265,5 @@ namespace CorgEng.Rendering
                 NULL                //Array buffer offset (null)
             );
         }
-
-    }
+	}
 }
