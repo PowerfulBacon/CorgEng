@@ -1,4 +1,5 @@
 ﻿using CorgEng.GenericInterfaces.ContentLoading.DefinitionNodes;
+using CorgEng.GenericInterfaces.EntityComponentSystem;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,7 +27,7 @@ namespace CorgEng.ContentLoading.DefinitionNodes
             arrayType = EntityLoader.TypePaths[node.Attributes["type"].Value];
         }
 
-        public override object CreateInstance(object parent, Dictionary<string, object> instanceRefs)
+        public override object CreateInstance(IWorld world, object parent, Dictionary<string, object> instanceRefs)
         {
             //Create the array object
             Array createdArray = Array.CreateInstance(arrayType, Children.Count);
@@ -34,7 +35,7 @@ namespace CorgEng.ContentLoading.DefinitionNodes
             int i = 0;
             foreach (DefinitionNode child in Children)
             {
-                createdArray.SetValue(child.CreateInstance(createdArray, instanceRefs), i++);
+                createdArray.SetValue(child.CreateInstance(world, createdArray, instanceRefs), i++);
             }
             //Add a reference to the created array
             if (Key != null)

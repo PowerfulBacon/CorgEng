@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 namespace CorgEng.Tests.NetworkingTests
 {
     [TestClass]
-    public class PacketQueueTests
+    public class PacketQueueTests : TestBase
     {
 
         [UsingDependency]

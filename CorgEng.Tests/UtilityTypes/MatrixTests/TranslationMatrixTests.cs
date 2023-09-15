@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace CorgEng.Tests.UtilityTypes.MatrixTests
 {
     [TestClass]
-    public class TranslationMatrixTests
+    public class TranslationMatrixTests : TestBase
     {
         [TestMethod]
         public void TestNoTranslation()

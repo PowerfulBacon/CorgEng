@@ -34,13 +34,13 @@ namespace CorgEng.ContentLoading
         /// <param name="entityName"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public IEntity CreateEntity(string entityName, Action<IEntity> preInitialisationEvents)
+        public IEntity CreateEntity(IWorld world, string entityName, Action<IEntity> preInitialisationEvents)
         {
             try
             {
                 if (EntityNodesByName.ContainsKey(entityName))
                 {
-                    IEntity createdEntity = EntityNodesByName[entityName].CreateEntity(preInitialisationEvents);
+                    IEntity createdEntity = EntityNodesByName[entityName].CreateEntity(world, preInitialisationEvents);
                     createdEntity.DefinitionName = entityName;
                     return createdEntity;
                 }
@@ -60,13 +60,13 @@ namespace CorgEng.ContentLoading
         /// <param name="objectIdentifier"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public object CreateObject(string objectIdentifier)
+        public object CreateObject(IWorld world, string objectIdentifier)
         {
             try
             {
                 if (EntityLoader.LoadedDefinitions.ContainsKey(objectIdentifier))
                 {
-                    return EntityLoader.LoadedDefinitions[objectIdentifier].CreateInstance(null, new Dictionary<string, object>());
+                    return EntityLoader.LoadedDefinitions[objectIdentifier].CreateInstance(world, null, new Dictionary<string, object>());
                 }
                 //Entity not found :(
                 throw new Exception($"The object with name {objectIdentifier} could not be spawned as it doesn't exist.");

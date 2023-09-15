@@ -23,7 +23,7 @@ namespace CorgEng.Example.Common.Components.Camera
         //Contains camera logic which only the client knows about
         public override EntitySystemFlags SystemFlags { get; } = EntitySystemFlags.CLIENT_SYSTEM;
 
-        public override void SystemSetup()
+        public override void SystemSetup(IWorld world)
         {
             RegisterLocalEvent<CameraComponent, MoveEvent>(OnCameraMoved);
             RegisterLocalEvent<CameraComponent, ComponentAddedEvent>(OnComponentAdded);

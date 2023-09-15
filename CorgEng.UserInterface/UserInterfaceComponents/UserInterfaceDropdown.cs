@@ -1,4 +1,5 @@
-﻿using CorgEng.GenericInterfaces.UserInterface.Anchors;
+﻿using CorgEng.GenericInterfaces.EntityComponentSystem;
+using CorgEng.GenericInterfaces.UserInterface.Anchors;
 using CorgEng.GenericInterfaces.UserInterface.Components;
 using CorgEng.UserInterface.Components;
 using System;
@@ -31,12 +32,12 @@ namespace CorgEng.UserInterface.UserInterfaceComponents
 
         private List<IUserInterfaceComponent> expandButton = new List<IUserInterfaceComponent>();
 
-        public UserInterfaceDropdown(IAnchor anchorDetails, IDictionary<string, string> arguments) : base(anchorDetails, arguments)
+        public UserInterfaceDropdown(IWorld world, IAnchor anchorDetails, IDictionary<string, string> arguments) : base(world, anchorDetails, arguments)
         {
             ToggleExpansion();
         }
 
-        public UserInterfaceDropdown(IUserInterfaceComponent parent, IAnchor anchorDetails, IDictionary<string, string> arguments) : base(parent, anchorDetails, arguments)
+        public UserInterfaceDropdown(IWorld world, IUserInterfaceComponent parent, IAnchor anchorDetails, IDictionary<string, string> arguments) : base(world, parent, anchorDetails, arguments)
         {
             ToggleExpansion();
         }

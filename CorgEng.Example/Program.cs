@@ -12,10 +12,10 @@ namespace CorgEng.Example
     {
 
         [UsingDependency]
-        private static IIsometricCameraFactory isometricCameraFactory;
+        private static IIsometricCameraFactory isometricCameraFactory = null!;
 
         [UsingDependency]
-        private static INetworkingClient NetworkingClient;
+        private static IWorldFactory WorldFactory = null!;
 
         static void Main(string[] args)
         {
@@ -25,6 +25,10 @@ namespace CorgEng.Example
             //This creates the window and loads all
             //modules that are dependencies
             CorgEngMain.Initialize();
+
+            // Create the world
+            IWorld world = WorldFactory.CreateWorld();
+            CorgEngMain.PrimaryWorld = world;
 
             //Set the render core
 
@@ -36,7 +40,7 @@ namespace CorgEng.Example
             CameraScrollSystem.IsometricCamera = camera;
 
             //Connect to our server
-            NetworkingClient.AttemptConnection("127.0.0.1", 5000);
+            world.ClientInstance.AttemptConnection("127.0.0.1", 5000);
 
             //Create the entity to hold and move the camera
             /*Entity mainCameraEntity = new Entity();

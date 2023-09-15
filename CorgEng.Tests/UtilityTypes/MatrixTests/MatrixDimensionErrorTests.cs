@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace CorgEng.Tests.UtilityTypes.MatrixTests
 {
     [TestClass]
-    public class MatrixDimensionErrorTests
+    public class MatrixDimensionErrorTests : TestBase
     {
         [TestMethod]
         [ExpectedException(typeof(InvalidMatrixDimensionError))]

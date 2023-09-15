@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 namespace CorgEng.Tests.Pathfinding
 {
     [TestClass]
-    public class PathfindingTests
+    public class PathfindingTests : TestBase
     {
 
         private class PathfindingTestQueryer : IPathCellQueryer

@@ -39,46 +39,37 @@ namespace CorgEng.Tests.NetworkingTests
     }
 
     [TestClass]
-    public class PrototypeTests
+    public class PrototypeTests : TestBase
     {
 
         [UsingDependency]
-        private static IEntityFactory EntityFactory;
+        private static IWorldFactory WorldFactory;
 
         [UsingDependency]
         private static IPrototypeManager PrototypeManager;
 
         [UsingDependency]
-        private static INetworkingServer Server;
-
-        [UsingDependency]
-        private static INetworkingClient Client;
-
-        [UsingDependency]
         private static ILogger Logger;
-
-        [TestCleanup]
-        public void AfterTest()
-        {
-            Server.Cleanup();
-            Client.Cleanup();
-        }
 
         [TestMethod]
         [Timeout(10000)]
         public void TestPrototypes()
         {
             bool success = false;
-            Server.StartHosting(5000);
-            Client.OnConnectionSuccess += (IPAddress ipAddress) => { success = true; };
-            Client.OnConnectionFailed += (IPAddress ipAddress, DisconnectReason disconnectReason, string reasonText) => { Assert.Fail("Connection failed, server rejected connection."); };
-            Client.AttemptConnection("127.0.0.1", 5000, 1000);
+
+            IWorld clientWorld = WorldFactory.CreateWorld();
+            IWorld serverWorld = WorldFactory.CreateWorld();
+
+            serverWorld.ServerInstance.StartHosting(5000);
+            clientWorld.ClientInstance.OnConnectionSuccess += (IPAddress ipAddress) => { success = true; };
+            clientWorld.ClientInstance.OnConnectionFailed += (IPAddress ipAddress, DisconnectReason disconnectReason, string reasonText) => { Assert.Fail("Connection failed, server rejected connection."); };
+            clientWorld.ClientInstance.AttemptConnection("127.0.0.1", 5000, 1000);
 
             while (!success)
                 Thread.Sleep(0);
 
             //Create an entity
-            IEntity entity = EntityFactory.CreateEmptyEntity(null);
+            IEntity entity = serverWorld.EntityManager.CreateEmptyEntity(null);
             TestComponent testComponent = new TestComponent();
             testComponent.Integer = 59;
             testComponent.Text = "Hello World!";
@@ -95,7 +86,7 @@ namespace CorgEng.Tests.NetworkingTests
 
             //Deserialize the entity's prototype
             IPrototype deserialisedPrototype = PrototypeManager.GetPrototype(serialisedPrototype);
-            IEntity createdEntity = deserialisedPrototype.CreateEntityFromPrototype();     //We don't care about the identifier for this test
+            IEntity createdEntity = deserialisedPrototype.CreateEntityFromPrototype(clientWorld);     //We don't care about the identifier for this test
             //Verify the entity is correct
             Assert.AreEqual(entity.Components.Count, createdEntity.Components.Count);
             TestComponent deserializedComponent = (TestComponent)createdEntity.Components[1];

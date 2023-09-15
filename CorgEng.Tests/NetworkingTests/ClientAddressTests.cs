@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 namespace CorgEng.Tests.NetworkingTests
 {
     [TestClass]
-    public class ClientAddressTests
+    public class ClientAddressTests : TestBase
     {
 
         [UsingDependency]

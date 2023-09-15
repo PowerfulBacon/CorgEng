@@ -38,6 +38,12 @@
     <None Update="Content\Icons\error.texdat">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Content\Shaders\DepthShader\DepthShader.frag">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Content\Shaders\DepthShader\DepthShader.vert">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Content\Shaders\CoreShader\CoreShader.frag">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 
 namespace CorgEng.EntityComponentSystem.Implementations.Transform
 {
+    [Obsolete("MoveEvent has been replaced by CVar events.", error:false)]
     public class MoveEvent : INetworkedEvent
     {
 

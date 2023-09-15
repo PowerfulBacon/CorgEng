@@ -19,11 +19,11 @@ namespace CorgEng.World.EntitySystems
     {
 
         [UsingDependency]
-        private static IWorld WorldAccess = null!;
+        private static IEntityPositionTracker WorldAccess = null!;
 
         public override EntitySystemFlags SystemFlags { get; } = EntitySystemFlags.HOST_SYSTEM;
 
-        public override void SystemSetup()
+        public override void SystemSetup(IWorld world)
         {
             RegisterLocalEvent<TrackComponent, ComponentAddedEvent>(OnEntityCreated);
             RegisterLocalEvent<TrackComponent, ContentsChangedEvent>(OnEntityLocationChanged);
@@ -46,7 +46,7 @@ namespace CorgEng.World.EntitySystems
             if (trackComponent.Parent.HasComponent<ContainedComponent>())
                 return;
             //Add the entity to the world
-            WorldAccess.AddEntity(trackComponent.Key, trackComponent, trackComponent.Transform.Position.X, trackComponent.Transform.Position.Y, 0);
+            WorldAccess.AddEntity(trackComponent.Key, trackComponent, trackComponent.Transform.Position.Value.X, trackComponent.Transform.Position.Value.Y, 0);
             trackComponent.isTracking = true;
         }
 
@@ -68,7 +68,7 @@ namespace CorgEng.World.EntitySystems
             {
                 //Start tracking
                 trackComponent.isTracking = true;
-                WorldAccess.AddEntity(trackComponent.Key, trackComponent, trackComponent.Transform.Position.X, trackComponent.Transform.Position.Y, 0);
+                WorldAccess.AddEntity(trackComponent.Key, trackComponent, trackComponent.Transform.Position.Value.X, trackComponent.Transform.Position.Value.Y, 0);
             }
         }
 

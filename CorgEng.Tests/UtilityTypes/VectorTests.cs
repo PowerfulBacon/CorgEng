@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace CorgEng.Tests.UtilityTypes
 {
     [TestClass]
-    public class VectorTests
+    public class VectorTests : TestBase
     {
 
         [TestMethod]

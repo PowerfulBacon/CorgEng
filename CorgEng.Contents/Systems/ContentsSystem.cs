@@ -28,7 +28,7 @@ namespace CorgEng.Contents.Systems
 
         public override EntitySystemFlags SystemFlags => EntitySystemFlags.HOST_SYSTEM;
 
-        public override void SystemSetup()
+        public override void SystemSetup(IWorld world)
         {
             RegisterLocalEvent<ContainedComponent, DeleteEntityEvent>(OnContainedEntityDeleted);
             RegisterLocalEvent<ContentsComponent, DeleteEntityEvent>(OnContentHolderDeleted);
@@ -55,7 +55,7 @@ namespace CorgEng.Contents.Systems
             TransformComponent? locatedTransform = containedComponent.Parent.FindComponent<TransformComponent>();
             if (locatedTransform != null)
             {
-                new SetPositionEvent(locatedTransform.Position).Raise(entity);
+                new SetPositionEvent(locatedTransform.Position.Value).Raise(entity);
             }
             //Raise the left contents event
             new ContentsChangedEvent(containedComponent.Parent, null).Raise(entity);

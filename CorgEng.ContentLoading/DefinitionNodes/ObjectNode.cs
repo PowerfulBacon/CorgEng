@@ -1,4 +1,5 @@
 ﻿using CorgEng.ContentLoading;
+using CorgEng.GenericInterfaces.EntityComponentSystem;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -78,10 +79,10 @@ namespace CorgEng.GenericInterfaces.ContentLoading.DefinitionNodes
             }
         }
 
-        public override object CreateInstance(object parent, Dictionary<string, object> instanceRefs)
+        public override object CreateInstance(IWorld world, object parent, Dictionary<string, object> instanceRefs)
         {
             //Create ourself
-            object createdObject = PropertyValue ?? Activator.CreateInstance(ObjectType);
+            object createdObject = PropertyValue ?? (typeof(WorldObject).IsAssignableFrom(ObjectType) ? Activator.CreateInstance(ObjectType, new object[] { world }) : Activator.CreateInstance(ObjectType));
             //Store it
             if (Key != null)
             {
@@ -90,7 +91,7 @@ namespace CorgEng.GenericInterfaces.ContentLoading.DefinitionNodes
             //Pass ourself to our children
             foreach (DefinitionNode childNode in Children)
             {
-                childNode.CreateInstance(createdObject, instanceRefs);
+                childNode.CreateInstance(world, createdObject, instanceRefs);
             }
             //Return the created object
             return createdObject;

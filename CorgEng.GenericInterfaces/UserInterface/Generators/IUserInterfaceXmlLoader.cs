@@ -1,4 +1,5 @@
-﻿using CorgEng.GenericInterfaces.UserInterface.Components;
+﻿using CorgEng.GenericInterfaces.EntityComponentSystem;
+using CorgEng.GenericInterfaces.UserInterface.Components;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,7 +16,7 @@ namespace CorgEng.GenericInterfaces.UserInterface.Generators
         /// </summary>
         /// <param name="filepath">The path to the XML file to load the user interface from.</param>
         /// <returns>Returns the root component of the user interface.</returns>
-        IUserInterfaceComponent LoadUserInterface(string filepath);
+        IUserInterfaceComponent LoadUserInterface(IWorld world, string filepath);
 
     }
 }

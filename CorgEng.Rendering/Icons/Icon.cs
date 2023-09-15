@@ -110,7 +110,7 @@ namespace CorgEng.Rendering.Icons
             IconName = iconName;
             Layer = layer;
             Plane = plane;
-            Colour.OnChange += (e, args) =>
+            Colour.ValueChanged += (e, args) =>
             {
                 ValueChanged?.Invoke();
             };

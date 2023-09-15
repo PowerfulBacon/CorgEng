@@ -22,13 +22,13 @@ namespace CorgEng.EntityComponentSystem.Implementations.Transform
         [UsingDependency]
         private static ILogger Logger;
 
-        public override void SystemSetup()
+        public override void SystemSetup(IWorld world)
         {
             RegisterLocalEvent<TransformComponent, SetPositionEvent>(SetEntityPosition);
             RegisterLocalEvent<TransformComponent, TranslateEvent>(TranslateEntity);
             RegisterLocalEvent<TransformComponent, SetRotationEvent>(SetEntityRotation);
             RegisterLocalEvent<TransformComponent, MoveEvent>((e, c, s) => {
-                c.Position = s.NewPosition;
+                c.Position.Value = s.NewPosition;
             });
         }
 
@@ -40,20 +40,20 @@ namespace CorgEng.EntityComponentSystem.Implementations.Transform
         /// <param name="setRotationEvent"></param>
         private void SetEntityRotation(IEntity entity, TransformComponent transform, SetRotationEvent setRotationEvent)
         {
-            RotationEvent rotationEvent = new RotationEvent(transform.Rotation, setRotationEvent.NewRotation);
+            RotationEvent rotationEvent = new RotationEvent(transform.Rotation.Value, setRotationEvent.NewRotation);
             //Update the rotation of the transform component
-            transform.Rotation = setRotationEvent.NewRotation;
+            transform.Rotation.Value = setRotationEvent.NewRotation;
             //Raise a rotationEvent
             rotationEvent.Raise(entity);
         }
 
         private void TranslateEntity(IEntity entity, TransformComponent transform, TranslateEvent translationEvent)
         {
-            Vector<float> newPosition = transform.Position + translationEvent.TranslationDelta;
+            Vector<float> newPosition = transform.Position.Value + translationEvent.TranslationDelta;
             //Create a new on move event
-            MoveEvent moveEvent = new MoveEvent(transform.Position, newPosition);
+            MoveEvent moveEvent = new MoveEvent(transform.Position.Value, newPosition);
             //Update the position of the transform
-            transform.Position = newPosition;
+            transform.Position.Value = newPosition;
             //Trigger the on move event
             moveEvent.Raise(entity);
         }
@@ -61,9 +61,9 @@ namespace CorgEng.EntityComponentSystem.Implementations.Transform
         private void SetEntityPosition(IEntity entity, TransformComponent transform, SetPositionEvent setPositionEvent)
         {
             //Create a new on move event
-            MoveEvent moveEvent = new MoveEvent(transform.Position, setPositionEvent.NewPosition);
+            MoveEvent moveEvent = new MoveEvent(transform.Position.Value, setPositionEvent.NewPosition);
             //Update the position of the transform
-            transform.Position = setPositionEvent.NewPosition;
+            transform.Position.Value = setPositionEvent.NewPosition;
             //Trigger the on move event
             moveEvent.Raise(entity);
         }

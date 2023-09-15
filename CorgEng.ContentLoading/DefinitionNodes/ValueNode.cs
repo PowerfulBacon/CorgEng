@@ -1,4 +1,5 @@
 ﻿using CorgEng.GenericInterfaces.ContentLoading.DefinitionNodes;
+using CorgEng.GenericInterfaces.EntityComponentSystem;
 using System;
 using System.Collections.Generic;
 using System.Linq;

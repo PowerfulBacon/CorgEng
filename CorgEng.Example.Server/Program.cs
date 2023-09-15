@@ -44,13 +44,7 @@ namespace CorgEng.Example.Server
         private static ILogger Logger;
 
         [UsingDependency]
-        private static INetworkingServer NetworkingServer;
-
-        [UsingDependency]
         private static IPrototypeManager PrototypeManager;
-
-        [UsingDependency]
-        private static IEntityFactory EntityFactory;
 
 #if DEBUG_RENDERING
         [UsingDependency]
@@ -60,9 +54,13 @@ namespace CorgEng.Example.Server
         [UsingDependency]
         private static IIconFactory IconFactory;
 
-
         [UsingDependency]
         private static INetworkConfig NetworkConfig;
+
+        [UsingDependency]
+        private static IWorldFactory WorldFactory;
+
+        public static IWorld ServerWorld;
 
         static void Main(string[] args)
         {
@@ -75,7 +73,17 @@ namespace CorgEng.Example.Server
 #else
             CorgEngMain.Initialize();
 
-            EntityFactory.CreateEmptyEntity(entity => {
+            // Create the program world
+            ServerWorld = WorldFactory.CreateWorld();
+            CorgEngMain.PrimaryWorld = ServerWorld;
+
+            //Start networking server
+            ServerWorld.ServerInstance.StartHosting(5000);
+
+            //Debug
+            NetworkConfig.ProcessClientSystems = true;
+
+            ServerWorld.EntityManager.CreateEmptyEntity(entity => {
                 IIsometricCamera camera = IsometricCameraFactory.CreateCamera();
                 camera.Width = 30;
                 camera.Height = 30;
@@ -87,7 +95,7 @@ namespace CorgEng.Example.Server
             });
 
             // Create a lighting debugger
-            EntityFactory.CreateEmptyEntity(entity => {
+            ServerWorld.EntityManager.CreateEmptyEntity(entity => {
                 entity.AddComponent(new TransformComponent());
                 entity.AddComponent(new FollowCursorComponent());
                 entity.AddComponent(new SpriteRenderComponent());
@@ -95,17 +103,12 @@ namespace CorgEng.Example.Server
                 new SetSpriteEvent(IconFactory.CreateIcon("rock", 5, Constants.RenderingConstants.DEFAULT_RENDERER_PLANE)).Raise(entity);
                 new SetSpriteRendererEvent(1).Raise(entity);
             });
-
-            //Debug
-            NetworkConfig.ProcessClientSystems = true;
 #endif
 
             BuildWorld();
 
             //Set the default player prototype
             SetPlayerPrototype();
-            //Start networking server
-            NetworkingServer.StartHosting(5000);
 
 #if DEBUG_RENDERING
             //Transfer control of the main thread to the CorgEng
@@ -158,7 +161,7 @@ namespace CorgEng.Example.Server
                         {
                             for (int yv = Math.Min(start_y, end_y); yv <= Math.Max(start_y, end_y); yv++)
                             {
-                                EntityFactory.CreateEmptyEntity(testingEntity => {
+                                ServerWorld.EntityManager.CreateEmptyEntity(testingEntity => {
                                     //Add components
                                     testingEntity.AddComponent(new NetworkTransformComponent());
                                     testingEntity.AddComponent(new SpriteRenderComponent());
@@ -175,7 +178,7 @@ namespace CorgEng.Example.Server
                 });
 
             //Create a testing entity
-            EntityFactory.CreateEmptyEntity(testingEntity => {
+            ServerWorld.EntityManager.CreateEmptyEntity(testingEntity => {
                 //Add components
                 testingEntity.AddComponent(new NetworkTransformComponent());
                 testingEntity.AddComponent(new SpriteRenderComponent());
@@ -189,13 +192,13 @@ namespace CorgEng.Example.Server
 
         private static void SetPlayerPrototype()
         {
-            EntityFactory.CreateEmptyEntity(playerPrototype => {
+            ServerWorld.EntityManager.CreateEmptyEntity(playerPrototype => {
                 playerPrototype.AddComponent(new ClientComponent());
                 playerPrototype.AddComponent(new NetworkTransformComponent());
                 playerPrototype.AddComponent(new SpriteRenderComponent() { Sprite = IconFactory.CreateIcon("human.ghost", 5, Constants.RenderingConstants.DEFAULT_RENDERER_PLANE), SpriteRendererIdentifier = 1 });
                 playerPrototype.AddComponent(new PlayerMovementComponent());
                 IPrototype prototype = PrototypeManager.GetPrototype(playerPrototype);
-                NetworkingServer.SetClientPrototype(prototype);
+                ServerWorld.ServerInstance.SetClientPrototype(prototype);
                 new DeleteEntityEvent().Raise(playerPrototype);
             });
         }

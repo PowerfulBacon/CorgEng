@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 namespace CorgEng.Tests.FontTests
 {
     [TestClass]
-    public class FontTests
+    public class FontTests : TestBase
     {
 
         [UsingDependency]

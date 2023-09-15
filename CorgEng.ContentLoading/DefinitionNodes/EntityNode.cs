@@ -15,9 +15,6 @@ namespace CorgEng.GenericInterfaces.ContentLoading.DefinitionNodes
     internal class EntityNode : DefinitionNode, IEntityDefinition
     {
 
-        [UsingDependency]
-        public static IEntityFactory EntityFactory;
-
         public bool Abstract { get; set; } = false;
 
         /// <summary>
@@ -50,19 +47,19 @@ namespace CorgEng.GenericInterfaces.ContentLoading.DefinitionNodes
         /// Create an entity from this node
         /// </summary>
         /// <returns></returns>
-        public IEntity CreateEntity(Action<IEntity> setupAction)
+        public IEntity CreateEntity(IWorld world, Action<IEntity> setupAction)
         {
-            return (IEntity)CreateInstance(null, new Dictionary<string, object>(), setupAction);
+            return (IEntity)CreateInstance(world, null, new Dictionary<string, object>(), setupAction);
         }
 
-        public override object CreateInstance(object parent, Dictionary<string, object> instanceRefs)
+        public override object CreateInstance(IWorld world, object parent, Dictionary<string, object> instanceRefs)
         {
-            return CreateInstance(parent, instanceRefs, null);
+            return CreateInstance(world, parent, instanceRefs, null);
         }
 
-        public object CreateInstance(object parent, Dictionary<string, object> instanceRefs, Action<IEntity> setupAction)
+        public object CreateInstance(IWorld world, object parent, Dictionary<string, object> instanceRefs, Action<IEntity> setupAction)
         {
-            IEntity createdEntity = EntityFactory.CreateUninitialisedEntity();
+            IEntity createdEntity = world.EntityManager.CreateUninitialisedEntity();
             //Store the key
             if (Key != null)
             {
@@ -71,7 +68,7 @@ namespace CorgEng.GenericInterfaces.ContentLoading.DefinitionNodes
             //Add on properties
             foreach (DefinitionNode childNode in Children)
             {
-                childNode.CreateInstance(createdEntity, instanceRefs);
+                childNode.CreateInstance(world, createdEntity, instanceRefs);
             }
             //Run init event
             setupAction?.Invoke(createdEntity);

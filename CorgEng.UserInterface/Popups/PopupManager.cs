@@ -1,6 +1,7 @@
 ﻿using CorgEng.Core.Dependencies;
 using CorgEng.Core.Modules;
 using CorgEng.DependencyInjection.Dependencies;
+using CorgEng.GenericInterfaces.EntityComponentSystem;
 using CorgEng.GenericInterfaces.UserInterface.Anchors;
 using CorgEng.GenericInterfaces.UserInterface.Components;
 using CorgEng.GenericInterfaces.UserInterface.Popups;
@@ -12,7 +13,6 @@ using System.Threading.Tasks;
 
 namespace CorgEng.UserInterface.Popups
 {
-    [Dependency]
     internal class PopupManager : IPopupManager
     {
 
@@ -30,10 +30,11 @@ namespace CorgEng.UserInterface.Popups
         /// </summary>
         private static IUserInterfaceComponent popupRootInterface;
 
-        [ModuleLoad(mainThread = true)]
-        public static void InitialisePopupInterface()
+        [WorldInitialise]
+        public static void InitialisePopupInterface(IWorld world)
         {
             popupRootInterface = UserInterfaceComponentFactory.CreateGenericUserInterfaceComponent(
+                world,
                 null,
                 AnchorFactory.CreateAnchor(
                     AnchorDetailFactory.CreateAnchorDetails(AnchorDirections.LEFT, AnchorUnits.PIXELS, 0),

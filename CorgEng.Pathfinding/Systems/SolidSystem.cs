@@ -19,7 +19,7 @@ namespace CorgEng.Pathfinding.Systems
     {
 
         [UsingDependency]
-        private static IWorld WorldAccess;
+        private static IEntityPositionTracker WorldAccess;
 
         /// <summary>
         /// The world layers
@@ -28,7 +28,7 @@ namespace CorgEng.Pathfinding.Systems
 
         public override EntitySystemFlags SystemFlags => EntitySystemFlags.HOST_SYSTEM;
 
-        public override void SystemSetup()
+        public override void SystemSetup(IWorld world)
         {
             RegisterLocalEvent<SolidComponent, ComponentAddedEvent>(OnComponentAdded);
             RegisterLocalEvent<SolidComponent, ComponentRemovedEvent>(OnComponentRemoved);
@@ -49,7 +49,7 @@ namespace CorgEng.Pathfinding.Systems
                 WorldLayers.Add(0, new WorldGrid());
             }
             //Get the position
-            IVector<int> gridPosition = WorldAccess.GetGridPosition(attachedTransformComponent.Position);
+            IVector<int> gridPosition = WorldAccess.GetGridPosition(attachedTransformComponent.Position.Value);
             int positionX = gridPosition.X;
             int positionY = gridPosition.Y;
             WorldLayers[0].AddElement(positionX, positionY);
@@ -69,7 +69,7 @@ namespace CorgEng.Pathfinding.Systems
                 return;
             }
             //Get the position
-            IVector<int> gridPosition = WorldAccess.GetGridPosition(attachedTransformComponent.Position);
+            IVector<int> gridPosition = WorldAccess.GetGridPosition(attachedTransformComponent.Position.Value);
             int positionX = gridPosition.X;
             int positionY = gridPosition.Y;
             WorldLayers[0].RemoveElement(positionX, positionY);

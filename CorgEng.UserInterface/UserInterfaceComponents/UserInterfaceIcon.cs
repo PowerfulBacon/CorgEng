@@ -1,6 +1,7 @@
 ﻿using CorgEng.Constants;
 using CorgEng.Core;
 using CorgEng.Core.Dependencies;
+using CorgEng.GenericInterfaces.EntityComponentSystem;
 using CorgEng.GenericInterfaces.Logging;
 using CorgEng.GenericInterfaces.Rendering;
 using CorgEng.GenericInterfaces.Rendering.Icons;
@@ -38,12 +39,12 @@ namespace CorgEng.UserInterface.UserInterfaceComponents
         /// </summary>
         protected override bool ScreencastInclude { get; } = false;
 
-        public UserInterfaceIcon(IAnchor anchorDetails, IDictionary<string, string> arguments) : base(anchorDetails, arguments)
+        public UserInterfaceIcon(IWorld world, IAnchor anchorDetails, IDictionary<string, string> arguments) : base(world, anchorDetails, arguments)
         {
             Init(arguments);
         }
 
-        public UserInterfaceIcon(IUserInterfaceComponent parent, IAnchor anchorDetails, IDictionary<string, string> arguments) : base(parent, anchorDetails, arguments)
+        public UserInterfaceIcon(IWorld world, IUserInterfaceComponent parent, IAnchor anchorDetails, IDictionary<string, string> arguments) : base(world, parent, anchorDetails, arguments)
         {
             Init(arguments);
         }

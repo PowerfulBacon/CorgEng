@@ -20,13 +20,13 @@ namespace CorgEng.UtilityTypes.Vectors
         public Vector(params T[] values)
         {
             Values = values;
-            OnChange = null;
+            ValueChanged = null;
             sizeOfT = Marshal.SizeOf(typeof(T));
         }
 
         private T[] Values;
 
-        public event EventHandler OnChange;
+        public event EventHandler ValueChanged;
 
         /// <summary>
         /// Overload for the [] operator, returns the element of the vector.
@@ -36,7 +36,7 @@ namespace CorgEng.UtilityTypes.Vectors
             get { return Values[x]; }
             set {
                 Values[x] = value;
-                OnChange?.Invoke(this, EventArgs.Empty);
+                ValueChanged?.Invoke(this, EventArgs.Empty);
             }
         }
 
@@ -379,7 +379,7 @@ namespace CorgEng.UtilityTypes.Vectors
             //Construct
             //new T[length] causes a stack overflow exception.
             Values = new T[length];
-            OnChange = null;
+            ValueChanged = null;
             sizeOfT = Marshal.SizeOf(typeof(T));
             //Read Ts
             for (int i = length - 1; i >= 0; i--)

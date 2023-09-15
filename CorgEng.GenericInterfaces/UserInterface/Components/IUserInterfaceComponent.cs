@@ -72,6 +72,11 @@ namespace CorgEng.GenericInterfaces.UserInterface.Components
         double BottomOffset { get; }
 
         /// <summary>
+        /// The world relevant to this user interface component
+        /// </summary>
+        IWorld World { get; }
+
+        /// <summary>
         /// Raw list of children
         /// </summary>
         List<IUserInterfaceComponent> Children { get; }

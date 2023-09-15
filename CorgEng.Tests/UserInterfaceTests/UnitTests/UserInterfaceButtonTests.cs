@@ -1,5 +1,6 @@
 ﻿using CorgEng.Core.Dependencies;
 using CorgEng.EntityComponentSystem.Events;
+using CorgEng.GenericInterfaces.EntityComponentSystem;
 using CorgEng.GenericInterfaces.UserInterface.Components;
 using CorgEng.GenericInterfaces.UserInterface.Generators;
 using CorgEng.UserInterface.Attributes;
@@ -17,11 +18,16 @@ using System.Threading.Tasks;
 namespace CorgEng.Tests.UserInterfaceTests.UnitTests
 {
     [TestClass]
-    public class UserInterfaceButtonTests
+    public class UserInterfaceButtonTests : TestBase
     {
 
         [UsingDependency]
         private static IUserInterfaceXmlLoader UserInterfaceXmlLoader;
+
+        [UsingDependency]
+        private static IWorldFactory WorldFactory;
+
+        private static IWorld world;
 
         private static bool TestPassed = false;
 
@@ -39,8 +45,7 @@ namespace CorgEng.Tests.UserInterfaceTests.UnitTests
             if (!setup)
             {
                 setup = true;
-                UserInterfaceClickSystem clickSystem = new UserInterfaceClickSystem();
-                clickSystem.SystemSetup();
+                world = WorldFactory.CreateWorld();
             }
         }
 
@@ -54,7 +59,7 @@ namespace CorgEng.Tests.UserInterfaceTests.UnitTests
             if (UserInterfaceXmlLoader == null)
                 Assert.Inconclusive("User interface XML loader dependency was not injected.");
             //Check for loading errors
-            IUserInterfaceComponent Root = UserInterfaceXmlLoader.LoadUserInterface("UserInterfaceTests/UnitTests/Content/UserInterfaceButton.xml");
+            IUserInterfaceComponent Root = UserInterfaceXmlLoader.LoadUserInterface(world, "UserInterfaceTests/UnitTests/Content/UserInterfaceButton.xml");
             IUserInterfaceComponent button = Root.GetChildren().First();
             new UserInterfaceClickEvent().Raise(button.ComponentHolder);
             while (!TestPassed)

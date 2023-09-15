@@ -18,38 +18,26 @@ using System.Threading.Tasks;
 namespace CorgEng.Tests.NetworkingTests
 {
     [TestClass]
-    public class EntityCommunicatorTests
+    public class EntityCommunicatorTests : TestBase
     {
 
         [UsingDependency]
-        private static IEntityCommunicator EntityCommunicator;
-
-        [UsingDependency]
-        private static INetworkingServer Server;
-
-        [UsingDependency]
-        private static INetworkingClient Client;
+        private static IEntityCommunicatorFactory EntityCommunicatorFactory;
 
         [UsingDependency]
         private static ILogger Logger;
 
         [UsingDependency]
-        private static IEntityFactory EntityFactory;
-
-        [TestCleanup]
-        public void AfterTest()
-        {
-            Server.Cleanup();
-            Client.Cleanup();
-            Logger?.WriteLine("TEST COMPLETED", LogType.DEBUG);
-        }
+        private static IWorldFactory WorldFactory;
 
         [TestMethod]
         [Timeout(1000)]
         public void TestEntityCommunication()
         {
+            IWorld world = WorldFactory.CreateWorld();
+            IEntityCommunicator EntityCommunicator = EntityCommunicatorFactory.CreateEntityCommunicator(world);
             //Alright, connection established. Lets communicate an entity
-            IEntity testEntity = EntityFactory.CreateEmptyEntity(null);
+            IEntity testEntity = world.EntityManager.CreateEmptyEntity(null);
             TestComponent testComponent = new TestComponent();
             testComponent.Text = "test";
             testComponent.DontSerialise = 5.31262;
@@ -59,7 +47,7 @@ namespace CorgEng.Tests.NetworkingTests
             //Communicate the entity
             byte[] serialisedEntity = EntityCommunicator.SerializeEntity(testEntity);
             //Clear entity manager, so it doesn't know about it
-            EntityManager.RemoveEntity(testEntity);
+            world.EntityManager.RemoveEntity(testEntity);
             //Deserialise the entity
             IEntity deserialisedEntity = EntityCommunicator.DeserialiseEntity(serialisedEntity).Result;
             //Perform tests

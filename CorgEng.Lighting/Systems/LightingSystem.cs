@@ -4,6 +4,7 @@ using CorgEng.EntityComponentSystem.Events.Events;
 using CorgEng.EntityComponentSystem.Implementations.Rendering.SpriteRendering;
 using CorgEng.EntityComponentSystem.Systems;
 using CorgEng.GenericInterfaces.ContentLoading;
+using CorgEng.GenericInterfaces.EntityComponentSystem;
 using CorgEng.GenericInterfaces.Rendering.Icons;
 using CorgEng.Lighting.Components;
 using CorgEng.Lighting.RenderCores;
@@ -23,12 +24,9 @@ namespace CorgEng.Lighting.Systems
         [UsingDependency]
         private static IIconFactory IconFactory = default!;
 
-        [UsingDependency]
-        private static IEntityCreator EntityCreator = default!;
-
         public override EntitySystemFlags SystemFlags => EntitySystemFlags.CLIENT_SYSTEM;
 
-        public override void SystemSetup()
+        public override void SystemSetup(IWorld world)
         {
             //When the lighting object initialises, set it to start rendering on the specified system
             RegisterLocalEvent<LightingComponent, InitialiseEvent>((entity, lightingComponent, signal) => {

@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 namespace CorgEng.Tests.RenderingTests
 {
     [TestClass]
-    public class TransparencyLoadingTests
+    public class TransparencyLoadingTests : TestBase
     {
 
         [UsingDependency]

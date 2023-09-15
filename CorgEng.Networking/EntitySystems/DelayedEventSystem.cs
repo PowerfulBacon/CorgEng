@@ -26,7 +26,7 @@ namespace CorgEng.Networking.EntitySystems
             }
         }
 
-        public override void SystemSetup()
+        public override void SystemSetup(IWorld world)
         {
             RegisterLocalEvent<NetworkTransformComponent, InitialiseNetworkedEntityEvent>((entity, component, signal) => {
                 List<Action<IEntity>> actionsToPerform;

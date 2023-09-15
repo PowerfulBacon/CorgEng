@@ -12,7 +12,7 @@ namespace CorgEng.Tests.UtilityTypes.MatrixTests
     /// Summary description for IdentityMatrixTests
     /// </summary>
     [TestClass]
-    public class IdentityMatrixTests
+    public class IdentityMatrixTests : TestBase
     {
 
         [TestMethod]

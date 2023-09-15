@@ -10,7 +10,7 @@ namespace CorgEng.Tests.DependencyInjection
     /// Dependency injection overiding is required for these tests to run, so no point in testing it.
     /// </summary>
     [TestClass]
-    public class DependencyTests
+    public class DependencyTests : TestBase
     {
 
         private interface IDependency
