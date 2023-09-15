@@ -609,7 +609,6 @@ namespace CorgEng.Core
             }
             WorldList.Clear();
             queuedActions.Clear();
-            MainRenderCore = null;
             Logger.WriteLine("Full cleanup of CorgEng application completed.", LogType.DEBUG);
         }
 

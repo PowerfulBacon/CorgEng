@@ -2,6 +2,7 @@
 using CorgEng.Core.Dependencies;
 using CorgEng.Core.Rendering;
 using CorgEng.GenericInterfaces.Core;
+using CorgEng.GenericInterfaces.EntityComponentSystem;
 using CorgEng.GenericInterfaces.Logging;
 using CorgEng.GenericInterfaces.Rendering;
 using CorgEng.GenericInterfaces.Rendering.Renderers;
@@ -202,6 +203,10 @@ namespace CorgEng.Rendering
 		}
 
 		private static Dictionary<string, IShaderSet> loadedShaders = new Dictionary<string, IShaderSet>();
+
+		protected PlaneRenderer(IWorld world) : base(world)
+		{
+		}
 
 		private IShaderSet GetShader(string name)
 		{

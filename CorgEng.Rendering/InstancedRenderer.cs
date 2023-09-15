@@ -1,6 +1,7 @@
 ﻿using CorgEng.Constants;
 using CorgEng.Core;
 using CorgEng.Core.Dependencies;
+using CorgEng.GenericInterfaces.EntityComponentSystem;
 using CorgEng.GenericInterfaces.Logging;
 using CorgEng.GenericInterfaces.Rendering;
 using CorgEng.GenericInterfaces.Rendering.Renderers;
@@ -19,7 +20,7 @@ using static OpenGL.Gl;
 namespace CorgEng.Rendering
 {
 
-    public abstract class InstancedRendererDependencyHolder
+    public abstract class InstancedRendererDependencyHolder : WorldObject
     {
         [UsingDependency]
         internal static ILogger Logger;
@@ -30,6 +31,10 @@ namespace CorgEng.Rendering
 
 		[UsingDependency]
 		protected static IColourFactory ColourFactory;
+
+		protected InstancedRendererDependencyHolder(IWorld world) : base(world)
+		{
+		}
 	}
 
     public abstract partial class InstancedRenderer<TSharedRenderAttributes, TBatch> : PlaneRenderer, IRenderer
@@ -151,11 +156,15 @@ namespace CorgEng.Rendering
         private int viewMatrixUniformLocation;
         private int projectionMatrixUniformLocation;
 
-        /// <summary>
-        /// Bind the texture if your batches use textures
-        /// </summary>
-        /// <param name="batch"></param>
-        protected virtual void BindBatchTexture(TSharedRenderAttributes batchAttributes)
+		protected InstancedRenderer(IWorld world) : base(world)
+		{
+		}
+
+		/// <summary>
+		/// Bind the texture if your batches use textures
+		/// </summary>
+		/// <param name="batch"></param>
+		protected virtual void BindBatchTexture(TSharedRenderAttributes batchAttributes)
         { }
 
         /// <summary>
