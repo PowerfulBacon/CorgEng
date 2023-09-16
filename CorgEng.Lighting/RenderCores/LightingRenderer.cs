@@ -1,6 +1,7 @@
 ﻿using CorgEng.Core;
 using CorgEng.Core.Dependencies;
 using CorgEng.Core.Rendering;
+using CorgEng.GenericInterfaces.EntityComponentSystem;
 using CorgEng.GenericInterfaces.Rendering.Renderers.SpriteRendering;
 using CorgEng.GenericInterfaces.UtilityTypes;
 using CorgEng.Rendering.SpriteRendering;
@@ -21,7 +22,11 @@ namespace CorgEng.Lighting.RenderCores
 
         public ISpriteRenderer lightRenderer = null!;
 
-        public override IColour BackColour => ColourFactory.GetColour(0.4f, 0.4f, 0.4f, 1);
+		public override IColour BackColour => ColourFactory.GetColour(0.4f, 0.4f, 0.4f, 1);
 
-    }
+		public LightingRenderer(IWorld world) : base(world)
+		{
+		}
+
+	}
 }

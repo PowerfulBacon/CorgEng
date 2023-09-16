@@ -1,4 +1,5 @@
-﻿using CorgEng.GenericInterfaces.Rendering.Renderers.ParallaxRenderer;
+﻿using CorgEng.GenericInterfaces.EntityComponentSystem;
+using CorgEng.GenericInterfaces.Rendering.Renderers.ParallaxRenderer;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,8 +10,10 @@ namespace CorgEng.Rendering.SpriteRendering.Parallax
 {
     internal class ParallaxRenderer : SpriteRenderer, IParallaxRenderer
     {
+		public ParallaxRenderer(IWorld world) : base(world)
+		{ }
 
-        protected override void CreateShaders()
+		protected override void CreateShaders()
         {
             _shaderSet = ShaderFactory.CreateShaderSet("ParallaxShader");
         }

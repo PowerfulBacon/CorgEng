@@ -202,7 +202,11 @@ namespace CorgEng.Core
                     foreach (var stagedPlane in stagedRenderPlanes)
                     {
                         renderingPlanes.TryAdd(stagedPlane.Key, stagedPlane.Value);
-                    }
+                        if (!stagedPlane.Value.Initialized)
+                        {
+                            stagedPlane.Value.Initialize();
+						}
+					}
                     stagedRenderPlanes.Clear();
 				}
                 //Trigger any render thread code
@@ -229,8 +233,10 @@ namespace CorgEng.Core
                 Glfw.PollEvents();
                 //Handle key events
                 GameWindow.Update();
-                // Perform rendering of the render planes that are not diverted to another source
-                foreach (var renderPlane in renderingPlanes.Values)
+                // Refresh the screen
+                RenderMaster.RefreshScreen();
+				// Perform rendering of the render planes that are not diverted to another source
+				foreach (var renderPlane in renderingPlanes.Values)
                 {
                     // Process the actual render
                     renderPlane.Render(MainCamera);
@@ -291,8 +297,11 @@ namespace CorgEng.Core
         {
             return renderCores.GetOrAdd(renderCorePlane, plane => {
                 // Fetch a default render core implementation
-                var spriteRenderer = SpriteRendererFactory.CreateSpriteRenderer(plane);
-                stagedRenderPlanes.Add(plane, spriteRenderer);
+                var spriteRenderer = SpriteRendererFactory.CreateSpriteRenderer(primaryWorld, plane);
+                lock (stagedRenderPlanes)
+                {
+                    stagedRenderPlanes.Add(plane, spriteRenderer);
+                }
 				return spriteRenderer;
 			});
 		}

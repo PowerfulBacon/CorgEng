@@ -1,4 +1,5 @@
 ﻿using CorgEng.DependencyInjection.Dependencies;
+using CorgEng.GenericInterfaces.EntityComponentSystem;
 using CorgEng.GenericInterfaces.Rendering.Renderers.SpriteRendering;
 using System;
 using System.Collections.Generic;
@@ -12,10 +13,11 @@ namespace CorgEng.Rendering.SpriteRendering
     public class SpriteRendererFactory : ISpriteRendererFactory
     {
 
-        public ISpriteRenderer CreateSpriteRenderer(int plane)
+        public ISpriteRenderer CreateSpriteRenderer(IWorld world, int plane)
         {
-            return new SpriteRenderer();
-        }
+            var spriteRenderer = new SpriteRenderer(world);
+            return spriteRenderer;
+		}
 
     }
 }

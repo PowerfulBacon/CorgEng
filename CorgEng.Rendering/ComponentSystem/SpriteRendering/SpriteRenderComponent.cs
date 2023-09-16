@@ -59,7 +59,7 @@ namespace CorgEng.EntityComponentSystem.Implementations.Rendering.SpriteRenderin
 
         internal bool WantsToRender { get; set; } = true;
 
-        private int cachedSpriteRendererIdentifier = 0;
+        protected int cachedSpriteRendererIdentifier = 0;
 
         protected ISpriteRenderer _spriteRenderer;
 

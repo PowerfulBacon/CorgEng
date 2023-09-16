@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CorgEng.GenericInterfaces.EntityComponentSystem;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,7 +10,7 @@ namespace CorgEng.GenericInterfaces.Rendering.Renderers.SpriteRendering
     public interface ISpriteRendererFactory
     {
 
-        ISpriteRenderer CreateSpriteRenderer(int plane);
+        ISpriteRenderer CreateSpriteRenderer(IWorld world, int plane);
 
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CorgEng.GenericInterfaces.EntityComponentSystem;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,7 +15,7 @@ namespace CorgEng.GenericInterfaces.Rendering.Renderers.ParallaxRenderer
         /// </summary>
         /// <param name="networkedIdentifier"></param>
         /// <returns></returns>
-        IParallaxRenderer CreateParallaxRenderer(int plane);
+        IParallaxRenderer CreateParallaxRenderer(IWorld world, int plane);
 
     }
 }

@@ -59,10 +59,15 @@ namespace CorgEng.Rendering
 
         public int Plane { get; private set; }
 
-        public override void Initialize()
+        public bool Initialized { get; set; } = false;
+
+		public override void Initialize()
         {
-            base.Initialize();
-            // Create the shaders
+			base.Initialize();
+            if (Initialized)
+                throw new Exception($"Render core {GetType()} is initialised already.");
+			Initialized = true;
+			// Create the shaders
 			CreateShaders();
             //Create a program for the renderer
             programUint = glCreateProgram();

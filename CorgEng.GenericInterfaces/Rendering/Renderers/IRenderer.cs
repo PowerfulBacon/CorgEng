@@ -35,6 +35,11 @@ namespace CorgEng.GenericInterfaces.Rendering.Renderers
 		int Plane { get; }
 
 		/// <summary>
+		/// Has this renderer been initialised?
+		/// </summary>
+		bool Initialized { get; }
+
+		/// <summary>
 		/// Initialise the renderer
 		/// </summary>
 		void Initialize();
