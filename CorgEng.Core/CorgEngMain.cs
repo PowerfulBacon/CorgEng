@@ -50,7 +50,7 @@ namespace CorgEng.Core
         /// <summary>
         /// Render planes that are staged to start rendering
         /// </summary>
-        private static SortedList<int, IRenderer> stagedRenderPlanes = new SortedList<int, IRenderer>();
+        private static volatile SortedList<int, IRenderer> stagedRenderPlanes = new SortedList<int, IRenderer>();
 
         /// <summary>
         /// A sorted list containing the planes that are currently drawing directly to the screen.
@@ -197,18 +197,21 @@ namespace CorgEng.Core
             {
                 lastFrameTime = Glfw.Time;
                 // Move the staged rendering planes into the active queue
-                lock (stagedRenderPlanes)
+                if (stagedRenderPlanes.Count > 0)
                 {
-                    foreach (var stagedPlane in stagedRenderPlanes)
+                    lock (stagedRenderPlanes)
                     {
-                        renderingPlanes.TryAdd(stagedPlane.Key, stagedPlane.Value);
-                        if (!stagedPlane.Value.Initialized)
+                        foreach (var stagedPlane in stagedRenderPlanes)
                         {
-                            stagedPlane.Value.Initialize();
-						}
-					}
-                    stagedRenderPlanes.Clear();
-				}
+                            renderingPlanes.TryAdd(stagedPlane.Key, stagedPlane.Value);
+                            if (!stagedPlane.Value.Initialized)
+                            {
+                                stagedPlane.Value.Initialize();
+                            }
+                        }
+                        stagedRenderPlanes.Clear();
+                    }
+                }
                 //Trigger any render thread code
                 if (!queuedActions.IsEmpty)
                 {
