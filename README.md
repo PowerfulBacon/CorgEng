@@ -1,3 +1,9 @@
+I am archiving this project either temporarilly or permanently because:
+- Making an engine is extremely time consuming. All the time I spent writing the engine, I am not writing a game which is counter-productive if I want to be developing indie games.
+- I have a lot of university work and don't have time to keep maintaining the code.
+
+In the future if I have time, or the need, to continue working on this then I will unarchive this and keep going.
+
 Feel free to ask me questions on discord @PowerfulBacon#3338
 
 https://discord.gg/6hgfjRrVJP
