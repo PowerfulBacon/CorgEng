@@ -1,4 +1,5 @@
-﻿using CorgEng.Core.Dependencies;
+﻿using CorgEng.Core;
+using CorgEng.Core.Dependencies;
 using CorgEng.GenericInterfaces.Rendering.Icons;
 using CorgEng.GenericInterfaces.Rendering.Renderers.SpriteRendering;
 using CorgEng.GenericInterfaces.Rendering.Textures;
@@ -65,8 +66,8 @@ namespace CorgEng.Rendering.Icons
         /// The renderer that should be used in order to render this icon.
         /// Will trigger ValueChanged when updated.
         /// </summary>
-        private uint plane;
-        public uint Plane
+        private int plane;
+        public int Plane
         {
             get => plane;
             set
@@ -85,7 +86,7 @@ namespace CorgEng.Rendering.Icons
             get
             {
                 if (_cachedRenderer == null)
-                    _cachedRenderer = RendererLookup.GetRendererByIdentifier<ISpriteRenderer>(Plane);
+                    _cachedRenderer = (ISpriteRenderer)CorgEngMain.GetRendererForPlane(Plane);
                 return _cachedRenderer;
             }
         }
@@ -104,7 +105,7 @@ namespace CorgEng.Rendering.Icons
             }
         }
 
-        public Icon(string iconName, float layer, uint plane)
+        public Icon(string iconName, float layer, int plane)
         {
             IconName = iconName;
             Layer = layer;
@@ -119,7 +120,7 @@ namespace CorgEng.Rendering.Icons
         {
             IconName = AutoSerialiser.Deserialize(typeof(string), binaryReader) as string;
             Layer = (float)AutoSerialiser.Deserialize(typeof(float), binaryReader);
-            Plane = (uint)AutoSerialiser.Deserialize(typeof(uint), binaryReader);
+            Plane = (int)AutoSerialiser.Deserialize(typeof(int), binaryReader);
             DirectionalState = (DirectionalState)AutoSerialiser.Deserialize(typeof(int), binaryReader);
             Colour = (IVector<float>)AutoSerialiser.Deserialize(typeof(Vector<float>), binaryReader);
         }
@@ -128,7 +129,7 @@ namespace CorgEng.Rendering.Icons
         {
             return AutoSerialiser.SerialisationLength(typeof(string), IconName)
                 + AutoSerialiser.SerialisationLength(typeof(float), Layer)
-                + AutoSerialiser.SerialisationLength(typeof(uint), Plane)
+                + AutoSerialiser.SerialisationLength(typeof(int), Plane)
                 + AutoSerialiser.SerialisationLength(typeof(int), (int)DirectionalState)
                 + AutoSerialiser.SerialisationLength(typeof(Vector<float>), Colour);
         }
@@ -137,7 +138,7 @@ namespace CorgEng.Rendering.Icons
         {
             AutoSerialiser.SerializeInto(typeof(string), IconName, binaryWriter);
             AutoSerialiser.SerializeInto(typeof(float), Layer, binaryWriter);
-            AutoSerialiser.SerializeInto(typeof(uint), Plane, binaryWriter);
+            AutoSerialiser.SerializeInto(typeof(int), Plane, binaryWriter);
             AutoSerialiser.SerializeInto(typeof(int), (int)DirectionalState, binaryWriter);
             AutoSerialiser.SerializeInto(typeof(Vector<float>), Colour, binaryWriter);
         }

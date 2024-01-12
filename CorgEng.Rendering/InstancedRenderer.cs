@@ -1,12 +1,14 @@
 ﻿using CorgEng.Constants;
 using CorgEng.Core;
 using CorgEng.Core.Dependencies;
+using CorgEng.GenericInterfaces.EntityComponentSystem;
 using CorgEng.GenericInterfaces.Logging;
 using CorgEng.GenericInterfaces.Rendering;
 using CorgEng.GenericInterfaces.Rendering.Renderers;
 using CorgEng.GenericInterfaces.Rendering.RenderObjects;
 using CorgEng.GenericInterfaces.Rendering.Shaders;
 using CorgEng.GenericInterfaces.Rendering.SharedRenderAttributes;
+using CorgEng.GenericInterfaces.UtilityTypes;
 using CorgEng.GenericInterfaces.UtilityTypes.Batches;
 using System;
 using System.Collections.Generic;
@@ -18,14 +20,25 @@ using static OpenGL.Gl;
 namespace CorgEng.Rendering
 {
 
-    internal static class InstancedRendererDependencyHolder
+    public abstract class InstancedRendererDependencyHolder : WorldObject
     {
         [UsingDependency]
         internal static ILogger Logger;
-    }
 
-    public abstract class InstancedRenderer<TSharedRenderAttributes, TBatch> : IRenderer
-        where TSharedRenderAttributes : ISharedRenderAttributes
+		//Fetch shader loading from some dependency somewhere
+		[UsingDependency]
+		protected static IShaderFactory ShaderFactory;
+
+		[UsingDependency]
+		protected static IColourFactory ColourFactory;
+
+		protected InstancedRendererDependencyHolder(IWorld world) : base(world)
+		{
+		}
+	}
+
+    public abstract partial class InstancedRenderer<TSharedRenderAttributes, TBatch> : PlaneRenderer, IRenderer
+		where TSharedRenderAttributes : ISharedRenderAttributes
         where TBatch : IBatch<TBatch>, new()
     {
 
@@ -44,24 +57,18 @@ namespace CorgEng.Rendering
         //The location of buffers that we are using
         protected uint[] storedBufferLocations;
 
-        //Used to identifier the networker
-        public uint NetworkIdentifier { get; }
+        public int Plane { get; private set; }
 
-        public InstancedRenderer(uint networkIdentifier)
-        {
-            //Set the network identifier
-            NetworkIdentifier = networkIdentifier;
-            //Do the renderer lookup
-            if (networkIdentifier != RenderingConstants.NETWORK_RENDERING_ID_LOCAL)
-            {
-                InstancedRendererDependencyHolder.Logger.WriteLine($"Added renderer on plane ID {networkIdentifier}", LogType.DEBUG);
-                RendererLookup.AddRenderer(this);
-            }
-        }
+        public bool Initialized { get; set; } = false;
 
-        public void Initialize()
+		public override void Initialize()
         {
-            CreateShaders();
+			base.Initialize();
+            if (Initialized)
+                throw new Exception($"Render core {GetType()} is initialised already.");
+			Initialized = true;
+			// Create the shaders
+			CreateShaders();
             //Create a program for the renderer
             programUint = glCreateProgram();
             //Setup the program:
@@ -77,7 +84,7 @@ namespace CorgEng.Rendering
 
         protected abstract void CreateShaders();
 
-        public void Render(ICamera camera)
+        public override void Render(ICamera camera)
         {
             if (ShaderSet == null)
                 throw new Exception("Attempting to use a renderer before it has been initialised. Please call Initialize() first.");
@@ -154,11 +161,15 @@ namespace CorgEng.Rendering
         private int viewMatrixUniformLocation;
         private int projectionMatrixUniformLocation;
 
-        /// <summary>
-        /// Bind the texture if your batches use textures
-        /// </summary>
-        /// <param name="batch"></param>
-        protected virtual void BindBatchTexture(TSharedRenderAttributes batchAttributes)
+		protected InstancedRenderer(IWorld world) : base(world)
+		{
+		}
+
+		/// <summary>
+		/// Bind the texture if your batches use textures
+		/// </summary>
+		/// <param name="batch"></param>
+		protected virtual void BindBatchTexture(TSharedRenderAttributes batchAttributes)
         { }
 
         /// <summary>
@@ -270,6 +281,5 @@ namespace CorgEng.Rendering
                 NULL                //Array buffer offset (null)
             );
         }
-
-    }
+	}
 }

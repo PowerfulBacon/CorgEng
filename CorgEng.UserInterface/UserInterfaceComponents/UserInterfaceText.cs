@@ -2,6 +2,7 @@
 using CorgEng.Core.Dependencies;
 using CorgEng.GenericInterfaces.EntityComponentSystem;
 using CorgEng.GenericInterfaces.Font.Fonts;
+using CorgEng.GenericInterfaces.Rendering;
 using CorgEng.GenericInterfaces.Rendering.Cameras.Isometric;
 using CorgEng.GenericInterfaces.Rendering.Renderers.SpriteRendering;
 using CorgEng.GenericInterfaces.Rendering.Text;
@@ -60,7 +61,7 @@ namespace CorgEng.UserInterface.UserInterfaceComponents
             //Create the camera
             IsometricCamera = IsometricCameraFactory.CreateCamera();
             //Create the renderer (Local, since UI)
-            spriteRenderer = SpriteRendererFactory.CreateSpriteRenderer(Constants.RenderingConstants.NETWORK_RENDERING_ID_LOCAL);
+            spriteRenderer = SpriteRendererFactory.CreateSpriteRenderer(world, Constants.RenderingConstants.NETWORK_RENDERING_ID_LOCAL);
             spriteRenderer.Initialize();
             //Get the font to use
             string typeface;
@@ -79,8 +80,8 @@ namespace CorgEng.UserInterface.UserInterfaceComponents
             });
         }
 
-        public override void PerformRender()
-        {
+		public override void Render(ICamera camera)
+		{
             if (!ready)
                 return;
             IsometricCamera.X = 0.8f;

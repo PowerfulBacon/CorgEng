@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace CorgEng.Rendering.SpriteRendering
 {
-    internal sealed class SpriteBatch : Batch<SpriteBatch>
+    public sealed class SpriteBatch : Batch<SpriteBatch>
     {
 
         public override int[] BatchVectorSizes { get; } = new int[] { 3, 3, 4, 1, 4 };

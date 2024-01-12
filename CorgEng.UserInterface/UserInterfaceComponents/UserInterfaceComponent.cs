@@ -5,10 +5,12 @@ using CorgEng.Core.Rendering;
 using CorgEng.GenericInterfaces.Core;
 using CorgEng.GenericInterfaces.EntityComponentSystem;
 using CorgEng.GenericInterfaces.Logging;
+using CorgEng.GenericInterfaces.Rendering;
 using CorgEng.GenericInterfaces.UserInterface.Anchors;
 using CorgEng.GenericInterfaces.UserInterface.Components;
 using CorgEng.GenericInterfaces.UserInterface.Rendering;
 using CorgEng.GenericInterfaces.UserInterface.Rendering.Renderer;
+using CorgEng.Rendering;
 using CorgEng.UserInterface.Hooks;
 using CorgEng.UserInterface.Rendering;
 using System;
@@ -20,7 +22,7 @@ using static OpenGL.Gl;
 
 namespace CorgEng.UserInterface.Components
 {
-    internal class UserInterfaceComponent : RenderCore, IUserInterfaceComponent
+    internal class UserInterfaceComponent : PlaneRenderer, IUserInterfaceComponent
     {
 
         private static int IdCounter = 0;
@@ -249,20 +251,20 @@ namespace CorgEng.UserInterface.Components
         // Component Rendering Interfaces
         //====================================
 
-        private static void Render(UserInterfaceComponent userInterfaceComponent, uint buffer, bool drawOnTop = false)
+        private static void Render(ICamera camera, UserInterfaceComponent userInterfaceComponent, uint buffer, bool drawOnTop = false)
         {
             //Not initalized yet
             if (!userInterfaceComponent.initialized)
                 return;
             //Resize if necessary
-            if (userInterfaceComponent.Fullscreen && userInterfaceComponent.Parent == null && (userInterfaceComponent.PixelWidth != CorgEngMain.MainRenderCore.Width || userInterfaceComponent.PixelHeight != CorgEngMain.MainRenderCore.Height))
+            if (userInterfaceComponent.Fullscreen && userInterfaceComponent.Parent == null && (userInterfaceComponent.PixelWidth != CorgEngMain.GameWindow.Width || userInterfaceComponent.PixelHeight != CorgEngMain.GameWindow.Height))
             {
-                userInterfaceComponent.SetWidth(CorgEngMain.MainRenderCore.Width, CorgEngMain.MainRenderCore.Height);
+                userInterfaceComponent.SetWidth(CorgEngMain.GameWindow.Width, CorgEngMain.GameWindow.Height);
             }
             //Switch to the correct render core and draw it to the framebuffer
             if (userInterfaceComponent.RenderInclude)
             {
-                userInterfaceComponent.DoRender();
+                userInterfaceComponent.DoRender(camera);
             }
             else
             {
@@ -275,7 +277,7 @@ namespace CorgEng.UserInterface.Components
                 foreach (IUserInterfaceComponent childComponent in userInterfaceComponent.GetChildren())
                 {
                     //Render the child component to our buffer
-                    Render(childComponent as UserInterfaceComponent, userInterfaceComponent.FrameBufferUint);
+                    Render(camera, childComponent as UserInterfaceComponent, userInterfaceComponent.FrameBufferUint);
                 }
             }
             if (drawOnTop)
@@ -299,7 +301,7 @@ namespace CorgEng.UserInterface.Components
         {
             try
             {
-                Render(this, frameBuffer, drawOnTop: true);
+                Render(CorgEngMain.MainCamera, this, frameBuffer, drawOnTop: true);
             }
             catch (Exception e)
             {
@@ -532,8 +534,9 @@ namespace CorgEng.UserInterface.Components
             }
         }
 
-        public override void Initialize()
+		public override void Initialize()
         {
+            base.Initialize();
             if (initialiseCallbackFunction != null)
             {
                 UserInterfaceModule.KeyMethods[initialiseCallbackFunction].Invoke(null, new object[] { this });
@@ -541,9 +544,6 @@ namespace CorgEng.UserInterface.Components
             }
             initialized = true;
         }
-
-        public override void PerformRender()
-        { }
 
         public virtual IUserInterfaceComponent Screencast(int relativeX, int relativeY)
         {
@@ -596,5 +596,10 @@ namespace CorgEng.UserInterface.Components
         {
             return dataStore[dataName];
         }
-    }
+
+		public override void Render(ICamera camera)
+		{
+			throw new NotImplementedException();
+		}
+	}
 }
