@@ -54,21 +54,17 @@ namespace CorgEng.Rendering.DepthParallax
         {
             base.Initialize();
             next?.Initialize();
-            renderer = SpriteRendererFactory.CreateSpriteRenderer(0);
-            renderer.Initialize();
-            next?.Initialize();
         }
 
         public override void PerformRender()
         {
-            // Render our current layer then pass that on to the next render core to draw
-            renderer.Render(CorgEngMain.MainCamera);
+            base.Render(camera);
             // Now render the layer below us
             if (next != null)
             {
-                next.DoRender(() => {
-                    DrawToBuffer(next.FrameBufferUint, 0, 0, Width, Height);
-                });
+                // TODO: Make the next layer not draw to the screen too
+                next.Render(camera);
+                next.DrawToBuffer(FrameBufferUint, 1, 1, Width, Height);
             }
         }
 
