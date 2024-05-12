@@ -1,4 +1,4 @@
-//TODO: Rewrite me to a proper README
+Feel free to ask me questions on discord @PowerfulBacon#3338
 
 https://discord.gg/6hgfjRrVJP
 

@@ -1,5 +1,6 @@
 ﻿using CorgEng.Core.Dependencies;
 using CorgEng.DependencyInjection.Dependencies;
+using CorgEng.GenericInterfaces.EntityComponentSystem;
 using CorgEng.GenericInterfaces.Rendering;
 using CorgEng.GenericInterfaces.Rendering.Renderers.SpriteRendering;
 using CorgEng.GenericInterfaces.Rendering.RenderObjects.SpriteRendering;
@@ -20,19 +21,18 @@ using static OpenGL.Gl;
 
 namespace CorgEng.Rendering.SpriteRendering
 {
-    internal class SpriteRenderer : InstancedRenderer<ISpriteSharedRenderAttributes, SpriteBatch>, ISpriteRenderer
+    public class SpriteRenderer : InstancedRenderer<ISpriteSharedRenderAttributes, SpriteBatch>, ISpriteRenderer
     {
-
-        [UsingDependency]
-        protected static IShaderFactory ShaderFactory;
 
         protected IShaderSet _shaderSet;
 
         protected override IShaderSet ShaderSet => _shaderSet;
 
-        internal SpriteRenderer(uint networkedId) : base(networkedId) { }
+		public SpriteRenderer(IWorld world) : base(world)
+		{
+		}
 
-        protected override void CreateShaders()
+		protected override void CreateShaders()
         {
             _shaderSet = ShaderFactory.CreateShaderSet("SpriteShader");
         }
@@ -71,9 +71,9 @@ namespace CorgEng.Rendering.SpriteRendering
             spriteRenderObject.SetBelongingBatchElement<SpriteBatch>(null);
         }
 
-        private int textureSamplerUniformLocation; 
+        private int textureSamplerUniformLocation;
 
-        protected override void LoadUniformVariableLocations()
+		protected override void LoadUniformVariableLocations()
         {
             base.LoadUniformVariableLocations();
             textureSamplerUniformLocation = glGetUniformLocation(programUint, "renderTexture");

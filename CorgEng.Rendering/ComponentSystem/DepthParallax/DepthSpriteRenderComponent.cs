@@ -23,7 +23,7 @@ namespace CorgEng.Rendering.ComponentSystem.DepthParallax
                 {
                     if (!ParallaxLayerRenderCore.parallaxRenderCores.ContainsKey((int)SpriteRendererIdentifier))
                         return null;
-                    _spriteRenderer = ParallaxLayerRenderCore.parallaxRenderCores[(int)SpriteRendererIdentifier][(int)Sprite.Layer-1].renderer;
+                    _spriteRenderer = ParallaxLayerRenderCore.parallaxRenderCores[(int)SpriteRendererIdentifier][(int)Sprite.Layer-1];
                     cachedSpriteRendererIdentifier = SpriteRendererIdentifier;
                 }
                 return _spriteRenderer;
