@@ -1,0 +1,3 @@
+[submodule "CorgEC"]
+	path = CorgEC
+	url = https://github.com/PowerfulBacon/CorgEC
