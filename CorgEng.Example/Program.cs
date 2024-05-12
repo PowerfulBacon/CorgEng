@@ -20,39 +20,18 @@ namespace CorgEng.Example
 
         static void Main(string[] args)
         {
-            //Load the application config
-            CorgEngMain.LoadConfig("CorgEngConfig.xml");
             //Initialize CorgEng
             //This creates the window and loads all
             //modules that are dependencies
-            CorgEngMain.Initialize();
-
-            // Create the world
-            IWorld world = WorldFactory.CreateWorld();
-            CorgEngMain.PrimaryWorld = world;
-
-            //Set the render core
-
-            // Prevent failures
-            //Thread.Sleep(5000);
+            CorgEngMain.Initialize("CorgEngConfig.xml");
 
             //Camera an isometric camera
             IIsometricCamera camera = isometricCameraFactory.CreateCamera();
             CameraScrollSystem.IsometricCamera = camera;
 
             //Connect to our server
-            world.ClientInstance.AttemptConnection("127.0.0.1", 5000);
+            CorgEngMain.World.ClientInstance.AttemptConnection("127.0.0.1", 5000);
 
-            //Create the entity to hold and move the camera
-            /*Entity mainCameraEntity = new Entity();
-            mainCameraEntity.AddComponent(new TransformComponent());
-            mainCameraEntity.AddComponent(new PlayerMovementComponent());
-            mainCameraEntity.AddComponent(new CameraComponent(camera));
-            mainCameraEntity.AddComponent(new SpriteRenderComponent());*/
-            /*
-            new SetSpriteEvent("human.ghost").Raise(mainCameraEntity);
-            new SetSpriteRendererEvent(erc.spriteRenderer).Raise(mainCameraEntity);
-            */
             //Set the main camera
             CorgEngMain.SetMainCamera(camera);
             //Transfer control of the main thread to the CorgEng

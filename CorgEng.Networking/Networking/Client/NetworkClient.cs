@@ -310,7 +310,7 @@ namespace CorgEng.Networking.Networking.Client
                                     Logger.WriteMetric("networked_global_event", raisedEvent.GetType().ToString());
                                     //Deserialize the event
                                     raisedEvent.Deserialise(reader);
-                                    raisedEvent.RaiseGlobally(CorgEngMain.PrimaryWorld, false);
+                                    raisedEvent.RaiseGlobally(CorgEngMain.World, false);
                                 }
                             }
                             return;
@@ -341,7 +341,7 @@ namespace CorgEng.Networking.Networking.Client
                                 double viewOffsetHeight = reader.ReadDouble();
                                 //Update our view
                                 //Send a signal
-                                new ModifyIsometricView(viewX + viewOffsetX, viewY + viewOffsetY, viewZ, viewOffsetWidth, viewOffsetHeight).RaiseGlobally(CorgEngMain.PrimaryWorld);
+                                new ModifyIsometricView(viewX + viewOffsetX, viewY + viewOffsetY, viewZ, viewOffsetWidth, viewOffsetHeight).RaiseGlobally(CorgEngMain.World);
                             }
                         }
                         return;

@@ -6,6 +6,8 @@ using CorgEng.Core.Rendering;
 using CorgEng.Core.Rendering.Exceptions;
 using CorgEng.GenericInterfaces.EntityComponentSystem;
 using CorgEng.GenericInterfaces.Logging;
+using CorgEng.GenericInterfaces.Networking.Networking.Client;
+using CorgEng.GenericInterfaces.Networking.Networking.Server;
 using CorgEng.GenericInterfaces.Rendering;
 using CorgEng.GenericInterfaces.Rendering.Renderers;
 using CorgEng.GenericInterfaces.Rendering.Renderers.SpriteRendering;
@@ -80,6 +82,12 @@ namespace CorgEng.Core
         private static ILogger Logger;
 
         /// <summary>
+        /// The thing that we use to create the world
+        /// </summary>
+        [UsingDependency]
+        private static IWorldFactory WorldFactory;
+
+        /// <summary>
         /// Time of the last frame
         /// </summary>
         private static double lastFrameTime;
@@ -103,17 +111,17 @@ namespace CorgEng.Core
 
         public static event Action OnReadyEvents = null;
 
-        private static IWorld primaryWorld = null;
+        private static IWorld _primaryWorld = null;
 
         /// <summary>
         /// The main world to use for the game for when one isn't accessible
         /// </summary>
-        public static IWorld PrimaryWorld
+        public static IWorld World
         {
-            get => primaryWorld;
+            get => _primaryWorld;
             set {
-                primaryWorld = value;
-                WorldInit(primaryWorld);
+                _primaryWorld = value;
+                WorldInit(_primaryWorld);
             }
         }
         /// <summary>
@@ -130,13 +138,14 @@ namespace CorgEng.Core
         /// Initializes the CorgEng game engine.
         /// Will call initialization on all CorgEng modules.
         /// </summary>
-        public static void Initialize(bool disableRendering = false)
+        public static void Initialize(string filePath, bool disableRendering = false, bool awaitOnError = true)
         {
+            LoadConfig(filePath, awaitOnError);
             try
             {
                 // Reset the world list
                 WorldList.Clear();
-                //Load priority modules (Logging)
+                // Load priority modules (Logging)
                 PriorityModuleInit();
                 Logger?.WriteLine("Starting CorgEng Application", LogType.DEBUG);
                 if (disableRendering)
@@ -145,21 +154,33 @@ namespace CorgEng.Core
                     ModuleInit();
                     return;
                 }
-                //Enable rendering functionality
+                // Enable rendering functionality
                 IsRendering = true;
-                //Create a new window
+                // Create a new window
                 GameWindow = new CorgEngWindow();
                 GameWindow.Open();
                 Logger?.WriteLine("Successfully created primary window", LogType.DEBUG);
-                //Create the internal render master
+                // Create the internal render master
                 InternalRenderMaster = new RenderMaster();
                 InternalRenderMaster.Initialize();
                 Logger?.WriteLine("Successfully initialized render master", LogType.DEBUG);
-				//Bind the render master size to the game window 
+				// Bind the render master size to the game window 
 				GameWindow.OnWindowResized += InternalRenderMaster.SetWindowRenderSize;
 				GameWindow.OnWindowResized += activeSizeDelegate;
-                //Load non-priority modules
+                // Load non-priority modules
                 ModuleInit();
+                // Create the world
+                if (World == null)
+                {
+                    if (WorldFactory != null)
+                    {
+                        World = WorldFactory.CreateWorld();
+                    }
+                    else
+                    {
+                        Logger?.WriteLine($"The world module is not loaded, meaning that no base game was created.", LogType.WARNING);
+                    }
+                }
             }
             catch (System.Exception e)
             {
@@ -300,7 +321,7 @@ namespace CorgEng.Core
         {
             return renderCores.GetOrAdd(renderCorePlane, plane => {
                 // Fetch a default render core implementation
-                var spriteRenderer = SpriteRendererFactory.CreateSpriteRenderer(primaryWorld, plane);
+                var spriteRenderer = SpriteRendererFactory.CreateSpriteRenderer(_primaryWorld, plane);
                 lock (stagedRenderPlanes)
                 {
                     stagedRenderPlanes.Add(plane, spriteRenderer);
@@ -335,14 +356,14 @@ namespace CorgEng.Core
         /// TODO: Whitelist/blacklist types and add sandboxing
         /// </summary>
         /// <param name="filePath"></param>
-        public static void LoadConfig(string filePath, bool embeddedResource = true, bool awaitOnError = true)
+        private static void LoadConfig(string filePath, bool awaitOnError = true)
         {
             try
             {
                 string resourceName;
                 Stream resourceStream;
                 //Locate the config resources file
-                if (embeddedResource)
+                if (!File.Exists(filePath))
                 {
                     resourceName = Assembly.GetEntryAssembly().GetManifestResourceNames().Single(str => str.EndsWith(filePath));
                     resourceStream = Assembly.GetEntryAssembly().GetManifestResourceStream(resourceName);
@@ -383,6 +404,9 @@ namespace CorgEng.Core
                                 }
                             }
                             LoadedAssemblyModules = loadedAssemblies;
+                            break;
+                        case "WindowName":
+                            WindowName = childElement.Value;
                             break;
                         default:
                             Console.Error.WriteLine($"[CorgEng Config Error]: Error parsing config, unknown config attribute {childElement.Name}.");
@@ -561,7 +585,6 @@ namespace CorgEng.Core
                 }
             }
             double timeToFire = Time + executeTime * 0.001;
-            Logger.WriteLine($"Action queued to fire at {timeToFire}", LogType.WARNING);
             // 0 or negative execution time
             if (timeToFire <= Time)
             {
@@ -614,7 +637,7 @@ namespace CorgEng.Core
         public static void Cleanup()
         {
             MainCamera = null;
-            primaryWorld = null;
+            _primaryWorld = null;
             foreach (IWorld world in WorldList)
             {
                 world.Cleanup();
@@ -623,6 +646,5 @@ namespace CorgEng.Core
             queuedActions.Clear();
             Logger.WriteLine("Full cleanup of CorgEng application completed.", LogType.DEBUG);
         }
-
     }
 }

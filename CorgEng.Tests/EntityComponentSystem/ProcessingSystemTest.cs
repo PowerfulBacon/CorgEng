@@ -58,7 +58,7 @@ namespace CorgEng.Tests.EntityComponentSystem
         public void TestProcessingSystems()
         {
             IWorld world = WorldFactory.CreateWorld();
-            CorgEngMain.PrimaryWorld = world;
+            CorgEngMain.World = world;
             //Create an entity to process
             IEntity testEntity = world.EntityManager.CreateEmptyEntity(null);
             TestComponent testComponent = new TestComponent();

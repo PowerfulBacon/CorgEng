@@ -50,7 +50,7 @@ namespace CorgEng.EntityComponentSystem.Systems
         /// </summary>
         internal Dictionary<EventComponentPair, List<SystemEventHandlerDelegate>> RegisteredSystemSignalHandlers { get; } = new Dictionary<EventComponentPair, List<SystemEventHandlerDelegate>>();
 
-        private EntitySystemThreadManager entitySystemThreadManager = new EntitySystemThreadManager(4);
+        private EntitySystemThreadManager entitySystemThreadManager = new EntitySystemThreadManager(1);
 
         private IWorld world;
 

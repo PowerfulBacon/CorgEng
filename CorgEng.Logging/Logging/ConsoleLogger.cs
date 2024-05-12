@@ -1,4 +1,5 @@
-﻿using CorgEng.Core.Modules;
+﻿using CorgEng.Core;
+using CorgEng.Core.Modules;
 using CorgEng.DependencyInjection.Dependencies;
 using CorgEng.GenericInterfaces.Logging;
 using System;
@@ -47,7 +48,7 @@ namespace CorgEng.Logging
                 ExceptionCount++;
             
             DateTime logTime = DateTime.Now;
-            string logText = $"[{Thread.CurrentThread.Name ?? $"T{Thread.CurrentThread.ManagedThreadId}"}][{logType}][{logTime}]";
+            string logText = $"[{Thread.CurrentThread.Name ?? $"T{Thread.CurrentThread.ManagedThreadId}"}][{logType}][{logTime}/{CorgEngMain.Time:F3}]";
             lock (consoleLock)
             {
                 //Ignore this log

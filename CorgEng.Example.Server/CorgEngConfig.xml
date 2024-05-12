@@ -1,4 +1,5 @@
 ﻿<CorgEngConfig>
+  
   <!--Specify which modules we need to load dynamically-->
   <DependencyModules>
     <Module>CorgEng.ContentLoading</Module>
@@ -18,4 +19,7 @@
     <Module>CorgEng.UserInterface</Module>
     <Module>CorgEng.World</Module>
   </DependencyModules>
+  
+  <WindowName>CorgEngApplication Server</WindowName>
+
 </CorgEngConfig>
