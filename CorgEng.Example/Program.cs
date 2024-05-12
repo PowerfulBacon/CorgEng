@@ -39,6 +39,7 @@ namespace CorgEng.Example
             //Camera an isometric camera
             IIsometricCamera camera = isometricCameraFactory.CreateCamera();
             CameraScrollSystem.IsometricCamera = camera;
+
             //Connect to our server
             world.ClientInstance.AttemptConnection("127.0.0.1", 5000);
 

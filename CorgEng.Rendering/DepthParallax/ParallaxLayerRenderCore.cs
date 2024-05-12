@@ -56,7 +56,7 @@ namespace CorgEng.Rendering.DepthParallax
             next?.Initialize();
         }
 
-        public override void PerformRender()
+        public override void Render(ICamera camera)
         {
             base.Render(camera);
             // Now render the layer below us
