@@ -14,7 +14,6 @@ using CorgEng.Example.Components.PlayerMovement;
 using CorgEng.Example.Shared.Components.FollowMouseComponent;
 using CorgEng.Example.Shared.Components.Gravity;
 using CorgEng.Example.Shared.Components.SandFactory;
-using CorgEng.Example.Shared.RenderCores;
 using CorgEng.GenericInterfaces.EntityComponentSystem;
 using CorgEng.GenericInterfaces.Logging;
 using CorgEng.GenericInterfaces.Networking.Config;
@@ -58,35 +57,21 @@ namespace CorgEng.Example.Server
         [UsingDependency]
         private static INetworkConfig NetworkConfig;
 
-        [UsingDependency]
-        private static IWorldFactory WorldFactory;
-
-        public static IWorld ServerWorld;
-
         static void Main(string[] args)
         {
-            //Load the application config
-            CorgEngMain.LoadConfig("CorgEngConfig.xml");
-            CorgEngMain.WindowName = "CorgEngApplication Server";
             //Initialize CorgEng in headless mode
 #if !DEBUG_RENDERING
-            CorgEngMain.Initialize(true);
+            CorgEngMain.Initialize("CorgEngConfig.xml", true);
 #else
-            CorgEngMain.Initialize();
-
-            // Create the program world
-            ServerWorld = WorldFactory.CreateWorld();
-            CorgEngMain.PrimaryWorld = ServerWorld;
+            CorgEngMain.Initialize("CorgEngConfig.xml");
 
             //Start networking server
-            ServerWorld.ServerInstance.StartHosting(5000);
+            CorgEngMain.World.ServerInstance.StartHosting(5000);
 
             //Debug
             NetworkConfig.ProcessClientSystems = true;
 
-            ExampleRenderCore erc = new ExampleRenderCore(ServerWorld);
-            CorgEngMain.SetRenderCore(erc);
-            ServerWorld.EntityManager.CreateEmptyEntity(entity => {
+            CorgEngMain.World.EntityManager.CreateEmptyEntity(entity => {
                 IIsometricCamera camera = IsometricCameraFactory.CreateCamera();
                 camera.Width = 30;
                 camera.Height = 30;
@@ -98,7 +83,7 @@ namespace CorgEng.Example.Server
             });
 
             // Create a lighting debugger
-            ServerWorld.EntityManager.CreateEmptyEntity(entity => {
+            CorgEngMain.World.EntityManager.CreateEmptyEntity(entity => {
                 entity.AddComponent(new TransformComponent());
                 entity.AddComponent(new FollowCursorComponent());
                 entity.AddComponent(new SpriteRenderComponent());
@@ -164,7 +149,7 @@ namespace CorgEng.Example.Server
                         {
                             for (int yv = Math.Min(start_y, end_y); yv <= Math.Max(start_y, end_y); yv++)
                             {
-                                ServerWorld.EntityManager.CreateEmptyEntity(testingEntity => {
+                                CorgEngMain.World.EntityManager.CreateEmptyEntity(testingEntity => {
                                     //Add components
                                     testingEntity.AddComponent(new NetworkTransformComponent());
                                     testingEntity.AddComponent(new SpriteRenderComponent());
@@ -181,7 +166,7 @@ namespace CorgEng.Example.Server
                 });
 
             //Create a testing entity
-            ServerWorld.EntityManager.CreateEmptyEntity(testingEntity => {
+            CorgEngMain.World.EntityManager.CreateEmptyEntity(testingEntity => {
                 //Add components
                 testingEntity.AddComponent(new NetworkTransformComponent());
                 testingEntity.AddComponent(new SpriteRenderComponent());
@@ -195,13 +180,13 @@ namespace CorgEng.Example.Server
 
         private static void SetPlayerPrototype()
         {
-            ServerWorld.EntityManager.CreateEmptyEntity(playerPrototype => {
+            CorgEngMain.World.EntityManager.CreateEmptyEntity(playerPrototype => {
                 playerPrototype.AddComponent(new ClientComponent());
                 playerPrototype.AddComponent(new NetworkTransformComponent());
                 playerPrototype.AddComponent(new SpriteRenderComponent() { Sprite = IconFactory.CreateIcon("human.ghost", 5, Constants.RenderingConstants.DEFAULT_RENDERER_PLANE), SpriteRendererIdentifier = 1 });
                 playerPrototype.AddComponent(new PlayerMovementComponent());
                 IPrototype prototype = PrototypeManager.GetPrototype(playerPrototype);
-                ServerWorld.ServerInstance.SetClientPrototype(prototype);
+                CorgEngMain.World.ServerInstance.SetClientPrototype(prototype);
                 new DeleteEntityEvent().Raise(playerPrototype);
             });
         }

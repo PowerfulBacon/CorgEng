@@ -21,21 +21,21 @@ namespace CorgEng.EntityComponentSystem.Implementations.Rendering.SpriteRenderin
         [UsingDependency]
         private static IAutoSerialiser AutoSerialiser;
 
-        public uint Target { get; set; }
+        public int Target { get; set; }
 
-        public SetSpriteRendererEvent(uint target)
+        public SetSpriteRendererEvent(int target)
         {
             Target = target;
         }
 
         public SetSpriteRendererEvent(ISpriteRenderer target)
         {
-            Target = target.NetworkIdentifier;
+            Target = target.Plane;
         }
 
         public void Deserialise(BinaryReader reader)
         {
-            Target = reader.ReadUInt32();
+            Target = reader.ReadInt32();
         }
 
         public void Serialise(BinaryWriter writer)
@@ -45,7 +45,7 @@ namespace CorgEng.EntityComponentSystem.Implementations.Rendering.SpriteRenderin
 
         public int SerialisedLength()
         {
-            return sizeof(uint);
+            return sizeof(int);
         }
     }
 }

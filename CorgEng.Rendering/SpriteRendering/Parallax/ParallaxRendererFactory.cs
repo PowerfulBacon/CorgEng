@@ -1,4 +1,5 @@
 ﻿using CorgEng.DependencyInjection.Dependencies;
+using CorgEng.GenericInterfaces.EntityComponentSystem;
 using CorgEng.GenericInterfaces.Rendering.Renderers.ParallaxRenderer;
 using System;
 using System.Collections.Generic;
@@ -11,9 +12,9 @@ namespace CorgEng.Rendering.SpriteRendering.Parallax
     [Dependency]
     internal class ParallaxRendererFactory : IParallaxRendererFactory
     {
-        public IParallaxRenderer CreateParallaxRenderer(uint networkedIdentifier)
+        public IParallaxRenderer CreateParallaxRenderer(IWorld world, int plane)
         {
-            return new ParallaxRenderer(networkedIdentifier);
+            return new ParallaxRenderer(world);
         }
     }
 }

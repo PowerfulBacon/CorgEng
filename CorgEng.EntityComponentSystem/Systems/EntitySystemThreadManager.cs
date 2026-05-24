@@ -91,7 +91,6 @@ namespace CorgEng.EntityComponentSystem.Systems
         public void FireSystemIn(EntitySystem system, double fireTime)
         {
             CorgEngMain.ExecuteIn(() => {
-                Logger.WriteLine($"Attempting to queue system {system} for processing fire at {CorgEngMain.Time}", LogType.TEMP);
                 system.QueueProcessing();
             }, fireTime);
         }

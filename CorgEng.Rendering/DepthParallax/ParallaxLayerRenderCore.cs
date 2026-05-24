@@ -2,6 +2,7 @@
 using CorgEng.Core.Dependencies;
 using CorgEng.Core.Rendering;
 using CorgEng.GenericInterfaces.EntityComponentSystem;
+using CorgEng.GenericInterfaces.Rendering;
 using CorgEng.GenericInterfaces.Rendering.Renderers;
 using CorgEng.GenericInterfaces.Rendering.Renderers.SpriteRendering;
 using CorgEng.Rendering.SpriteRendering;
@@ -14,7 +15,7 @@ using static OpenGL.Gl;
 
 namespace CorgEng.Rendering.DepthParallax
 {
-    public class ParallaxLayerRenderCore : RenderCore
+    public class ParallaxLayerRenderCore : SpriteRenderer
     {
 
         [UsingDependency]
@@ -29,11 +30,6 @@ namespace CorgEng.Rendering.DepthParallax
         /// The next layer in the sequence
         /// </summary>
         private ParallaxLayerRenderCore? next;
-
-        /// <summary>
-        /// The renderer
-        /// </summary>
-        internal ISpriteRenderer renderer;
 
         /// <summary>
         /// Parallax render cores that are active in the world
@@ -56,22 +52,18 @@ namespace CorgEng.Rendering.DepthParallax
 
         public override void Initialize()
         {
-            renderer = SpriteRendererFactory.CreateSpriteRenderer(0);
-            renderer.Initialize();
+            base.Initialize();
             next?.Initialize();
         }
 
-        public override void PerformRender()
+        public override void Render(ICamera camera)
         {
-            // Render our current layer then pass that on to the next render core to draw
-            renderer.Render(CorgEngMain.MainCamera);
+            base.Render(camera);
             // Now render the layer below us
             if (next != null)
             {
-                next.DoRender(() => {
-                    DrawToBuffer(next.FrameBufferUint, 0, 0, Width, Height);
-                });
-                // Render the layer below us onto our layer
+                // TODO: Make the next layer not draw to the screen too
+                next.Render(camera);
                 next.DrawToBuffer(FrameBufferUint, 1, 1, Width, Height);
             }
         }
